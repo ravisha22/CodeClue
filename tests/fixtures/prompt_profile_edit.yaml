@@ -1,0 +1,10 @@
+profile_id: edit-localization-v1
+intent: edit-point-localization
+constraints:
+  max_context: focused
+  enforce_traceability: true
+focus_symbols:
+  - build_greeting
+focus_keywords:
+  - normalize
+strict_mode: true

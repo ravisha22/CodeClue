@@ -1,0 +1,50 @@
+{
+  "aggregate": {
+    "clue_only_families": [
+      "OF3",
+      "OF4",
+      "OF5"
+    ],
+    "families_needing_lookup": [
+      "OF1",
+      "OF2"
+    ],
+    "mean_confidence": 0.591241,
+    "total_suggested_actions": 172
+  },
+  "commit_id": "8366143e4086d3a70c286ac59abff073d08464bc",
+  "per_family": {
+    "OF1": {
+      "confidence_overall": 0.0,
+      "lookup_decision_hint": "expanded_lookup",
+      "suggested_actions_count": 10,
+      "tool_call_budget": 5
+    },
+    "OF2": {
+      "confidence_overall": 0.0,
+      "lookup_decision_hint": "expanded_lookup",
+      "suggested_actions_count": 10,
+      "tool_call_budget": 15
+    },
+    "OF3": {
+      "confidence_overall": 1.0,
+      "lookup_decision_hint": "clue_only",
+      "suggested_actions_count": 5,
+      "tool_call_budget": 10
+    },
+    "OF4": {
+      "confidence_overall": 1.0,
+      "lookup_decision_hint": "clue_only",
+      "suggested_actions_count": 10,
+      "tool_call_budget": 20
+    },
+    "OF5": {
+      "confidence_overall": 0.956204,
+      "lookup_decision_hint": "clue_only",
+      "suggested_actions_count": 137,
+      "tool_call_budget": 30
+    }
+  },
+  "repo_name": "nestjs/nest",
+  "timestamp": "2026-04-01T09:22:22.252343+00:00"
+}

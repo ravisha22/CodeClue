@@ -1,0 +1,18 @@
+{
+  "counts": {
+    "expected_edges": 2,
+    "expected_nodes": 3,
+    "observed_edges": 2,
+    "observed_nodes": 3
+  },
+  "metrics": {
+    "CRR": 1.0,
+    "CS": 1.0,
+    "PDI": 0.0,
+    "PP": 1.0,
+    "PR": 1.0
+  },
+  "passed": true,
+  "probe_id": "cct_probe_adversarial_v1",
+  "task_id": "task-adversarial-001"
+}

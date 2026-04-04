@@ -1,0 +1,67 @@
+{
+  "cct": {
+    "counts": {
+      "expected_edges": 1,
+      "expected_nodes": 2,
+      "observed_edges": 1,
+      "observed_nodes": 2
+    },
+    "metrics": {
+      "CRR": 1.0,
+      "CS": 1.0,
+      "PDI": 0.0,
+      "PP": 1.0,
+      "PR": 1.0
+    },
+    "passed": true,
+    "probe_id": "cct_probe_sample_v1",
+    "task_id": "task-sample-001"
+  },
+  "graph_file": "experiments/runs/pilot-unified/graph.json",
+  "integrity": {
+    "avg_dominator_set_size": 1.8132,
+    "edge_count": 135,
+    "edge_type_counts": {
+      "calls": 61,
+      "contains": 74
+    },
+    "invariant_checks": {
+      "connectivity_invariant": true,
+      "no_gap_invariant": true
+    },
+    "largest_scc": 1,
+    "module_roots": 17,
+    "node_count": 91,
+    "orphan_nodes": [],
+    "scc_count": 91,
+    "unreachable_nodes": []
+  },
+  "integrity_passed": true,
+  "passed": true,
+  "roundtrip": {
+    "edge_counts": {
+      "json": 121,
+      "original": 121,
+      "yaml": 121
+    },
+    "hashes": {
+      "json": "5855db7570201ce3506127520ff4970790070bfbf19cb0d5839701c2987d4dc2",
+      "original": "5855db7570201ce3506127520ff4970790070bfbf19cb0d5839701c2987d4dc2",
+      "yaml": "5855db7570201ce3506127520ff4970790070bfbf19cb0d5839701c2987d4dc2"
+    },
+    "lossless_requirements": {
+      "edge_set_preserved": true,
+      "node_set_preserved": true,
+      "semantic_hash_equal": true
+    },
+    "node_counts": {
+      "json": 91,
+      "original": 91,
+      "yaml": 91
+    },
+    "passed": true
+  },
+  "run_dir": "experiments/runs/pilot-unified",
+  "validation_errors": [],
+  "validation_passed": true
+}

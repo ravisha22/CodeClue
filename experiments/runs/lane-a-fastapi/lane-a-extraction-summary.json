@@ -1,0 +1,57 @@
+{
+  "commit_id": "8a9258b169dce3e321f614c14b1877c18750d6c7",
+  "generator_model": "codeclue-structural-v1",
+  "graph_stats": {
+    "edge_count": 6012,
+    "node_count": 6359
+  },
+  "integrity_passed": true,
+  "language": "python",
+  "projections": {
+    "OF1": {
+      "confidence_overall": 0.0,
+      "edges": 310,
+      "lookup_hint": "expanded_lookup",
+      "nodes": 160,
+      "suggested_actions_count": 0,
+      "tool_call_budget": 5
+    },
+    "OF2": {
+      "confidence_overall": 0.0,
+      "edges": 0,
+      "lookup_hint": "expanded_lookup",
+      "nodes": 3,
+      "suggested_actions_count": 6,
+      "tool_call_budget": 15
+    },
+    "OF3": {
+      "confidence_overall": 1.0,
+      "edges": 8,
+      "lookup_hint": "clue_only",
+      "nodes": 11,
+      "suggested_actions_count": 8,
+      "tool_call_budget": 10
+    },
+    "OF4": {
+      "confidence_overall": 1.0,
+      "edges": 8,
+      "lookup_hint": "clue_only",
+      "nodes": 11,
+      "suggested_actions_count": 11,
+      "tool_call_budget": 20
+    },
+    "OF5": {
+      "confidence_overall": 0.117949,
+      "edges": 607,
+      "lookup_hint": "expanded_lookup",
+      "nodes": 160,
+      "suggested_actions_count": 227,
+      "tool_call_budget": 30
+    }
+  },
+  "repo_name": "fastapi/fastapi",
+  "roundtrip_passed": true,
+  "timestamp": "2026-04-01T09:17:03.924466+00:00",
+  "validation_error_count": 0,
+  "validation_passed": true
+}

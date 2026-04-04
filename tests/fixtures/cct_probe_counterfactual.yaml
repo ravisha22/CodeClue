@@ -1,0 +1,18 @@
+probe_id: cct_probe_counterfactual_v1
+task_id: task-counterfactual-001
+operation_family: OF4
+expected_path:
+  nodes:
+    - symbol:examples/sample_module.py:build_greeting:5
+    - symbol:examples/sample_module.py:normalize_user:1
+  edges:
+    - calls:symbol:examples/sample_module.py:build_greeting:5:symbol:examples/sample_module.py:normalize_user:1:6
+ablation_targets:
+  - symbol:examples/sample_module.py:build_greeting:5
+contradiction_injections:
+  - claim: "A counterfactual patch removed normalize_user from build_greeting"
+    expected_outcome: reject
+thresholds:
+  path_precision_min: 0.8
+  path_recall_min: 0.8
+  contradiction_rejection_min: 1.0

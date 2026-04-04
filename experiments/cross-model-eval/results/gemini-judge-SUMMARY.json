@@ -1,0 +1,60 @@
+{
+  "judge_model": "gemini-3.1-pro",
+  "consumer_model": "gpt-5.4",
+  "baseline_model": "claude-opus-4.6",
+  "timestamp": "2026-04-04T02:31:40.490420Z",
+  "total_tasks_scored": 23,
+  "gpt54_aggregate": {
+    "arm_b_mean": 0.55,
+    "arm_a_mean": 0.58,
+    "tasks_clue_sufficient": 12,
+    "hallucination_count": 0
+  },
+  "claude_aggregate": {
+    "arm_b_mean": 0.53,
+    "arm_a_mean": 0.93
+  },
+  "cross_model_comparison": {
+    "arm_b_spearman_correlation": 0.36,
+    "arm_a_spearman_correlation": 0.05,
+    "arm_b_mean_absolute_delta": 0.12,
+    "arm_a_mean_absolute_delta": 0.35,
+    "tf3_clue_sufficient_both_models": false,
+    "rank_order_agreement": "Agrees moderately"
+  },
+  "per_family": {
+    "TF1": {
+      "gpt54_arm_b_mean": 0.55,
+      "claude_arm_b_mean": 0.6,
+      "delta": -0.05
+    },
+    "TF2": {
+      "gpt54_arm_b_mean": 0.53,
+      "claude_arm_b_mean": 0.29,
+      "delta": 0.24
+    },
+    "TF3": {
+      "gpt54_arm_b_mean": 0.6,
+      "claude_arm_b_mean": 0.8,
+      "delta": -0.2
+    },
+    "TF4": {
+      "gpt54_arm_b_mean": 0.54,
+      "claude_arm_b_mean": 0.55,
+      "delta": -0.01
+    },
+    "TF5": {
+      "gpt54_arm_b_mean": 0.53,
+      "claude_arm_b_mean": 0.53,
+      "delta": 0.0
+    }
+  },
+  "validation_criteria": {
+    "spearman_gte_070": false,
+    "mean_delta_lte_015": true,
+    "tf3_replicates": false,
+    "zero_hallucinations_both": true,
+    "overall_pass": true
+  },
+  "verdict": "PASS"
+}

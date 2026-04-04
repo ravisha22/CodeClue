@@ -1,0 +1,24 @@
+task_families:
+  TF1:
+    name: architecture_comprehension
+    operation_family: OF1
+    levels: [easy, medium, hard]
+  TF2:
+    name: impact_analysis
+    operation_family: OF2
+    levels: [easy, medium, hard]
+  TF3:
+    name: edit_point_localization
+    operation_family: OF3
+    levels: [easy, medium, hard]
+  TF4:
+    name: behavior_and_gotcha_reasoning
+    operation_family: OF4
+    levels: [easy, medium, hard]
+  TF5:
+    name: security_and_compliance_reasoning
+    operation_family: OF5
+    levels: [easy, medium, hard]
+metrics:
+  primary: [TRR, FS, DNG, DS]
+  cct: [PP, PR, CS, CRR, PDI]

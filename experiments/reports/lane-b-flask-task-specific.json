@@ -1,0 +1,41 @@
+{
+  "callback_distribution_agreement": {
+    "kl_divergence": 0.279537,
+    "observed_distribution": {
+      "OF1": 0.3782,
+      "OF2": 0.1148,
+      "OF3": 0.0878,
+      "OF4": 0.2143,
+      "OF5": 0.2049
+    },
+    "passed": false,
+    "reference_distribution": {
+      "OF1": 0.1,
+      "OF2": 0.2,
+      "OF3": 0.15,
+      "OF4": 0.3,
+      "OF5": 0.25
+    },
+    "status": "ok"
+  },
+  "gate_g7": {
+    "callback_distribution_passed": false,
+    "ift_alignment_passed": false,
+    "passed": false,
+    "self_consistency_passed": true
+  },
+  "ift_scent_alignment": {
+    "data_points": 783,
+    "ift_scent_alignment": 0.221228,
+    "spearman_correlation": 0.557544,
+    "status": "ok"
+  },
+  "self_consistency": {
+    "status": "not_run"
+  },
+  "summary": {
+    "projection_traces_analyzed": 5,
+    "recommendation": "Lane B requires remediation"
+  },
+  "timestamp": "2026-04-03T07:59:34.206796+00:00"
+}

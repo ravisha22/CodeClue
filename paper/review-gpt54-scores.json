@@ -1,0 +1,22 @@
+{
+  "scores": {
+    "technical_accuracy": 2,
+    "logical_coherence": 2,
+    "honest_reporting": 3,
+    "clarity": 4,
+    "novelty": 4,
+    "reproducibility": 2
+  },
+  "recommendation": "major_revisions",
+  "summary": "The draft has a clear research idea and a credible experimental scaffold, but several central presentation claims do not currently line up with the supplied artifacts. The most serious issues are a wrong language/accounting story for Express, a non-reproducible Table 4.4, and cross-model claims that are stronger than the replication file supports.",
+  "top_3_strengths": [
+    "Strong problem framing around persistent code-comprehension artifacts.",
+    "Clear separation between Tier 1 structural safety claims and Tier 2 semantic enrichment goals.",
+    "The workspace contains unusually explicit benchmark artifacts and falsifiable hypothesis definitions."
+  ],
+  "top_3_weaknesses": [
+    "Table 4.4 does not reproduce from the supplied task and projection artifacts.",
+    "Cross-model and zero-hallucination claims are overstated relative to the evidence.",
+    "Public reproducibility is incomplete because the paper still lacks a real repository URL and clearer source provenance."
+  ]
+}

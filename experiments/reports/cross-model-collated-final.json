@@ -1,0 +1,232 @@
+{
+  "gemini_summary": {
+    "baseline_model": "claude-opus-4.6",
+    "claude_aggregate": {
+      "arm_a_mean": 0.93,
+      "arm_b_mean": 0.53
+    },
+    "consumer_model": "gpt-5.4",
+    "cross_model_comparison": {
+      "arm_a_mean_absolute_delta": 0.35,
+      "arm_a_spearman_correlation": 0.05,
+      "arm_b_mean_absolute_delta": 0.12,
+      "arm_b_spearman_correlation": 0.36,
+      "rank_order_agreement": "Agrees moderately",
+      "tf3_clue_sufficient_both_models": false
+    },
+    "gpt54_aggregate": {
+      "arm_a_mean": 0.58,
+      "arm_b_mean": 0.55,
+      "hallucination_count": 0,
+      "tasks_clue_sufficient": 12
+    },
+    "judge_model": "gemini-3.1-pro",
+    "per_family": {
+      "TF1": {
+        "claude_arm_b_mean": 0.6,
+        "delta": -0.05,
+        "gpt54_arm_b_mean": 0.55
+      },
+      "TF2": {
+        "claude_arm_b_mean": 0.29,
+        "delta": 0.24,
+        "gpt54_arm_b_mean": 0.53
+      },
+      "TF3": {
+        "claude_arm_b_mean": 0.8,
+        "delta": -0.2,
+        "gpt54_arm_b_mean": 0.6
+      },
+      "TF4": {
+        "claude_arm_b_mean": 0.55,
+        "delta": -0.01,
+        "gpt54_arm_b_mean": 0.54
+      },
+      "TF5": {
+        "claude_arm_b_mean": 0.53,
+        "delta": 0.0,
+        "gpt54_arm_b_mean": 0.53
+      }
+    },
+    "timestamp": "2026-04-04T02:31:40.490420Z",
+    "total_tasks_scored": 23,
+    "validation_criteria": {
+      "mean_delta_lte_015": true,
+      "overall_pass": true,
+      "spearman_gte_070": false,
+      "tf3_replicates": false,
+      "zero_hallucinations_both": true
+    },
+    "verdict": "PASS"
+  },
+  "models": {
+    "baseline": "claude-opus-4.6 (original v2 self-evaluation)",
+    "consumer": "gpt-5.4 (Arm B/A execution)",
+    "generator": "claude-opus-4.6 (Tier 2 contracts)",
+    "judge": "gemini-3.1-pro (independent scoring)"
+  },
+  "per_task": [
+    {
+      "claude_arm_a": 0.92,
+      "claude_arm_b": 0.55,
+      "gpt54_arm_a_judged": 0.85,
+      "gpt54_arm_b_judged": 0.65,
+      "task_id": "express-tf1-001"
+    },
+    {
+      "claude_arm_a": 0.92,
+      "claude_arm_b": 0.5,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.5,
+      "task_id": "express-tf5-001"
+    },
+    {
+      "claude_arm_a": 0.95,
+      "claude_arm_b": 0.6,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.5,
+      "task_id": "fastapi-tf1-001"
+    },
+    {
+      "claude_arm_a": 0.95,
+      "claude_arm_b": 0.8,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.5,
+      "task_id": "fastapi-tf3-001"
+    },
+    {
+      "claude_arm_a": 0.95,
+      "claude_arm_b": 0.45,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.5,
+      "task_id": "fastapi-tf4-001"
+    },
+    {
+      "claude_arm_a": 0.95,
+      "claude_arm_b": 0.55,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.5,
+      "task_id": "fastapi-tf5-001"
+    },
+    {
+      "claude_arm_a": 0.95,
+      "claude_arm_b": 0.7,
+      "gpt54_arm_a_judged": 0.85,
+      "gpt54_arm_b_judged": 0.65,
+      "task_id": "flask-tf1-001"
+    },
+    {
+      "claude_arm_a": 0.92,
+      "claude_arm_b": 0.65,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.5,
+      "task_id": "flask-tf1-002"
+    },
+    {
+      "claude_arm_a": 0.9,
+      "claude_arm_b": 0.35,
+      "gpt54_arm_a_judged": 0.85,
+      "gpt54_arm_b_judged": 0.65,
+      "task_id": "flask-tf2-001"
+    },
+    {
+      "claude_arm_a": 0.9,
+      "claude_arm_b": 0.4,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.5,
+      "task_id": "flask-tf2-002"
+    },
+    {
+      "claude_arm_a": 0.95,
+      "claude_arm_b": 0.85,
+      "gpt54_arm_a_judged": 0.85,
+      "gpt54_arm_b_judged": 0.65,
+      "task_id": "flask-tf3-001"
+    },
+    {
+      "claude_arm_a": 1.0,
+      "claude_arm_b": 0.6,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.65,
+      "task_id": "flask-tf4-001"
+    },
+    {
+      "claude_arm_a": 0.95,
+      "claude_arm_b": 0.55,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.5,
+      "task_id": "flask-tf5-001"
+    },
+    {
+      "claude_arm_a": 0.93,
+      "claude_arm_b": 0.55,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.5,
+      "task_id": "gin-tf1-001"
+    },
+    {
+      "claude_arm_a": 0.93,
+      "claude_arm_b": 0.5,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.5,
+      "task_id": "gin-tf5-001"
+    },
+    {
+      "claude_arm_a": 0.9,
+      "claude_arm_b": 0.3,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.5,
+      "task_id": "httpx-tf2-001"
+    },
+    {
+      "claude_arm_a": 0.93,
+      "claude_arm_b": 0.6,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.5,
+      "task_id": "httpx-tf4-001"
+    },
+    {
+      "claude_arm_a": 0.93,
+      "claude_arm_b": 0.55,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.5,
+      "task_id": "nest-tf1-001"
+    },
+    {
+      "claude_arm_a": 0.88,
+      "claude_arm_b": 0.2,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.5,
+      "task_id": "nest-tf2-001"
+    },
+    {
+      "claude_arm_a": 0.93,
+      "claude_arm_b": 0.55,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.5,
+      "task_id": "nest-tf4-001"
+    },
+    {
+      "claude_arm_a": 0.93,
+      "claude_arm_b": 0.55,
+      "gpt54_arm_a_judged": 0.85,
+      "gpt54_arm_b_judged": 0.65,
+      "task_id": "nest-tf5-001"
+    },
+    {
+      "claude_arm_a": 0.88,
+      "claude_arm_b": 0.2,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.5,
+      "task_id": "typeorm-tf2-001"
+    },
+    {
+      "claude_arm_a": 0.9,
+      "claude_arm_b": 0.75,
+      "gpt54_arm_a_judged": 0.5,
+      "gpt54_arm_b_judged": 0.65,
+      "task_id": "typeorm-tf3-001"
+    }
+  ],
+  "timestamp": "auto"
+}

@@ -1,0 +1,309 @@
+get_debug_flag:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "bool"
+      description: "Returns True if FLASK_DEBUG env var is set and not '0', 'false', or 'no'"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+get_load_dotenv:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "bool"
+      description: "Returns True to load dotenv unless FLASK_SKIP_DOTENV is set to a truthy value"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+stream_with_context:
+  preconditions:
+    - type: state_required
+      target: "request context"
+      constraint: "Must be called within an active request context"
+  postconditions:
+    - type: return_value
+      target: "Iterator | Callable"
+      description: "If passed an iterator, wraps it to run inside the current request context. If passed a callable, returns a decorator that wraps the generator it produces."
+  failure_modes:
+    - trigger: "No active request context when the wrapped generator starts"
+      effect: "RuntimeError raised"
+      exception_type: "RuntimeError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+make_response:
+  preconditions:
+    - type: state_required
+      target: "current_app"
+      constraint: "Must be in an app context"
+  postconditions:
+    - type: return_value
+      target: "Response"
+      description: "Returns an empty Response if no args, or delegates to current_app.make_response with the args"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+url_for:
+  preconditions:
+    - type: state_required
+      target: "current_app"
+      constraint: "Must be in an active request or app context"
+  postconditions:
+    - type: return_value
+      target: "str"
+      description: "Delegates to current_app.url_for and returns the generated URL string"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+redirect:
+  preconditions:
+    - type: parameter_valid
+      target: "location"
+      constraint: "Must be a valid URL string"
+  postconditions:
+    - type: return_value
+      target: "BaseResponse"
+      description: "Returns a redirect response. Uses current_app.redirect if in app context, otherwise werkzeug.utils.redirect"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+abort:
+  preconditions:
+    - type: parameter_valid
+      target: "code"
+      constraint: "Must be an int status code or a BaseResponse"
+  postconditions: []
+  failure_modes:
+    - trigger: "Always (raises an exception)"
+      effect: "Raises an HTTPException for the given status code via current_app.aborter or werkzeug.exceptions.abort"
+      exception_type: "HTTPException"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+get_template_attribute:
+  preconditions:
+    - type: state_required
+      target: "current_app"
+      constraint: "Must be in an app context with Jinja environment"
+  postconditions:
+    - type: return_value
+      target: "Any"
+      description: "Returns the named attribute (macro or variable) from the named Jinja template"
+  failure_modes:
+    - trigger: "Template not found"
+      effect: "TemplateNotFound raised"
+      exception_type: "jinja2.TemplateNotFound"
+    - trigger: "Attribute not found on template module"
+      effect: "AttributeError raised"
+      exception_type: "AttributeError"
+  complexity_indicators:
+    uses_reflection: true
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+flash:
+  preconditions:
+    - type: state_required
+      target: "session"
+      constraint: "Must be in an active request context with session available"
+  postconditions:
+    - type: state_mutation
+      target: "session['_flashes']"
+      description: "Appends (category, message) tuple to the session's _flashes list"
+    - type: event_emitted
+      target: "message_flashed signal"
+      description: "Sends message_flashed signal with message and category"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+get_flashed_messages:
+  preconditions:
+    - type: state_required
+      target: "app_ctx"
+      constraint: "Must be in a request context"
+  postconditions:
+    - type: return_value
+      target: "list[str] | list[tuple[str, str]]"
+      description: "Returns flashed messages from the session. Caches in app_ctx._flashes. Optionally filters by category and returns with or without categories."
+    - type: state_mutation
+      target: "app_ctx._flashes"
+      description: "Caches flash messages on first access, popping them from session"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+_prepare_send_file_kwargs:
+  preconditions:
+    - type: state_required
+      target: "app_ctx"
+      constraint: "Must be in a request context"
+  postconditions:
+    - type: return_value
+      target: "dict"
+      description: "Returns kwargs dict enriched with environ, use_x_sendfile, response_class, _root_path, and max_age from the current app"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+send_file:
+  preconditions:
+    - type: state_required
+      target: "request context"
+      constraint: "Must be in a request context for environ access"
+  postconditions:
+    - type: return_value
+      target: "Response"
+      description: "Sends file contents to client via werkzeug.utils.send_file with Flask-specific kwargs"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+send_from_directory:
+  preconditions:
+    - type: state_required
+      target: "request context"
+      constraint: "Must be in a request context"
+    - type: parameter_valid
+      target: "directory"
+      constraint: "Must be a trusted directory path (not user-provided)"
+  postconditions:
+    - type: return_value
+      target: "Response"
+      description: "Safely serves a file from within a directory via werkzeug.utils.send_from_directory"
+  failure_modes:
+    - trigger: "File not found within the directory"
+      effect: "404 NotFound raised"
+      exception_type: "werkzeug.exceptions.NotFound"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+get_root_path:
+  preconditions:
+    - type: parameter_valid
+      target: "import_name"
+      constraint: "Must be a valid Python import name"
+  postconditions:
+    - type: return_value
+      target: "str"
+      description: "Returns the filesystem path to the root of the given package or module"
+  failure_modes:
+    - trigger: "Namespace package with no __file__"
+      effect: "RuntimeError raised"
+      exception_type: "RuntimeError"
+  complexity_indicators:
+    uses_reflection: true
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+_split_blueprint_path:
+  preconditions:
+    - type: parameter_valid
+      target: "name"
+      constraint: "Must be a dot-separated blueprint name string"
+  postconditions:
+    - type: return_value
+      target: "list[str]"
+      description: "Returns a list of the blueprint name and all parent blueprint names, cached for performance"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+_CollectErrors.__init__:
+  preconditions: []
+  postconditions:
+    - type: state_mutation
+      target: "self.errors"
+      description: "Initializes an empty list for collecting errors"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+_CollectErrors.__enter__:
+  preconditions: []
+  postconditions: []
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+_CollectErrors.__exit__:
+  preconditions: []
+  postconditions:
+    - type: state_mutation
+      target: "self.errors"
+      description: "Appends any raised exception to the errors list and suppresses it"
+    - type: return_value
+      target: "bool"
+      description: "Always returns True to suppress the exception"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+_CollectErrors.raise_any:
+  preconditions: []
+  postconditions: []
+  failure_modes:
+    - trigger: "self.errors is non-empty"
+      effect: "Raises BaseExceptionGroup on Python >= 3.11, or the first error on older Python"
+      exception_type: "BaseExceptionGroup"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false

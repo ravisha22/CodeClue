@@ -1,0 +1,12 @@
+profile_id: behavior-debug-v1
+intent: behavior-and-gotcha-reasoning
+constraints:
+  max_context: balanced
+  enforce_traceability: true
+focus_symbols:
+  - build_greeting
+  - greet
+focus_keywords:
+  - call
+  - normalize
+strict_mode: true

@@ -1,0 +1,18 @@
+{
+  "avg_dominator_set_size": 1.8132,
+  "edge_count": 135,
+  "edge_type_counts": {
+    "calls": 61,
+    "contains": 74
+  },
+  "invariant_checks": {
+    "connectivity_invariant": true,
+    "no_gap_invariant": true
+  },
+  "largest_scc": 1,
+  "module_roots": 17,
+  "node_count": 91,
+  "orphan_nodes": [],
+  "scc_count": 91,
+  "unreachable_nodes": []
+}

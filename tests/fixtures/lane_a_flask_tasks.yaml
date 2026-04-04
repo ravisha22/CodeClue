@@ -1,0 +1,128 @@
+# Lane A Benchmark Task Set for Flask
+# Each task has: id, family, question, ground_truth_answer, relevant_files, prompt_profile
+
+tasks:
+  # TF1: Architecture Comprehension
+  - task_id: flask-tf1-001
+    family: TF1
+    operation_family: OF1
+    question: "What are the core components of Flask's request handling pipeline? List the classes involved from receiving an HTTP request to returning a response."
+    ground_truth_summary: "Flask.wsgi_app() dispatches to Flask.full_dispatch_request() which calls Flask.dispatch_request(). Request context is pushed via RequestContext (ctx.py). The request is matched to a view function via url_map. Response is built via Flask.make_response(). Teardown callbacks run via Flask.process_response() and Flask.do_teardown_request()."
+    relevant_files:
+      - src/flask/app.py
+      - src/flask/ctx.py
+      - src/flask/wrappers.py
+    prompt_profile:
+      profile_id: flask-architecture-v1
+      intent: architecture-comprehension
+      constraints:
+        max_context: broad
+      focus_files:
+        - src/flask/app.py
+        - src/flask/ctx.py
+      focus_keywords:
+        - wsgi_app
+        - dispatch
+        - request
+        - response
+
+  # TF2: Impact Analysis
+  - task_id: flask-tf2-001
+    family: TF2
+    operation_family: OF2
+    question: "If I change the `push` method in RequestContext (ctx.py) to be async, what other components would be impacted?"
+    ground_truth_summary: "RequestContext.push() is called by Flask.wsgi_app() via RequestContext's __enter__. It sets up _cv_tokens, calls session_interface.open_session(), and triggers appcontext_pushed signal. Making it async would require Flask.wsgi_app(), Flask.full_dispatch_request(), and all before_request/after_request handlers to be async-aware. The testing client (testing.py) also calls push() directly."
+    relevant_files:
+      - src/flask/ctx.py
+      - src/flask/app.py
+      - src/flask/testing.py
+      - src/flask/sessions.py
+    prompt_profile:
+      profile_id: flask-impact-ctx-v1
+      intent: impact-analysis
+      constraints:
+        max_context: balanced
+      focus_files:
+        - src/flask/ctx.py
+      focus_symbols:
+        - push
+        - RequestContext
+      focus_keywords:
+        - push
+        - context
+
+  # TF3: Edit-Point Localization
+  - task_id: flask-tf3-001
+    family: TF3
+    operation_family: OF3
+    question: "I need to add a new lifecycle hook that fires between before_request and the actual view function dispatch. Which file and function should I modify?"
+    ground_truth_summary: "Modify Flask.full_dispatch_request() in src/flask/app.py. This method calls self.try_trigger_before_request_functions() and then self.dispatch_request(). A new hook would be inserted between these two calls. The hook registration would follow the pattern of before_request_funcs in src/flask/app.py."
+    relevant_files:
+      - src/flask/app.py
+    prompt_profile:
+      profile_id: flask-edit-dispatch-v1
+      intent: edit-localization
+      constraints:
+        max_context: focused
+      focus_files:
+        - src/flask/app.py
+      focus_symbols:
+        - full_dispatch_request
+        - dispatch_request
+        - try_trigger_before_request_functions
+      focus_keywords:
+        - dispatch
+        - before_request
+        - hook
+
+  # TF4: Behavior and Gotcha Identification
+  - task_id: flask-tf4-001
+    family: TF4
+    operation_family: OF4
+    question: "What happens to teardown callbacks if an exception occurs during request processing in Flask? Are all teardown callbacks guaranteed to run?"
+    ground_truth_summary: "Yes, as of PR #5928. Flask.do_teardown_request() and Flask.do_teardown_appcontext() iterate over all registered teardown functions and catch exceptions from each one individually, ensuring all callbacks run even if earlier ones raise. Previously, an exception in one teardown would prevent subsequent teardowns from running. The exception from teardown is logged but suppressed."
+    relevant_files:
+      - src/flask/app.py
+      - src/flask/ctx.py
+    prompt_profile:
+      profile_id: flask-behavior-teardown-v1
+      intent: behavior-debugging
+      constraints:
+        max_context: balanced
+      focus_files:
+        - src/flask/app.py
+        - src/flask/ctx.py
+      focus_symbols:
+        - do_teardown_request
+        - do_teardown_appcontext
+      focus_keywords:
+        - teardown
+        - exception
+        - callback
+
+  # TF5: Security / Compliance
+  - task_id: flask-tf5-001
+    family: TF5
+    operation_family: OF5
+    question: "How does Flask handle session security? What mechanisms protect against session tampering or hijacking?"
+    ground_truth_summary: "Flask uses itsdangerous.URLSafeTimedSerializer to cryptographically sign session cookies via SecureCookieSessionInterface in sessions.py. Sessions are signed with app.secret_key. The session cookie has httponly=True by default (SESSION_COOKIE_HTTPONLY config). SameSite attribute is configurable via SESSION_COOKIE_SAMESITE. Sessions are not encrypted — they are base64-encoded and signed. An attacker can read but not tamper with session data without the secret_key."
+    relevant_files:
+      - src/flask/sessions.py
+      - src/flask/app.py
+    prompt_profile:
+      profile_id: flask-security-session-v1
+      intent: security-compliance
+      constraints:
+        max_context: balanced
+      focus_files:
+        - src/flask/sessions.py
+      focus_symbols:
+        - SecureCookieSessionInterface
+        - open_session
+        - save_session
+      focus_keywords:
+        - session
+        - secret
+        - cookie
+        - sign
+        - security

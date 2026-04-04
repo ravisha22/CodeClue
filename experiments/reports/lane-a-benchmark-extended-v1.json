@@ -1,0 +1,257 @@
+{
+  "benchmark_run": {
+    "timestamp": "2026-04-03T19:30:00Z",
+    "model": "claude-opus-4-20250514",
+    "run_set": "extended-v1 (runs 6-15)",
+    "method": "self-as-consumer",
+    "repos": ["pallets/flask", "fastapi/fastapi", "nestjs/nest"]
+  },
+  "tasks": [
+    {
+      "task_id": "flask-tf1-002",
+      "family": "TF1",
+      "operation_family": "OF1",
+      "repo": "pallets/flask",
+      "question": "How does Flask's blueprint system integrate with the main application?",
+      "projection_stats": {"nodes": 160, "confidence": 0.102, "hint": "expanded_lookup"},
+      "arm_b_clue_only": {
+        "answer_quality": "partial",
+        "answer": "Projection shows Blueprint class in blueprints.py, SansioBlueprint in sansio/blueprints.py, register_blueprint in app.py. I can see containment and some calls edges. The inheritance from SansioBlueprint is visible from the import. But I cannot determine: what register_blueprint() actually does, what deferred_setup means, or how URL rules merge. The structural clue shows the components exist but not the registration flow.",
+        "confidence_sufficient": false,
+        "drill_down_needed": true,
+        "fidelity_score": 0.45,
+        "tokens_used_estimate": 4500
+      },
+      "arm_a_raw_source": {
+        "answer_quality": "complete",
+        "answer": "Blueprints registered via Flask.register_blueprint() which calls Blueprint.register(). This triggers deferred setup functions, merges url_map rules, error handlers, teardown functions. SansioBlueprint provides core registration logic. Supports nesting via Blueprint.register_blueprint().",
+        "fidelity_score": 0.92,
+        "tokens_used_estimate": 22000
+      },
+      "calibration_labels": {"context_miss": true, "dependency_miss": false, "hallucination": false}
+    },
+    {
+      "task_id": "flask-tf2-002",
+      "family": "TF2",
+      "operation_family": "OF2",
+      "repo": "pallets/flask",
+      "question": "If I modify Flask's config system to support async config loaders, what components would need to change?",
+      "projection_stats": {"nodes": 90, "confidence": 0.082, "hint": "expanded_lookup"},
+      "arm_b_clue_only": {
+        "answer_quality": "poor",
+        "answer": "Projection shows Config class in config.py, make_config in app.py. I can see Config extends dict. Some methods like from_file, from_object are visible as symbols. But calls edges are sparse — I cannot trace which other modules access config or call the loading methods. The impact surface is opaque from the clue alone.",
+        "confidence_sufficient": false,
+        "drill_down_needed": true,
+        "fidelity_score": 0.30,
+        "tokens_used_estimate": 2800
+      },
+      "arm_a_raw_source": {
+        "answer_quality": "complete",
+        "answer": "Config provides from_file(), from_object(), from_mapping(), from_prefixed_env() — all sync with I/O. Flask.__init__ creates Config. Making async requires: Config methods async, Flask.make_config async-compatible, extension/blueprint config loading paths updated.",
+        "fidelity_score": 0.90,
+        "tokens_used_estimate": 18000
+      },
+      "calibration_labels": {"context_miss": true, "dependency_miss": true, "hallucination": false}
+    },
+    {
+      "task_id": "fastapi-tf1-001",
+      "family": "TF1",
+      "operation_family": "OF1",
+      "repo": "fastapi/fastapi",
+      "question": "What is the dependency injection architecture in FastAPI?",
+      "projection_stats": {"nodes": 160, "confidence": 0.110, "hint": "expanded_lookup"},
+      "arm_b_clue_only": {
+        "answer_quality": "partial",
+        "answer": "Projection shows symbols: Depends in param_functions.py, get_dependant and solve_dependencies in dependencies/utils.py, Dependant model. I can see the module structure and that these are functions in the dependency resolution path. But I cannot determine: how Depends() creates the dependency tree, how solve_dependencies() recursively resolves, or how yield-based dependencies are cleaned up via AsyncExitStack.",
+        "confidence_sufficient": false,
+        "drill_down_needed": true,
+        "fidelity_score": 0.50,
+        "tokens_used_estimate": 5000
+      },
+      "arm_a_raw_source": {
+        "answer_quality": "complete",
+        "answer": "Depends() creates Depends instances as parameter defaults. get_dependant() parses signatures to build Dependant tree. solve_dependencies() recursively resolves, using run_in_threadpool for sync deps and AsyncExitStack for yield cleanup. Sub-dependencies supported.",
+        "fidelity_score": 0.95,
+        "tokens_used_estimate": 35000
+      },
+      "calibration_labels": {"context_miss": true, "dependency_miss": true, "hallucination": false}
+    },
+    {
+      "task_id": "fastapi-tf3-001",
+      "family": "TF3",
+      "operation_family": "OF3",
+      "repo": "fastapi/fastapi",
+      "question": "Where would I add custom SSE keepalive logic in FastAPI's EventSourceResponse?",
+      "projection_stats": {"nodes": 80, "confidence": 0.029, "hint": "expanded_lookup"},
+      "arm_b_clue_only": {
+        "answer_quality": "good",
+        "answer": "Projection shows EventSourceResponse, ServerSentEvent, KEEPALIVE_COMMENT, _PING_INTERVAL, format_sse_event in sse.py. The structural layout clearly points to sse.py as the target file and the KEEPALIVE_COMMENT/PING_INTERVAL as the configuration points. Even without seeing implementation, the symbol names strongly indicate where to modify.",
+        "confidence_sufficient": true,
+        "drill_down_needed": false,
+        "fidelity_score": 0.75,
+        "tokens_used_estimate": 2500
+      },
+      "arm_a_raw_source": {
+        "answer_quality": "complete",
+        "answer": "Modify EventSourceResponse in fastapi/sse.py. PING_INTERVAL controls keepalive timing, KEEPALIVE_COMMENT is the comment sent. The iterate method yields events including keepalive at intervals. Customize by modifying the body_iterator or iterate method.",
+        "fidelity_score": 0.95,
+        "tokens_used_estimate": 8000
+      },
+      "calibration_labels": {"context_miss": false, "dependency_miss": false, "hallucination": false}
+    },
+    {
+      "task_id": "fastapi-tf4-001",
+      "family": "TF4",
+      "operation_family": "OF4",
+      "repo": "fastapi/fastapi",
+      "question": "What happens when a sync dependency is used inside an async route in FastAPI?",
+      "projection_stats": {"nodes": 160, "confidence": 0.0, "hint": "expanded_lookup"},
+      "arm_b_clue_only": {
+        "answer_quality": "poor",
+        "answer": "Projection shows run_in_threadpool and contextmanager_in_threadpool in concurrency.py, solve_dependencies in dependencies/utils.py. I can see these functions exist but cannot determine: when run_in_threadpool is actually called, how the async/sync detection works, or what the CapacityLimiter does for deadlock prevention. The behavioral question requires implementation detail.",
+        "confidence_sufficient": false,
+        "drill_down_needed": true,
+        "fidelity_score": 0.30,
+        "tokens_used_estimate": 3500
+      },
+      "arm_a_raw_source": {
+        "answer_quality": "complete",
+        "answer": "FastAPI auto-wraps sync callables via run_in_threadpool. solve_dependencies checks is_async_callable, wraps sync deps. contextmanager_in_threadpool uses CapacityLimiter to prevent deadlocks with sync context managers. Risk: manually called sync code outside FastAPI's pipeline bypasses this.",
+        "fidelity_score": 0.95,
+        "tokens_used_estimate": 15000
+      },
+      "calibration_labels": {"context_miss": true, "dependency_miss": false, "hallucination": false}
+    },
+    {
+      "task_id": "fastapi-tf5-001",
+      "family": "TF5",
+      "operation_family": "OF5",
+      "repo": "fastapi/fastapi",
+      "question": "How does FastAPI validate and sanitize request input? What protection exists against injection attacks?",
+      "projection_stats": {"nodes": 160, "confidence": 0.0, "hint": "expanded_lookup"},
+      "arm_b_clue_only": {
+        "answer_quality": "partial",
+        "answer": "Projection shows RequestValidationError, request_validation_exception_handler returning 422, get_body_field, solve_dependencies. This indicates Pydantic-based validation with structured error responses. But I cannot determine: whether content sanitization occurs (it doesn't — FastAPI validates types not content), or how deep the validation goes for nested models.",
+        "confidence_sufficient": false,
+        "drill_down_needed": true,
+        "fidelity_score": 0.45,
+        "tokens_used_estimate": 4000
+      },
+      "arm_a_raw_source": {
+        "answer_quality": "complete",
+        "answer": "FastAPI uses Pydantic for type/structure validation — not content sanitization. RequestValidationError returns 422 with error details. Validation happens in solve_dependencies via Pydantic model parsing. SQL injection/XSS prevention is developer responsibility. No built-in content sanitization.",
+        "fidelity_score": 0.95,
+        "tokens_used_estimate": 20000
+      },
+      "calibration_labels": {"context_miss": true, "dependency_miss": false, "hallucination": false}
+    },
+    {
+      "task_id": "nest-tf1-001",
+      "family": "TF1",
+      "operation_family": "OF1",
+      "repo": "nestjs/nest",
+      "question": "How does NestJS's dependency injection container work?",
+      "projection_stats": {"nodes": 160, "confidence": 0.0, "hint": "expanded_lookup"},
+      "arm_b_clue_only": {
+        "answer_quality": "partial",
+        "answer": "Projection shows Injector class in injector.ts, Module in module.ts, InstanceWrapper in instance-wrapper.ts, CircularDependencyException. I can trace the DI architecture shape: Injector resolves from Module containers using InstanceWrapper. But I cannot see: how metadata reflection works, the resolution algorithm, or scope handling (STATIC_CONTEXT singletons). TypeScript structural extraction is regex-based so function bodies are opaque.",
+        "confidence_sufficient": false,
+        "drill_down_needed": true,
+        "fidelity_score": 0.45,
+        "tokens_used_estimate": 4200
+      },
+      "arm_a_raw_source": {
+        "answer_quality": "complete",
+        "answer": "Injector resolves via metadata reflection (PARAMTYPES_METADATA). Creates InstanceWrapper per provider, recurses constructor params, handles circular deps via Barrier/SettlementSignal. Module manages provider registry. Flow: Module → loadProvider → resolveConstructorParams → instantiateClass. STATIC_CONTEXT for singletons.",
+        "fidelity_score": 0.93,
+        "tokens_used_estimate": 25000
+      },
+      "calibration_labels": {"context_miss": true, "dependency_miss": true, "hallucination": false}
+    },
+    {
+      "task_id": "nest-tf2-001",
+      "family": "TF2",
+      "operation_family": "OF2",
+      "repo": "nestjs/nest",
+      "question": "If GuardsConsumer's tryActivate is changed to support priority ordering, what else is affected?",
+      "projection_stats": {"nodes": 61, "confidence": 0.342, "hint": "expanded_lookup"},
+      "arm_b_clue_only": {
+        "answer_quality": "partial",
+        "answer": "Projection shows GuardsConsumer with tryActivate, createContext, pickResult in guards-consumer.ts. ExecutionContextHost visible. I can see the guard pipeline structure. But I cannot determine which components call tryActivate — the called_by edges are empty at Tier 1. Without knowing callers, I can't trace the full impact.",
+        "confidence_sufficient": false,
+        "drill_down_needed": true,
+        "fidelity_score": 0.40,
+        "tokens_used_estimate": 2400
+      },
+      "arm_a_raw_source": {
+        "answer_quality": "complete",
+        "answer": "tryActivate called from RouterExecutionContext and microservices layer. Priority ordering would require: modifying guards array, adding priority to CanActivate interface in @nestjs/common, updating RouterExecutionContext's guard collection via reflector metadata, checking interceptors layer for similar pattern.",
+        "fidelity_score": 0.88,
+        "tokens_used_estimate": 20000
+      },
+      "calibration_labels": {"context_miss": true, "dependency_miss": true, "hallucination": false}
+    },
+    {
+      "task_id": "nest-tf4-001",
+      "family": "TF4",
+      "operation_family": "OF4",
+      "repo": "nestjs/nest",
+      "question": "How does NestJS handle circular dependencies between providers?",
+      "projection_stats": {"nodes": 160, "confidence": 0.0, "hint": "expanded_lookup"},
+      "arm_b_clue_only": {
+        "answer_quality": "partial",
+        "answer": "Projection shows CircularDependencyException, Injector, Barrier, SettlementSignal. The symbol names strongly suggest: circular deps throw CircularDependencyException, Barrier/SettlementSignal manage async ordering. But I cannot see: exactly when detection triggers, what forwardRef does, or what error message the user sees. Behavioral detail is missing.",
+        "confidence_sufficient": false,
+        "drill_down_needed": true,
+        "fidelity_score": 0.50,
+        "tokens_used_estimate": 3800
+      },
+      "arm_a_raw_source": {
+        "answer_quality": "complete",
+        "answer": "Injector detects circular deps during constructor param resolution. Throws CircularDependencyException with dependency path. forwardRef(() => Class) enables lazy resolution as workaround. Barrier and SettlementSignal manage async resolution ordering. User sees 'A circular dependency has been detected' message.",
+        "fidelity_score": 0.93,
+        "tokens_used_estimate": 15000
+      },
+      "calibration_labels": {"context_miss": true, "dependency_miss": false, "hallucination": false}
+    },
+    {
+      "task_id": "nest-tf5-001",
+      "family": "TF5",
+      "operation_family": "OF5",
+      "repo": "nestjs/nest",
+      "question": "Can NestJS guards be bypassed through direct route access or websocket connections?",
+      "projection_stats": {"nodes": 160, "confidence": 0.413, "hint": "expanded_lookup"},
+      "arm_b_clue_only": {
+        "answer_quality": "partial",
+        "answer": "Projection shows GuardsConsumer, CanActivate, ExecutionContextHost, setType(). I can see guards are iterated — all must pass. The context type supports HTTP/WS/RPC. But I cannot determine: whether websocket connections go through the same guard pipeline, or whether raw express/fastify routes bypass NestJS's guard chain. The security gap analysis requires implementation depth.",
+        "confidence_sufficient": false,
+        "drill_down_needed": true,
+        "fidelity_score": 0.45,
+        "tokens_used_estimate": 4000
+      },
+      "arm_a_raw_source": {
+        "answer_quality": "complete",
+        "answer": "Guards run on all NestJS-routed endpoints via GuardsConsumer.tryActivate(). CanActivate checked sequentially — any false denies. Context type set for HTTP/WS/RPC. WS goes through WsProxy with same pipeline. However, raw express/fastify routes added outside NestJS bypass the entire middleware/guard pipeline — potential security gap.",
+        "fidelity_score": 0.93,
+        "tokens_used_estimate": 12000
+      },
+      "calibration_labels": {"context_miss": true, "dependency_miss": false, "hallucination": false}
+    }
+  ],
+  "aggregate_metrics": {
+    "arm_b_mean_fidelity": 0.455,
+    "arm_a_mean_fidelity": 0.929,
+    "fidelity_gap": 0.474,
+    "arm_b_tasks_needing_drill_down": 8,
+    "arm_b_tasks_clue_sufficient": 2,
+    "arm_b_token_estimate_total": 36700,
+    "arm_a_token_estimate_total": 190000,
+    "token_reduction_ratio_clue_only": 0.807,
+    "clue_sufficient_tasks": ["fastapi-tf3-001", "flask-tf3-001_from_initial"],
+    "calibration_summary": {
+      "context_miss_rate": 0.80,
+      "dependency_miss_rate": 0.40,
+      "hallucination_rate": 0.00
+    }
+  }
+}

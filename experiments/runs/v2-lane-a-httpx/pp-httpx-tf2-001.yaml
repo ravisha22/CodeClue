@@ -1,0 +1,12 @@
+profile_id: httpx-impact-timeout-v1
+intent: impact-analysis
+constraints:
+  max_context: balanced
+focus_files:
+- httpx/_config.py
+focus_symbols:
+- Timeout
+- DEFAULT_TIMEOUT_CONFIG
+focus_keywords:
+- timeout
+- config

@@ -1,0 +1,8 @@
+profile_id: architecture-map-v1
+intent: architecture-comprehension
+constraints:
+  max_context: broad
+  enforce_traceability: true
+focus_files:
+  - examples/sample_module.py
+strict_mode: true

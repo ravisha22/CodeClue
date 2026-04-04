@@ -1,0 +1,17 @@
+{
+  "patch_id": "sample-delta-001",
+  "operations": [
+    {
+      "op": "update_node_contract",
+      "node_id": "symbol:examples/sample_module.py:normalize_user:1",
+      "semantic_contract": {
+        "symbol_name": "normalize_user",
+        "path": "function:normalize_user",
+        "task_notes": [
+          "normalization must preserve trim-before-lower semantics"
+        ]
+      },
+      "confidence": 0.95
+    }
+  ]
+}

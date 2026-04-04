@@ -1,0 +1,78 @@
+Blueprint.__init__:
+  preconditions:
+    - type: parameter_valid
+      target: "name"
+      constraint: "Must be a string identifying the blueprint"
+    - type: parameter_valid
+      target: "import_name"
+      constraint: "Must be a string identifying the package/module"
+  postconditions:
+    - type: state_mutation
+      target: "self.cli"
+      description: "Creates and assigns a Click AppGroup for CLI commands, with name set to the blueprint name"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Blueprint.get_send_file_max_age:
+  preconditions:
+    - type: state_required
+      target: "current_app"
+      constraint: "Must be in an app context"
+  postconditions:
+    - type: return_value
+      target: "int | None"
+      description: "Returns None if config value is None, int seconds if timedelta, or the raw config value"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Blueprint.send_static_file:
+  preconditions:
+    - type: state_required
+      target: "self.has_static_folder"
+      constraint: "static_folder must be set"
+  postconditions:
+    - type: return_value
+      target: "Response"
+      description: "Serves a file from static_folder using send_from_directory with computed max_age"
+  failure_modes:
+    - trigger: "has_static_folder is False"
+      effect: "RuntimeError raised"
+      exception_type: "RuntimeError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Blueprint.open_resource:
+  preconditions:
+    - type: parameter_valid
+      target: "mode"
+      constraint: "Must be 'r', 'rt', or 'rb'"
+    - type: parameter_valid
+      target: "resource"
+      constraint: "Path relative to root_path"
+  postconditions:
+    - type: return_value
+      target: "IO"
+      description: "Returns an open file handle for the resource relative to the blueprint's root_path"
+  failure_modes:
+    - trigger: "mode not in {'r', 'rt', 'rb'}"
+      effect: "ValueError raised"
+      exception_type: "ValueError"
+    - trigger: "File does not exist"
+      effect: "FileNotFoundError raised"
+      exception_type: "FileNotFoundError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false

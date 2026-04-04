@@ -1,0 +1,90 @@
+{
+  "tasks": [
+    {
+      "conf_delta": -0.2,
+      "family": "TF1",
+      "of": "OF1",
+      "task_id": "flask-tf1-001",
+      "tier1_conf": 0.95,
+      "tier1_hint": "clue_only",
+      "tier1_nodes": 80,
+      "tier2_conf": 0.75,
+      "tier2_hint": "targeted_lookup",
+      "tier2_nodes": 80
+    },
+    {
+      "conf_delta": -0.084,
+      "family": "TF2",
+      "of": "OF2",
+      "task_id": "flask-tf2-001",
+      "tier1_conf": 0.4874,
+      "tier1_hint": "expanded_lookup",
+      "tier1_nodes": 68,
+      "tier2_conf": 0.4034,
+      "tier2_hint": "expanded_lookup",
+      "tier2_nodes": 68
+    },
+    {
+      "conf_delta": -0.3096,
+      "family": "TF3",
+      "of": "OF3",
+      "task_id": "flask-tf3-001",
+      "tier1_conf": 0.9048,
+      "tier1_hint": "clue_only",
+      "tier1_nodes": 42,
+      "tier2_conf": 0.5952,
+      "tier2_hint": "expanded_lookup",
+      "tier2_nodes": 42
+    },
+    {
+      "conf_delta": -0.2192,
+      "family": "TF4",
+      "of": "OF4",
+      "task_id": "flask-tf4-001",
+      "tier1_conf": 0.9452,
+      "tier1_hint": "clue_only",
+      "tier1_nodes": 73,
+      "tier2_conf": 0.726,
+      "tier2_hint": "targeted_lookup",
+      "tier2_nodes": 73
+    },
+    {
+      "conf_delta": -0.0244,
+      "family": "TF5",
+      "of": "OF5",
+      "task_id": "flask-tf5-001",
+      "tier1_conf": 1.0,
+      "tier1_hint": "clue_only",
+      "tier1_nodes": 123,
+      "tier2_conf": 0.9756,
+      "tier2_hint": "clue_only",
+      "tier2_nodes": 123
+    },
+    {
+      "conf_delta": -0.0095,
+      "family": "TF1",
+      "of": "OF1",
+      "task_id": "flask-tf1-002",
+      "tier1_conf": 0.9714,
+      "tier1_hint": "clue_only",
+      "tier1_nodes": 105,
+      "tier2_conf": 0.9619,
+      "tier2_hint": "clue_only",
+      "tier2_nodes": 105
+    },
+    {
+      "conf_delta": -0.05,
+      "family": "TF2",
+      "of": "OF2",
+      "task_id": "flask-tf2-002",
+      "tier1_conf": 0.65,
+      "tier1_hint": "targeted_lookup",
+      "tier1_nodes": 27,
+      "tier2_conf": 0.6,
+      "tier2_hint": "targeted_lookup",
+      "tier2_nodes": 27
+    }
+  ],
+  "tier2_enriched_nodes": 154,
+  "total_nodes": 1712
+}

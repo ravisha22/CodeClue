@@ -1,0 +1,57 @@
+{
+  "commit_id": "c34d6e81fd8e405e6d4178bf24b364918811ef17",
+  "generator_model": "codeclue-structural-v1",
+  "graph_stats": {
+    "edge_count": 2163,
+    "node_count": 1712
+  },
+  "integrity_passed": true,
+  "language": "python",
+  "projections": {
+    "OF1": {
+      "confidence_overall": 0.0,
+      "edges": 1629,
+      "lookup_hint": "expanded_lookup",
+      "nodes": 160,
+      "suggested_actions_count": 211,
+      "tool_call_budget": 5
+    },
+    "OF2": {
+      "confidence_overall": 0.375,
+      "edges": 1,
+      "lookup_hint": "expanded_lookup",
+      "nodes": 4,
+      "suggested_actions_count": 6,
+      "tool_call_budget": 15
+    },
+    "OF3": {
+      "confidence_overall": 1.0,
+      "edges": 8,
+      "lookup_hint": "clue_only",
+      "nodes": 9,
+      "suggested_actions_count": 7,
+      "tool_call_budget": 10
+    },
+    "OF4": {
+      "confidence_overall": 1.0,
+      "edges": 8,
+      "lookup_hint": "clue_only",
+      "nodes": 9,
+      "suggested_actions_count": 9,
+      "tool_call_budget": 20
+    },
+    "OF5": {
+      "confidence_overall": 0.392151,
+      "edges": 338,
+      "lookup_hint": "expanded_lookup",
+      "nodes": 160,
+      "suggested_actions_count": 188,
+      "tool_call_budget": 30
+    }
+  },
+  "repo_name": "pallets/flask",
+  "roundtrip_passed": true,
+  "timestamp": "2026-04-01T09:05:50.645164+00:00",
+  "validation_error_count": 0,
+  "validation_passed": true
+}

@@ -1,0 +1,479 @@
+_AppCtxGlobals.__getattr__:
+  preconditions:
+    - type: parameter_valid
+      target: "name"
+      constraint: "Must be a string attribute name"
+  postconditions:
+    - type: return_value
+      target: "Any"
+      description: "Returns the value from __dict__ for the given name"
+  failure_modes:
+    - trigger: "name not in self.__dict__"
+      effect: "AttributeError raised"
+      exception_type: "AttributeError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+_AppCtxGlobals.__setattr__:
+  preconditions:
+    - type: parameter_valid
+      target: "name"
+      constraint: "Must be a string"
+  postconditions:
+    - type: state_mutation
+      target: "self.__dict__[name]"
+      description: "Sets the attribute value in the instance dict"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+_AppCtxGlobals.__delattr__:
+  preconditions:
+    - type: parameter_valid
+      target: "name"
+      constraint: "Must be a string attribute name that exists"
+  postconditions:
+    - type: state_mutation
+      target: "self.__dict__"
+      description: "Removes the named attribute from the instance dict"
+  failure_modes:
+    - trigger: "name not in self.__dict__"
+      effect: "AttributeError raised"
+      exception_type: "AttributeError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+_AppCtxGlobals.get:
+  preconditions:
+    - type: parameter_valid
+      target: "name"
+      constraint: "Must be a string"
+  postconditions:
+    - type: return_value
+      target: "Any"
+      description: "Returns the attribute value or default if not present"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+_AppCtxGlobals.pop:
+  preconditions:
+    - type: parameter_valid
+      target: "name"
+      constraint: "Must be a string"
+  postconditions:
+    - type: return_value
+      target: "Any"
+      description: "Returns and removes the attribute value, or default if provided"
+    - type: state_mutation
+      target: "self.__dict__"
+      description: "Removes the named key from __dict__"
+  failure_modes:
+    - trigger: "name not in __dict__ and no default provided"
+      effect: "KeyError raised"
+      exception_type: "KeyError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+_AppCtxGlobals.setdefault:
+  preconditions:
+    - type: parameter_valid
+      target: "name"
+      constraint: "Must be a string"
+  postconditions:
+    - type: return_value
+      target: "Any"
+      description: "Returns existing value for name, or sets and returns default"
+    - type: state_mutation
+      target: "self.__dict__"
+      description: "Sets name to default if not already present"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+_AppCtxGlobals.__contains__:
+  preconditions:
+    - type: parameter_valid
+      target: "item"
+      constraint: "Must be a string"
+  postconditions:
+    - type: return_value
+      target: "bool"
+      description: "Returns True if item is in __dict__"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+_AppCtxGlobals.__iter__:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "Iterator[str]"
+      description: "Returns an iterator over attribute names in __dict__"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+_AppCtxGlobals.__repr__:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "str"
+      description: "Returns '<flask.g of app_name>' if in app context, otherwise default object repr"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+after_this_request:
+  preconditions:
+    - type: state_required
+      target: "request context"
+      constraint: "Must be called within an active request context"
+  postconditions:
+    - type: state_mutation
+      target: "ctx._after_request_functions"
+      description: "Appends the decorated function to the current context's after-request list"
+    - type: return_value
+      target: "AfterRequestCallable"
+      description: "Returns the function unchanged"
+  failure_modes:
+    - trigger: "No active request context"
+      effect: "RuntimeError raised"
+      exception_type: "RuntimeError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+copy_current_request_context:
+  preconditions:
+    - type: state_required
+      target: "app context"
+      constraint: "Must be called within an active app context"
+  postconditions:
+    - type: return_value
+      target: "wrapped function"
+      description: "Returns a wrapper that copies the current context and runs the decorated function inside it"
+  failure_modes:
+    - trigger: "No active app context"
+      effect: "RuntimeError raised"
+      exception_type: "RuntimeError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+has_request_context:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "bool"
+      description: "Returns True if an app context with request data is active"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+has_app_context:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "bool"
+      description: "Returns True if an app context is active"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+AppContext.__init__:
+  preconditions:
+    - type: parameter_valid
+      target: "app"
+      constraint: "Must be a Flask application instance"
+  postconditions:
+    - type: state_mutation
+      target: "self"
+      description: "Initializes app, g, url_adapter, request, session, flashes, after_request_functions, cv_token, and push_count"
+  failure_modes:
+    - trigger: "create_url_adapter raises HTTPException and request is provided"
+      effect: "Sets request.routing_exception instead of propagating"
+      exception_type: null
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+AppContext.from_environ:
+  preconditions:
+    - type: parameter_valid
+      target: "app"
+      constraint: "Must be a Flask application instance"
+    - type: parameter_valid
+      target: "environ"
+      constraint: "Must be a valid WSGI environ dict"
+  postconditions:
+    - type: return_value
+      target: "AppContext"
+      description: "Creates an AppContext with a Request built from the WSGI environ"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+AppContext.has_request:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "bool"
+      description: "Returns True if this context was created with request data"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+AppContext.copy:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "AppContext"
+      description: "Returns a new AppContext with the same app, request, and session references"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+AppContext.request:
+  preconditions:
+    - type: state_required
+      target: "self._request"
+      constraint: "Must not be None (must be a request context)"
+  postconditions:
+    - type: return_value
+      target: "Request"
+      description: "Returns the request object associated with this context"
+  failure_modes:
+    - trigger: "self._request is None"
+      effect: "RuntimeError raised"
+      exception_type: "RuntimeError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+AppContext._get_session:
+  preconditions:
+    - type: state_required
+      target: "self._request"
+      constraint: "Must not be None"
+  postconditions:
+    - type: return_value
+      target: "SessionMixin"
+      description: "Returns the session, opening it via session_interface.open_session if not already loaded; falls back to null session"
+    - type: state_mutation
+      target: "self._session"
+      description: "Lazily initializes self._session on first access"
+  failure_modes:
+    - trigger: "self._request is None"
+      effect: "RuntimeError raised"
+      exception_type: "RuntimeError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+AppContext.session:
+  preconditions:
+    - type: state_required
+      target: "self._request"
+      constraint: "Must be a request context"
+  postconditions:
+    - type: return_value
+      target: "SessionMixin"
+      description: "Returns the session with accessed flag set to True"
+    - type: state_mutation
+      target: "session.accessed"
+      description: "Sets accessed to True"
+  failure_modes:
+    - trigger: "self._request is None"
+      effect: "RuntimeError raised (via _get_session)"
+      exception_type: "RuntimeError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+AppContext.match_request:
+  preconditions:
+    - type: state_required
+      target: "self.url_adapter"
+      constraint: "Should not be None for matching to succeed"
+  postconditions:
+    - type: state_mutation
+      target: "self._request.url_rule, self._request.view_args"
+      description: "Sets url_rule and view_args on the request if matching succeeds"
+  failure_modes:
+    - trigger: "URL matching raises HTTPException"
+      effect: "Sets request.routing_exception instead of propagating"
+      exception_type: null
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+AppContext.push:
+  preconditions: []
+  postconditions:
+    - type: state_mutation
+      target: "_cv_app context variable"
+      description: "Sets this context as the active context variable value"
+    - type: event_emitted
+      target: "appcontext_pushed signal"
+      description: "Sends appcontext_pushed signal (only on first push)"
+    - type: side_effect
+      target: "session and URL matching"
+      description: "Opens session and matches request URL on first push if request context"
+    - type: state_mutation
+      target: "self._push_count"
+      description: "Incremented by 1"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+AppContext.pop:
+  preconditions:
+    - type: state_required
+      target: "self._cv_token"
+      constraint: "Must have been pushed (cv_token is not None)"
+  postconditions:
+    - type: state_mutation
+      target: "_cv_app context variable"
+      description: "Resets context variable to previous state"
+    - type: side_effect
+      target: "teardown functions"
+      description: "Calls do_teardown_request and do_teardown_appcontext, closes request"
+    - type: event_emitted
+      target: "appcontext_popped signal"
+      description: "Sends appcontext_popped signal"
+    - type: state_mutation
+      target: "self._push_count"
+      description: "Decremented by 1; cleanup only runs when count reaches 0"
+  failure_modes:
+    - trigger: "Context was not pushed"
+      effect: "RuntimeError raised"
+      exception_type: "RuntimeError"
+    - trigger: "Context is not the active context"
+      effect: "RuntimeError raised"
+      exception_type: "RuntimeError"
+    - trigger: "Teardown functions raise errors"
+      effect: "All errors collected and raised as BaseExceptionGroup"
+      exception_type: "BaseExceptionGroup"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+AppContext.__enter__:
+  preconditions: []
+  postconditions:
+    - type: side_effect
+      target: "self"
+      description: "Calls push() and returns self"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+AppContext.__exit__:
+  preconditions: []
+  postconditions:
+    - type: side_effect
+      target: "self"
+      description: "Calls pop(exc_value) to trigger teardown"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+AppContext.__repr__:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "str"
+      description: "Returns a repr string including app name and request method/URL if in a request context"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+__getattr__:
+  preconditions:
+    - type: parameter_valid
+      target: "name"
+      constraint: "Must be a string"
+  postconditions:
+    - type: return_value
+      target: "Any"
+      description: "Returns AppContext if name is 'RequestContext' (with deprecation warning), otherwise raises AttributeError"
+  failure_modes:
+    - trigger: "name is not 'RequestContext'"
+      effect: "AttributeError raised"
+      exception_type: "AttributeError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false

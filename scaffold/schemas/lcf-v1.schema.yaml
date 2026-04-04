@@ -1,0 +1,45 @@
+schema_id: codeclue.lcf.v1
+kind: canonical_clue_graph
+required:
+  - metadata
+  - repository
+  - nodes
+  - edges
+  - operations
+  - invariants
+metadata:
+  required: [schema_version, generated_at, generator, commit_id]
+repository:
+  required: [name, default_branch, root_hash]
+nodes:
+  type: array
+  item_required:
+    - node_id
+    - node_type
+    - source_anchor
+    - semantic_contract
+    - confidence
+source_anchor:
+  required: [file_path, byte_start, byte_end, ast_path, content_hash]
+edges:
+  type: array
+  item_required:
+    - edge_id
+    - edge_type
+    - from_node
+    - to_node
+    - evidence
+operations:
+  description: task-conditioned projection rules
+  required: [operation_families, projection_policies]
+invariants:
+  required:
+    - connectivity_invariant
+    - anchor_invariant
+    - no_gap_invariant
+    - round_trip_invariant
+lossless_requirements:
+  - all_nodes_anchor_to_source: true
+  - all_edges_reference_existing_nodes: true
+  - serialization_round_trip_semantic_loss: 0
+  - operational_path_coverage_loss: 0

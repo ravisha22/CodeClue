@@ -1,0 +1,3339 @@
+{
+  "edges": [
+    {
+      "edge_id": "calls:module:examples/sample_go.go:symbol:examples/sample_go.go:Build:7:7",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 7,
+        "rel": "regex_call"
+      },
+      "from_node": "module:examples/sample_go.go",
+      "to_node": "symbol:examples/sample_go.go:Build:7"
+    },
+    {
+      "edge_id": "calls:module:examples/sample_go.go:symbol:examples/sample_go.go:normalize:3:3",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 3,
+        "rel": "regex_call"
+      },
+      "from_node": "module:examples/sample_go.go",
+      "to_node": "symbol:examples/sample_go.go:normalize:3"
+    },
+    {
+      "edge_id": "calls:module:examples/sample_go.go:symbol:examples/sample_go.go:normalize:3:8",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 8,
+        "rel": "regex_call"
+      },
+      "from_node": "module:examples/sample_go.go",
+      "to_node": "symbol:examples/sample_go.go:normalize:3"
+    },
+    {
+      "edge_id": "calls:module:examples/sample_ts.ts:symbol:examples/sample_ts.ts:buildLabel:5:5",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 5,
+        "rel": "regex_call"
+      },
+      "from_node": "module:examples/sample_ts.ts",
+      "to_node": "symbol:examples/sample_ts.ts:buildLabel:5"
+    },
+    {
+      "edge_id": "calls:module:examples/sample_ts.ts:symbol:examples/sample_ts.ts:sanitize:1:1",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 1,
+        "rel": "regex_call"
+      },
+      "from_node": "module:examples/sample_ts.ts",
+      "to_node": "symbol:examples/sample_ts.ts:sanitize:1"
+    },
+    {
+      "edge_id": "calls:module:examples/sample_ts.ts:symbol:examples/sample_ts.ts:sanitize:1:6",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 6,
+        "rel": "regex_call"
+      },
+      "from_node": "module:examples/sample_ts.ts",
+      "to_node": "symbol:examples/sample_ts.ts:sanitize:1"
+    },
+    {
+      "edge_id": "calls:symbol:examples/sample_module.py:Greeter.greet:11:symbol:examples/sample_module.py:build_greeting:5:12",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 12,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:examples/sample_module.py:Greeter.greet:11",
+      "to_node": "symbol:examples/sample_module.py:build_greeting:5"
+    },
+    {
+      "edge_id": "calls:symbol:examples/sample_module.py:build_greeting:5:symbol:examples/sample_module.py:normalize_user:1:6",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 6,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:examples/sample_module.py:build_greeting:5",
+      "to_node": "symbol:examples/sample_module.py:normalize_user:1"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/cct.py:run_cct_probe:41:symbol:src/codeclue_research/cct.py:_load_probe:16:42",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 42,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/cct.py:run_cct_probe:41",
+      "to_node": "symbol:src/codeclue_research/cct.py:_load_probe:16"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/cct.py:run_cct_probe:41:symbol:src/codeclue_research/cct.py:_load_trace:20:43",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 43,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/cct.py:run_cct_probe:41",
+      "to_node": "symbol:src/codeclue_research/cct.py:_load_trace:20"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/cct.py:run_cct_probe:41:symbol:src/codeclue_research/cct.py:_safe_div:10:51",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 51,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/cct.py:run_cct_probe:41",
+      "to_node": "symbol:src/codeclue_research/cct.py:_safe_div:10"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/cct.py:run_cct_probe:41:symbol:src/codeclue_research/cct.py:_safe_div:10:55",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 55,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/cct.py:run_cct_probe:41",
+      "to_node": "symbol:src/codeclue_research/cct.py:_safe_div:10"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/cct.py:run_cct_probe:41:symbol:src/codeclue_research/cct.py:_safe_div:10:67",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 67,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/cct.py:run_cct_probe:41",
+      "to_node": "symbol:src/codeclue_research/cct.py:_safe_div:10"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/cct.py:run_cct_probe:41:symbol:src/codeclue_research/cct.py:_safe_div:10:76",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 76,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/cct.py:run_cct_probe:41",
+      "to_node": "symbol:src/codeclue_research/cct.py:_safe_div:10"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/cli.py:main:226:symbol:src/codeclue_research/cli.py:_build_parser:129:227",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 227,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/cli.py:main:226",
+      "to_node": "symbol:src/codeclue_research/cli.py:_build_parser:129"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/delta.py:apply_delta_patch:40:symbol:src/codeclue_research/delta.py:_edge_from_payload:30:86",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 86,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/delta.py:apply_delta_patch:40",
+      "to_node": "symbol:src/codeclue_research/delta.py:_edge_from_payload:30"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/delta.py:apply_delta_patch:40:symbol:src/codeclue_research/delta.py:_node_from_payload:20:59",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 59,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/delta.py:apply_delta_patch:40",
+      "to_node": "symbol:src/codeclue_research/delta.py:_node_from_payload:20"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extract_go.py:_byte_span:24:symbol:src/codeclue_research/extract_go.py:_line_offsets:15:25",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 25,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extract_go.py:_byte_span:24",
+      "to_node": "symbol:src/codeclue_research/extract_go.py:_line_offsets:15"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extract_go.py:extract_go_nodes_edges:40:symbol:src/codeclue_research/extract_go.py:_byte_span:24:82",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 82,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extract_go.py:extract_go_nodes_edges:40",
+      "to_node": "symbol:src/codeclue_research/extract_go.py:_byte_span:24"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extract_go.py:extract_go_nodes_edges:40:symbol:src/codeclue_research/extract_go.py:_hash_text:9:61",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 61,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extract_go.py:extract_go_nodes_edges:40",
+      "to_node": "symbol:src/codeclue_research/extract_go.py:_hash_text:9"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extract_go.py:extract_go_nodes_edges:40:symbol:src/codeclue_research/extract_go.py:_hash_text:9:92",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 92,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extract_go.py:extract_go_nodes_edges:40",
+      "to_node": "symbol:src/codeclue_research/extract_go.py:_hash_text:9"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extract_go.py:extract_go_nodes_edges:40:symbol:src/codeclue_research/extract_go.py:_iter_go_files:31:47",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 47,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extract_go.py:extract_go_nodes_edges:40",
+      "to_node": "symbol:src/codeclue_research/extract_go.py:_iter_go_files:31"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extract_typescript.py:_byte_span:24:symbol:src/codeclue_research/extract_typescript.py:_line_offsets:15:25",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 25,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extract_typescript.py:_byte_span:24",
+      "to_node": "symbol:src/codeclue_research/extract_typescript.py:_line_offsets:15"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extract_typescript.py:extract_typescript_nodes_edges:42:symbol:src/codeclue_research/extract_typescript.py:_byte_span:24:91",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 91,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extract_typescript.py:extract_typescript_nodes_edges:42",
+      "to_node": "symbol:src/codeclue_research/extract_typescript.py:_byte_span:24"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extract_typescript.py:extract_typescript_nodes_edges:42:symbol:src/codeclue_research/extract_typescript.py:_hash_text:9:103",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 103,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extract_typescript.py:extract_typescript_nodes_edges:42",
+      "to_node": "symbol:src/codeclue_research/extract_typescript.py:_hash_text:9"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extract_typescript.py:extract_typescript_nodes_edges:42:symbol:src/codeclue_research/extract_typescript.py:_hash_text:9:68",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 68,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extract_typescript.py:extract_typescript_nodes_edges:42",
+      "to_node": "symbol:src/codeclue_research/extract_typescript.py:_hash_text:9"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extract_typescript.py:extract_typescript_nodes_edges:42:symbol:src/codeclue_research/extract_typescript.py:_iter_ts_files:31:55",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 55,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extract_typescript.py:extract_typescript_nodes_edges:42",
+      "to_node": "symbol:src/codeclue_research/extract_typescript.py:_iter_ts_files:31"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extractor.py:SymbolCollector._record:55:symbol:src/codeclue_research/extractor.py:SymbolRecord:16:59",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 59,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extractor.py:SymbolCollector._record:55",
+      "to_node": "symbol:src/codeclue_research/extractor.py:SymbolRecord:16"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extractor.py:SymbolCollector.visit_AsyncFunctionDef:83:symbol:src/codeclue_research/extractor.py:SymbolCollector._record:55:84",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 84,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extractor.py:SymbolCollector.visit_AsyncFunctionDef:83",
+      "to_node": "symbol:src/codeclue_research/extractor.py:SymbolCollector._record:55"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extractor.py:SymbolCollector.visit_ClassDef:71:symbol:src/codeclue_research/extractor.py:SymbolCollector._record:55:72",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 72,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extractor.py:SymbolCollector.visit_ClassDef:71",
+      "to_node": "symbol:src/codeclue_research/extractor.py:SymbolCollector._record:55"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extractor.py:SymbolCollector.visit_FunctionDef:77:symbol:src/codeclue_research/extractor.py:SymbolCollector._record:55:78",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 78,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extractor.py:SymbolCollector.visit_FunctionDef:77",
+      "to_node": "symbol:src/codeclue_research/extractor.py:SymbolCollector._record:55"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extractor.py:extract_graph:194:symbol:src/codeclue_research/extractor.py:_hash_text:27:242",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 242,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extractor.py:extract_graph:194",
+      "to_node": "symbol:src/codeclue_research/extractor.py:_hash_text:27"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extractor.py:extract_graph:194:symbol:src/codeclue_research/extractor.py:extract_python_nodes_edges:90:213",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 213,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extractor.py:extract_graph:194",
+      "to_node": "symbol:src/codeclue_research/extractor.py:extract_python_nodes_edges:90"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extractor.py:extract_python_nodes_edges:90:symbol:src/codeclue_research/extractor.py:SymbolCollector:49:120",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 120,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extractor.py:extract_python_nodes_edges:90",
+      "to_node": "symbol:src/codeclue_research/extractor.py:SymbolCollector:49"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extractor.py:extract_python_nodes_edges:90:symbol:src/codeclue_research/extractor.py:_hash_text:27:104",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 104,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extractor.py:extract_python_nodes_edges:90",
+      "to_node": "symbol:src/codeclue_research/extractor.py:_hash_text:27"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extractor.py:extract_python_nodes_edges:90:symbol:src/codeclue_research/extractor.py:_hash_text:27:137",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 137,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extractor.py:extract_python_nodes_edges:90",
+      "to_node": "symbol:src/codeclue_research/extractor.py:_hash_text:27"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extractor.py:extract_python_nodes_edges:90:symbol:src/codeclue_research/extractor.py:_iter_python_files:42:94",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 94,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extractor.py:extract_python_nodes_edges:90",
+      "to_node": "symbol:src/codeclue_research/extractor.py:_iter_python_files:42"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extractor.py:extract_python_nodes_edges:90:symbol:src/codeclue_research/extractor.py:_line_col_to_offset:31:125",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 125,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extractor.py:extract_python_nodes_edges:90",
+      "to_node": "symbol:src/codeclue_research/extractor.py:_line_col_to_offset:31"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/extractor.py:extract_python_nodes_edges:90:symbol:src/codeclue_research/extractor.py:_line_col_to_offset:31:126",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 126,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/extractor.py:extract_python_nodes_edges:90",
+      "to_node": "symbol:src/codeclue_research/extractor.py:_line_col_to_offset:31"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43:symbol:src/codeclue_research/fidelity.py:_extract_gold_sets:32:48",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 48,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43",
+      "to_node": "symbol:src/codeclue_research/fidelity.py:_extract_gold_sets:32"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43:symbol:src/codeclue_research/fidelity.py:_extract_projection_sets:18:47",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 47,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43",
+      "to_node": "symbol:src/codeclue_research/fidelity.py:_extract_projection_sets:18"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43:symbol:src/codeclue_research/fidelity.py:_f1:12:55",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 55,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43",
+      "to_node": "symbol:src/codeclue_research/fidelity.py:_f1:12"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43:symbol:src/codeclue_research/fidelity.py:_f1:12:59",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 59,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43",
+      "to_node": "symbol:src/codeclue_research/fidelity.py:_f1:12"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43:symbol:src/codeclue_research/fidelity.py:_safe_div:6:53",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 53,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43",
+      "to_node": "symbol:src/codeclue_research/fidelity.py:_safe_div:6"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43:symbol:src/codeclue_research/fidelity.py:_safe_div:6:54",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 54,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43",
+      "to_node": "symbol:src/codeclue_research/fidelity.py:_safe_div:6"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43:symbol:src/codeclue_research/fidelity.py:_safe_div:6:57",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 57,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43",
+      "to_node": "symbol:src/codeclue_research/fidelity.py:_safe_div:6"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43:symbol:src/codeclue_research/fidelity.py:_safe_div:6:58",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 58,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43",
+      "to_node": "symbol:src/codeclue_research/fidelity.py:_safe_div:6"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc.strongconnect:49:symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc.strongconnect:49:59",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 59,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc.strongconnect:49",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc.strongconnect:49"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc:41:symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc.strongconnect:49:59",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 59,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc:41",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc.strongconnect:49"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc:41:symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc.strongconnect:49:76",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 76,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc:41",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc.strongconnect:49"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/graph_analysis.py:analyze_graph_integrity:113:symbol:src/codeclue_research/graph_analysis.py:_build_adjacency:9:114",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 114,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/graph_analysis.py:analyze_graph_integrity:113",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:_build_adjacency:9"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/graph_analysis.py:analyze_graph_integrity:113:symbol:src/codeclue_research/graph_analysis.py:_build_reverse_adjacency:17:115",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 115,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/graph_analysis.py:analyze_graph_integrity:113",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:_build_reverse_adjacency:17"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/graph_analysis.py:analyze_graph_integrity:113:symbol:src/codeclue_research/graph_analysis.py:_compute_dominators:81:133",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 133,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/graph_analysis.py:analyze_graph_integrity:113",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:_compute_dominators:81"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/graph_analysis.py:analyze_graph_integrity:113:symbol:src/codeclue_research/graph_analysis.py:_reachable_from_roots:27:118",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 118,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/graph_analysis.py:analyze_graph_integrity:113",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:_reachable_from_roots:27"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/graph_analysis.py:analyze_graph_integrity:113:symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc:41:130",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 130,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/graph_analysis.py:analyze_graph_integrity:113",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc:41"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/graph_analysis.py:compare_operational_paths:161:symbol:src/codeclue_research/graph_analysis.py:compare_operational_paths.edge_triplets:167:170",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 170,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/graph_analysis.py:compare_operational_paths:161",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:compare_operational_paths.edge_triplets:167"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/graph_analysis.py:compare_operational_paths:161:symbol:src/codeclue_research/graph_analysis.py:compare_operational_paths.edge_triplets:167:171",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 171,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/graph_analysis.py:compare_operational_paths:161",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:compare_operational_paths.edge_triplets:167"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/io.py:load_graph:26:symbol:src/codeclue_research/io.py:load_data:12:27",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 27,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/io.py:load_graph:26",
+      "to_node": "symbol:src/codeclue_research/io.py:load_data:12"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/io.py:save_graph:30:symbol:src/codeclue_research/io.py:save_data:18:31",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 31,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/io.py:save_graph:30",
+      "to_node": "symbol:src/codeclue_research/io.py:save_data:18"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/models.py:CanonicalClueGraph.from_dict:81:symbol:src/codeclue_research/models.py:Edge:44:93",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 93,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/models.py:CanonicalClueGraph.from_dict:81",
+      "to_node": "symbol:src/codeclue_research/models.py:Edge:44"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/models.py:CanonicalClueGraph.from_dict:81:symbol:src/codeclue_research/models.py:Node:26:83",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 83,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/models.py:CanonicalClueGraph.from_dict:81",
+      "to_node": "symbol:src/codeclue_research/models.py:Node:26"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/models.py:CanonicalClueGraph.from_dict:81:symbol:src/codeclue_research/models.py:SourceAnchor:8:86",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 86,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/models.py:CanonicalClueGraph.from_dict:81",
+      "to_node": "symbol:src/codeclue_research/models.py:SourceAnchor:8"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/operation_projection.py:_seed_nodes:79:symbol:src/codeclue_research/operation_projection.py:_node_text:53:108",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 108,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/operation_projection.py:_seed_nodes:79",
+      "to_node": "symbol:src/codeclue_research/operation_projection.py:_node_text:53"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/operation_projection.py:_seed_nodes:79:symbol:src/codeclue_research/operation_projection.py:_node_text:53:115",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 115,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/operation_projection.py:_seed_nodes:79",
+      "to_node": "symbol:src/codeclue_research/operation_projection.py:_node_text:53"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/operation_projection.py:_tuned_policy:67:symbol:src/codeclue_research/operation_projection.py:_context_level:59:68",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 68,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/operation_projection.py:_tuned_policy:67",
+      "to_node": "symbol:src/codeclue_research/operation_projection.py:_context_level:59"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/operation_projection.py:project_operation:188:symbol:src/codeclue_research/operation_projection.py:_candidate_universe:157:225",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 225,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/operation_projection.py:project_operation:188",
+      "to_node": "symbol:src/codeclue_research/operation_projection.py:_candidate_universe:157"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/operation_projection.py:project_operation:188:symbol:src/codeclue_research/operation_projection.py:_expand_seed_set:129:206",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 206,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/operation_projection.py:project_operation:188",
+      "to_node": "symbol:src/codeclue_research/operation_projection.py:_expand_seed_set:129"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/operation_projection.py:project_operation:188:symbol:src/codeclue_research/operation_projection.py:_policy_for:13:203",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 203,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/operation_projection.py:project_operation:188",
+      "to_node": "symbol:src/codeclue_research/operation_projection.py:_policy_for:13"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/operation_projection.py:project_operation:188:symbol:src/codeclue_research/operation_projection.py:_seed_nodes:79:205",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 205,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/operation_projection.py:project_operation:188",
+      "to_node": "symbol:src/codeclue_research/operation_projection.py:_seed_nodes:79"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/operation_projection.py:project_operation:188:symbol:src/codeclue_research/operation_projection.py:_tuned_policy:67:204",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 204,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/operation_projection.py:project_operation:188",
+      "to_node": "symbol:src/codeclue_research/operation_projection.py:_tuned_policy:67"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/roundtrip.py:_canonicalize:12:symbol:src/codeclue_research/roundtrip.py:_canonicalize:12:14",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 14,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/roundtrip.py:_canonicalize:12",
+      "to_node": "symbol:src/codeclue_research/roundtrip.py:_canonicalize:12"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/roundtrip.py:_canonicalize:12:symbol:src/codeclue_research/roundtrip.py:_canonicalize:12:16",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 16,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/roundtrip.py:_canonicalize:12",
+      "to_node": "symbol:src/codeclue_research/roundtrip.py:_canonicalize:12"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/roundtrip.py:_semantic_hash:20:symbol:src/codeclue_research/roundtrip.py:_canonicalize:12:21",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 21,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/roundtrip.py:_semantic_hash:20",
+      "to_node": "symbol:src/codeclue_research/roundtrip.py:_canonicalize:12"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/roundtrip.py:run_roundtrip:26:symbol:src/codeclue_research/roundtrip.py:_semantic_hash:20:35",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 35,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/roundtrip.py:run_roundtrip:26",
+      "to_node": "symbol:src/codeclue_research/roundtrip.py:_semantic_hash:20"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/roundtrip.py:run_roundtrip:26:symbol:src/codeclue_research/roundtrip.py:_semantic_hash:20:36",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 36,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/roundtrip.py:run_roundtrip:26",
+      "to_node": "symbol:src/codeclue_research/roundtrip.py:_semantic_hash:20"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/roundtrip.py:run_roundtrip:26:symbol:src/codeclue_research/roundtrip.py:_semantic_hash:20:37",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 37,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/roundtrip.py:run_roundtrip:26",
+      "to_node": "symbol:src/codeclue_research/roundtrip.py:_semantic_hash:20"
+    },
+    {
+      "edge_id": "calls:symbol:src/codeclue_research/schema_validator.py:validate_payload:89:symbol:src/codeclue_research/schema_validator.py:validate_graph:20:90",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 90,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:src/codeclue_research/schema_validator.py:validate_payload:89",
+      "to_node": "symbol:src/codeclue_research/schema_validator.py:validate_graph:20"
+    },
+    {
+      "edge_id": "contains:module:examples/sample_go.go:symbol:examples/sample_go.go:Build:7",
+      "edge_type": "contains",
+      "evidence": {
+        "line": 7,
+        "rel": "regex_containment"
+      },
+      "from_node": "module:examples/sample_go.go",
+      "to_node": "symbol:examples/sample_go.go:Build:7"
+    },
+    {
+      "edge_id": "contains:module:examples/sample_go.go:symbol:examples/sample_go.go:normalize:3",
+      "edge_type": "contains",
+      "evidence": {
+        "line": 3,
+        "rel": "regex_containment"
+      },
+      "from_node": "module:examples/sample_go.go",
+      "to_node": "symbol:examples/sample_go.go:normalize:3"
+    },
+    {
+      "edge_id": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter.greet:11",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:examples/sample_module.py",
+      "to_node": "symbol:examples/sample_module.py:Greeter.greet:11"
+    },
+    {
+      "edge_id": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter:10",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:examples/sample_module.py",
+      "to_node": "symbol:examples/sample_module.py:Greeter:10"
+    },
+    {
+      "edge_id": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:build_greeting:5",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:examples/sample_module.py",
+      "to_node": "symbol:examples/sample_module.py:build_greeting:5"
+    },
+    {
+      "edge_id": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:normalize_user:1",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:examples/sample_module.py",
+      "to_node": "symbol:examples/sample_module.py:normalize_user:1"
+    },
+    {
+      "edge_id": "contains:module:examples/sample_ts.ts:symbol:examples/sample_ts.ts:buildLabel:5",
+      "edge_type": "contains",
+      "evidence": {
+        "line": 5,
+        "rel": "regex_containment"
+      },
+      "from_node": "module:examples/sample_ts.ts",
+      "to_node": "symbol:examples/sample_ts.ts:buildLabel:5"
+    },
+    {
+      "edge_id": "contains:module:examples/sample_ts.ts:symbol:examples/sample_ts.ts:sanitize:1",
+      "edge_type": "contains",
+      "evidence": {
+        "line": 1,
+        "rel": "regex_containment"
+      },
+      "from_node": "module:examples/sample_ts.ts",
+      "to_node": "symbol:examples/sample_ts.ts:sanitize:1"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/cct.py:symbol:src/codeclue_research/cct.py:_load_probe:16",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/cct.py",
+      "to_node": "symbol:src/codeclue_research/cct.py:_load_probe:16"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/cct.py:symbol:src/codeclue_research/cct.py:_load_trace:20",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/cct.py",
+      "to_node": "symbol:src/codeclue_research/cct.py:_load_trace:20"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/cct.py:symbol:src/codeclue_research/cct.py:_safe_div:10",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/cct.py",
+      "to_node": "symbol:src/codeclue_research/cct.py:_safe_div:10"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/cct.py:symbol:src/codeclue_research/cct.py:run_cct_probe:41",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/cct.py",
+      "to_node": "symbol:src/codeclue_research/cct.py:run_cct_probe:41"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/cli.py:symbol:src/codeclue_research/cli.py:_build_parser:129",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/cli.py",
+      "to_node": "symbol:src/codeclue_research/cli.py:_build_parser:129"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/cli.py:symbol:src/codeclue_research/cli.py:_cmd_cct:45",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/cli.py",
+      "to_node": "symbol:src/codeclue_research/cli.py:_cmd_cct:45"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/cli.py:symbol:src/codeclue_research/cli.py:_cmd_delta_apply:67",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/cli.py",
+      "to_node": "symbol:src/codeclue_research/cli.py:_cmd_delta_apply:67"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/cli.py:symbol:src/codeclue_research/cli.py:_cmd_extract:19",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/cli.py",
+      "to_node": "symbol:src/codeclue_research/cli.py:_cmd_extract:19"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/cli.py:symbol:src/codeclue_research/cli.py:_cmd_fidelity_eval:119",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/cli.py",
+      "to_node": "symbol:src/codeclue_research/cli.py:_cmd_fidelity_eval:119"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/cli.py:symbol:src/codeclue_research/cli.py:_cmd_integrity:53",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/cli.py",
+      "to_node": "symbol:src/codeclue_research/cli.py:_cmd_integrity:53"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/cli.py:symbol:src/codeclue_research/cli.py:_cmd_project:102",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/cli.py",
+      "to_node": "symbol:src/codeclue_research/cli.py:_cmd_project:102"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/cli.py:symbol:src/codeclue_research/cli.py:_cmd_roundtrip:38",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/cli.py",
+      "to_node": "symbol:src/codeclue_research/cli.py:_cmd_roundtrip:38"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/cli.py:symbol:src/codeclue_research/cli.py:_cmd_run_pilot:78",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/cli.py",
+      "to_node": "symbol:src/codeclue_research/cli.py:_cmd_run_pilot:78"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/cli.py:symbol:src/codeclue_research/cli.py:_cmd_validate:30",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/cli.py",
+      "to_node": "symbol:src/codeclue_research/cli.py:_cmd_validate:30"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/cli.py:symbol:src/codeclue_research/cli.py:main:226",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/cli.py",
+      "to_node": "symbol:src/codeclue_research/cli.py:main:226"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/delta.py:symbol:src/codeclue_research/delta.py:_edge_from_payload:30",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/delta.py",
+      "to_node": "symbol:src/codeclue_research/delta.py:_edge_from_payload:30"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/delta.py:symbol:src/codeclue_research/delta.py:_node_from_payload:20",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/delta.py",
+      "to_node": "symbol:src/codeclue_research/delta.py:_node_from_payload:20"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/delta.py:symbol:src/codeclue_research/delta.py:apply_delta_patch:40",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/delta.py",
+      "to_node": "symbol:src/codeclue_research/delta.py:apply_delta_patch:40"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extract_go.py:symbol:src/codeclue_research/extract_go.py:_byte_span:24",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extract_go.py",
+      "to_node": "symbol:src/codeclue_research/extract_go.py:_byte_span:24"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extract_go.py:symbol:src/codeclue_research/extract_go.py:_hash_text:9",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extract_go.py",
+      "to_node": "symbol:src/codeclue_research/extract_go.py:_hash_text:9"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extract_go.py:symbol:src/codeclue_research/extract_go.py:_iter_go_files:31",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extract_go.py",
+      "to_node": "symbol:src/codeclue_research/extract_go.py:_iter_go_files:31"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extract_go.py:symbol:src/codeclue_research/extract_go.py:_line_offsets:15",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extract_go.py",
+      "to_node": "symbol:src/codeclue_research/extract_go.py:_line_offsets:15"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extract_go.py:symbol:src/codeclue_research/extract_go.py:extract_go_nodes_edges:40",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extract_go.py",
+      "to_node": "symbol:src/codeclue_research/extract_go.py:extract_go_nodes_edges:40"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extract_typescript.py:symbol:src/codeclue_research/extract_typescript.py:_byte_span:24",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extract_typescript.py",
+      "to_node": "symbol:src/codeclue_research/extract_typescript.py:_byte_span:24"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extract_typescript.py:symbol:src/codeclue_research/extract_typescript.py:_hash_text:9",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extract_typescript.py",
+      "to_node": "symbol:src/codeclue_research/extract_typescript.py:_hash_text:9"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extract_typescript.py:symbol:src/codeclue_research/extract_typescript.py:_iter_ts_files:31",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extract_typescript.py",
+      "to_node": "symbol:src/codeclue_research/extract_typescript.py:_iter_ts_files:31"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extract_typescript.py:symbol:src/codeclue_research/extract_typescript.py:_line_offsets:15",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extract_typescript.py",
+      "to_node": "symbol:src/codeclue_research/extract_typescript.py:_line_offsets:15"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extract_typescript.py:symbol:src/codeclue_research/extract_typescript.py:extract_typescript_nodes_edges:42",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extract_typescript.py",
+      "to_node": "symbol:src/codeclue_research/extract_typescript.py:extract_typescript_nodes_edges:42"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extractor.py:symbol:src/codeclue_research/extractor.py:SymbolCollector.__init__:50",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extractor.py",
+      "to_node": "symbol:src/codeclue_research/extractor.py:SymbolCollector.__init__:50"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extractor.py:symbol:src/codeclue_research/extractor.py:SymbolCollector._record:55",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extractor.py",
+      "to_node": "symbol:src/codeclue_research/extractor.py:SymbolCollector._record:55"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extractor.py:symbol:src/codeclue_research/extractor.py:SymbolCollector.visit_AsyncFunctionDef:83",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extractor.py",
+      "to_node": "symbol:src/codeclue_research/extractor.py:SymbolCollector.visit_AsyncFunctionDef:83"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extractor.py:symbol:src/codeclue_research/extractor.py:SymbolCollector.visit_ClassDef:71",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extractor.py",
+      "to_node": "symbol:src/codeclue_research/extractor.py:SymbolCollector.visit_ClassDef:71"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extractor.py:symbol:src/codeclue_research/extractor.py:SymbolCollector.visit_FunctionDef:77",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extractor.py",
+      "to_node": "symbol:src/codeclue_research/extractor.py:SymbolCollector.visit_FunctionDef:77"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extractor.py:symbol:src/codeclue_research/extractor.py:SymbolCollector:49",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extractor.py",
+      "to_node": "symbol:src/codeclue_research/extractor.py:SymbolCollector:49"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extractor.py:symbol:src/codeclue_research/extractor.py:SymbolRecord:16",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extractor.py",
+      "to_node": "symbol:src/codeclue_research/extractor.py:SymbolRecord:16"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extractor.py:symbol:src/codeclue_research/extractor.py:_hash_text:27",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extractor.py",
+      "to_node": "symbol:src/codeclue_research/extractor.py:_hash_text:27"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extractor.py:symbol:src/codeclue_research/extractor.py:_iter_python_files:42",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extractor.py",
+      "to_node": "symbol:src/codeclue_research/extractor.py:_iter_python_files:42"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extractor.py:symbol:src/codeclue_research/extractor.py:_line_col_to_offset:31",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extractor.py",
+      "to_node": "symbol:src/codeclue_research/extractor.py:_line_col_to_offset:31"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extractor.py:symbol:src/codeclue_research/extractor.py:extract_graph:194",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extractor.py",
+      "to_node": "symbol:src/codeclue_research/extractor.py:extract_graph:194"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/extractor.py:symbol:src/codeclue_research/extractor.py:extract_python_nodes_edges:90",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/extractor.py",
+      "to_node": "symbol:src/codeclue_research/extractor.py:extract_python_nodes_edges:90"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/fidelity.py:symbol:src/codeclue_research/fidelity.py:_extract_gold_sets:32",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/fidelity.py",
+      "to_node": "symbol:src/codeclue_research/fidelity.py:_extract_gold_sets:32"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/fidelity.py:symbol:src/codeclue_research/fidelity.py:_extract_projection_sets:18",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/fidelity.py",
+      "to_node": "symbol:src/codeclue_research/fidelity.py:_extract_projection_sets:18"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/fidelity.py:symbol:src/codeclue_research/fidelity.py:_f1:12",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/fidelity.py",
+      "to_node": "symbol:src/codeclue_research/fidelity.py:_f1:12"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/fidelity.py:symbol:src/codeclue_research/fidelity.py:_safe_div:6",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/fidelity.py",
+      "to_node": "symbol:src/codeclue_research/fidelity.py:_safe_div:6"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/fidelity.py:symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/fidelity.py",
+      "to_node": "symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/graph_analysis.py:symbol:src/codeclue_research/graph_analysis.py:_build_adjacency:9",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/graph_analysis.py",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:_build_adjacency:9"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/graph_analysis.py:symbol:src/codeclue_research/graph_analysis.py:_build_reverse_adjacency:17",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/graph_analysis.py",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:_build_reverse_adjacency:17"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/graph_analysis.py:symbol:src/codeclue_research/graph_analysis.py:_compute_dominators:81",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/graph_analysis.py",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:_compute_dominators:81"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/graph_analysis.py:symbol:src/codeclue_research/graph_analysis.py:_reachable_from_roots:27",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/graph_analysis.py",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:_reachable_from_roots:27"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/graph_analysis.py:symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc.strongconnect:49",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/graph_analysis.py",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc.strongconnect:49"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/graph_analysis.py:symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc:41",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/graph_analysis.py",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc:41"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/graph_analysis.py:symbol:src/codeclue_research/graph_analysis.py:analyze_graph_integrity:113",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/graph_analysis.py",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:analyze_graph_integrity:113"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/graph_analysis.py:symbol:src/codeclue_research/graph_analysis.py:compare_operational_paths.edge_triplets:167",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/graph_analysis.py",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:compare_operational_paths.edge_triplets:167"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/graph_analysis.py:symbol:src/codeclue_research/graph_analysis.py:compare_operational_paths:161",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/graph_analysis.py",
+      "to_node": "symbol:src/codeclue_research/graph_analysis.py:compare_operational_paths:161"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/harness.py:symbol:src/codeclue_research/harness.py:run_pilot:16",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/harness.py",
+      "to_node": "symbol:src/codeclue_research/harness.py:run_pilot:16"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/io.py:symbol:src/codeclue_research/io.py:load_data:12",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/io.py",
+      "to_node": "symbol:src/codeclue_research/io.py:load_data:12"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/io.py:symbol:src/codeclue_research/io.py:load_graph:26",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/io.py",
+      "to_node": "symbol:src/codeclue_research/io.py:load_graph:26"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/io.py:symbol:src/codeclue_research/io.py:save_data:18",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/io.py",
+      "to_node": "symbol:src/codeclue_research/io.py:save_data:18"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/io.py:symbol:src/codeclue_research/io.py:save_graph:30",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/io.py",
+      "to_node": "symbol:src/codeclue_research/io.py:save_graph:30"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/models.py:symbol:src/codeclue_research/models.py:CanonicalClueGraph.from_dict:81",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/models.py",
+      "to_node": "symbol:src/codeclue_research/models.py:CanonicalClueGraph.from_dict:81"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/models.py:symbol:src/codeclue_research/models.py:CanonicalClueGraph.to_dict:70",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/models.py",
+      "to_node": "symbol:src/codeclue_research/models.py:CanonicalClueGraph.to_dict:70"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/models.py:symbol:src/codeclue_research/models.py:CanonicalClueGraph:62",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/models.py",
+      "to_node": "symbol:src/codeclue_research/models.py:CanonicalClueGraph:62"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/models.py:symbol:src/codeclue_research/models.py:Edge.to_dict:51",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/models.py",
+      "to_node": "symbol:src/codeclue_research/models.py:Edge.to_dict:51"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/models.py:symbol:src/codeclue_research/models.py:Edge:44",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/models.py",
+      "to_node": "symbol:src/codeclue_research/models.py:Edge:44"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/models.py:symbol:src/codeclue_research/models.py:Node.to_dict:33",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/models.py",
+      "to_node": "symbol:src/codeclue_research/models.py:Node.to_dict:33"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/models.py:symbol:src/codeclue_research/models.py:Node:26",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/models.py",
+      "to_node": "symbol:src/codeclue_research/models.py:Node:26"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/models.py:symbol:src/codeclue_research/models.py:SourceAnchor.to_dict:15",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/models.py",
+      "to_node": "symbol:src/codeclue_research/models.py:SourceAnchor.to_dict:15"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/models.py:symbol:src/codeclue_research/models.py:SourceAnchor:8",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/models.py",
+      "to_node": "symbol:src/codeclue_research/models.py:SourceAnchor:8"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/operation_projection.py:symbol:src/codeclue_research/operation_projection.py:_candidate_universe:157",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/operation_projection.py",
+      "to_node": "symbol:src/codeclue_research/operation_projection.py:_candidate_universe:157"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/operation_projection.py:symbol:src/codeclue_research/operation_projection.py:_context_level:59",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/operation_projection.py",
+      "to_node": "symbol:src/codeclue_research/operation_projection.py:_context_level:59"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/operation_projection.py:symbol:src/codeclue_research/operation_projection.py:_expand_seed_set:129",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/operation_projection.py",
+      "to_node": "symbol:src/codeclue_research/operation_projection.py:_expand_seed_set:129"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/operation_projection.py:symbol:src/codeclue_research/operation_projection.py:_node_text:53",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/operation_projection.py",
+      "to_node": "symbol:src/codeclue_research/operation_projection.py:_node_text:53"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/operation_projection.py:symbol:src/codeclue_research/operation_projection.py:_policy_for:13",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/operation_projection.py",
+      "to_node": "symbol:src/codeclue_research/operation_projection.py:_policy_for:13"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/operation_projection.py:symbol:src/codeclue_research/operation_projection.py:_seed_nodes:79",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/operation_projection.py",
+      "to_node": "symbol:src/codeclue_research/operation_projection.py:_seed_nodes:79"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/operation_projection.py:symbol:src/codeclue_research/operation_projection.py:_tuned_policy:67",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/operation_projection.py",
+      "to_node": "symbol:src/codeclue_research/operation_projection.py:_tuned_policy:67"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/operation_projection.py:symbol:src/codeclue_research/operation_projection.py:project_operation:188",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/operation_projection.py",
+      "to_node": "symbol:src/codeclue_research/operation_projection.py:project_operation:188"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/roundtrip.py:symbol:src/codeclue_research/roundtrip.py:_canonicalize:12",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/roundtrip.py",
+      "to_node": "symbol:src/codeclue_research/roundtrip.py:_canonicalize:12"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/roundtrip.py:symbol:src/codeclue_research/roundtrip.py:_semantic_hash:20",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/roundtrip.py",
+      "to_node": "symbol:src/codeclue_research/roundtrip.py:_semantic_hash:20"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/roundtrip.py:symbol:src/codeclue_research/roundtrip.py:run_roundtrip:26",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/roundtrip.py",
+      "to_node": "symbol:src/codeclue_research/roundtrip.py:run_roundtrip:26"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/schema_validator.py:symbol:src/codeclue_research/schema_validator.py:validate_graph:20",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/schema_validator.py",
+      "to_node": "symbol:src/codeclue_research/schema_validator.py:validate_graph:20"
+    },
+    {
+      "edge_id": "contains:module:src/codeclue_research/schema_validator.py:symbol:src/codeclue_research/schema_validator.py:validate_payload:89",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:src/codeclue_research/schema_validator.py",
+      "to_node": "symbol:src/codeclue_research/schema_validator.py:validate_payload:89"
+    }
+  ],
+  "invariants": {
+    "anchor_invariant": true,
+    "connectivity_invariant": true,
+    "no_gap_invariant": true,
+    "round_trip_invariant": true
+  },
+  "metadata": {
+    "commit_id": "batch-of-refresh",
+    "generated_at": "2026-03-28T03:52:01.914601+00:00",
+    "generator": "phase2.extractor.multi_language",
+    "language_selector": "auto",
+    "schema_version": "codeclue.lcf.v1"
+  },
+  "nodes": [
+    {
+      "confidence": 1.0,
+      "node_id": "module:examples/sample_go.go",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "go"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 140,
+        "byte_start": 0,
+        "content_hash": "d45e7f950ee355faf47deabf68fe72567e8edf112b620e59b4ce30fc719c85b5",
+        "file_path": "examples/sample_go.go"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:examples/sample_module.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 267,
+        "byte_start": 0,
+        "content_hash": "4648c2ba29058f71e7d79232272237b2d046b25564741082ece79abfc432e7b5",
+        "file_path": "examples/sample_module.py"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:examples/sample_ts.ts",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "typescript"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 181,
+        "byte_start": 0,
+        "content_hash": "1724017050cf537c0a0cee641ede46d717702e3f26b68ee39f4bb84e3ed5d395",
+        "file_path": "examples/sample_ts.ts"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:src/codeclue_research/__init__.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 243,
+        "byte_start": 0,
+        "content_hash": "bddec702e1e36440c1e4e8142f48680790e5ada029469fdfb745eb5136598aa1",
+        "file_path": "src/codeclue_research/__init__.py"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:src/codeclue_research/__main__.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 80,
+        "byte_start": 0,
+        "content_hash": "3d2438ae92f4746e9ffaa1f837b1fe803f6281091d1f31f8c95643716f257d9a",
+        "file_path": "src/codeclue_research/__main__.py"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:src/codeclue_research/cct.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 3633,
+        "byte_start": 0,
+        "content_hash": "5806fd6ab15ed8a5c04535c09cb964a7a8e1e1469f7e0674cd297696c31a749c",
+        "file_path": "src/codeclue_research/cct.py"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:src/codeclue_research/cli.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 8040,
+        "byte_start": 0,
+        "content_hash": "e99f00bbc92e7e022b89722b2e515173a0b82dc1e39dc71a76bc3a5de103d269",
+        "file_path": "src/codeclue_research/cli.py"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:src/codeclue_research/delta.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 4381,
+        "byte_start": 0,
+        "content_hash": "7c492d39049fa66ce56ef3faca5117d62da4517f0a1fa2b8e240d2005c3f07ce",
+        "file_path": "src/codeclue_research/delta.py"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:src/codeclue_research/extract_go.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 4299,
+        "byte_start": 0,
+        "content_hash": "9d6166dd811753781e006f5ac8c55f84c1be5144200080b653a0b986b09546ed",
+        "file_path": "src/codeclue_research/extract_go.py"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:src/codeclue_research/extract_typescript.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 4855,
+        "byte_start": 0,
+        "content_hash": "8e002914fd93cfc4654d6760f286dd26199d18370691027d81bacb4783f7b285",
+        "file_path": "src/codeclue_research/extract_typescript.py"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:src/codeclue_research/extractor.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 9158,
+        "byte_start": 0,
+        "content_hash": "cfbc84b122ae24194635862fb24df21ff4c00b4f4ca967a29249e7ccc4158f9d",
+        "file_path": "src/codeclue_research/extractor.py"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:src/codeclue_research/fidelity.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 3877,
+        "byte_start": 0,
+        "content_hash": "4ac9614e1eca184f2983df37b9a78a51315ca7105e83e66e8359a3b5ea4f59fc",
+        "file_path": "src/codeclue_research/fidelity.py"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:src/codeclue_research/graph_analysis.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 6310,
+        "byte_start": 0,
+        "content_hash": "6782dce785336cdacb4a9f7981f0d06ba5e379efbf5cd7e19ad03bf0144dd03f",
+        "file_path": "src/codeclue_research/graph_analysis.py"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:src/codeclue_research/harness.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 3051,
+        "byte_start": 0,
+        "content_hash": "a89258a8c26d8fd2d3f067f3378e586bddc4c3cadfce96f925b3d3d41c7d2b17",
+        "file_path": "src/codeclue_research/harness.py"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:src/codeclue_research/io.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 953,
+        "byte_start": 0,
+        "content_hash": "ce9e4f4376958294120667ff6480993df65d1d948ec013f71ab4e17022eefed2",
+        "file_path": "src/codeclue_research/io.py"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:src/codeclue_research/models.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 3108,
+        "byte_start": 0,
+        "content_hash": "759d389a7a49d42a83dc33a6fdfee8fb80e575a43e9d05ae676cd60000c3a5be",
+        "file_path": "src/codeclue_research/models.py"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:src/codeclue_research/operation_projection.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 11030,
+        "byte_start": 0,
+        "content_hash": "d5da16873220fb19c1859e03026e2b29076163f6eaefa4283f0b96d8dc5a9cbe",
+        "file_path": "src/codeclue_research/operation_projection.py"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:src/codeclue_research/roundtrip.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 2631,
+        "byte_start": 0,
+        "content_hash": "9873d000a56f701aace5e1e1daaa064af41d31254420dc1419cbe922c0a4f5da",
+        "file_path": "src/codeclue_research/roundtrip.py"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:src/codeclue_research/schema_validator.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 3231,
+        "byte_start": 0,
+        "content_hash": "6ef9853168bb727d8fb63eabe7216cccc90bb92df11d1bc8daa85d54723b0752",
+        "file_path": "src/codeclue_research/schema_validator.py"
+      }
+    },
+    {
+      "confidence": 0.86,
+      "node_id": "symbol:examples/sample_go.go:Build:7",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:Build",
+        "symbol_name": "Build"
+      },
+      "source_anchor": {
+        "ast_path": "function:Build",
+        "byte_end": 86,
+        "byte_start": 81,
+        "content_hash": "2b1558206af52e4f376454ca3aca95eba8e3fa2be88834d7295e17ab5638ca84",
+        "file_path": "examples/sample_go.go"
+      }
+    },
+    {
+      "confidence": 0.86,
+      "node_id": "symbol:examples/sample_go.go:normalize:3",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:normalize",
+        "symbol_name": "normalize"
+      },
+      "source_anchor": {
+        "ast_path": "function:normalize",
+        "byte_end": 32,
+        "byte_start": 23,
+        "content_hash": "49eb20565a7a259d0c7cc4689d3d769908a182b59d25c3768eed71f47ac84eec",
+        "file_path": "examples/sample_go.go"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:examples/sample_module.py:Greeter.greet:11",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:Greeter.greet",
+        "symbol_name": "greet"
+      },
+      "source_anchor": {
+        "ast_path": "function:Greeter.greet",
+        "byte_end": 266,
+        "byte_start": 196,
+        "content_hash": "c53aad27d9757d09c6b08b8b6a320f117fb47da842ecaabe3ccf319f085481ef",
+        "file_path": "examples/sample_module.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:examples/sample_module.py:Greeter:10",
+      "node_type": "class",
+      "semantic_contract": {
+        "path": "class:Greeter",
+        "symbol_name": "Greeter"
+      },
+      "source_anchor": {
+        "ast_path": "class:Greeter",
+        "byte_end": 266,
+        "byte_start": 177,
+        "content_hash": "38b80ab4b7ee34a4b429dc82df79226aa03a47ab7d6b421f57c67a7fe55e2fe8",
+        "file_path": "examples/sample_module.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:examples/sample_module.py:build_greeting:5",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:build_greeting",
+        "symbol_name": "build_greeting"
+      },
+      "source_anchor": {
+        "ast_path": "function:build_greeting",
+        "byte_end": 174,
+        "byte_start": 72,
+        "content_hash": "479ded982072cd27cced16b6ef845ce0a12a0c38b8ffd5e99de9183cada81eeb",
+        "file_path": "examples/sample_module.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:examples/sample_module.py:normalize_user:1",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:normalize_user",
+        "symbol_name": "normalize_user"
+      },
+      "source_anchor": {
+        "ast_path": "function:normalize_user",
+        "byte_end": 69,
+        "byte_start": 0,
+        "content_hash": "8364f4f1d7adf6e1a15930f1026933b423db59fcadd4290252e6a49716fdf8e6",
+        "file_path": "examples/sample_module.py"
+      }
+    },
+    {
+      "confidence": 0.86,
+      "node_id": "symbol:examples/sample_ts.ts:buildLabel:5",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:buildLabel",
+        "symbol_name": "buildLabel"
+      },
+      "source_anchor": {
+        "ast_path": "function:buildLabel",
+        "byte_end": 116,
+        "byte_start": 106,
+        "content_hash": "d8fde64e2a247dc92037239035b54eb6ba002a0db10097b6cc5248c6cedb7ccb",
+        "file_path": "examples/sample_ts.ts"
+      }
+    },
+    {
+      "confidence": 0.86,
+      "node_id": "symbol:examples/sample_ts.ts:sanitize:1",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:sanitize",
+        "symbol_name": "sanitize"
+      },
+      "source_anchor": {
+        "ast_path": "function:sanitize",
+        "byte_end": 24,
+        "byte_start": 16,
+        "content_hash": "03c8f5b092b55a876f5fa3bc7003b2553d64515b92561676817a45323cff5351",
+        "file_path": "examples/sample_ts.ts"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/cct.py:_load_probe:16",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_load_probe",
+        "symbol_name": "_load_probe"
+      },
+      "source_anchor": {
+        "ast_path": "function:_load_probe",
+        "byte_end": 324,
+        "byte_start": 218,
+        "content_hash": "94ee0f22925849c250b0278ed01d7d0a8133b5e3829c5338e6522b2815b4d3df",
+        "file_path": "src/codeclue_research/cct.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/cct.py:_load_trace:20",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_load_trace",
+        "symbol_name": "_load_trace"
+      },
+      "source_anchor": {
+        "ast_path": "function:_load_trace",
+        "byte_end": 1039,
+        "byte_start": 327,
+        "content_hash": "229654e7b30df2d2ecabb2670a6e9bd7f7d3735ab0fc17deea4faaa03bbbc012",
+        "file_path": "src/codeclue_research/cct.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/cct.py:_safe_div:10",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_safe_div",
+        "symbol_name": "_safe_div"
+      },
+      "source_anchor": {
+        "ast_path": "function:_safe_div",
+        "byte_end": 215,
+        "byte_start": 111,
+        "content_hash": "89355160c868da52e15eb36e3df1d0961035d34c699eef4f7c655465578e06c8",
+        "file_path": "src/codeclue_research/cct.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/cct.py:run_cct_probe:41",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:run_cct_probe",
+        "symbol_name": "run_cct_probe"
+      },
+      "source_anchor": {
+        "ast_path": "function:run_cct_probe",
+        "byte_end": 3632,
+        "byte_start": 1042,
+        "content_hash": "702264f49b6d892ffa3b484a83c25f8aa329892b7bf3a7a11368041775b18a60",
+        "file_path": "src/codeclue_research/cct.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/cli.py:_build_parser:129",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_build_parser",
+        "symbol_name": "_build_parser"
+      },
+      "source_anchor": {
+        "ast_path": "function:_build_parser",
+        "byte_end": 7926,
+        "byte_start": 4271,
+        "content_hash": "cfa8a005ce50b20b5e683ea763bf77b9ff273627c8ecf48e0d68b31c4e5f4aba",
+        "file_path": "src/codeclue_research/cli.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/cli.py:_cmd_cct:45",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_cmd_cct",
+        "symbol_name": "_cmd_cct"
+      },
+      "source_anchor": {
+        "ast_path": "function:_cmd_cct",
+        "byte_end": 1666,
+        "byte_start": 1388,
+        "content_hash": "3975e289a8e60625fffccb91c87d13e5fc72e9ad66e0cded329a417dfebb172b",
+        "file_path": "src/codeclue_research/cli.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/cli.py:_cmd_delta_apply:67",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_cmd_delta_apply",
+        "symbol_name": "_cmd_delta_apply"
+      },
+      "source_anchor": {
+        "ast_path": "function:_cmd_delta_apply",
+        "byte_end": 2577,
+        "byte_start": 2134,
+        "content_hash": "e1433987ba523d5621d5ca5b82fda176fb3c2fa6a460b6422add0cbc447ef3da",
+        "file_path": "src/codeclue_research/cli.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/cli.py:_cmd_extract:19",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_cmd_extract",
+        "symbol_name": "_cmd_extract"
+      },
+      "source_anchor": {
+        "ast_path": "function:_cmd_extract",
+        "byte_end": 873,
+        "byte_start": 567,
+        "content_hash": "2147c65075d56e30756e75ca96e3a4f38be3f33b25ee6bd510a8f916eae1328f",
+        "file_path": "src/codeclue_research/cli.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/cli.py:_cmd_fidelity_eval:119",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_cmd_fidelity_eval",
+        "symbol_name": "_cmd_fidelity_eval"
+      },
+      "source_anchor": {
+        "ast_path": "function:_cmd_fidelity_eval",
+        "byte_end": 4268,
+        "byte_start": 3873,
+        "content_hash": "856bfdc4b3082d06c11c406c47baa4beb0fc2110aaad60572e992a003c4e749a",
+        "file_path": "src/codeclue_research/cli.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/cli.py:_cmd_integrity:53",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_cmd_integrity",
+        "symbol_name": "_cmd_integrity"
+      },
+      "source_anchor": {
+        "ast_path": "function:_cmd_integrity",
+        "byte_end": 2131,
+        "byte_start": 1669,
+        "content_hash": "93e4a8c7678070514ffdc389bf1ddb8662a53404f2535d7fec869ca946051996",
+        "file_path": "src/codeclue_research/cli.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/cli.py:_cmd_project:102",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_cmd_project",
+        "symbol_name": "_cmd_project"
+      },
+      "source_anchor": {
+        "ast_path": "function:_cmd_project",
+        "byte_end": 3870,
+        "byte_start": 3376,
+        "content_hash": "3773ec2e18118b4f49985d0fd340b851a1f87ba1a00058258ae6eda64dcec8fb",
+        "file_path": "src/codeclue_research/cli.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/cli.py:_cmd_roundtrip:38",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_cmd_roundtrip",
+        "symbol_name": "_cmd_roundtrip"
+      },
+      "source_anchor": {
+        "ast_path": "function:_cmd_roundtrip",
+        "byte_end": 1385,
+        "byte_start": 1169,
+        "content_hash": "23f64595d48e85ec34b516920ea3c669604f35a8e841851f14943ffb7ed69743",
+        "file_path": "src/codeclue_research/cli.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/cli.py:_cmd_run_pilot:78",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_cmd_run_pilot",
+        "symbol_name": "_cmd_run_pilot"
+      },
+      "source_anchor": {
+        "ast_path": "function:_cmd_run_pilot",
+        "byte_end": 3373,
+        "byte_start": 2580,
+        "content_hash": "53001f0f6263dbb302fb69e6572164f642eeda716d0cc993b3585b2b57172fe0",
+        "file_path": "src/codeclue_research/cli.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/cli.py:_cmd_validate:30",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_cmd_validate",
+        "symbol_name": "_cmd_validate"
+      },
+      "source_anchor": {
+        "ast_path": "function:_cmd_validate",
+        "byte_end": 1166,
+        "byte_start": 876,
+        "content_hash": "f15e395507ad87edf035fa77a02a8e2107e7a75fd6434bffca08236a613c99dd",
+        "file_path": "src/codeclue_research/cli.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/cli.py:main:226",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:main",
+        "symbol_name": "main"
+      },
+      "source_anchor": {
+        "ast_path": "function:main",
+        "byte_end": 8039,
+        "byte_start": 7929,
+        "content_hash": "3faae19cc689cccf300b193f3d9a8dae02d1d34d1b455f28d21ac4b764a000c9",
+        "file_path": "src/codeclue_research/cli.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/delta.py:_edge_from_payload:30",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_edge_from_payload",
+        "symbol_name": "_edge_from_payload"
+      },
+      "source_anchor": {
+        "ast_path": "function:_edge_from_payload",
+        "byte_end": 993,
+        "byte_start": 724,
+        "content_hash": "1711be7bd1b7ab4a83bf5d5cd7632d2a96e78200179d8ac76830e9fca16eadb6",
+        "file_path": "src/codeclue_research/delta.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/delta.py:_node_from_payload:20",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_node_from_payload",
+        "symbol_name": "_node_from_payload"
+      },
+      "source_anchor": {
+        "ast_path": "function:_node_from_payload",
+        "byte_end": 721,
+        "byte_start": 397,
+        "content_hash": "29f1f73f97e959085b9614dc84aa5869d5056d5b1eb4880eb99bb802878e97ac",
+        "file_path": "src/codeclue_research/delta.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/delta.py:apply_delta_patch:40",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:apply_delta_patch",
+        "symbol_name": "apply_delta_patch"
+      },
+      "source_anchor": {
+        "ast_path": "function:apply_delta_patch",
+        "byte_end": 4380,
+        "byte_start": 996,
+        "content_hash": "f62ee6b046d9b31eb516ff388ded9c961c57d495f294392f7ea4648f27bc3b03",
+        "file_path": "src/codeclue_research/delta.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extract_go.py:_byte_span:24",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_byte_span",
+        "symbol_name": "_byte_span"
+      },
+      "source_anchor": {
+        "ast_path": "function:_byte_span",
+        "byte_end": 704,
+        "byte_start": 452,
+        "content_hash": "2bd4c5f0ff23f1dd040c522f031f91d20d39b9b1b202332f7872a8c88830ecd0",
+        "file_path": "src/codeclue_research/extract_go.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extract_go.py:_hash_text:9",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_hash_text",
+        "symbol_name": "_hash_text"
+      },
+      "source_anchor": {
+        "ast_path": "function:_hash_text",
+        "byte_end": 232,
+        "byte_start": 119,
+        "content_hash": "8b79a56c9d7e9ab47a30f173ca33389469b4082a0e63f3c03a8dd7f414580a3b",
+        "file_path": "src/codeclue_research/extract_go.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extract_go.py:_iter_go_files:31",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_iter_go_files",
+        "symbol_name": "_iter_go_files"
+      },
+      "source_anchor": {
+        "ast_path": "function:_iter_go_files",
+        "byte_end": 959,
+        "byte_start": 707,
+        "content_hash": "cc7dbd527b1595c83b9c0a01b133faa7a00b2c63441936ff15908aaf9a0b8f44",
+        "file_path": "src/codeclue_research/extract_go.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extract_go.py:_line_offsets:15",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_line_offsets",
+        "symbol_name": "_line_offsets"
+      },
+      "source_anchor": {
+        "ast_path": "function:_line_offsets",
+        "byte_end": 449,
+        "byte_start": 235,
+        "content_hash": "f45ec902ef81ba79dc39f1b7dbd72feb997baf5387a4402ae7429ee0e57f4510",
+        "file_path": "src/codeclue_research/extract_go.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extract_go.py:extract_go_nodes_edges:40",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:extract_go_nodes_edges",
+        "symbol_name": "extract_go_nodes_edges"
+      },
+      "source_anchor": {
+        "ast_path": "function:extract_go_nodes_edges",
+        "byte_end": 4298,
+        "byte_start": 962,
+        "content_hash": "a153791776f560538197f847716bc23b58daa6ccede3462a84bc8d05532b57ae",
+        "file_path": "src/codeclue_research/extract_go.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extract_typescript.py:_byte_span:24",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_byte_span",
+        "symbol_name": "_byte_span"
+      },
+      "source_anchor": {
+        "ast_path": "function:_byte_span",
+        "byte_end": 704,
+        "byte_start": 452,
+        "content_hash": "2bd4c5f0ff23f1dd040c522f031f91d20d39b9b1b202332f7872a8c88830ecd0",
+        "file_path": "src/codeclue_research/extract_typescript.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extract_typescript.py:_hash_text:9",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_hash_text",
+        "symbol_name": "_hash_text"
+      },
+      "source_anchor": {
+        "ast_path": "function:_hash_text",
+        "byte_end": 232,
+        "byte_start": 119,
+        "content_hash": "8b79a56c9d7e9ab47a30f173ca33389469b4082a0e63f3c03a8dd7f414580a3b",
+        "file_path": "src/codeclue_research/extract_typescript.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extract_typescript.py:_iter_ts_files:31",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_iter_ts_files",
+        "symbol_name": "_iter_ts_files"
+      },
+      "source_anchor": {
+        "ast_path": "function:_iter_ts_files",
+        "byte_end": 1060,
+        "byte_start": 707,
+        "content_hash": "c5c07085b52a248be08e2dea376fa8fc231c89689fc50616b71548ada704f7dc",
+        "file_path": "src/codeclue_research/extract_typescript.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extract_typescript.py:_line_offsets:15",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_line_offsets",
+        "symbol_name": "_line_offsets"
+      },
+      "source_anchor": {
+        "ast_path": "function:_line_offsets",
+        "byte_end": 449,
+        "byte_start": 235,
+        "content_hash": "f45ec902ef81ba79dc39f1b7dbd72feb997baf5387a4402ae7429ee0e57f4510",
+        "file_path": "src/codeclue_research/extract_typescript.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extract_typescript.py:extract_typescript_nodes_edges:42",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:extract_typescript_nodes_edges",
+        "symbol_name": "extract_typescript_nodes_edges"
+      },
+      "source_anchor": {
+        "ast_path": "function:extract_typescript_nodes_edges",
+        "byte_end": 4854,
+        "byte_start": 1063,
+        "content_hash": "11807f9b5e4820cbac095aae6a74bcf9da500a3ea6989526872ab05dee85f494",
+        "file_path": "src/codeclue_research/extract_typescript.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extractor.py:SymbolCollector.__init__:50",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:SymbolCollector.__init__",
+        "symbol_name": "__init__"
+      },
+      "source_anchor": {
+        "ast_path": "function:SymbolCollector.__init__",
+        "byte_end": 1393,
+        "byte_start": 1231,
+        "content_hash": "f4facea69265588771ad5287d117cec95f5b49672c6208279aa1677d4641c190",
+        "file_path": "src/codeclue_research/extractor.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extractor.py:SymbolCollector._record:55",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:SymbolCollector._record",
+        "symbol_name": "_record"
+      },
+      "source_anchor": {
+        "ast_path": "function:SymbolCollector._record",
+        "byte_end": 2107,
+        "byte_start": 1399,
+        "content_hash": "a009adfd7a1976c2d91488ff5be514a54c50815de3d0a85c82dd4a8409e10b08",
+        "file_path": "src/codeclue_research/extractor.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extractor.py:SymbolCollector.visit_AsyncFunctionDef:83",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:SymbolCollector.visit_AsyncFunctionDef",
+        "symbol_name": "visit_AsyncFunctionDef"
+      },
+      "source_anchor": {
+        "ast_path": "function:SymbolCollector.visit_AsyncFunctionDef",
+        "byte_end": 2780,
+        "byte_start": 2548,
+        "content_hash": "22f211914876ee1d1dd5a3343a830696738e28ecee3c572216291356b2c8f384",
+        "file_path": "src/codeclue_research/extractor.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extractor.py:SymbolCollector.visit_ClassDef:71",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:SymbolCollector.visit_ClassDef",
+        "symbol_name": "visit_ClassDef"
+      },
+      "source_anchor": {
+        "ast_path": "function:SymbolCollector.visit_ClassDef",
+        "byte_end": 2320,
+        "byte_start": 2113,
+        "content_hash": "4c009f0d7a3ee99b9c04b97109fe257f576ac69b2cf1edd80a635323125370b3",
+        "file_path": "src/codeclue_research/extractor.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extractor.py:SymbolCollector.visit_FunctionDef:77",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:SymbolCollector.visit_FunctionDef",
+        "symbol_name": "visit_FunctionDef"
+      },
+      "source_anchor": {
+        "ast_path": "function:SymbolCollector.visit_FunctionDef",
+        "byte_end": 2542,
+        "byte_start": 2326,
+        "content_hash": "1fa1d2ab3b786fc68ce6a99bbaf5a29fc5bcf027daa859296a471928c9801cf2",
+        "file_path": "src/codeclue_research/extractor.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extractor.py:SymbolCollector:49",
+      "node_type": "class",
+      "semantic_contract": {
+        "path": "class:SymbolCollector",
+        "symbol_name": "SymbolCollector"
+      },
+      "source_anchor": {
+        "ast_path": "class:SymbolCollector",
+        "byte_end": 2780,
+        "byte_start": 1187,
+        "content_hash": "70fd726f6f07f99fb2278b3905f87f6eb1f98e12ef28acdf81c5e8f2c3be25fd",
+        "file_path": "src/codeclue_research/extractor.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extractor.py:SymbolRecord:16",
+      "node_type": "class",
+      "semantic_contract": {
+        "path": "class:SymbolRecord",
+        "symbol_name": "SymbolRecord"
+      },
+      "source_anchor": {
+        "ast_path": "class:SymbolRecord",
+        "byte_end": 550,
+        "byte_start": 378,
+        "content_hash": "fd493c57a5b1a05eaa4cf42c03d57e2d2419da2ac41095f756532e589a17b9db",
+        "file_path": "src/codeclue_research/extractor.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extractor.py:_hash_text:27",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_hash_text",
+        "symbol_name": "_hash_text"
+      },
+      "source_anchor": {
+        "ast_path": "function:_hash_text",
+        "byte_end": 646,
+        "byte_start": 553,
+        "content_hash": "e986c4ce44d5bd22dc8f1040e9b0f1b7cc0538c53a548b4d91bcb46b4e7c315d",
+        "file_path": "src/codeclue_research/extractor.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extractor.py:_iter_python_files:42",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_iter_python_files",
+        "symbol_name": "_iter_python_files"
+      },
+      "source_anchor": {
+        "ast_path": "function:_iter_python_files",
+        "byte_end": 1184,
+        "byte_start": 984,
+        "content_hash": "186c2ce04786a6a653a8942f43eea1cd1186f95edaf389386ed84d725819ac69",
+        "file_path": "src/codeclue_research/extractor.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extractor.py:_line_col_to_offset:31",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_line_col_to_offset",
+        "symbol_name": "_line_col_to_offset"
+      },
+      "source_anchor": {
+        "ast_path": "function:_line_col_to_offset",
+        "byte_end": 981,
+        "byte_start": 649,
+        "content_hash": "be3e3ca7f5dbca12fa6772b7c5669410a3189dfb0d1c8fad700da2acd894c992",
+        "file_path": "src/codeclue_research/extractor.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extractor.py:extract_graph:194",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:extract_graph",
+        "symbol_name": "extract_graph"
+      },
+      "source_anchor": {
+        "ast_path": "function:extract_graph",
+        "byte_end": 9157,
+        "byte_start": 6813,
+        "content_hash": "93f24433382ad3a3a070703bfda9a394780b94328f882c69efddcf0bc5d5f0a6",
+        "file_path": "src/codeclue_research/extractor.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/extractor.py:extract_python_nodes_edges:90",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:extract_python_nodes_edges",
+        "symbol_name": "extract_python_nodes_edges"
+      },
+      "source_anchor": {
+        "ast_path": "function:extract_python_nodes_edges",
+        "byte_end": 6810,
+        "byte_start": 2783,
+        "content_hash": "9e6f19f24c5cd0066ffcd26baa3932d0b1ef574b17f8b6502a7096dd78308be1",
+        "file_path": "src/codeclue_research/extractor.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/fidelity.py:_extract_gold_sets:32",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_extract_gold_sets",
+        "symbol_name": "_extract_gold_sets"
+      },
+      "source_anchor": {
+        "ast_path": "function:_extract_gold_sets",
+        "byte_end": 1300,
+        "byte_start": 824,
+        "content_hash": "52190a37a09d9da9625c82be9563e3b503971a4985e4bab5fe83e5ecf796716f",
+        "file_path": "src/codeclue_research/fidelity.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/fidelity.py:_extract_projection_sets:18",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_extract_projection_sets",
+        "symbol_name": "_extract_projection_sets"
+      },
+      "source_anchor": {
+        "ast_path": "function:_extract_projection_sets",
+        "byte_end": 821,
+        "byte_start": 329,
+        "content_hash": "1c151d85f8c4e7a03017e4d14fb61caab82f42772abc902f6df69d10fc562400",
+        "file_path": "src/codeclue_research/fidelity.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/fidelity.py:_f1:12",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_f1",
+        "symbol_name": "_f1"
+      },
+      "source_anchor": {
+        "ast_path": "function:_f1",
+        "byte_end": 326,
+        "byte_start": 168,
+        "content_hash": "9567843bf8c85b3fa057c5dfc467744c38e09110345d0dbc1439ce99df262afe",
+        "file_path": "src/codeclue_research/fidelity.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/fidelity.py:_safe_div:6",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_safe_div",
+        "symbol_name": "_safe_div"
+      },
+      "source_anchor": {
+        "ast_path": "function:_safe_div",
+        "byte_end": 165,
+        "byte_start": 61,
+        "content_hash": "89355160c868da52e15eb36e3df1d0961035d34c699eef4f7c655465578e06c8",
+        "file_path": "src/codeclue_research/fidelity.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/fidelity.py:evaluate_projection_fidelity:43",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:evaluate_projection_fidelity",
+        "symbol_name": "evaluate_projection_fidelity"
+      },
+      "source_anchor": {
+        "ast_path": "function:evaluate_projection_fidelity",
+        "byte_end": 3876,
+        "byte_start": 1303,
+        "content_hash": "8d4901ca74b4a52b663a0349855d256d09b4f27321495f55433c2e024d44fd3c",
+        "file_path": "src/codeclue_research/fidelity.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/graph_analysis.py:_build_adjacency:9",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_build_adjacency",
+        "symbol_name": "_build_adjacency"
+      },
+      "source_anchor": {
+        "ast_path": "function:_build_adjacency",
+        "byte_end": 461,
+        "byte_start": 137,
+        "content_hash": "d2994027161d5a9458a733e7ae9aae5497f16207dff7a3cb17bd99bfa0e28474",
+        "file_path": "src/codeclue_research/graph_analysis.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/graph_analysis.py:_build_reverse_adjacency:17",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_build_reverse_adjacency",
+        "symbol_name": "_build_reverse_adjacency"
+      },
+      "source_anchor": {
+        "ast_path": "function:_build_reverse_adjacency",
+        "byte_end": 826,
+        "byte_start": 464,
+        "content_hash": "5a8d362f83b288855d57678cfc387a05c8e2ede51f19af88bde45da518fdd170",
+        "file_path": "src/codeclue_research/graph_analysis.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/graph_analysis.py:_compute_dominators:81",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_compute_dominators",
+        "symbol_name": "_compute_dominators"
+      },
+      "source_anchor": {
+        "ast_path": "function:_compute_dominators",
+        "byte_end": 3286,
+        "byte_start": 2316,
+        "content_hash": "d5b512e5fabe4d40d09a21606c3b720bfa41bf7e013093e85cfa11a73b3b26ea",
+        "file_path": "src/codeclue_research/graph_analysis.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/graph_analysis.py:_reachable_from_roots:27",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_reachable_from_roots",
+        "symbol_name": "_reachable_from_roots"
+      },
+      "source_anchor": {
+        "ast_path": "function:_reachable_from_roots",
+        "byte_end": 1236,
+        "byte_start": 829,
+        "content_hash": "623f264e35064785333473709671ba8cceb8adc7d04501bbded5c9ab7e2843d4",
+        "file_path": "src/codeclue_research/graph_analysis.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc.strongconnect:49",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_tarjan_scc.strongconnect",
+        "symbol_name": "strongconnect"
+      },
+      "source_anchor": {
+        "ast_path": "function:_tarjan_scc.strongconnect",
+        "byte_end": 2204,
+        "byte_start": 1480,
+        "content_hash": "b1e6432467fe52351582b1b740cc606caf1158c862e2de9f039420bf8195277e",
+        "file_path": "src/codeclue_research/graph_analysis.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/graph_analysis.py:_tarjan_scc:41",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_tarjan_scc",
+        "symbol_name": "_tarjan_scc"
+      },
+      "source_anchor": {
+        "ast_path": "function:_tarjan_scc",
+        "byte_end": 2313,
+        "byte_start": 1239,
+        "content_hash": "082048f34ed7a1cd35ef2d24a9256bdbecb7ed2b70d40f10f0af2da41b984ff6",
+        "file_path": "src/codeclue_research/graph_analysis.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/graph_analysis.py:analyze_graph_integrity:113",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:analyze_graph_integrity",
+        "symbol_name": "analyze_graph_integrity"
+      },
+      "source_anchor": {
+        "ast_path": "function:analyze_graph_integrity",
+        "byte_end": 5143,
+        "byte_start": 3289,
+        "content_hash": "7cadc02a0c5a81b894e288bc6a720125242c0e9cd6d4927c8119ef2c196e4af1",
+        "file_path": "src/codeclue_research/graph_analysis.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/graph_analysis.py:compare_operational_paths.edge_triplets:167",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:compare_operational_paths.edge_triplets",
+        "symbol_name": "edge_triplets"
+      },
+      "source_anchor": {
+        "ast_path": "function:compare_operational_paths.edge_triplets",
+        "byte_end": 5552,
+        "byte_start": 5402,
+        "content_hash": "dcef65e23e0c6615c647834daf5dfa73aa5c44e2b9349fd9866225980a889dd2",
+        "file_path": "src/codeclue_research/graph_analysis.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/graph_analysis.py:compare_operational_paths:161",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:compare_operational_paths",
+        "symbol_name": "compare_operational_paths"
+      },
+      "source_anchor": {
+        "ast_path": "function:compare_operational_paths",
+        "byte_end": 6309,
+        "byte_start": 5146,
+        "content_hash": "be7b76dda0af971c503801d1b7aafe249c7c62476e659cdea02dfb4ee28b2bee",
+        "file_path": "src/codeclue_research/graph_analysis.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/harness.py:run_pilot:16",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:run_pilot",
+        "symbol_name": "run_pilot"
+      },
+      "source_anchor": {
+        "ast_path": "function:run_pilot",
+        "byte_end": 3050,
+        "byte_start": 471,
+        "content_hash": "c724400a4397d017258a16f510dd5e16dbf204023b4b776b31926d654f8f344c",
+        "file_path": "src/codeclue_research/harness.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/io.py:load_data:12",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:load_data",
+        "symbol_name": "load_data"
+      },
+      "source_anchor": {
+        "ast_path": "function:load_data",
+        "byte_end": 396,
+        "byte_start": 183,
+        "content_hash": "c08848a203db02af0f618fe954c392e5e584c84894de897d1a4deec185aeb029",
+        "file_path": "src/codeclue_research/io.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/io.py:load_graph:26",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:load_graph",
+        "symbol_name": "load_graph"
+      },
+      "source_anchor": {
+        "ast_path": "function:load_graph",
+        "byte_end": 850,
+        "byte_start": 744,
+        "content_hash": "1a3a8fa907b14f70e5974617d9d8ff4a57b6e5c161a74a8034fb18d0e2771ba2",
+        "file_path": "src/codeclue_research/io.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/io.py:save_data:18",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:save_data",
+        "symbol_name": "save_data"
+      },
+      "source_anchor": {
+        "ast_path": "function:save_data",
+        "byte_end": 741,
+        "byte_start": 399,
+        "content_hash": "40ff338b524d62dca4f5d706a02720a42ac2c783987d578dc022deca47c31294",
+        "file_path": "src/codeclue_research/io.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/io.py:save_graph:30",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:save_graph",
+        "symbol_name": "save_graph"
+      },
+      "source_anchor": {
+        "ast_path": "function:save_graph",
+        "byte_end": 952,
+        "byte_start": 853,
+        "content_hash": "2b5d5a442a9493c627d7bc9c61da3bfd728caeed482b8881e019ecb6a35fb887",
+        "file_path": "src/codeclue_research/io.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/models.py:CanonicalClueGraph.from_dict:81",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:CanonicalClueGraph.from_dict",
+        "symbol_name": "from_dict"
+      },
+      "source_anchor": {
+        "ast_path": "function:CanonicalClueGraph.from_dict",
+        "byte_end": 3107,
+        "byte_start": 2065,
+        "content_hash": "936cf1d5062f8bba09ce349bf467a4857f81093fd2086f5574f4f547f81e1d57",
+        "file_path": "src/codeclue_research/models.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/models.py:CanonicalClueGraph.to_dict:70",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:CanonicalClueGraph.to_dict",
+        "symbol_name": "to_dict"
+      },
+      "source_anchor": {
+        "ast_path": "function:CanonicalClueGraph.to_dict",
+        "byte_end": 2042,
+        "byte_start": 1687,
+        "content_hash": "65d9b905193a9f3c0a0b2d2bb658c0763422dcc8b4c35da79e9b772553c86572",
+        "file_path": "src/codeclue_research/models.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/models.py:CanonicalClueGraph:62",
+      "node_type": "class",
+      "semantic_contract": {
+        "path": "class:CanonicalClueGraph",
+        "symbol_name": "CanonicalClueGraph"
+      },
+      "source_anchor": {
+        "ast_path": "class:CanonicalClueGraph",
+        "byte_end": 3107,
+        "byte_start": 1370,
+        "content_hash": "c7186d65ca39413fe4adbf1e9a99c2d6c7b0beaa67cd370dafb06fcd89d779d9",
+        "file_path": "src/codeclue_research/models.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/models.py:Edge.to_dict:51",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:Edge.to_dict",
+        "symbol_name": "to_dict"
+      },
+      "source_anchor": {
+        "ast_path": "function:Edge.to_dict",
+        "byte_end": 1356,
+        "byte_start": 1098,
+        "content_hash": "403eefaa272078c0ee3f302b82e6461c0bf16ff71c70e3fcde9ec10133558386",
+        "file_path": "src/codeclue_research/models.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/models.py:Edge:44",
+      "node_type": "class",
+      "semantic_contract": {
+        "path": "class:Edge",
+        "symbol_name": "Edge"
+      },
+      "source_anchor": {
+        "ast_path": "class:Edge",
+        "byte_end": 1356,
+        "byte_start": 980,
+        "content_hash": "0459d7d8245613d755018dcc772371e1dbe7325d89801fcecc08c9f55ef9017d",
+        "file_path": "src/codeclue_research/models.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/models.py:Node.to_dict:33",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:Node.to_dict",
+        "symbol_name": "to_dict"
+      },
+      "source_anchor": {
+        "ast_path": "function:Node.to_dict",
+        "byte_end": 966,
+        "byte_start": 666,
+        "content_hash": "7deb22ae5d3b934033e60d4706a2b3b9b7a8568833e5623ae410c734114d69ff",
+        "file_path": "src/codeclue_research/models.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/models.py:Node:26",
+      "node_type": "class",
+      "semantic_contract": {
+        "path": "class:Node",
+        "symbol_name": "Node"
+      },
+      "source_anchor": {
+        "ast_path": "class:Node",
+        "byte_end": 966,
+        "byte_start": 521,
+        "content_hash": "81b238e63ec2c0b548de193820783af6251c70598859791992ce948fc6caace9",
+        "file_path": "src/codeclue_research/models.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/models.py:SourceAnchor.to_dict:15",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:SourceAnchor.to_dict",
+        "symbol_name": "to_dict"
+      },
+      "source_anchor": {
+        "ast_path": "function:SourceAnchor.to_dict",
+        "byte_end": 507,
+        "byte_start": 235,
+        "content_hash": "55f2f9a1334058c85095016f01111df7b6f9f3982575e03ab24deb011bb8ae1e",
+        "file_path": "src/codeclue_research/models.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/models.py:SourceAnchor:8",
+      "node_type": "class",
+      "semantic_contract": {
+        "path": "class:SourceAnchor",
+        "symbol_name": "SourceAnchor"
+      },
+      "source_anchor": {
+        "ast_path": "class:SourceAnchor",
+        "byte_end": 507,
+        "byte_start": 113,
+        "content_hash": "e91fb92ca27d1d5120bde5374037e83a44bbcf5f9102d116913e5821af65ba34",
+        "file_path": "src/codeclue_research/models.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/operation_projection.py:_candidate_universe:157",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_candidate_universe",
+        "symbol_name": "_candidate_universe"
+      },
+      "source_anchor": {
+        "ast_path": "function:_candidate_universe",
+        "byte_end": 5968,
+        "byte_start": 4999,
+        "content_hash": "5d7c73589a949b7c7e1d9a518c65b363116c7b84e7959ab0001c81e301100c94",
+        "file_path": "src/codeclue_research/operation_projection.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/operation_projection.py:_context_level:59",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_context_level",
+        "symbol_name": "_context_level"
+      },
+      "source_anchor": {
+        "ast_path": "function:_context_level",
+        "byte_end": 1917,
+        "byte_start": 1632,
+        "content_hash": "fe4bfd811378229f07788476b565802ce75f432e51db0857941b869cad33de37",
+        "file_path": "src/codeclue_research/operation_projection.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/operation_projection.py:_expand_seed_set:129",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_expand_seed_set",
+        "symbol_name": "_expand_seed_set"
+      },
+      "source_anchor": {
+        "ast_path": "function:_expand_seed_set",
+        "byte_end": 4996,
+        "byte_start": 4109,
+        "content_hash": "185ecfde67a8c55fc583db8a49e83e85d2a2ac86e4400507d42e28c3bb17e26a",
+        "file_path": "src/codeclue_research/operation_projection.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/operation_projection.py:_node_text:53",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_node_text",
+        "symbol_name": "_node_text"
+      },
+      "source_anchor": {
+        "ast_path": "function:_node_text",
+        "byte_end": 1629,
+        "byte_start": 1417,
+        "content_hash": "6756e4e8f5737fd383152b9702b8e3cad4c6976085343b653b25ef7b40eb4450",
+        "file_path": "src/codeclue_research/operation_projection.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/operation_projection.py:_policy_for:13",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_policy_for",
+        "symbol_name": "_policy_for"
+      },
+      "source_anchor": {
+        "ast_path": "function:_policy_for",
+        "byte_end": 1414,
+        "byte_start": 229,
+        "content_hash": "83042f6f9742a85c7f105e9016368216a0ef95d55d662bbfdf27e467fd2ea75d",
+        "file_path": "src/codeclue_research/operation_projection.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/operation_projection.py:_seed_nodes:79",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_seed_nodes",
+        "symbol_name": "_seed_nodes"
+      },
+      "source_anchor": {
+        "ast_path": "function:_seed_nodes",
+        "byte_end": 4106,
+        "byte_start": 2383,
+        "content_hash": "11589b64f5c6c2a596027c19e3eb0647ed6d23d70ed32cc34914dccf375de489",
+        "file_path": "src/codeclue_research/operation_projection.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/operation_projection.py:_tuned_policy:67",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_tuned_policy",
+        "symbol_name": "_tuned_policy"
+      },
+      "source_anchor": {
+        "ast_path": "function:_tuned_policy",
+        "byte_end": 2380,
+        "byte_start": 1920,
+        "content_hash": "aae4a8d5b4ce1ac60943d13a07b18c8df16547713b62f4d58e99126e0776ec0a",
+        "file_path": "src/codeclue_research/operation_projection.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/operation_projection.py:project_operation:188",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:project_operation",
+        "symbol_name": "project_operation"
+      },
+      "source_anchor": {
+        "ast_path": "function:project_operation",
+        "byte_end": 11029,
+        "byte_start": 5971,
+        "content_hash": "1d5b67d4377c21c6e53b3378f36b13101489f8f28183f409c74bda6234747608",
+        "file_path": "src/codeclue_research/operation_projection.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/roundtrip.py:_canonicalize:12",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_canonicalize",
+        "symbol_name": "_canonicalize"
+      },
+      "source_anchor": {
+        "ast_path": "function:_canonicalize",
+        "byte_end": 411,
+        "byte_start": 158,
+        "content_hash": "0ffb418c121a9de6c6dcfb5d001c43a67aaf547643296e033e3b8d3c506ad2ef",
+        "file_path": "src/codeclue_research/roundtrip.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/roundtrip.py:_semantic_hash:20",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:_semantic_hash",
+        "symbol_name": "_semantic_hash"
+      },
+      "source_anchor": {
+        "ast_path": "function:_semantic_hash",
+        "byte_end": 626,
+        "byte_start": 414,
+        "content_hash": "5dbaf1856ec087bd858ec4a3ce491b10082d4c02b7e1d3c99e3735623516602f",
+        "file_path": "src/codeclue_research/roundtrip.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/roundtrip.py:run_roundtrip:26",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:run_roundtrip",
+        "symbol_name": "run_roundtrip"
+      },
+      "source_anchor": {
+        "ast_path": "function:run_roundtrip",
+        "byte_end": 2630,
+        "byte_start": 629,
+        "content_hash": "e59af948ee6ba16eefd3ad181fc4adf3603364b90a69dc397d1bc4dc888a8ad2",
+        "file_path": "src/codeclue_research/roundtrip.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/schema_validator.py:validate_graph:20",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:validate_graph",
+        "symbol_name": "validate_graph"
+      },
+      "source_anchor": {
+        "ast_path": "function:validate_graph",
+        "byte_end": 3075,
+        "byte_start": 301,
+        "content_hash": "6b21c62c01612283d8f9765c5123e3c0d3d135542a96588cf97ea1980a39f80c",
+        "file_path": "src/codeclue_research/schema_validator.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:src/codeclue_research/schema_validator.py:validate_payload:89",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:validate_payload",
+        "symbol_name": "validate_payload"
+      },
+      "source_anchor": {
+        "ast_path": "function:validate_payload",
+        "byte_end": 3230,
+        "byte_start": 3078,
+        "content_hash": "8c8d42b57a19bda0d2212771f4f0133cdf5155d19f836ab2ad9eecadbcfc9afe",
+        "file_path": "src/codeclue_research/schema_validator.py"
+      }
+    }
+  ],
+  "operations": {
+    "operation_families": [
+      "OF1",
+      "OF2",
+      "OF3",
+      "OF4",
+      "OF5"
+    ],
+    "projection_policies": {
+      "default": "task-conditioned subgraph extraction from canonical graph"
+    }
+  },
+  "repository": {
+    "default_branch": "unknown",
+    "name": "CodeClue-Research-Scaffold",
+    "root_hash": "ec965905757a7105f78393ce0b931117530865619301214fbd6abd6c789d47d6"
+  }
+}

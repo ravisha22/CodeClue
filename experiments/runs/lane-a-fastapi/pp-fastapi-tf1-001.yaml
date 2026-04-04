@@ -1,0 +1,14 @@
+profile_id: fastapi-arch-di-v1
+intent: architecture-comprehension
+constraints:
+  max_context: balanced
+focus_keywords:
+- Depends
+- dependant
+- dependency
+- inject
+- solve
+focus_symbols:
+- Depends
+- get_dependant
+- solve_dependencies

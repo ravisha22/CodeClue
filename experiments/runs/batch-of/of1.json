@@ -1,0 +1,199 @@
+{
+  "operation_family": "OF1",
+  "policy": {
+    "bidirectional": false,
+    "context_level": "broad",
+    "edge_types": [
+      "contains"
+    ],
+    "max_depth": 3,
+    "node_budget": 320,
+    "output_edge_types": [
+      "contains"
+    ],
+    "seed_hops": 1
+  },
+  "projected_edges": [
+    {
+      "edge_id": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter.greet:11",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:examples/sample_module.py",
+      "to_node": "symbol:examples/sample_module.py:Greeter.greet:11"
+    },
+    {
+      "edge_id": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter:10",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:examples/sample_module.py",
+      "to_node": "symbol:examples/sample_module.py:Greeter:10"
+    },
+    {
+      "edge_id": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:build_greeting:5",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:examples/sample_module.py",
+      "to_node": "symbol:examples/sample_module.py:build_greeting:5"
+    },
+    {
+      "edge_id": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:normalize_user:1",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:examples/sample_module.py",
+      "to_node": "symbol:examples/sample_module.py:normalize_user:1"
+    }
+  ],
+  "projected_nodes": [
+    {
+      "confidence": 1.0,
+      "node_id": "module:examples/sample_module.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 267,
+        "byte_start": 0,
+        "content_hash": "4648c2ba29058f71e7d79232272237b2d046b25564741082ece79abfc432e7b5",
+        "file_path": "examples/sample_module.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:examples/sample_module.py:Greeter.greet:11",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:Greeter.greet",
+        "symbol_name": "greet"
+      },
+      "source_anchor": {
+        "ast_path": "function:Greeter.greet",
+        "byte_end": 266,
+        "byte_start": 196,
+        "content_hash": "c53aad27d9757d09c6b08b8b6a320f117fb47da842ecaabe3ccf319f085481ef",
+        "file_path": "examples/sample_module.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:examples/sample_module.py:Greeter:10",
+      "node_type": "class",
+      "semantic_contract": {
+        "path": "class:Greeter",
+        "symbol_name": "Greeter"
+      },
+      "source_anchor": {
+        "ast_path": "class:Greeter",
+        "byte_end": 266,
+        "byte_start": 177,
+        "content_hash": "38b80ab4b7ee34a4b429dc82df79226aa03a47ab7d6b421f57c67a7fe55e2fe8",
+        "file_path": "examples/sample_module.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:examples/sample_module.py:build_greeting:5",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:build_greeting",
+        "symbol_name": "build_greeting"
+      },
+      "source_anchor": {
+        "ast_path": "function:build_greeting",
+        "byte_end": 174,
+        "byte_start": 72,
+        "content_hash": "479ded982072cd27cced16b6ef845ce0a12a0c38b8ffd5e99de9183cada81eeb",
+        "file_path": "examples/sample_module.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:examples/sample_module.py:normalize_user:1",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:normalize_user",
+        "symbol_name": "normalize_user"
+      },
+      "source_anchor": {
+        "ast_path": "function:normalize_user",
+        "byte_end": 69,
+        "byte_start": 0,
+        "content_hash": "8364f4f1d7adf6e1a15930f1026933b423db59fcadd4290252e6a49716fdf8e6",
+        "file_path": "examples/sample_module.py"
+      }
+    }
+  ],
+  "prompt_profile": {
+    "constraints": {
+      "enforce_traceability": true,
+      "max_context": "broad"
+    },
+    "focus_files": [
+      "examples/sample_module.py"
+    ],
+    "intent": "architecture-comprehension",
+    "profile_id": "architecture-map-v1",
+    "strict_mode": true
+  },
+  "reasoning_path": [
+    {
+      "depth": 0,
+      "node_id": "module:examples/sample_module.py",
+      "step": 1,
+      "via_edge": null
+    },
+    {
+      "depth": 0,
+      "node_id": "symbol:examples/sample_module.py:Greeter.greet:11",
+      "step": 2,
+      "via_edge": null
+    },
+    {
+      "depth": 0,
+      "node_id": "symbol:examples/sample_module.py:Greeter:10",
+      "step": 3,
+      "via_edge": null
+    },
+    {
+      "depth": 0,
+      "node_id": "symbol:examples/sample_module.py:build_greeting:5",
+      "step": 4,
+      "via_edge": null
+    },
+    {
+      "depth": 0,
+      "node_id": "symbol:examples/sample_module.py:normalize_user:1",
+      "step": 5,
+      "via_edge": null
+    }
+  ],
+  "stats": {
+    "graph_edge_count": 166,
+    "graph_node_count": 108,
+    "initial_seed_count": 5,
+    "projected_edge_count": 4,
+    "projected_node_count": 5,
+    "seed_count": 5
+  },
+  "trace_id": "trace-OF1-20260328035224",
+  "validation": {
+    "candidate_edge_count": 4,
+    "candidate_node_count": 5,
+    "contradiction_rejection": 1.0,
+    "path_drift_index": 0.0,
+    "path_precision": 1.0,
+    "path_recall": 1.0,
+    "path_recall_global": 0.046296,
+    "traversed_edge_count": 4
+  }
+}

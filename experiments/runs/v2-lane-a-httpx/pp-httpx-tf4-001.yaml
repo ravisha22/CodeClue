@@ -1,0 +1,13 @@
+profile_id: httpx-behavior-redirect-v1
+intent: behavior-debugging
+constraints:
+  max_context: balanced
+focus_files:
+- httpx/_client.py
+focus_symbols:
+- TooManyRedirects
+- DEFAULT_MAX_REDIRECTS
+focus_keywords:
+- redirect
+- max_redirects
+- loop

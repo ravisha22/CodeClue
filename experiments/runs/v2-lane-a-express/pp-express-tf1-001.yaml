@@ -1,0 +1,12 @@
+profile_id: express-arch-middleware-v1
+intent: architecture-comprehension
+constraints:
+  max_context: balanced
+focus_keywords:
+- middleware
+- next
+- router
+- layer
+- route
+- stack
+- handle

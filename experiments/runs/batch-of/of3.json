@@ -1,0 +1,340 @@
+{
+  "operation_family": "OF3",
+  "policy": {
+    "bidirectional": true,
+    "context_level": "focused",
+    "edge_types": [
+      "contains",
+      "calls"
+    ],
+    "max_depth": 2,
+    "node_budget": 80,
+    "output_edge_types": [
+      "contains",
+      "calls"
+    ],
+    "seed_hops": 2
+  },
+  "projected_edges": [
+    {
+      "edge_id": "calls:module:examples/sample_go.go:symbol:examples/sample_go.go:Build:7:7",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 7,
+        "rel": "regex_call"
+      },
+      "from_node": "module:examples/sample_go.go",
+      "to_node": "symbol:examples/sample_go.go:Build:7"
+    },
+    {
+      "edge_id": "calls:module:examples/sample_go.go:symbol:examples/sample_go.go:normalize:3:3",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 3,
+        "rel": "regex_call"
+      },
+      "from_node": "module:examples/sample_go.go",
+      "to_node": "symbol:examples/sample_go.go:normalize:3"
+    },
+    {
+      "edge_id": "calls:module:examples/sample_go.go:symbol:examples/sample_go.go:normalize:3:8",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 8,
+        "rel": "regex_call"
+      },
+      "from_node": "module:examples/sample_go.go",
+      "to_node": "symbol:examples/sample_go.go:normalize:3"
+    },
+    {
+      "edge_id": "calls:symbol:examples/sample_module.py:Greeter.greet:11:symbol:examples/sample_module.py:build_greeting:5:12",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 12,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:examples/sample_module.py:Greeter.greet:11",
+      "to_node": "symbol:examples/sample_module.py:build_greeting:5"
+    },
+    {
+      "edge_id": "calls:symbol:examples/sample_module.py:build_greeting:5:symbol:examples/sample_module.py:normalize_user:1:6",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 6,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:examples/sample_module.py:build_greeting:5",
+      "to_node": "symbol:examples/sample_module.py:normalize_user:1"
+    },
+    {
+      "edge_id": "contains:module:examples/sample_go.go:symbol:examples/sample_go.go:Build:7",
+      "edge_type": "contains",
+      "evidence": {
+        "line": 7,
+        "rel": "regex_containment"
+      },
+      "from_node": "module:examples/sample_go.go",
+      "to_node": "symbol:examples/sample_go.go:Build:7"
+    },
+    {
+      "edge_id": "contains:module:examples/sample_go.go:symbol:examples/sample_go.go:normalize:3",
+      "edge_type": "contains",
+      "evidence": {
+        "line": 3,
+        "rel": "regex_containment"
+      },
+      "from_node": "module:examples/sample_go.go",
+      "to_node": "symbol:examples/sample_go.go:normalize:3"
+    },
+    {
+      "edge_id": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter.greet:11",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:examples/sample_module.py",
+      "to_node": "symbol:examples/sample_module.py:Greeter.greet:11"
+    },
+    {
+      "edge_id": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter:10",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:examples/sample_module.py",
+      "to_node": "symbol:examples/sample_module.py:Greeter:10"
+    },
+    {
+      "edge_id": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:build_greeting:5",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:examples/sample_module.py",
+      "to_node": "symbol:examples/sample_module.py:build_greeting:5"
+    },
+    {
+      "edge_id": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:normalize_user:1",
+      "edge_type": "contains",
+      "evidence": {
+        "rel": "ast_containment"
+      },
+      "from_node": "module:examples/sample_module.py",
+      "to_node": "symbol:examples/sample_module.py:normalize_user:1"
+    }
+  ],
+  "projected_nodes": [
+    {
+      "confidence": 1.0,
+      "node_id": "module:examples/sample_go.go",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "go"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 140,
+        "byte_start": 0,
+        "content_hash": "d45e7f950ee355faf47deabf68fe72567e8edf112b620e59b4ce30fc719c85b5",
+        "file_path": "examples/sample_go.go"
+      }
+    },
+    {
+      "confidence": 1.0,
+      "node_id": "module:examples/sample_module.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 267,
+        "byte_start": 0,
+        "content_hash": "4648c2ba29058f71e7d79232272237b2d046b25564741082ece79abfc432e7b5",
+        "file_path": "examples/sample_module.py"
+      }
+    },
+    {
+      "confidence": 0.86,
+      "node_id": "symbol:examples/sample_go.go:Build:7",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:Build",
+        "symbol_name": "Build"
+      },
+      "source_anchor": {
+        "ast_path": "function:Build",
+        "byte_end": 86,
+        "byte_start": 81,
+        "content_hash": "2b1558206af52e4f376454ca3aca95eba8e3fa2be88834d7295e17ab5638ca84",
+        "file_path": "examples/sample_go.go"
+      }
+    },
+    {
+      "confidence": 0.86,
+      "node_id": "symbol:examples/sample_go.go:normalize:3",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:normalize",
+        "symbol_name": "normalize"
+      },
+      "source_anchor": {
+        "ast_path": "function:normalize",
+        "byte_end": 32,
+        "byte_start": 23,
+        "content_hash": "49eb20565a7a259d0c7cc4689d3d769908a182b59d25c3768eed71f47ac84eec",
+        "file_path": "examples/sample_go.go"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:examples/sample_module.py:Greeter.greet:11",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:Greeter.greet",
+        "symbol_name": "greet"
+      },
+      "source_anchor": {
+        "ast_path": "function:Greeter.greet",
+        "byte_end": 266,
+        "byte_start": 196,
+        "content_hash": "c53aad27d9757d09c6b08b8b6a320f117fb47da842ecaabe3ccf319f085481ef",
+        "file_path": "examples/sample_module.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:examples/sample_module.py:Greeter:10",
+      "node_type": "class",
+      "semantic_contract": {
+        "path": "class:Greeter",
+        "symbol_name": "Greeter"
+      },
+      "source_anchor": {
+        "ast_path": "class:Greeter",
+        "byte_end": 266,
+        "byte_start": 177,
+        "content_hash": "38b80ab4b7ee34a4b429dc82df79226aa03a47ab7d6b421f57c67a7fe55e2fe8",
+        "file_path": "examples/sample_module.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:examples/sample_module.py:build_greeting:5",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:build_greeting",
+        "symbol_name": "build_greeting"
+      },
+      "source_anchor": {
+        "ast_path": "function:build_greeting",
+        "byte_end": 174,
+        "byte_start": 72,
+        "content_hash": "479ded982072cd27cced16b6ef845ce0a12a0c38b8ffd5e99de9183cada81eeb",
+        "file_path": "examples/sample_module.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:examples/sample_module.py:normalize_user:1",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:normalize_user",
+        "symbol_name": "normalize_user"
+      },
+      "source_anchor": {
+        "ast_path": "function:normalize_user",
+        "byte_end": 69,
+        "byte_start": 0,
+        "content_hash": "8364f4f1d7adf6e1a15930f1026933b423db59fcadd4290252e6a49716fdf8e6",
+        "file_path": "examples/sample_module.py"
+      }
+    }
+  ],
+  "prompt_profile": {
+    "constraints": {
+      "enforce_traceability": true,
+      "max_context": "focused"
+    },
+    "focus_keywords": [
+      "normalize"
+    ],
+    "focus_symbols": [
+      "build_greeting"
+    ],
+    "intent": "edit-point-localization",
+    "profile_id": "edit-localization-v1",
+    "strict_mode": true
+  },
+  "reasoning_path": [
+    {
+      "depth": 0,
+      "node_id": "module:examples/sample_go.go",
+      "step": 1,
+      "via_edge": null
+    },
+    {
+      "depth": 0,
+      "node_id": "module:examples/sample_module.py",
+      "step": 2,
+      "via_edge": null
+    },
+    {
+      "depth": 0,
+      "node_id": "symbol:examples/sample_go.go:normalize:3",
+      "step": 3,
+      "via_edge": null
+    },
+    {
+      "depth": 0,
+      "node_id": "symbol:examples/sample_module.py:build_greeting:5",
+      "step": 4,
+      "via_edge": null
+    },
+    {
+      "depth": 0,
+      "node_id": "symbol:examples/sample_module.py:normalize_user:1",
+      "step": 5,
+      "via_edge": null
+    },
+    {
+      "depth": 1,
+      "node_id": "symbol:examples/sample_go.go:Build:7",
+      "step": 6,
+      "via_edge": "calls:module:examples/sample_go.go:symbol:examples/sample_go.go:Build:7:7"
+    },
+    {
+      "depth": 1,
+      "node_id": "symbol:examples/sample_module.py:Greeter.greet:11",
+      "step": 7,
+      "via_edge": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter.greet:11"
+    },
+    {
+      "depth": 1,
+      "node_id": "symbol:examples/sample_module.py:Greeter:10",
+      "step": 8,
+      "via_edge": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter:10"
+    }
+  ],
+  "stats": {
+    "graph_edge_count": 166,
+    "graph_node_count": 108,
+    "initial_seed_count": 3,
+    "projected_edge_count": 11,
+    "projected_node_count": 8,
+    "seed_count": 5
+  },
+  "trace_id": "trace-OF3-20260328035226",
+  "validation": {
+    "candidate_edge_count": 11,
+    "candidate_node_count": 8,
+    "contradiction_rejection": 1.0,
+    "path_drift_index": 0.0,
+    "path_precision": 1.0,
+    "path_recall": 1.0,
+    "path_recall_global": 0.074074,
+    "traversed_edge_count": 11
+  }
+}

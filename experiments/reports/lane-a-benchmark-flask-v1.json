@@ -1,0 +1,159 @@
+{
+  "benchmark_run": {
+    "timestamp": "2026-04-03T19:00:00Z",
+    "model": "claude-opus-4-20250514",
+    "repo": "pallets/flask",
+    "commit_id": "c34d6e81fd8e405e6d4178bf24b364918811ef17",
+    "method": "self-as-consumer"
+  },
+  "tasks": [
+    {
+      "task_id": "flask-tf1-001",
+      "family": "TF1",
+      "operation_family": "OF1",
+      "question": "What are the core components of Flask's request handling pipeline?",
+      "arm_b_clue_only": {
+        "answer_quality": "partial",
+        "answer": "The projection shows Flask in app.py with functions: __call__, wsgi_app, full_dispatch_request, dispatch_request, preprocess_request, process_response, finalize_request. RequestContext and AppContext exist in ctx.py. The pipeline appears to flow from __call__ through wsgi_app to full_dispatch_request to dispatch_request. However, the Tier 1 contracts only show symbol names and containment — I cannot determine the actual call chain ordering or what wsgi_app does with contexts from the clue alone.",
+        "confidence_sufficient": false,
+        "drill_down_needed": true,
+        "drill_down_reason": "Cannot determine call ordering or context push/pop mechanics from structural contracts",
+        "fidelity_score": 0.55,
+        "tokens_used_estimate": 4800
+      },
+      "arm_a_raw_source": {
+        "answer_quality": "complete",
+        "answer": "Flask.__call__ invokes wsgi_app(). wsgi_app() pushes RequestContext (which pushes AppContext implicitly), calls full_dispatch_request(), which calls preprocess_request() (runs before_request hooks), then dispatch_request() (matches URL rule to view function), then finalize_request() which calls process_response() (runs after_request hooks). Teardown happens via context pop. Response flows back through wsgi_app to WSGI server.",
+        "fidelity_score": 0.95,
+        "tokens_used_estimate": 28000
+      },
+      "calibration_labels": {
+        "context_miss": true,
+        "dependency_miss": true,
+        "hallucination": false
+      }
+    },
+    {
+      "task_id": "flask-tf2-001",
+      "family": "TF2",
+      "operation_family": "OF2",
+      "question": "If I change the push method in RequestContext to be async, what components would be impacted?",
+      "arm_b_clue_only": {
+        "answer_quality": "poor",
+        "answer": "The projection shows RequestContext.push exists in ctx.py and Flask.wsgi_app exists in app.py. I can see containment edges between ctx.py module and push, and calls edges to a few functions. But I cannot determine which other functions call push() or depend on it synchronously. The Tier 1 contract does not include called_by information populated. I would need to drill down into ctx.py and app.py to trace all call sites.",
+        "confidence_sufficient": false,
+        "drill_down_needed": true,
+        "drill_down_reason": "calls/called_by edges are empty at Tier 1; cannot trace impact without source",
+        "fidelity_score": 0.25,
+        "tokens_used_estimate": 2200
+      },
+      "arm_a_raw_source": {
+        "answer_quality": "complete",
+        "answer": "RequestContext.push() is called by: (1) RequestContext.__enter__, (2) wsgi_app via ctx.push(), (3) Flask.test_request_context, (4) testing.FlaskClient methods. It calls: session_interface.open_session(), _cv_tokens setup, appcontext push. Making push() async would require: wsgi_app to become async, full_dispatch_request async, all before/after_request handlers async-compatible, and the testing client to use async context managers. Impact spans app.py, ctx.py, testing.py, sessions.py.",
+        "fidelity_score": 0.90,
+        "tokens_used_estimate": 35000
+      },
+      "calibration_labels": {
+        "context_miss": true,
+        "dependency_miss": true,
+        "hallucination": false
+      }
+    },
+    {
+      "task_id": "flask-tf3-001",
+      "family": "TF3",
+      "operation_family": "OF3",
+      "question": "I need to add a new lifecycle hook between before_request and view function dispatch. Which file and function should I modify?",
+      "arm_b_clue_only": {
+        "answer_quality": "good",
+        "answer": "The projection shows full_dispatch_request and dispatch_request in app.py, and try_trigger_before_request_functions (via preprocess_request). The structural containment and calls edges indicate these are in the dispatch chain in app.py. I would recommend modifying full_dispatch_request in src/flask/app.py, inserting between the preprocess_request call and the dispatch_request call. The hook registration would follow the before_request_funcs pattern.",
+        "confidence_sufficient": true,
+        "drill_down_needed": false,
+        "drill_down_reason": null,
+        "fidelity_score": 0.80,
+        "tokens_used_estimate": 3500
+      },
+      "arm_a_raw_source": {
+        "answer_quality": "complete",
+        "answer": "Modify Flask.full_dispatch_request() in src/flask/app.py. At line ~1013, after rv = self.preprocess_request(ctx) and the if rv is None check, insert the new hook call before rv = self.dispatch_request(ctx). Register hooks using the same pattern as before_request_funcs dict in sansio/app.py.",
+        "fidelity_score": 0.95,
+        "tokens_used_estimate": 18000
+      },
+      "calibration_labels": {
+        "context_miss": false,
+        "dependency_miss": false,
+        "hallucination": false
+      }
+    },
+    {
+      "task_id": "flask-tf4-001",
+      "family": "TF4",
+      "operation_family": "OF4",
+      "question": "What happens to teardown callbacks if an exception occurs during request processing? Are all teardown callbacks guaranteed to run?",
+      "arm_b_clue_only": {
+        "answer_quality": "partial",
+        "answer": "The projection shows do_teardown_request and do_teardown_appcontext in app.py, and test_robust_teardown in test_appctx.py with sub-functions request_teardown and app_teardown. Multiple teardown test handlers (teardown_request1, teardown_request2) exist in test_basic.py. The existence of test_robust_teardown and multiple numbered teardown handlers suggests robustness testing. However, I cannot see the implementation to confirm whether exceptions in one callback prevent others from running. The Tier 1 contract only tells me the functions exist, not their behavior.",
+        "confidence_sufficient": false,
+        "drill_down_needed": true,
+        "drill_down_reason": "Cannot determine exception handling behavior from structural contract",
+        "fidelity_score": 0.50,
+        "tokens_used_estimate": 3800
+      },
+      "arm_a_raw_source": {
+        "answer_quality": "complete",
+        "answer": "Yes, all teardown callbacks are guaranteed to run as of version 3.2. do_teardown_request() and do_teardown_appcontext() use a _CollectErrors context manager pattern. Each teardown callback is wrapped in 'with collect_errors:', which catches and stores exceptions individually. After all callbacks complete, collect_errors.raise_any() combines and raises them. This ensures one failing callback does not prevent subsequent callbacks from executing.",
+        "fidelity_score": 1.0,
+        "tokens_used_estimate": 8000
+      },
+      "calibration_labels": {
+        "context_miss": true,
+        "dependency_miss": false,
+        "hallucination": false
+      }
+    },
+    {
+      "task_id": "flask-tf5-001",
+      "family": "TF5",
+      "operation_family": "OF5",
+      "question": "How does Flask handle session security? What mechanisms protect against session tampering or hijacking?",
+      "arm_b_clue_only": {
+        "answer_quality": "poor",
+        "answer": "The projection shows SecureCookieSessionInterface, SecureCookieSession, open_session, save_session, get_signing_serializer in sessions.py. I can see get_cookie_httponly, get_cookie_secure, get_cookie_samesite methods. This suggests cookie-based sessions with httponly, secure, and samesite flags. A signing serializer exists. But I cannot determine: what signing algorithm is used, whether sessions are encrypted or just signed, what happens if secret_key is not set, or what the default cookie flag values are.",
+        "confidence_sufficient": false,
+        "drill_down_needed": true,
+        "drill_down_reason": "Security analysis requires implementation detail — signing mechanism, default flag values, encryption vs signing",
+        "fidelity_score": 0.40,
+        "tokens_used_estimate": 4200
+      },
+      "arm_a_raw_source": {
+        "answer_quality": "complete",
+        "answer": "Flask uses itsdangerous.URLSafeTimedSerializer to cryptographically sign session cookies via SecureCookieSessionInterface. Sessions are signed (not encrypted) with app.secret_key using HMAC with SHA-1 digest. SECRET_KEY_FALLBACKS supports key rotation. If secret_key is unset, NullSession is returned (read-only, raises RuntimeError on write). Cookie attributes: httponly from SESSION_COOKIE_HTTPONLY config, secure from SESSION_COOKIE_SECURE, samesite from SESSION_COOKIE_SAMESITE, partitioned from SESSION_COOKIE_PARTITIONED. Sessions are base64-encoded and signed — readable but not tamperable without the key.",
+        "fidelity_score": 0.95,
+        "tokens_used_estimate": 12000
+      },
+      "calibration_labels": {
+        "context_miss": true,
+        "dependency_miss": true,
+        "hallucination": false
+      }
+    }
+  ],
+  "aggregate_metrics": {
+    "arm_b_mean_fidelity": 0.50,
+    "arm_a_mean_fidelity": 0.95,
+    "fidelity_gap": 0.45,
+    "arm_b_tasks_needing_drill_down": 4,
+    "arm_b_tasks_clue_sufficient": 1,
+    "arm_b_token_estimate_total": 18500,
+    "arm_a_token_estimate_total": 101000,
+    "token_reduction_ratio_clue_only": 0.817,
+    "drill_down_tasks": ["flask-tf1-001", "flask-tf2-001", "flask-tf4-001", "flask-tf5-001"],
+    "clue_sufficient_tasks": ["flask-tf3-001"],
+    "calibration_summary": {
+      "context_miss_rate": 0.80,
+      "dependency_miss_rate": 0.40,
+      "hallucination_rate": 0.00
+    },
+    "notes": "TF3 (edit localization) was the only task where Tier 1 structural clue was sufficient. TF1/TF2/TF4/TF5 all required source drill-down because Tier 1 contracts lack behavioral semantics (preconditions, postconditions, call chains, exception handling). This validates the two-tier design: Tier 2 (LLM semantic contracts) is essential for OF1 architecture, OF2 impact, OF4 behavior, and OF5 security tasks."
+  }
+}

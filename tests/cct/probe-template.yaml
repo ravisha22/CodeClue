@@ -1,0 +1,14 @@
+probe_id: cct_probe_template_v1
+task_id: TBD
+operation_family: OF1
+expected_path:
+  nodes: []
+  edges: []
+ablation_targets: []
+contradiction_injections:
+  - claim: TBD
+    expected_outcome: reject
+thresholds:
+  path_precision_min: 0.85
+  path_recall_min: 0.85
+  contradiction_rejection_min: 0.95

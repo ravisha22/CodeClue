@@ -1,0 +1,14 @@
+profile_id: nest-arch-di-v1
+intent: architecture-comprehension
+constraints:
+  max_context: balanced
+focus_keywords:
+- injector
+- inject
+- provider
+- resolve
+- dependency
+focus_symbols:
+- Injector
+- Module
+- InstanceWrapper

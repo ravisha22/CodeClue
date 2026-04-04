@@ -1,0 +1,15 @@
+{
+  "task_id": "flask-tf5-001",
+  "model": "gpt-5.4",
+  "timestamp": "2026-04-03T21:23:53.8278149Z",
+  "arm_b": {
+    "answer": "The clue indicates Flask uses its secure cookie session interface rather than a server-side store by default. Session data is signed with the app secret key, bad signatures are rejected, and cookie attributes such as HttpOnly, Secure, SameSite, and partitioning are part of the session interface. That is enough to say Flask protects against tampering and can reduce hijacking exposure with cookie flags, although the exact defaults are not fully shown.",
+    "clue_sufficient": true,
+    "gaps_identified": [],
+    "confidence_from_projection": 1.0,
+    "lookup_hint_from_projection": "clue_only"
+  },
+  "arm_a": {
+    "answer": "Flask's default SessionInterface is SecureCookieSessionInterface. It serializes the session with itsdangerous URLSafeTimedSerializer using the app secret key plus a salt and HMAC-style signing, and open_session discards tampered cookies by catching BadSignature and returning a fresh empty session instead. save_session then writes the cookie with configured HttpOnly, Secure, SameSite, Partitioned, domain, path, and expiry settings. So tampering is prevented by signing, while hijacking risk is reduced only to the extent you configure Secure/HttpOnly/SameSite and serve over HTTPS; there is no built-in server-side session revocation in the default cookie-backed model."
+  }
+}

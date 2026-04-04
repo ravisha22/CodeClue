@@ -1,0 +1,14 @@
+profile_id: fastapi-edit-sse-v1
+intent: edit-localization
+constraints:
+  max_context: focused
+focus_files:
+- fastapi/sse.py
+focus_symbols:
+- EventSourceResponse
+- KEEPALIVE_COMMENT
+focus_keywords:
+- sse
+- keepalive
+- event
+- stream

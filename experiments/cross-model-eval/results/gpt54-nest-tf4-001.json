@@ -1,0 +1,15 @@
+{
+  "task_id": "nest-tf4-001",
+  "model": "gpt-5.4",
+  "timestamp": "2026-04-03T21:23:53.8278149Z",
+  "arm_b": {
+    "answer": "The clue shows two important pieces: `Injector` participates in cycle detection, and `CircularDependencyException` tells users to use `forwardRef()` on both sides of a bidirectional relationship. It also explicitly says circular relationships between custom providers such as factories are not supported. That is enough to answer the user-visible behavior and the intended workaround.",
+    "clue_sufficient": true,
+    "gaps_identified": [],
+    "confidence_from_projection": 0.928571,
+    "lookup_hint_from_projection": "clue_only"
+  },
+  "arm_a": {
+    "answer": "Nest detects a circular dependency during injector resolution. In `Injector.loadInstance`, if an instance is pending and the settlement signal detects a cycle involving the inquirer, Nest throws `CircularDependencyException`. The exception message tells the user to decorate each side with `forwardRef()` and explicitly notes that circular relationships between custom providers such as factories are not supported. The workaround path is also visible in `resolveParamToken`, which recognizes a `forwardRef`, marks the wrapper accordingly, and resolves the real token lazily."
+  }
+}

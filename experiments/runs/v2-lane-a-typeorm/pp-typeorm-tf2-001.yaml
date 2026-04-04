@@ -1,0 +1,12 @@
+profile_id: typeorm-impact-metadata-v1
+intent: impact-analysis
+constraints:
+  max_context: balanced
+focus_keywords:
+- entity
+- metadata
+- connection
+- repository
+- query
+focus_symbols:
+- EntityMetadata

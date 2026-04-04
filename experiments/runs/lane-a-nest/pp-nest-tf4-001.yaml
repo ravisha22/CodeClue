@@ -1,0 +1,13 @@
+profile_id: nest-behavior-circular-v1
+intent: behavior-debugging
+constraints:
+  max_context: balanced
+focus_keywords:
+- circular
+- dependency
+- forwardRef
+- exception
+focus_symbols:
+- CircularDependencyException
+- Injector
+- Barrier

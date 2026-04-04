@@ -1,0 +1,175 @@
+{
+  "operation_family": "OF2",
+  "policy": {
+    "always_include_node_types": [
+      "module"
+    ],
+    "bidirectional": true,
+    "context_level": "focused",
+    "edge_types": [
+      "contains",
+      "calls"
+    ],
+    "include_only_edge_incident_nodes": true,
+    "max_depth": 3,
+    "node_budget": 80,
+    "output_edge_types": [
+      "calls"
+    ],
+    "seed_hops": 2
+  },
+  "projected_edges": [
+    {
+      "edge_id": "calls:symbol:examples/sample_module.py:Greeter.greet:11:symbol:examples/sample_module.py:build_greeting:5:12",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 12,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:examples/sample_module.py:Greeter.greet:11",
+      "to_node": "symbol:examples/sample_module.py:build_greeting:5"
+    },
+    {
+      "edge_id": "calls:symbol:examples/sample_module.py:build_greeting:5:symbol:examples/sample_module.py:normalize_user:1:6",
+      "edge_type": "calls",
+      "evidence": {
+        "line": 6,
+        "rel": "ast_call"
+      },
+      "from_node": "symbol:examples/sample_module.py:build_greeting:5",
+      "to_node": "symbol:examples/sample_module.py:normalize_user:1"
+    }
+  ],
+  "projected_nodes": [
+    {
+      "confidence": 1.0,
+      "node_id": "module:examples/sample_module.py",
+      "node_type": "module",
+      "semantic_contract": {
+        "description": "Module-level semantic container",
+        "language": "python"
+      },
+      "source_anchor": {
+        "ast_path": "module",
+        "byte_end": 267,
+        "byte_start": 0,
+        "content_hash": "4648c2ba29058f71e7d79232272237b2d046b25564741082ece79abfc432e7b5",
+        "file_path": "examples/sample_module.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:examples/sample_module.py:Greeter.greet:11",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:Greeter.greet",
+        "symbol_name": "greet"
+      },
+      "source_anchor": {
+        "ast_path": "function:Greeter.greet",
+        "byte_end": 266,
+        "byte_start": 196,
+        "content_hash": "c53aad27d9757d09c6b08b8b6a320f117fb47da842ecaabe3ccf319f085481ef",
+        "file_path": "examples/sample_module.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:examples/sample_module.py:build_greeting:5",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:build_greeting",
+        "symbol_name": "build_greeting"
+      },
+      "source_anchor": {
+        "ast_path": "function:build_greeting",
+        "byte_end": 174,
+        "byte_start": 72,
+        "content_hash": "479ded982072cd27cced16b6ef845ce0a12a0c38b8ffd5e99de9183cada81eeb",
+        "file_path": "examples/sample_module.py"
+      }
+    },
+    {
+      "confidence": 0.92,
+      "node_id": "symbol:examples/sample_module.py:normalize_user:1",
+      "node_type": "function",
+      "semantic_contract": {
+        "path": "function:normalize_user",
+        "symbol_name": "normalize_user"
+      },
+      "source_anchor": {
+        "ast_path": "function:normalize_user",
+        "byte_end": 69,
+        "byte_start": 0,
+        "content_hash": "8364f4f1d7adf6e1a15930f1026933b423db59fcadd4290252e6a49716fdf8e6",
+        "file_path": "examples/sample_module.py"
+      }
+    }
+  ],
+  "prompt_profile": {
+    "constraints": {
+      "enforce_traceability": true,
+      "max_context": "focused"
+    },
+    "focus_keywords": [
+      "greeting"
+    ],
+    "focus_symbols": [
+      "normalize_user"
+    ],
+    "intent": "impact-analysis",
+    "profile_id": "impact-default-v1",
+    "strict_mode": true
+  },
+  "reasoning_path": [
+    {
+      "depth": 0,
+      "node_id": "module:examples/sample_module.py",
+      "step": 1,
+      "via_edge": null
+    },
+    {
+      "depth": 0,
+      "node_id": "symbol:examples/sample_module.py:build_greeting:5",
+      "step": 2,
+      "via_edge": null
+    },
+    {
+      "depth": 0,
+      "node_id": "symbol:examples/sample_module.py:normalize_user:1",
+      "step": 3,
+      "via_edge": null
+    },
+    {
+      "depth": 1,
+      "node_id": "symbol:examples/sample_module.py:Greeter.greet:11",
+      "step": 4,
+      "via_edge": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter.greet:11"
+    },
+    {
+      "depth": 1,
+      "node_id": "symbol:examples/sample_module.py:Greeter:10",
+      "step": 5,
+      "via_edge": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter:10"
+    }
+  ],
+  "stats": {
+    "graph_edge_count": 166,
+    "graph_node_count": 108,
+    "initial_seed_count": 2,
+    "projected_edge_count": 2,
+    "projected_node_count": 4,
+    "seed_count": 3
+  },
+  "trace_id": "trace-OF2-20260328035446",
+  "validation": {
+    "candidate_edge_count": 6,
+    "candidate_node_count": 5,
+    "contradiction_rejection": 1.0,
+    "path_drift_index": 0.0,
+    "path_precision": 1.0,
+    "path_recall": 1.0,
+    "path_recall_global": 0.037037,
+    "traversed_edge_count": 2
+  }
+}

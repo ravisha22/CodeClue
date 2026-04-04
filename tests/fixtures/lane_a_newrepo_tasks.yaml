@@ -1,0 +1,136 @@
+# Lane A V2 Benchmark: Tasks for 4 New Repos
+# 2 tasks per repo = 8 tasks total, spanning TF1-TF5
+
+tasks:
+  # === HTTPX (Python async HTTP client) ===
+  - task_id: httpx-tf2-001
+    family: TF2
+    operation_family: OF2
+    repo: encode/httpx
+    repo_dir: httpx
+    language: python
+    question: "If I change the Timeout class in _config.py to make all timeouts optional (default None), what components would break?"
+    ground_truth_summary: "Timeout is used by Client and AsyncClient in _client.py as DEFAULT_TIMEOUT_CONFIG. It's passed to HTTPTransport/AsyncHTTPTransport in _transports/. The transport layers use timeout values for connection pools. Making all None would cause httpcore to use no timeout, potentially hanging on unresponsive servers. The _api.py convenience functions (get, post, etc.) pass timeout through. Test timeouts would also change behavior."
+    relevant_files: [httpx/_config.py, httpx/_client.py, httpx/_transports/default.py]
+    prompt_profile:
+      profile_id: httpx-impact-timeout-v1
+      intent: impact-analysis
+      constraints: {max_context: balanced}
+      focus_files: [httpx/_config.py]
+      focus_symbols: [Timeout, DEFAULT_TIMEOUT_CONFIG]
+      focus_keywords: [timeout, config]
+
+  - task_id: httpx-tf4-001
+    family: TF4
+    operation_family: OF4
+    repo: encode/httpx
+    repo_dir: httpx
+    language: python
+    question: "How does httpx handle redirect loops? What is the maximum number of redirects and what exception is raised?"
+    ground_truth_summary: "Client._send_handling_redirects() in _client.py follows redirects up to max_redirects (default 20, set via DEFAULT_MAX_REDIRECTS in _config.py). Each redirect increments a counter. When exceeded, TooManyRedirects exception from _exceptions.py is raised. The redirect response includes the redirect history. Both sync Client and AsyncClient share this logic pattern."
+    relevant_files: [httpx/_client.py, httpx/_config.py, httpx/_exceptions.py]
+    prompt_profile:
+      profile_id: httpx-behavior-redirect-v1
+      intent: behavior-debugging
+      constraints: {max_context: balanced}
+      focus_files: [httpx/_client.py]
+      focus_symbols: [TooManyRedirects, DEFAULT_MAX_REDIRECTS]
+      focus_keywords: [redirect, max_redirects, loop]
+
+  # === EXPRESS (JavaScript/TypeScript web framework) ===
+  - task_id: express-tf1-001
+    family: TF1
+    operation_family: OF1
+    repo: expressjs/express
+    repo_dir: express
+    language: typescript
+    question: "What is the middleware pipeline architecture in Express? How does next() propagation work?"
+    ground_truth_summary: "Express uses a Layer/Route/Router stack in lib/router/. app.use() adds middleware to the router stack. Each request is processed by Router.handle() which iterates the stack. next() advances to the next Layer. Errors are caught and passed to error-handling middleware (4 args). The stack processes in order: app-level middleware, router-level, route handlers. lib/router/index.js contains the main dispatch loop."
+    relevant_files: [lib/application.js, lib/router/index.js, lib/router/layer.js, lib/router/route.js]
+    prompt_profile:
+      profile_id: express-arch-middleware-v1
+      intent: architecture-comprehension
+      constraints: {max_context: balanced}
+      focus_keywords: [middleware, next, router, layer, route, stack, handle]
+
+  - task_id: express-tf5-001
+    family: TF5
+    operation_family: OF5
+    repo: expressjs/express
+    repo_dir: express
+    language: typescript
+    question: "What security headers or protections does Express provide by default? Are there known security concerns with the default configuration?"
+    ground_truth_summary: "Express by default does NOT set security headers (no CSRF, no CSP, no HSTS). The X-Powered-By header is set to 'Express' by default, which is an information leak (recommended to disable). Express does not sanitize input — template engines may be vulnerable to XSS. The trust proxy setting affects IP detection and must be configured correctly for reverse proxy setups. No built-in rate limiting. Helmet.js is the recommended security middleware but is not bundled."
+    relevant_files: [lib/application.js, lib/request.js, lib/response.js]
+    prompt_profile:
+      profile_id: express-security-default-v1
+      intent: security-compliance
+      constraints: {max_context: balanced}
+      focus_keywords: [security, header, trust, proxy, powered, xss, csrf]
+
+  # === TYPEORM (TypeScript ORM) ===
+  - task_id: typeorm-tf3-001
+    family: TF3
+    operation_family: OF3
+    repo: typeorm/typeorm
+    repo_dir: typeorm
+    language: typescript
+    question: "Where would I add support for a new database driver (e.g., DuckDB) in TypeORM?"
+    ground_truth_summary: "TypeORM uses a driver abstraction in src/driver/. Each database has a directory (e.g., postgres/, mysql/). You'd create src/driver/duckdb/ with: DuckdbDriver implementing Driver interface, DuckdbConnectionOptions, DuckdbQueryRunner. Register in DriverFactory (src/driver/DriverFactory.ts) and add connection options type. The QueryRunner handles SQL execution. Migration support would require a SchemaBuilder variant."
+    relevant_files: [src/driver/DriverFactory.ts]
+    prompt_profile:
+      profile_id: typeorm-edit-driver-v1
+      intent: edit-localization
+      constraints: {max_context: focused}
+      focus_keywords: [driver, factory, connection, database, query runner]
+      focus_symbols: [DriverFactory]
+
+  - task_id: typeorm-tf2-001
+    family: TF2
+    operation_family: OF2
+    repo: typeorm/typeorm
+    repo_dir: typeorm
+    language: typescript
+    question: "If Entity metadata resolution is changed from synchronous to lazy/async loading, what subsystems would be impacted?"
+    ground_truth_summary: "Entity metadata is managed by EntityMetadataFactory and stored in Connection.entityMetadatas. It's consumed by: QueryBuilder for building SQL, Repository for CRUD operations, SchemaBuilder for migrations, FindOptions for query construction, and the subscriber/listener system for lifecycle hooks. Making it async would require: async initialization in Connection, lazy loading in Repository, async QueryBuilder chain start, and updated migration runner."
+    relevant_files: [src/metadata/EntityMetadata.ts]
+    prompt_profile:
+      profile_id: typeorm-impact-metadata-v1
+      intent: impact-analysis
+      constraints: {max_context: balanced}
+      focus_keywords: [entity, metadata, connection, repository, query]
+      focus_symbols: [EntityMetadata]
+
+  # === GIN (Go web framework) ===
+  - task_id: gin-tf1-001
+    family: TF1
+    operation_family: OF1
+    repo: gin-gonic/gin
+    repo_dir: gin
+    language: go
+    question: "What is the request handling architecture in Gin? How does a request flow from receipt to response?"
+    ground_truth_summary: "Gin's Engine struct embeds RouterGroup and implements http.Handler via ServeHTTP(). Routes are registered via Engine.GET/POST/etc which call RouterGroup.Handle() storing handlers in methodTrees (radix tree per HTTP method). ServeHTTP() looks up the route in the tree, creates a Context, and calls Context.Next() which iterates through the handler chain (middleware + final handler). Context holds request/response and provides JSON(), HTML(), etc. for responses."
+    relevant_files: [gin.go, context.go, routergroup.go, tree.go]
+    prompt_profile:
+      profile_id: gin-arch-flow-v1
+      intent: architecture-comprehension
+      constraints: {max_context: balanced}
+      focus_keywords: [engine, context, router, handle, serve, tree, next]
+      focus_symbols: [Engine, Context, RouterGroup]
+
+  - task_id: gin-tf5-001
+    family: TF5
+    operation_family: OF5
+    repo: gin-gonic/gin
+    repo_dir: gin
+    language: go
+    question: "How does Gin handle authentication middleware? What is the BasicAuth implementation and are there security concerns?"
+    ground_truth_summary: "Gin provides BasicAuth() middleware in auth.go that checks HTTP Basic Auth against a map of username:password pairs (Accounts type). It uses subtle.ConstantTimeCompare for timing-safe comparison. Credentials are stored as sha256 hashes of user:password pairs. Security concerns: passwords in Accounts map are plaintext in code (hashed at runtime only), no rate limiting on auth failures, no session/token support built-in, basic auth transmits credentials base64-encoded (need HTTPS)."
+    relevant_files: [auth.go, context.go]
+    prompt_profile:
+      profile_id: gin-security-auth-v1
+      intent: security-compliance
+      constraints: {max_context: balanced}
+      focus_files: [auth.go]
+      focus_keywords: [auth, basic, password, credential, security, token]
+      focus_symbols: [BasicAuth, Accounts]

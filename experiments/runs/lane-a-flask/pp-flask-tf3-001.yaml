@@ -1,0 +1,14 @@
+profile_id: flask-edit-dispatch-v1
+intent: edit-localization
+constraints:
+  max_context: focused
+focus_files:
+- src/flask/app.py
+focus_symbols:
+- full_dispatch_request
+- dispatch_request
+- try_trigger_before_request_functions
+focus_keywords:
+- dispatch
+- before_request
+- hook

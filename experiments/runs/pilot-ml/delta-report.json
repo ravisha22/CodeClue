@@ -1,0 +1,46 @@
+{
+  "applied_operation_count": 1,
+  "applied_operations": [
+    {
+      "index": 1,
+      "node_id": "symbol:examples/sample_module.py:normalize_user:1",
+      "op": "update_node_contract"
+    }
+  ],
+  "integrity_report": {
+    "avg_dominator_set_size": 1.8132,
+    "edge_count": 135,
+    "edge_type_counts": {
+      "calls": 61,
+      "contains": 74
+    },
+    "invariant_checks": {
+      "connectivity_invariant": true,
+      "no_gap_invariant": true
+    },
+    "largest_scc": 1,
+    "module_roots": 17,
+    "node_count": 91,
+    "orphan_nodes": [],
+    "scc_count": 91,
+    "unreachable_nodes": []
+  },
+  "operation_errors": [],
+  "passed": true,
+  "patch_id": "sample-delta-001",
+  "path_report": {
+    "added_edges": [],
+    "added_nodes": [],
+    "base_path_count": 121,
+    "lost_path_count": 0,
+    "missing_edges": [],
+    "missing_nodes": [],
+    "path_coverage": 1.0
+  },
+  "proofs": {
+    "connectivity_proof": true,
+    "no_gap_proof": true,
+    "path_coverage": 1.0
+  },
+  "validation_errors": []
+}

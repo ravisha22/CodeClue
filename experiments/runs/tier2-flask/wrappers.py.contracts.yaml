@@ -1,0 +1,158 @@
+Request.max_content_length:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "int | None"
+      description: "Returns per-request override if set, falls back to parent class if no current_app, otherwise returns MAX_CONTENT_LENGTH config"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Request.max_content_length.setter:
+  preconditions: []
+  postconditions:
+    - type: state_mutation
+      target: "self._max_content_length"
+      description: "Sets the per-request max content length override"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Request.max_form_memory_size:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "int | None"
+      description: "Returns per-request override if set, falls back to parent class if no current_app, otherwise returns MAX_FORM_MEMORY_SIZE config"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Request.max_form_memory_size.setter:
+  preconditions: []
+  postconditions:
+    - type: state_mutation
+      target: "self._max_form_memory_size"
+      description: "Sets the per-request max form memory size override"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Request.max_form_parts:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "int | None"
+      description: "Returns per-request override if set, falls back to parent class if no current_app, otherwise returns MAX_FORM_PARTS config"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Request.max_form_parts.setter:
+  preconditions: []
+  postconditions:
+    - type: state_mutation
+      target: "self._max_form_parts"
+      description: "Sets the per-request max form parts override"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Request.endpoint:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "str | None"
+      description: "Returns the endpoint from url_rule if set, otherwise None"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Request.blueprint:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "str | None"
+      description: "Returns the blueprint name extracted from the endpoint (everything before the last dot), or None if no blueprint"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Request.blueprints:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "list[str]"
+      description: "Returns list of blueprint names from current up through parents, or empty list if no blueprint"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Request._load_form_data:
+  preconditions: []
+  postconditions:
+    - type: side_effect
+      target: "self.files"
+      description: "Loads form data via parent class. In debug mode with non-multipart content type and no files, attaches error multidict for better error messages."
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Request.on_json_loading_failed:
+  preconditions: []
+  postconditions: []
+  failure_modes:
+    - trigger: "JSON parsing fails in debug mode"
+      effect: "BadRequest raised with detailed error info"
+      exception_type: "BadRequest"
+    - trigger: "JSON parsing fails in non-debug mode"
+      effect: "BadRequest raised without detail (for security)"
+      exception_type: "BadRequest"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Response.max_cookie_size:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "int"
+      description: "Returns MAX_COOKIE_SIZE from app config if in app context, otherwise Werkzeug's default"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false

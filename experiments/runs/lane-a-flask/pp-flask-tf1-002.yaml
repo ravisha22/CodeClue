@@ -1,0 +1,10 @@
+profile_id: flask-arch-blueprint-v1
+intent: architecture-comprehension
+constraints:
+  max_context: balanced
+focus_symbols:
+- register_blueprint
+- Blueprint
+focus_keywords:
+- blueprint
+- register

@@ -1,0 +1,3 @@
+{"node_id":"symbol:examples/sample_module.py:Greeter.greet:11","edge_id":"calls:symbol:examples/sample_module.py:Greeter.greet:11:symbol:examples/sample_module.py:build_greeting:5:12","contradictions":[{"claim":"Greeter.greet bypasses build_greeting and returns a constant string","decision":"reject"}]}
+{"node_id":"symbol:examples/sample_module.py:build_greeting:5","edge_id":"calls:symbol:examples/sample_module.py:build_greeting:5:symbol:examples/sample_module.py:normalize_user:1:6","contradictions":[{"claim":"build_greeting never calls normalize_user","decision":"reject"}],"ablation":[{"target":"symbol:examples/sample_module.py:normalize_user:1","degraded":true}]}
+{"node_id":"symbol:examples/sample_module.py:normalize_user:1"}

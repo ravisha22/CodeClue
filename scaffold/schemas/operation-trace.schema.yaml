@@ -1,0 +1,23 @@
+schema_id: codeclue.operation_trace.v1
+kind: operation_projection_trace
+required:
+  - trace_id
+  - operation_family
+  - prompt_profile
+  - projected_nodes
+  - projected_edges
+  - reasoning_path
+  - validation
+fields:
+  operation_family:
+    enum: [OF1, OF2, OF3, OF4, OF5]
+  prompt_profile:
+    required: [profile_id, intent, constraints]
+  reasoning_path:
+    description: ordered node and edge traversal for task completion
+  validation:
+    required:
+      - path_precision
+      - path_recall
+      - contradiction_rejection
+      - path_drift_index

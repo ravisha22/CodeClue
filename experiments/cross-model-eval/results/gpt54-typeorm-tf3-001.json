@@ -1,0 +1,15 @@
+{
+  "task_id": "typeorm-tf3-001",
+  "model": "gpt-5.4",
+  "timestamp": "2026-04-03T21:23:53.8278149Z",
+  "arm_b": {
+    "answer": "The projection is very clear: `src/driver/DriverFactory.ts` and `DriverFactory` are the dispatch point for driver selection. To add a new database driver such as DuckDB, you would add a new driver import and a new switch case in `DriverFactory.create(...)`, plus update the supported-driver list used by `MissingDriverError`.",
+    "clue_sufficient": true,
+    "gaps_identified": [],
+    "confidence_from_projection": 1.0,
+    "lookup_hint_from_projection": "clue_only"
+  },
+  "arm_a": {
+    "answer": "The primary file to modify is `src/driver/DriverFactory.ts`. `DriverFactory.create(dataSource)` switches on `dataSource.options.type`, imports each concrete driver, returns the corresponding driver instance, and falls back to `MissingDriverError` with the list of supported types. So to add DuckDB, you would add a DuckDB driver import, add a `case \"duckdb\": return new DuckDBDriver(dataSource)`, and include `duckdb` in the supported-type list. The actual driver implementation and datasource option typing would also need work elsewhere, but this file is the central factory entry point."
+  }
+}

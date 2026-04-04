@@ -1,0 +1,17 @@
+schema_id: codeclue.delta_patch.v1
+required:
+  - patch_id
+  - operations
+operation:
+  required:
+    - op
+supported_ops:
+  - add_node
+  - remove_node
+  - update_node_contract
+  - add_edge
+  - remove_edge
+notes:
+  - add_node requires a full node payload matching codeclue.lcf.v1 node contract.
+  - add_edge requires a full edge payload.
+  - update_node_contract can include semantic_contract and confidence.

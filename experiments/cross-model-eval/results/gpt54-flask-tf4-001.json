@@ -1,0 +1,18 @@
+{
+  "task_id": "flask-tf4-001",
+  "model": "gpt-5.4",
+  "timestamp": "2026-04-03T21:23:53.8278149Z",
+  "arm_b": {
+    "answer": "The projection shows teardown running through do_teardown_request and do_teardown_appcontext from the context pop path, and wsgi_app wraps dispatch in a finally block. That strongly suggests teardown still runs after exceptions. However, the clue does not show the callback iteration and error-collection behavior closely enough to prove whether every teardown callback is always attempted.",
+    "clue_sufficient": false,
+    "gaps_identified": [
+      "The projection does not show the internal error-collection logic used while iterating teardown callbacks.",
+      "The clue does not prove whether teardown stops on the first failing callback or continues through all callbacks."
+    ],
+    "confidence_from_projection": 0.945205,
+    "lookup_hint_from_projection": "clue_only"
+  },
+  "arm_a": {
+    "answer": "If an exception occurs, Flask still runs teardown. Flask.wsgi_app always calls ctx.pop(...) in its finally path, and AppContext.pop invokes do_teardown_request and do_teardown_appcontext. In current Flask, both teardown methods wrap each callback in a _CollectErrors helper and only raise after iterating all callbacks and signals, so teardown does not stop at the first callback failure. That means all registered teardown callbacks are attempted, even when request processing raised an exception, and any teardown errors are aggregated afterward."
+  }
+}

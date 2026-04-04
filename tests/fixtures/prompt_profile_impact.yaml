@@ -1,0 +1,10 @@
+profile_id: impact-default-v1
+intent: impact-analysis
+constraints:
+  max_context: focused
+  enforce_traceability: true
+focus_symbols:
+  - normalize_user
+focus_keywords:
+  - greeting
+strict_mode: true

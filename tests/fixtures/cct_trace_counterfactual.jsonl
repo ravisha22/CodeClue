@@ -1,0 +1,2 @@
+{"node_id":"symbol:examples/sample_module.py:build_greeting:5","edge_id":"calls:symbol:examples/sample_module.py:build_greeting:5:symbol:examples/sample_module.py:normalize_user:1:6","contradictions":[{"claim":"A counterfactual patch removed normalize_user from build_greeting","decision":"reject"}],"ablation":[{"target":"symbol:examples/sample_module.py:build_greeting:5","degraded":true}]}
+{"node_id":"symbol:examples/sample_module.py:normalize_user:1"}

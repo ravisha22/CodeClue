@@ -1,0 +1,18 @@
+gold_id: gold-architecture-sample-v1
+operation_family: OF1
+gold_path:
+  nodes:
+    - module:examples/sample_module.py
+    - symbol:examples/sample_module.py:normalize_user:1
+    - symbol:examples/sample_module.py:build_greeting:5
+    - symbol:examples/sample_module.py:Greeter:10
+    - symbol:examples/sample_module.py:Greeter.greet:11
+  edges:
+    - contains:module:examples/sample_module.py:symbol:examples/sample_module.py:normalize_user:1
+    - contains:module:examples/sample_module.py:symbol:examples/sample_module.py:build_greeting:5
+    - contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter:10
+    - contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter.greet:11
+thresholds:
+  node_f1_min: 0.90
+  edge_f1_min: 0.90
+  path_fidelity_min: 0.90

@@ -1,0 +1,15 @@
+gold_id: gold-impact-sample-v1
+operation_family: OF2
+gold_path:
+  nodes:
+    - module:examples/sample_module.py
+    - symbol:examples/sample_module.py:normalize_user:1
+    - symbol:examples/sample_module.py:build_greeting:5
+    - symbol:examples/sample_module.py:Greeter.greet:11
+  edges:
+    - calls:symbol:examples/sample_module.py:build_greeting:5:symbol:examples/sample_module.py:normalize_user:1:6
+    - calls:symbol:examples/sample_module.py:Greeter.greet:11:symbol:examples/sample_module.py:build_greeting:5:12
+thresholds:
+  node_f1_min: 0.65
+  edge_f1_min: 0.50
+  path_fidelity_min: 0.60

@@ -1,0 +1,12 @@
+profile_id: express-security-default-v1
+intent: security-compliance
+constraints:
+  max_context: balanced
+focus_keywords:
+- security
+- header
+- trust
+- proxy
+- powered
+- xss
+- csrf

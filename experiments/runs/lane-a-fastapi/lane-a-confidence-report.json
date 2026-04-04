@@ -1,0 +1,50 @@
+{
+  "aggregate": {
+    "clue_only_families": [
+      "OF3",
+      "OF4"
+    ],
+    "families_needing_lookup": [
+      "OF1",
+      "OF2",
+      "OF5"
+    ],
+    "mean_confidence": 0.42359,
+    "total_suggested_actions": 252
+  },
+  "commit_id": "8a9258b169dce3e321f614c14b1877c18750d6c7",
+  "per_family": {
+    "OF1": {
+      "confidence_overall": 0.0,
+      "lookup_decision_hint": "expanded_lookup",
+      "suggested_actions_count": 0,
+      "tool_call_budget": 5
+    },
+    "OF2": {
+      "confidence_overall": 0.0,
+      "lookup_decision_hint": "expanded_lookup",
+      "suggested_actions_count": 6,
+      "tool_call_budget": 15
+    },
+    "OF3": {
+      "confidence_overall": 1.0,
+      "lookup_decision_hint": "clue_only",
+      "suggested_actions_count": 8,
+      "tool_call_budget": 10
+    },
+    "OF4": {
+      "confidence_overall": 1.0,
+      "lookup_decision_hint": "clue_only",
+      "suggested_actions_count": 11,
+      "tool_call_budget": 20
+    },
+    "OF5": {
+      "confidence_overall": 0.117949,
+      "lookup_decision_hint": "expanded_lookup",
+      "suggested_actions_count": 227,
+      "tool_call_budget": 30
+    }
+  },
+  "repo_name": "fastapi/fastapi",
+  "timestamp": "2026-04-01T09:17:04.132205+00:00"
+}

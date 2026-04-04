@@ -1,0 +1,18 @@
+{
+  "counts": {
+    "expected_edges": 1,
+    "expected_nodes": 2,
+    "observed_edges": 1,
+    "observed_nodes": 2
+  },
+  "metrics": {
+    "CRR": 1.0,
+    "CS": 1.0,
+    "PDI": 0.0,
+    "PP": 1.0,
+    "PR": 1.0
+  },
+  "passed": true,
+  "probe_id": "cct_probe_sample_v1",
+  "task_id": "task-sample-001"
+}

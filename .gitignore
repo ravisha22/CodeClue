@@ -1,0 +1,58 @@
+# External repo clones (large, re-cloneable)
+experiments/external-repos/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Byte-compiled
+*.pyc
+
+# Temp and generated
+*.tmp
+.pytest_cache/
+.mypy_cache/
+
+# Large experiment artifacts (re-generable from source)
+experiments/runs/*/graph.json
+experiments/runs/*/graph-tier2.json
+experiments/runs/v2-lane-a-*/graph.json
+experiments/runs/v2-lane-a-*/graph-tier2.json
+experiments/runs/**/projection-*.json
+experiments/runs/**/task-proj-*.json
+experiments/runs/**/v2-proj-*.json
+experiments/runs/**/tier2-proj-*.json
+experiments/runs/**/blue-check-*.json
+
+# PDF paper outputs (regenerable from markdown)
+paper/*.pdf
+paper/*.html
+
+# Reference PDFs (too large for git, keep locally)
+*.pdf
+
+# Revert snapshots (local development only)
+experiments/revert-point-*/

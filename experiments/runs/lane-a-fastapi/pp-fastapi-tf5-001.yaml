@@ -1,0 +1,13 @@
+profile_id: fastapi-security-validation-v1
+intent: security-compliance
+constraints:
+  max_context: balanced
+focus_keywords:
+- validation
+- security
+- inject
+- sanitize
+- request body
+focus_symbols:
+- RequestValidationError
+- request_validation_exception_handler

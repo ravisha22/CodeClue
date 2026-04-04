@@ -1,0 +1,176 @@
+# Lane A Extended Benchmark Task Set (Runs 6-15)
+# Spans all three repos: flask (Python), fastapi (Python), nest (TypeScript)
+# Covers TF1-TF5 across repos
+
+tasks:
+  # === FLASK ADDITIONAL TASKS ===
+  - task_id: flask-tf1-002
+    family: TF1
+    operation_family: OF1
+    repo: pallets/flask
+    question: "How does Flask's blueprint system integrate with the main application? What is the registration flow?"
+    ground_truth_summary: "Blueprints are registered via Flask.register_blueprint() in app.py, which calls Blueprint.register() in blueprints.py. Registration merges blueprint's url_map rules, error handlers, teardown functions, template_folder, and static_folder into the app. Blueprints support nesting via Blueprint.register_blueprint(). The sansio/blueprints.py base class provides the core registration logic. Deferred setup functions stored in _deferred_setup are called during registration."
+    relevant_files:
+      - src/flask/app.py
+      - src/flask/blueprints.py
+      - src/flask/sansio/blueprints.py
+    prompt_profile:
+      profile_id: flask-arch-blueprint-v1
+      intent: architecture-comprehension
+      constraints: {max_context: balanced}
+      focus_symbols: [register_blueprint, Blueprint]
+      focus_keywords: [blueprint, register]
+
+  - task_id: flask-tf2-002
+    family: TF2
+    operation_family: OF2
+    repo: pallets/flask
+    question: "If I modify Flask's config system to support async config loaders, what components would need to change?"
+    ground_truth_summary: "Config class in config.py provides from_file(), from_object(), from_mapping(), from_prefixed_env() methods — all sync. Flask.__init__ creates Config via self.make_config(). Config is accessed via app.config dict throughout the codebase. Making loaders async would require: Config methods to become async, Flask.make_config to support async, any code that calls config loading during app setup (extensions, blueprints) to be async-compatible. The from_file and from_prefixed_env methods do I/O."
+    relevant_files:
+      - src/flask/config.py
+      - src/flask/app.py
+      - src/flask/sansio/app.py
+    prompt_profile:
+      profile_id: flask-impact-config-v1
+      intent: impact-analysis
+      constraints: {max_context: balanced}
+      focus_files: [src/flask/config.py]
+      focus_symbols: [Config, from_file, from_object]
+      focus_keywords: [config, load]
+
+  # === FASTAPI TASKS ===
+  - task_id: fastapi-tf1-001
+    family: TF1
+    operation_family: OF1
+    repo: fastapi/fastapi
+    question: "What is the dependency injection architecture in FastAPI? How are dependencies resolved and injected?"
+    ground_truth_summary: "FastAPI uses a Depends() function in param_functions.py that creates Depends instances stored as parameter defaults. get_dependant() in dependencies/utils.py parses function signatures to build a Dependant tree. solve_dependencies() recursively resolves the tree, calling each dependency and injecting results. Dependencies can be sync or async, use yield for cleanup (via AsyncExitStack), and support sub-dependencies. The Dependant model in dependencies/models.py tracks the tree structure."
+    relevant_files:
+      - fastapi/param_functions.py
+      - fastapi/dependencies/utils.py
+      - fastapi/dependencies/models.py
+    prompt_profile:
+      profile_id: fastapi-arch-di-v1
+      intent: architecture-comprehension
+      constraints: {max_context: balanced}
+      focus_keywords: [Depends, dependant, dependency, inject, solve]
+      focus_symbols: [Depends, get_dependant, solve_dependencies]
+
+  - task_id: fastapi-tf3-001
+    family: TF3
+    operation_family: OF3
+    repo: fastapi/fastapi
+    question: "Where would I add custom SSE keepalive logic in FastAPI's EventSourceResponse?"
+    ground_truth_summary: "Modify EventSourceResponse in fastapi/sse.py. The class has _PING_INTERVAL constant and KEEPALIVE_COMMENT. The __call__ method handles the streaming loop. Keepalive is sent as a comment event. To customize keepalive logic, modify the body_iterator method or the iterate method that yields ServerSentEvent objects including the keepalive comment at intervals."
+    relevant_files:
+      - fastapi/sse.py
+    prompt_profile:
+      profile_id: fastapi-edit-sse-v1
+      intent: edit-localization
+      constraints: {max_context: focused}
+      focus_files: [fastapi/sse.py]
+      focus_symbols: [EventSourceResponse, KEEPALIVE_COMMENT]
+      focus_keywords: [sse, keepalive, event, stream]
+
+  - task_id: fastapi-tf4-001
+    family: TF4
+    operation_family: OF4
+    repo: fastapi/fastapi
+    question: "What happens when a sync dependency is used inside an async route in FastAPI? Is there a risk of blocking the event loop?"
+    ground_truth_summary: "FastAPI automatically wraps sync callables using run_in_threadpool() from starlette.concurrency. In solve_dependencies(), if a dependency is not async callable, it's run via run_in_threadpool to avoid blocking. For sync context managers (yield dependencies), contextmanager_in_threadpool in concurrency.py wraps them with a CapacityLimiter to prevent deadlocks. The key risk is that custom middleware or manually called sync functions bypass this protection."
+    relevant_files:
+      - fastapi/dependencies/utils.py
+      - fastapi/concurrency.py
+      - fastapi/routing.py
+    prompt_profile:
+      profile_id: fastapi-behavior-sync-v1
+      intent: behavior-debugging
+      constraints: {max_context: balanced}
+      focus_files: [fastapi/concurrency.py, fastapi/dependencies/utils.py]
+      focus_keywords: [sync, async, threadpool, blocking, event loop]
+      focus_symbols: [run_in_threadpool, contextmanager_in_threadpool, solve_dependencies]
+
+  - task_id: fastapi-tf5-001
+    family: TF5
+    operation_family: OF5
+    repo: fastapi/fastapi
+    question: "How does FastAPI validate and sanitize request input? What protection exists against injection attacks via request bodies?"
+    ground_truth_summary: "FastAPI uses Pydantic models for automatic request validation. Request bodies are parsed and validated against type annotations by the dependency injection system. RequestValidationError is raised for invalid input, returning 422 with error details. The validation happens in solve_dependencies → get_body_field → Pydantic model validation. However, FastAPI does NOT sanitize string content — it validates structure/types but not content. SQL injection, XSS prevention etc. are the developer's responsibility."
+    relevant_files:
+      - fastapi/routing.py
+      - fastapi/exception_handlers.py
+      - fastapi/dependencies/utils.py
+    prompt_profile:
+      profile_id: fastapi-security-validation-v1
+      intent: security-compliance
+      constraints: {max_context: balanced}
+      focus_keywords: [validation, security, inject, sanitize, request body]
+      focus_symbols: [RequestValidationError, request_validation_exception_handler]
+
+  # === NEST (TypeScript) TASKS ===
+  - task_id: nest-tf1-001
+    family: TF1
+    operation_family: OF1
+    repo: nestjs/nest
+    question: "How does NestJS's dependency injection container work? What is the lifecycle of resolving an injectable?"
+    ground_truth_summary: "The Injector class in packages/core/injector/injector.ts resolves dependencies via metadata reflection (PARAMTYPES_METADATA, SELF_DECLARED_DEPS_METADATA). It creates InstanceWrapper objects for each provider, resolves constructor parameters recursively, handles circular dependencies via Barrier/SettlementSignal, and supports different scopes (STATIC_CONTEXT for singletons). Module class in injector/module.ts manages the provider registry. The resolution flows: Module → Injector.loadProvider → resolveConstructorParams → instantiateClass."
+    relevant_files:
+      - packages/core/injector/injector.ts
+      - packages/core/injector/module.ts
+      - packages/core/injector/instance-wrapper.ts
+    prompt_profile:
+      profile_id: nest-arch-di-v1
+      intent: architecture-comprehension
+      constraints: {max_context: balanced}
+      focus_keywords: [injector, inject, provider, resolve, dependency]
+      focus_symbols: [Injector, Module, InstanceWrapper]
+
+  - task_id: nest-tf2-001
+    family: TF2
+    operation_family: OF2
+    repo: nestjs/nest
+    question: "If the GuardsConsumer's tryActivate method is changed to support priority ordering of guards, what other components are affected?"
+    ground_truth_summary: "GuardsConsumer.tryActivate() in packages/core/guards/guards-consumer.ts iterates guards sequentially using a for-of loop. It's called from RouterExecutionContext and the microservices layer. Changing to priority-ordered would require: modifying the guards array before iteration, potentially adding a priority field to the CanActivate interface (in @nestjs/common), updating the RouterExecutionContext that collects guards via reflector metadata, and ensuring the interceptors layer (which follows a similar pattern) is not affected."
+    relevant_files:
+      - packages/core/guards/guards-consumer.ts
+      - packages/core/router/router-execution-context.ts
+    prompt_profile:
+      profile_id: nest-impact-guards-v1
+      intent: impact-analysis
+      constraints: {max_context: balanced}
+      focus_files: [packages/core/guards/guards-consumer.ts]
+      focus_symbols: [GuardsConsumer, tryActivate]
+      focus_keywords: [guard, activate, canActivate]
+
+  - task_id: nest-tf4-001
+    family: TF4
+    operation_family: OF4
+    repo: nestjs/nest
+    question: "How does NestJS handle circular dependencies between providers? What error does the user see and is there a workaround?"
+    ground_truth_summary: "The Injector detects circular dependencies when resolving constructor params. CircularDependencyException from packages/core/errors/exceptions is thrown. The Injector uses forwardRef() to handle intentional circular references — this wraps the type reference in a function that's resolved lazily. The Barrier and SettlementSignal classes in the injector help manage async resolution ordering. The user sees 'A circular dependency has been detected' with the dependency path. Workaround: use forwardRef(() => TargetClass) in @Inject()."
+    relevant_files:
+      - packages/core/injector/injector.ts
+      - packages/core/errors/exceptions/circular-dependency.exception.ts
+    prompt_profile:
+      profile_id: nest-behavior-circular-v1
+      intent: behavior-debugging
+      constraints: {max_context: balanced}
+      focus_keywords: [circular, dependency, forwardRef, exception]
+      focus_symbols: [CircularDependencyException, Injector, Barrier]
+
+  - task_id: nest-tf5-001
+    family: TF5
+    operation_family: OF5
+    repo: nestjs/nest
+    question: "How does NestJS's guard system enforce authorization? Can a guard be bypassed through direct route access or websocket connections?"
+    ground_truth_summary: "Guards implement CanActivate interface with canActivate(context) returning boolean or Observable<boolean>. GuardsConsumer.tryActivate() iterates ALL guards — if any returns false, access is denied. Guards are collected via metadata reflection on the controller/handler. The context type (HTTP, WS, RPC) is set via setType(). For websockets, the same guard pipeline runs through WsProxy. However, guards only run on NestJS-routed endpoints — a raw express/fastify route bypass NestJS's middleware pipeline entirely, which could be a security gap."
+    relevant_files:
+      - packages/core/guards/guards-consumer.ts
+      - packages/core/helpers/execution-context-host.ts
+    prompt_profile:
+      profile_id: nest-security-guards-v1
+      intent: security-compliance
+      constraints: {max_context: balanced}
+      focus_keywords: [guard, authorize, security, canActivate, bypass]
+      focus_symbols: [GuardsConsumer, CanActivate, ExecutionContextHost]

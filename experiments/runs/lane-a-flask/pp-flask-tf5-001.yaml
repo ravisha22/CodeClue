@@ -1,0 +1,16 @@
+profile_id: flask-security-session-v1
+intent: security-compliance
+constraints:
+  max_context: balanced
+focus_files:
+- src/flask/sessions.py
+focus_symbols:
+- SecureCookieSessionInterface
+- open_session
+- save_session
+focus_keywords:
+- session
+- secret
+- cookie
+- sign
+- security

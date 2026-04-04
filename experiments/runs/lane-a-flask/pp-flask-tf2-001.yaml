@@ -1,0 +1,12 @@
+profile_id: flask-impact-ctx-v1
+intent: impact-analysis
+constraints:
+  max_context: balanced
+focus_files:
+- src/flask/ctx.py
+focus_symbols:
+- push
+- RequestContext
+focus_keywords:
+- push
+- context

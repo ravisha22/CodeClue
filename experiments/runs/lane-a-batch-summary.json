@@ -1,0 +1,55 @@
+{
+  "replay_set": "experiments\\reports\\pr-replay-set-v1.json",
+  "repos_attempted": 3,
+  "repos_succeeded": 3,
+  "results": [
+    {
+      "commit_id": "c34d6e81fd8e405e6d4178bf24b364918811ef17",
+      "families_needing_lookup": [
+        "OF1",
+        "OF2",
+        "OF5"
+      ],
+      "graph_edges": 2163,
+      "graph_nodes": 1712,
+      "integrity_passed": true,
+      "mean_confidence": 0.55343,
+      "repo": "pallets/flask",
+      "status": "ok",
+      "total_suggested_actions": 421,
+      "validation_passed": true
+    },
+    {
+      "commit_id": "8a9258b169dce3e321f614c14b1877c18750d6c7",
+      "families_needing_lookup": [
+        "OF1",
+        "OF2",
+        "OF5"
+      ],
+      "graph_edges": 6012,
+      "graph_nodes": 6359,
+      "integrity_passed": true,
+      "mean_confidence": 0.42359,
+      "repo": "fastapi/fastapi",
+      "status": "ok",
+      "total_suggested_actions": 252,
+      "validation_passed": true
+    },
+    {
+      "commit_id": "8366143e4086d3a70c286ac59abff073d08464bc",
+      "families_needing_lookup": [
+        "OF1",
+        "OF2"
+      ],
+      "graph_edges": 3060,
+      "graph_nodes": 3803,
+      "integrity_passed": true,
+      "mean_confidence": 0.591241,
+      "repo": "nestjs/nest",
+      "status": "ok",
+      "total_suggested_actions": 172,
+      "validation_passed": true
+    }
+  ],
+  "timestamp": "2026-04-01T09:22:22.258111+00:00"
+}

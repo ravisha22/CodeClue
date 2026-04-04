@@ -1,0 +1,93 @@
+{
+  "tasks": [
+    {
+      "actions": 23,
+      "conf": 0.0813,
+      "edges": 22,
+      "family": "TF2",
+      "hint": "expanded_lookup",
+      "nodes": 21,
+      "of": "OF2",
+      "repo": "encode/httpx",
+      "task_id": "httpx-tf2-001"
+    },
+    {
+      "actions": 123,
+      "conf": 0.935,
+      "edges": 145,
+      "family": "TF4",
+      "hint": "clue_only",
+      "nodes": 123,
+      "of": "OF4",
+      "repo": "encode/httpx",
+      "task_id": "httpx-tf4-001"
+    },
+    {
+      "actions": 23,
+      "conf": 1.0,
+      "edges": 23,
+      "family": "TF1",
+      "hint": "clue_only",
+      "nodes": 38,
+      "of": "OF1",
+      "repo": "expressjs/express",
+      "task_id": "express-tf1-001"
+    },
+    {
+      "actions": 59,
+      "conf": 0.9661,
+      "edges": 208,
+      "family": "TF5",
+      "hint": "clue_only",
+      "nodes": 59,
+      "of": "OF5",
+      "repo": "expressjs/express",
+      "task_id": "express-tf5-001"
+    },
+    {
+      "actions": 1,
+      "conf": 1.0,
+      "edges": 1,
+      "family": "TF3",
+      "hint": "clue_only",
+      "nodes": 2,
+      "of": "OF3",
+      "repo": "typeorm/typeorm",
+      "task_id": "typeorm-tf3-001"
+    },
+    {
+      "actions": 2,
+      "conf": 0.0,
+      "edges": 0,
+      "family": "TF2",
+      "hint": "expanded_lookup",
+      "nodes": 1,
+      "of": "OF2",
+      "repo": "typeorm/typeorm",
+      "task_id": "typeorm-tf2-001"
+    },
+    {
+      "actions": 158,
+      "conf": 0.7318,
+      "edges": 225,
+      "family": "TF1",
+      "hint": "targeted_lookup",
+      "nodes": 160,
+      "of": "OF1",
+      "repo": "gin-gonic/gin",
+      "task_id": "gin-tf1-001"
+    },
+    {
+      "actions": 162,
+      "conf": 0.6443,
+      "edges": 560,
+      "family": "TF5",
+      "hint": "targeted_lookup",
+      "nodes": 160,
+      "of": "OF5",
+      "repo": "gin-gonic/gin",
+      "task_id": "gin-tf5-001"
+    }
+  ],
+  "version": "v2-fixes"
+}

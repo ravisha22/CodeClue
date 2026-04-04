@@ -1,0 +1,329 @@
+SessionMixin.permanent:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "bool"
+      description: "Returns the value of '_permanent' key in the session dict, defaulting to False"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SessionMixin.permanent.setter:
+  preconditions: []
+  postconditions:
+    - type: state_mutation
+      target: "self['_permanent']"
+      description: "Sets the '_permanent' key to bool(value)"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SecureCookieSession.__init__:
+  preconditions: []
+  postconditions:
+    - type: state_mutation
+      target: "self"
+      description: "Initializes the CallbackDict with optional initial data and sets up on_update callback to mark modified=True"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+NullSession._fail:
+  preconditions: []
+  postconditions: []
+  failure_modes:
+    - trigger: "Always"
+      effect: "RuntimeError raised indicating session is unavailable due to missing secret_key"
+      exception_type: "RuntimeError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SessionInterface.make_null_session:
+  preconditions:
+    - type: parameter_valid
+      target: "app"
+      constraint: "Must be a Flask app instance"
+  postconditions:
+    - type: return_value
+      target: "NullSession"
+      description: "Returns an instance of null_session_class"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SessionInterface.is_null_session:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "bool"
+      description: "Returns True if obj is an instance of null_session_class"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SessionInterface.get_cookie_name:
+  preconditions:
+    - type: config_required
+      target: "SESSION_COOKIE_NAME"
+      constraint: "Must be set in app.config"
+  postconditions:
+    - type: return_value
+      target: "str"
+      description: "Returns the value of SESSION_COOKIE_NAME config"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SessionInterface.get_cookie_domain:
+  preconditions:
+    - type: config_required
+      target: "SESSION_COOKIE_DOMAIN"
+      constraint: "Must be accessible in app.config"
+  postconditions:
+    - type: return_value
+      target: "str | None"
+      description: "Returns the value of SESSION_COOKIE_DOMAIN config"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SessionInterface.get_cookie_path:
+  preconditions:
+    - type: config_required
+      target: "SESSION_COOKIE_PATH"
+      constraint: "Must be accessible in app.config"
+  postconditions:
+    - type: return_value
+      target: "str"
+      description: "Returns SESSION_COOKIE_PATH if set, otherwise APPLICATION_ROOT"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SessionInterface.get_cookie_httponly:
+  preconditions:
+    - type: config_required
+      target: "SESSION_COOKIE_HTTPONLY"
+      constraint: "Must be accessible in app.config"
+  postconditions:
+    - type: return_value
+      target: "bool"
+      description: "Returns the value of SESSION_COOKIE_HTTPONLY config"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SessionInterface.get_cookie_secure:
+  preconditions:
+    - type: config_required
+      target: "SESSION_COOKIE_SECURE"
+      constraint: "Must be accessible in app.config"
+  postconditions:
+    - type: return_value
+      target: "bool"
+      description: "Returns the value of SESSION_COOKIE_SECURE config"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SessionInterface.get_cookie_samesite:
+  preconditions:
+    - type: config_required
+      target: "SESSION_COOKIE_SAMESITE"
+      constraint: "Must be accessible in app.config"
+  postconditions:
+    - type: return_value
+      target: "str | None"
+      description: "Returns the value of SESSION_COOKIE_SAMESITE config"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SessionInterface.get_cookie_partitioned:
+  preconditions:
+    - type: config_required
+      target: "SESSION_COOKIE_PARTITIONED"
+      constraint: "Must be accessible in app.config"
+  postconditions:
+    - type: return_value
+      target: "bool"
+      description: "Returns the value of SESSION_COOKIE_PARTITIONED config"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SessionInterface.get_expiration_time:
+  preconditions:
+    - type: parameter_valid
+      target: "session"
+      constraint: "Must implement SessionMixin"
+  postconditions:
+    - type: return_value
+      target: "datetime | None"
+      description: "Returns now + permanent_session_lifetime if session.permanent, otherwise None"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SessionInterface.should_set_cookie:
+  preconditions:
+    - type: parameter_valid
+      target: "session"
+      constraint: "Must implement SessionMixin"
+  postconditions:
+    - type: return_value
+      target: "bool"
+      description: "Returns True if session.modified or (session.permanent and SESSION_REFRESH_EACH_REQUEST)"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SessionInterface.open_session:
+  preconditions:
+    - type: parameter_valid
+      target: "app"
+      constraint: "Must be a Flask app instance"
+    - type: parameter_valid
+      target: "request"
+      constraint: "Must be a Request instance"
+  postconditions: []
+  failure_modes:
+    - trigger: "Always (abstract method)"
+      effect: "NotImplementedError raised"
+      exception_type: "NotImplementedError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SessionInterface.save_session:
+  preconditions:
+    - type: parameter_valid
+      target: "app"
+      constraint: "Must be a Flask app instance"
+    - type: parameter_valid
+      target: "session"
+      constraint: "Must implement SessionMixin"
+    - type: parameter_valid
+      target: "response"
+      constraint: "Must be a Response instance"
+  postconditions: []
+  failure_modes:
+    - trigger: "Always (abstract method)"
+      effect: "NotImplementedError raised"
+      exception_type: "NotImplementedError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+_lazy_sha1:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "hash object"
+      description: "Returns hashlib.sha1 hash object, deferring access until runtime for FIPS compatibility"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SecureCookieSessionInterface.get_signing_serializer:
+  preconditions:
+    - type: config_required
+      target: "app.secret_key"
+      constraint: "Must be set for signing to work"
+  postconditions:
+    - type: return_value
+      target: "URLSafeTimedSerializer | None"
+      description: "Returns a configured URLSafeTimedSerializer with the secret key and fallback keys, or None if no secret_key"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SecureCookieSessionInterface.open_session:
+  preconditions:
+    - type: config_required
+      target: "app.secret_key"
+      constraint: "Must be set for session to be opened (returns None otherwise)"
+  postconditions:
+    - type: return_value
+      target: "SecureCookieSession | None"
+      description: "Returns None if no signing serializer, empty session if no cookie, deserialized session from cookie, or empty session on bad signature"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+SecureCookieSessionInterface.save_session:
+  preconditions:
+    - type: parameter_valid
+      target: "response"
+      constraint: "Must be a Response instance"
+  postconditions:
+    - type: side_effect
+      target: "response"
+      description: "Sets or deletes the session cookie on the response based on session state. Adds Vary: Cookie header if session was accessed."
+    - type: state_mutation
+      target: "response.headers"
+      description: "Modifies Set-Cookie and Vary headers"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false

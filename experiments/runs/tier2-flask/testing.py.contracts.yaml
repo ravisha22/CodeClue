@@ -1,0 +1,203 @@
+EnvironBuilder.__init__:
+  preconditions:
+    - type: parameter_valid
+      target: "app"
+      constraint: "Must be a Flask application instance"
+    - type: parameter_valid
+      target: "base_url, subdomain, url_scheme"
+      constraint: "Cannot pass subdomain or url_scheme together with base_url"
+  postconditions:
+    - type: state_mutation
+      target: "self.app"
+      description: "Sets the Flask app reference"
+    - type: state_mutation
+      target: "base_url"
+      description: "If base_url not provided, builds it from SERVER_NAME, APPLICATION_ROOT, subdomain, and PREFERRED_URL_SCHEME config"
+  failure_modes:
+    - trigger: "Both base_url and (subdomain or url_scheme) provided"
+      effect: "AssertionError raised"
+      exception_type: "AssertionError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+EnvironBuilder.json_dumps:
+  preconditions:
+    - type: parameter_valid
+      target: "obj"
+      constraint: "Must be JSON-serializable"
+  postconditions:
+    - type: return_value
+      target: "str"
+      description: "Returns JSON string serialized using the app's JSON provider"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+_get_werkzeug_version:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "str"
+      description: "Returns the installed werkzeug version string, cached after first call"
+    - type: state_mutation
+      target: "_werkzeug_version module global"
+      description: "Caches the version string on first call"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+FlaskClient.__init__:
+  preconditions: []
+  postconditions:
+    - type: state_mutation
+      target: "self"
+      description: "Initializes preserve_context=False, _new_contexts=[], _context_stack=ExitStack(), and environ_base with REMOTE_ADDR and User-Agent"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+FlaskClient.session_transaction:
+  preconditions:
+    - type: state_required
+      target: "self._cookies"
+      constraint: "Cookies must be enabled (use_cookies=True)"
+  postconditions:
+    - type: side_effect
+      target: "session"
+      description: "Opens a session in a test request context, yields it for modification, then saves it back and updates client cookies"
+  failure_modes:
+    - trigger: "self._cookies is None"
+      effect: "TypeError raised"
+      exception_type: "TypeError"
+    - trigger: "Session backend returns None"
+      effect: "RuntimeError raised"
+      exception_type: "RuntimeError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+FlaskClient._copy_environ:
+  preconditions:
+    - type: parameter_valid
+      target: "other"
+      constraint: "Must be a WSGI environ dict"
+  postconditions:
+    - type: return_value
+      target: "WSGIEnvironment"
+      description: "Returns a merged dict of environ_base and other, optionally adding werkzeug.debug.preserve_context if preserve_context is True"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+FlaskClient._request_from_builder_args:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "BaseRequest"
+      description: "Creates an EnvironBuilder from the args/kwargs with merged environ_base, builds and returns the request"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+FlaskClient.open:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "TestResponse"
+      description: "Sends a request to the app and returns the test response. Handles EnvironBuilder, dict, BaseRequest, or keyword args. Preserves contexts if configured."
+    - type: side_effect
+      target: "self._context_stack"
+      description: "Pops previously preserved contexts, re-pushes new ones after the request"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+FlaskClient.__enter__:
+  preconditions:
+    - type: state_required
+      target: "self.preserve_context"
+      constraint: "Must be False (cannot nest client invocations)"
+  postconditions:
+    - type: state_mutation
+      target: "self.preserve_context"
+      description: "Set to True"
+    - type: return_value
+      target: "FlaskClient"
+      description: "Returns self"
+  failure_modes:
+    - trigger: "self.preserve_context is already True"
+      effect: "RuntimeError raised"
+      exception_type: "RuntimeError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+FlaskClient.__exit__:
+  preconditions: []
+  postconditions:
+    - type: state_mutation
+      target: "self.preserve_context"
+      description: "Set to False"
+    - type: side_effect
+      target: "self._context_stack"
+      description: "Closes the context stack, popping all preserved contexts"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+FlaskCliRunner.__init__:
+  preconditions:
+    - type: parameter_valid
+      target: "app"
+      constraint: "Must be a Flask application instance"
+  postconditions:
+    - type: state_mutation
+      target: "self.app"
+      description: "Stores the Flask app reference"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+FlaskCliRunner.invoke:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "Result"
+      description: "Invokes the CLI command (defaulting to app.cli) in an isolated environment with ScriptInfo"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false

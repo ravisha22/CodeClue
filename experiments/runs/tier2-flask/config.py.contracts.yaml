@@ -1,0 +1,209 @@
+ConfigAttribute.__init__:
+  preconditions:
+    - type: parameter_valid
+      target: "name"
+      constraint: "Must be a string matching a config key"
+  postconditions:
+    - type: state_mutation
+      target: "self.__name__, self.get_converter"
+      description: "Stores the config key name and optional converter callable"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: true
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+ConfigAttribute.__get__:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "T | Self"
+      description: "Returns self if accessed on the class (obj is None), otherwise returns the config value, optionally converted via get_converter"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: true
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: true
+
+ConfigAttribute.__set__:
+  preconditions:
+    - type: parameter_valid
+      target: "obj"
+      constraint: "Must be an App instance"
+  postconditions:
+    - type: state_mutation
+      target: "obj.config[self.__name__]"
+      description: "Sets the config value for the named key"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Config.__init__:
+  preconditions:
+    - type: parameter_valid
+      target: "root_path"
+      constraint: "Must be a valid path string or PathLike"
+  postconditions:
+    - type: state_mutation
+      target: "self"
+      description: "Initializes the dict with optional defaults and stores root_path"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Config.from_envvar:
+  preconditions:
+    - type: parameter_valid
+      target: "variable_name"
+      constraint: "Must be a string naming an environment variable"
+  postconditions:
+    - type: return_value
+      target: "bool"
+      description: "Returns True if config file was loaded successfully"
+    - type: state_mutation
+      target: "self"
+      description: "Updates config from the file pointed to by the env variable"
+  failure_modes:
+    - trigger: "Environment variable not set and silent=False"
+      effect: "RuntimeError raised"
+      exception_type: "RuntimeError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Config.from_prefixed_env:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "bool"
+      description: "Always returns True"
+    - type: state_mutation
+      target: "self"
+      description: "Loads all env vars with the given prefix, parsing values via the loads function, supporting nested keys via double underscores"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Config.from_pyfile:
+  preconditions:
+    - type: parameter_valid
+      target: "filename"
+      constraint: "Must be a path to a Python file, absolute or relative to root_path"
+  postconditions:
+    - type: return_value
+      target: "bool"
+      description: "Returns True if the file was loaded successfully"
+    - type: state_mutation
+      target: "self"
+      description: "Executes the Python file and imports uppercase attributes into config"
+  failure_modes:
+    - trigger: "File not found/not accessible and silent=False"
+      effect: "OSError raised with enhanced message"
+      exception_type: "OSError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: true
+
+Config.from_object:
+  preconditions:
+    - type: parameter_valid
+      target: "obj"
+      constraint: "Must be a string (import path) or an object with uppercase attributes"
+  postconditions:
+    - type: state_mutation
+      target: "self"
+      description: "Updates config with all uppercase attributes from the given object"
+  failure_modes:
+    - trigger: "String import path that cannot be resolved"
+      effect: "ImportError raised"
+      exception_type: "ImportError"
+  complexity_indicators:
+    uses_reflection: true
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Config.from_file:
+  preconditions:
+    - type: parameter_valid
+      target: "filename"
+      constraint: "Must be a path to a data file, absolute or relative to root_path"
+    - type: parameter_valid
+      target: "load"
+      constraint: "Must be a callable that takes a file handle and returns a mapping"
+  postconditions:
+    - type: return_value
+      target: "bool"
+      description: "Returns True if file was loaded successfully"
+    - type: state_mutation
+      target: "self"
+      description: "Opens the file, passes to load callable, and updates config via from_mapping"
+  failure_modes:
+    - trigger: "File not found and silent=False"
+      effect: "OSError raised with enhanced message"
+      exception_type: "OSError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Config.from_mapping:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "bool"
+      description: "Always returns True"
+    - type: state_mutation
+      target: "self"
+      description: "Updates config with uppercase keys from the given mapping and kwargs"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Config.get_namespace:
+  preconditions:
+    - type: parameter_valid
+      target: "namespace"
+      constraint: "Must be a string prefix"
+  postconditions:
+    - type: return_value
+      target: "dict"
+      description: "Returns a dict of config items matching the namespace prefix, optionally lowercased and with prefix trimmed"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Config.__repr__:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "str"
+      description: "Returns a repr string showing the class name and dict contents"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false

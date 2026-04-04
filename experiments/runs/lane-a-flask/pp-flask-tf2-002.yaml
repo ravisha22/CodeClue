@@ -1,0 +1,13 @@
+profile_id: flask-impact-config-v1
+intent: impact-analysis
+constraints:
+  max_context: balanced
+focus_files:
+- src/flask/config.py
+focus_symbols:
+- Config
+- from_file
+- from_object
+focus_keywords:
+- config
+- load

@@ -1,0 +1,691 @@
+_make_timedelta:
+  preconditions:
+    - type: parameter_valid
+      target: "value"
+      constraint: "Must be None, a timedelta instance, or an int (seconds)"
+  postconditions:
+    - type: return_value
+      target: "timedelta | None"
+      description: "Returns None if value is None, the timedelta unchanged if already a timedelta, or timedelta(seconds=value) if int"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+remove_ctx:
+  preconditions:
+    - type: parameter_valid
+      target: "f"
+      constraint: "Must be a callable (function/method)"
+  postconditions:
+    - type: return_value
+      target: "wrapped function"
+      description: "Returns a wrapper that strips the first AppContext arg if present before calling f"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+add_ctx:
+  preconditions:
+    - type: parameter_valid
+      target: "f"
+      constraint: "Must be a callable (function/method)"
+  postconditions:
+    - type: return_value
+      target: "wrapped function"
+      description: "Returns a wrapper that injects the current AppContext as the first arg if not already present"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.__init_subclass__:
+  preconditions: []
+  postconditions:
+    - type: side_effect
+      target: "cls"
+      description: "Detects overridden methods with old signatures missing ctx param, wraps them with remove_ctx/add_ctx decorators, and emits DeprecationWarning"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: true
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: true
+
+Flask.__init__:
+  preconditions:
+    - type: parameter_valid
+      target: "import_name"
+      constraint: "Must be a string identifying the application package or module"
+  postconditions:
+    - type: state_mutation
+      target: "self.cli"
+      description: "Creates and assigns a Click AppGroup for CLI commands"
+    - type: side_effect
+      target: "URL rules"
+      description: "Adds a static file URL rule if static_folder is configured and host_matching is consistent"
+  failure_modes:
+    - trigger: "static_host/host_matching mismatch when has_static_folder is True"
+      effect: "AssertionError raised"
+      exception_type: "AssertionError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.get_send_file_max_age:
+  preconditions:
+    - type: state_required
+      target: "self.config"
+      constraint: "SEND_FILE_MAX_AGE_DEFAULT must be accessible in config"
+  postconditions:
+    - type: return_value
+      target: "int | None"
+      description: "Returns None if config value is None, int seconds if timedelta, or the raw config value otherwise"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.send_static_file:
+  preconditions:
+    - type: state_required
+      target: "self.has_static_folder"
+      constraint: "static_folder must be set"
+  postconditions:
+    - type: return_value
+      target: "Response"
+      description: "Serves a file from static_folder using send_from_directory with computed max_age"
+  failure_modes:
+    - trigger: "has_static_folder is False"
+      effect: "RuntimeError raised"
+      exception_type: "RuntimeError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.open_resource:
+  preconditions:
+    - type: parameter_valid
+      target: "mode"
+      constraint: "Must be 'r', 'rt', or 'rb'"
+    - type: parameter_valid
+      target: "resource"
+      constraint: "Path relative to root_path"
+  postconditions:
+    - type: return_value
+      target: "IO"
+      description: "Returns an open file handle for the resource in the specified mode"
+  failure_modes:
+    - trigger: "mode not in {'r', 'rt', 'rb'}"
+      effect: "ValueError raised"
+      exception_type: "ValueError"
+    - trigger: "File does not exist at root_path/resource"
+      effect: "FileNotFoundError raised"
+      exception_type: "FileNotFoundError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.open_instance_resource:
+  preconditions:
+    - type: parameter_valid
+      target: "resource"
+      constraint: "Path relative to instance_path"
+  postconditions:
+    - type: return_value
+      target: "IO"
+      description: "Returns an open file handle for the resource in the specified mode, relative to instance_path"
+  failure_modes:
+    - trigger: "File does not exist at instance_path/resource"
+      effect: "FileNotFoundError raised"
+      exception_type: "FileNotFoundError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.create_jinja_environment:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "Environment"
+      description: "Returns a configured Jinja2 Environment with Flask globals (url_for, get_flashed_messages, config, request, session, g) and policies set"
+    - type: state_mutation
+      target: "Environment.globals"
+      description: "Injects url_for, get_flashed_messages, config, request, session, g into template globals"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+Flask.create_url_adapter:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "MapAdapter | None"
+      description: "Returns a URL adapter bound to the request environ if request given, or bound to SERVER_NAME config if no request but SERVER_NAME is set, or None otherwise"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.raise_routing_exception:
+  preconditions:
+    - type: state_required
+      target: "request.routing_exception"
+      constraint: "Must be set (not None)"
+  postconditions:
+    - type: side_effect
+      target: "exception"
+      description: "Always raises an exception — either the routing_exception directly, or FormDataRoutingRedirect in debug mode for non-GET/HEAD/OPTIONS redirects"
+  failure_modes:
+    - trigger: "Always raises"
+      effect: "Re-raises request.routing_exception or FormDataRoutingRedirect"
+      exception_type: "RoutingException"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.update_template_context:
+  preconditions:
+    - type: parameter_valid
+      target: "context"
+      constraint: "Must be a mutable dict"
+  postconditions:
+    - type: state_mutation
+      target: "context"
+      description: "Updates context dict with output of template context processors, preserving original values passed to render_template"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+Flask.make_shell_context:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "dict"
+      description: "Returns a dict with 'app' and 'g', updated by all registered shell context processors"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+Flask.run:
+  preconditions: []
+  postconditions:
+    - type: side_effect
+      target: "development server"
+      description: "Starts a Werkzeug development server. Loads dotenv files, sets debug mode, resolves host/port from config or params, then calls run_simple"
+    - type: state_mutation
+      target: "self._got_first_request"
+      description: "Reset to False in the finally block"
+  failure_modes:
+    - trigger: "FLASK_RUN_FROM_CLI is 'true' and not running from reloader"
+      effect: "Prints warning and returns without starting server"
+      exception_type: null
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.test_client:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "FlaskClient"
+      description: "Returns an instance of test_client_class (or FlaskClient if not set) configured with the app and response_class"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+Flask.test_cli_runner:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "FlaskCliRunner"
+      description: "Returns an instance of test_cli_runner_class (or FlaskCliRunner if not set) configured with the app"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+Flask.handle_http_exception:
+  preconditions:
+    - type: parameter_valid
+      target: "e"
+      constraint: "Must be an HTTPException instance"
+  postconditions:
+    - type: return_value
+      target: "HTTPException | ResponseReturnValue"
+      description: "Returns the exception unchanged if code is None or is a RoutingException; otherwise looks up a registered error handler and invokes it, or returns the exception if no handler found"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+Flask.handle_user_exception:
+  preconditions:
+    - type: parameter_valid
+      target: "e"
+      constraint: "Must be an Exception instance"
+  postconditions:
+    - type: return_value
+      target: "HTTPException | ResponseReturnValue"
+      description: "Delegates to handle_http_exception for HTTPExceptions (unless trapped), finds and invokes error handler if registered, or re-raises"
+  failure_modes:
+    - trigger: "No handler found for the exception type"
+      effect: "Re-raises the original exception"
+      exception_type: null
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+Flask.handle_exception:
+  preconditions:
+    - type: parameter_valid
+      target: "e"
+      constraint: "Must be an Exception"
+  postconditions:
+    - type: side_effect
+      target: "got_request_exception signal"
+      description: "Sends got_request_exception signal with the exception"
+    - type: return_value
+      target: "Response"
+      description: "Returns a finalized 500 InternalServerError response, possibly handled by a registered error handler"
+  failure_modes:
+    - trigger: "PROPAGATE_EXCEPTIONS is True (or debug/testing mode)"
+      effect: "Re-raises the exception"
+      exception_type: null
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+Flask.log_exception:
+  preconditions:
+    - type: parameter_valid
+      target: "exc_info"
+      constraint: "Must be a 3-tuple from sys.exc_info()"
+  postconditions:
+    - type: side_effect
+      target: "self.logger"
+      description: "Logs the exception at error level with request path and method"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.dispatch_request:
+  preconditions:
+    - type: state_required
+      target: "ctx.request"
+      constraint: "Request must be routed (url_rule set or routing_exception set)"
+  postconditions:
+    - type: return_value
+      target: "ResponseReturnValue"
+      description: "Returns the view function's return value for the matched endpoint, or an OPTIONS response if automatic options apply"
+  failure_modes:
+    - trigger: "request.routing_exception is not None"
+      effect: "Calls raise_routing_exception which raises"
+      exception_type: "HTTPException"
+  complexity_indicators:
+    uses_reflection: true
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+Flask.full_dispatch_request:
+  preconditions: []
+  postconditions:
+    - type: side_effect
+      target: "request_started signal"
+      description: "Sends request_started signal"
+    - type: state_mutation
+      target: "self._got_first_request"
+      description: "Set to True"
+    - type: return_value
+      target: "Response"
+      description: "Returns a finalized Response after preprocessing, dispatching, and finalizing"
+  failure_modes:
+    - trigger: "Exception during dispatch or preprocessing"
+      effect: "Delegates to handle_user_exception"
+      exception_type: null
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.finalize_request:
+  preconditions:
+    - type: parameter_valid
+      target: "rv"
+      constraint: "Must be a valid ResponseReturnValue or HTTPException"
+  postconditions:
+    - type: return_value
+      target: "Response"
+      description: "Converts rv to a Response via make_response, runs process_response, sends request_finished signal"
+    - type: event_emitted
+      target: "request_finished signal"
+      description: "Sends request_finished signal with the response"
+  failure_modes:
+    - trigger: "Error in process_response when from_error_handler is True"
+      effect: "Error is logged and suppressed"
+      exception_type: null
+    - trigger: "Error in process_response when from_error_handler is False"
+      effect: "Exception propagates"
+      exception_type: null
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.make_default_options_response:
+  preconditions:
+    - type: state_required
+      target: "ctx.url_adapter"
+      constraint: "URL adapter must be available"
+  postconditions:
+    - type: return_value
+      target: "Response"
+      description: "Returns a Response with the Allow header set to the allowed methods for the matched URL"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.ensure_sync:
+  preconditions:
+    - type: parameter_valid
+      target: "func"
+      constraint: "Must be a callable"
+  postconditions:
+    - type: return_value
+      target: "Callable"
+      description: "Returns func unchanged if synchronous, or wraps async functions via async_to_sync"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.async_to_sync:
+  preconditions:
+    - type: parameter_valid
+      target: "func"
+      constraint: "Must be a coroutine function"
+  postconditions:
+    - type: return_value
+      target: "Callable"
+      description: "Returns a synchronous wrapper around the coroutine function using asgiref.sync.async_to_sync"
+  failure_modes:
+    - trigger: "asgiref is not installed"
+      effect: "RuntimeError raised with install instructions"
+      exception_type: "RuntimeError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.url_for:
+  preconditions:
+    - type: parameter_valid
+      target: "endpoint"
+      constraint: "Must be a string naming a registered URL endpoint"
+  postconditions:
+    - type: return_value
+      target: "str"
+      description: "Returns a URL string for the given endpoint with the given values, optionally with anchor, scheme, and external flag"
+  failure_modes:
+    - trigger: "No active request and SERVER_NAME not configured"
+      effect: "RuntimeError raised"
+      exception_type: "RuntimeError"
+    - trigger: "_scheme set but _external is False"
+      effect: "ValueError raised"
+      exception_type: "ValueError"
+    - trigger: "BuildError from url_adapter.build"
+      effect: "Delegates to handle_url_build_error which may raise BuildError"
+      exception_type: "BuildError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.make_response:
+  preconditions:
+    - type: parameter_valid
+      target: "rv"
+      constraint: "Must be a valid response return value: str, bytes, dict, list, tuple, iterator, Response, BaseResponse, or callable"
+  postconditions:
+    - type: return_value
+      target: "Response"
+      description: "Converts the view return value to a proper Response instance, applying status and headers if provided via tuple unpacking"
+  failure_modes:
+    - trigger: "rv is a tuple with length != 2 or 3"
+      effect: "TypeError raised"
+      exception_type: "TypeError"
+    - trigger: "rv is None"
+      effect: "TypeError raised with message about view returning None"
+      exception_type: "TypeError"
+    - trigger: "rv is an unsupported type"
+      effect: "TypeError raised with message listing valid return types"
+      exception_type: "TypeError"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+Flask.preprocess_request:
+  preconditions:
+    - type: state_required
+      target: "ctx.request"
+      constraint: "Must be in a request context"
+  postconditions:
+    - type: return_value
+      target: "ResponseReturnValue | None"
+      description: "Returns None if all before_request handlers pass, or the first non-None return value from a before_request handler"
+    - type: side_effect
+      target: "url_value_preprocessors"
+      description: "Calls all registered URL value preprocessors for the app and matching blueprints"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+Flask.process_response:
+  preconditions:
+    - type: parameter_valid
+      target: "response"
+      constraint: "Must be a Response instance"
+    - type: state_required
+      target: "ctx"
+      constraint: "Must be in a request context with AppContext"
+  postconditions:
+    - type: return_value
+      target: "Response"
+      description: "Returns the response after running after_request functions (per-request, blueprint, and app-level) and saving the session"
+    - type: side_effect
+      target: "session"
+      description: "Saves the session via session_interface.save_session if not a null session"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+Flask.do_teardown_request:
+  preconditions:
+    - type: state_required
+      target: "ctx.request"
+      constraint: "Must be in a request context"
+  postconditions:
+    - type: side_effect
+      target: "teardown_request_funcs"
+      description: "Calls all registered teardown_request functions for blueprints and app, collecting errors"
+    - type: event_emitted
+      target: "request_tearing_down signal"
+      description: "Sends request_tearing_down signal with exc argument"
+  failure_modes:
+    - trigger: "Any teardown function raises"
+      effect: "All errors collected and raised as BaseExceptionGroup (or first error on Python < 3.11)"
+      exception_type: "BaseExceptionGroup"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+Flask.do_teardown_appcontext:
+  preconditions: []
+  postconditions:
+    - type: side_effect
+      target: "teardown_appcontext_funcs"
+      description: "Calls all registered teardown_appcontext functions, collecting errors"
+    - type: event_emitted
+      target: "appcontext_tearing_down signal"
+      description: "Sends appcontext_tearing_down signal with exc argument"
+  failure_modes:
+    - trigger: "Any teardown function raises"
+      effect: "All errors collected and raised as BaseExceptionGroup (or first error on Python < 3.11)"
+      exception_type: "BaseExceptionGroup"
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: true
+    uses_metaprogramming: false
+
+Flask.app_context:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "AppContext"
+      description: "Returns a new AppContext for this app, usable as a context manager"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.request_context:
+  preconditions:
+    - type: parameter_valid
+      target: "environ"
+      constraint: "Must be a valid WSGI environment dict"
+  postconditions:
+    - type: return_value
+      target: "AppContext"
+      description: "Returns an AppContext created from the WSGI environ with request information"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.test_request_context:
+  preconditions: []
+  postconditions:
+    - type: return_value
+      target: "AppContext"
+      description: "Returns an AppContext with a test request created via EnvironBuilder from the given arguments"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.wsgi_app:
+  preconditions:
+    - type: parameter_valid
+      target: "environ"
+      constraint: "Must be a valid WSGI environment dict"
+    - type: parameter_valid
+      target: "start_response"
+      constraint: "Must be a WSGI start_response callable"
+  postconditions:
+    - type: return_value
+      target: "Iterable[bytes]"
+      description: "Returns the WSGI response iterable after full request dispatch"
+    - type: side_effect
+      target: "context"
+      description: "Pushes and pops the request context, handling teardown and debug context preservation"
+  failure_modes:
+    - trigger: "Unhandled exception during dispatch"
+      effect: "Delegates to handle_exception; if that also fails, re-raises. Context is always popped in finally."
+      exception_type: null
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false
+
+Flask.__call__:
+  preconditions:
+    - type: parameter_valid
+      target: "environ"
+      constraint: "Must be a valid WSGI environment dict"
+    - type: parameter_valid
+      target: "start_response"
+      constraint: "Must be a WSGI start_response callable"
+  postconditions:
+    - type: return_value
+      target: "Iterable[bytes]"
+      description: "Delegates to wsgi_app and returns its result"
+  failure_modes: []
+  complexity_indicators:
+    uses_reflection: false
+    uses_generics: false
+    uses_dynamic_dispatch: false
+    uses_metaprogramming: false

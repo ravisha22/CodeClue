@@ -1,0 +1,328 @@
+{
+  "cct": {
+    "counts": {
+      "expected_edges": 1,
+      "expected_nodes": 2,
+      "observed_edges": 1,
+      "observed_nodes": 2
+    },
+    "metrics": {
+      "CRR": 1.0,
+      "CS": 1.0,
+      "PDI": 0.0,
+      "PP": 1.0,
+      "PR": 1.0
+    },
+    "passed": true,
+    "probe_id": "cct_probe_sample_v1",
+    "task_id": "task-sample-001"
+  },
+  "fidelity": {
+    "counts": {
+      "edge_true_positives": 2,
+      "expected_edges": 2,
+      "expected_nodes": 4,
+      "node_true_positives": 4,
+      "observed_edges": 6,
+      "observed_nodes": 5
+    },
+    "diff": {
+      "extra_edges": [
+        "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter.greet:11",
+        "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter:10",
+        "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:build_greeting:5",
+        "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:normalize_user:1"
+      ],
+      "extra_nodes": [
+        "symbol:examples/sample_module.py:Greeter:10"
+      ],
+      "missing_edges": [],
+      "missing_nodes": []
+    },
+    "gold_id": "gold-impact-sample-v1",
+    "metrics": {
+      "edge_f1": 0.5,
+      "edge_precision": 0.333333,
+      "edge_recall": 1.0,
+      "node_f1": 0.888889,
+      "node_precision": 0.8,
+      "node_recall": 1.0,
+      "path_fidelity": 0.694444
+    },
+    "operation_family": "OF2",
+    "passed": true,
+    "projection_trace_id": "trace-OF2-20260328033512",
+    "thresholds": {
+      "edge_f1_min": 0.5,
+      "node_f1_min": 0.65,
+      "path_fidelity_min": 0.6
+    }
+  },
+  "graph_file": "experiments/runs/pilot-fidelity/graph.json",
+  "integrity": {
+    "avg_dominator_set_size": 1.8241,
+    "edge_count": 166,
+    "edge_type_counts": {
+      "calls": 77,
+      "contains": 89
+    },
+    "invariant_checks": {
+      "connectivity_invariant": true,
+      "no_gap_invariant": true
+    },
+    "largest_scc": 1,
+    "module_roots": 19,
+    "node_count": 108,
+    "orphan_nodes": [],
+    "scc_count": 108,
+    "unreachable_nodes": []
+  },
+  "integrity_passed": true,
+  "passed": true,
+  "projection": {
+    "operation_family": "OF2",
+    "policy": {
+      "bidirectional": true,
+      "context_level": "focused",
+      "edge_types": [
+        "contains",
+        "calls"
+      ],
+      "max_depth": 3,
+      "node_budget": 80,
+      "seed_hops": 2
+    },
+    "projected_edges": [
+      {
+        "edge_id": "calls:symbol:examples/sample_module.py:Greeter.greet:11:symbol:examples/sample_module.py:build_greeting:5:12",
+        "edge_type": "calls",
+        "evidence": {
+          "line": 12,
+          "rel": "ast_call"
+        },
+        "from_node": "symbol:examples/sample_module.py:Greeter.greet:11",
+        "to_node": "symbol:examples/sample_module.py:build_greeting:5"
+      },
+      {
+        "edge_id": "calls:symbol:examples/sample_module.py:build_greeting:5:symbol:examples/sample_module.py:normalize_user:1:6",
+        "edge_type": "calls",
+        "evidence": {
+          "line": 6,
+          "rel": "ast_call"
+        },
+        "from_node": "symbol:examples/sample_module.py:build_greeting:5",
+        "to_node": "symbol:examples/sample_module.py:normalize_user:1"
+      },
+      {
+        "edge_id": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter.greet:11",
+        "edge_type": "contains",
+        "evidence": {
+          "rel": "ast_containment"
+        },
+        "from_node": "module:examples/sample_module.py",
+        "to_node": "symbol:examples/sample_module.py:Greeter.greet:11"
+      },
+      {
+        "edge_id": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter:10",
+        "edge_type": "contains",
+        "evidence": {
+          "rel": "ast_containment"
+        },
+        "from_node": "module:examples/sample_module.py",
+        "to_node": "symbol:examples/sample_module.py:Greeter:10"
+      },
+      {
+        "edge_id": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:build_greeting:5",
+        "edge_type": "contains",
+        "evidence": {
+          "rel": "ast_containment"
+        },
+        "from_node": "module:examples/sample_module.py",
+        "to_node": "symbol:examples/sample_module.py:build_greeting:5"
+      },
+      {
+        "edge_id": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:normalize_user:1",
+        "edge_type": "contains",
+        "evidence": {
+          "rel": "ast_containment"
+        },
+        "from_node": "module:examples/sample_module.py",
+        "to_node": "symbol:examples/sample_module.py:normalize_user:1"
+      }
+    ],
+    "projected_nodes": [
+      {
+        "confidence": 1.0,
+        "node_id": "module:examples/sample_module.py",
+        "node_type": "module",
+        "semantic_contract": {
+          "description": "Module-level semantic container",
+          "language": "python"
+        },
+        "source_anchor": {
+          "ast_path": "module",
+          "byte_end": 267,
+          "byte_start": 0,
+          "content_hash": "4648c2ba29058f71e7d79232272237b2d046b25564741082ece79abfc432e7b5",
+          "file_path": "examples/sample_module.py"
+        }
+      },
+      {
+        "confidence": 0.92,
+        "node_id": "symbol:examples/sample_module.py:Greeter.greet:11",
+        "node_type": "function",
+        "semantic_contract": {
+          "path": "function:Greeter.greet",
+          "symbol_name": "greet"
+        },
+        "source_anchor": {
+          "ast_path": "function:Greeter.greet",
+          "byte_end": 266,
+          "byte_start": 196,
+          "content_hash": "c53aad27d9757d09c6b08b8b6a320f117fb47da842ecaabe3ccf319f085481ef",
+          "file_path": "examples/sample_module.py"
+        }
+      },
+      {
+        "confidence": 0.92,
+        "node_id": "symbol:examples/sample_module.py:Greeter:10",
+        "node_type": "class",
+        "semantic_contract": {
+          "path": "class:Greeter",
+          "symbol_name": "Greeter"
+        },
+        "source_anchor": {
+          "ast_path": "class:Greeter",
+          "byte_end": 266,
+          "byte_start": 177,
+          "content_hash": "38b80ab4b7ee34a4b429dc82df79226aa03a47ab7d6b421f57c67a7fe55e2fe8",
+          "file_path": "examples/sample_module.py"
+        }
+      },
+      {
+        "confidence": 0.92,
+        "node_id": "symbol:examples/sample_module.py:build_greeting:5",
+        "node_type": "function",
+        "semantic_contract": {
+          "path": "function:build_greeting",
+          "symbol_name": "build_greeting"
+        },
+        "source_anchor": {
+          "ast_path": "function:build_greeting",
+          "byte_end": 174,
+          "byte_start": 72,
+          "content_hash": "479ded982072cd27cced16b6ef845ce0a12a0c38b8ffd5e99de9183cada81eeb",
+          "file_path": "examples/sample_module.py"
+        }
+      },
+      {
+        "confidence": 0.92,
+        "node_id": "symbol:examples/sample_module.py:normalize_user:1",
+        "node_type": "function",
+        "semantic_contract": {
+          "path": "function:normalize_user",
+          "symbol_name": "normalize_user"
+        },
+        "source_anchor": {
+          "ast_path": "function:normalize_user",
+          "byte_end": 69,
+          "byte_start": 0,
+          "content_hash": "8364f4f1d7adf6e1a15930f1026933b423db59fcadd4290252e6a49716fdf8e6",
+          "file_path": "examples/sample_module.py"
+        }
+      }
+    ],
+    "prompt_profile": {
+      "constraints": {
+        "enforce_traceability": true,
+        "max_context": "focused"
+      },
+      "focus_keywords": [
+        "greeting"
+      ],
+      "focus_symbols": [
+        "normalize_user"
+      ],
+      "intent": "impact-analysis",
+      "profile_id": "impact-default-v1",
+      "strict_mode": true
+    },
+    "reasoning_path": [
+      {
+        "depth": 0,
+        "node_id": "module:examples/sample_module.py",
+        "step": 1,
+        "via_edge": null
+      },
+      {
+        "depth": 0,
+        "node_id": "symbol:examples/sample_module.py:build_greeting:5",
+        "step": 2,
+        "via_edge": null
+      },
+      {
+        "depth": 0,
+        "node_id": "symbol:examples/sample_module.py:normalize_user:1",
+        "step": 3,
+        "via_edge": null
+      },
+      {
+        "depth": 1,
+        "node_id": "symbol:examples/sample_module.py:Greeter.greet:11",
+        "step": 4,
+        "via_edge": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter.greet:11"
+      },
+      {
+        "depth": 1,
+        "node_id": "symbol:examples/sample_module.py:Greeter:10",
+        "step": 5,
+        "via_edge": "contains:module:examples/sample_module.py:symbol:examples/sample_module.py:Greeter:10"
+      }
+    ],
+    "stats": {
+      "graph_edge_count": 166,
+      "graph_node_count": 108,
+      "initial_seed_count": 2,
+      "projected_edge_count": 6,
+      "projected_node_count": 5,
+      "seed_count": 3
+    },
+    "trace_id": "trace-OF2-20260328033512",
+    "validation": {
+      "candidate_edge_count": 6,
+      "candidate_node_count": 5,
+      "contradiction_rejection": 1.0,
+      "path_drift_index": 0.0,
+      "path_precision": 1.0,
+      "path_recall": 1.0,
+      "path_recall_global": 0.046296,
+      "traversed_edge_count": 6
+    }
+  },
+  "roundtrip": {
+    "edge_counts": {
+      "json": 147,
+      "original": 147,
+      "yaml": 147
+    },
+    "hashes": {
+      "json": "6f04a1376c18f2b88e337b3d08fa232df3d7e3c197621be6e28f685ea81f2c29",
+      "original": "6f04a1376c18f2b88e337b3d08fa232df3d7e3c197621be6e28f685ea81f2c29",
+      "yaml": "6f04a1376c18f2b88e337b3d08fa232df3d7e3c197621be6e28f685ea81f2c29"
+    },
+    "lossless_requirements": {
+      "edge_set_preserved": true,
+      "node_set_preserved": true,
+      "semantic_hash_equal": true
+    },
+    "node_counts": {
+      "json": 108,
+      "original": 108,
+      "yaml": 108
+    },
+    "passed": true
+  },
+  "run_dir": "experiments/runs/pilot-fidelity",
+  "validation_errors": [],
+  "validation_passed": true
+}

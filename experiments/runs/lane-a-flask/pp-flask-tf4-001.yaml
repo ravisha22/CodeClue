@@ -1,0 +1,14 @@
+profile_id: flask-behavior-teardown-v1
+intent: behavior-debugging
+constraints:
+  max_context: balanced
+focus_files:
+- src/flask/app.py
+- src/flask/ctx.py
+focus_symbols:
+- do_teardown_request
+- do_teardown_appcontext
+focus_keywords:
+- teardown
+- exception
+- callback

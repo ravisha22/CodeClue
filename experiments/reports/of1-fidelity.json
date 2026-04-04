@@ -1,0 +1,34 @@
+{
+  "counts": {
+    "edge_true_positives": 4,
+    "expected_edges": 4,
+    "expected_nodes": 5,
+    "node_true_positives": 5,
+    "observed_edges": 4,
+    "observed_nodes": 5
+  },
+  "diff": {
+    "extra_edges": [],
+    "extra_nodes": [],
+    "missing_edges": [],
+    "missing_nodes": []
+  },
+  "gold_id": "gold-architecture-sample-v1",
+  "metrics": {
+    "edge_f1": 1.0,
+    "edge_precision": 1.0,
+    "edge_recall": 1.0,
+    "node_f1": 1.0,
+    "node_precision": 1.0,
+    "node_recall": 1.0,
+    "path_fidelity": 1.0
+  },
+  "operation_family": "OF1",
+  "passed": true,
+  "projection_trace_id": "trace-OF1-20260328035224",
+  "thresholds": {
+    "edge_f1_min": 0.9,
+    "node_f1_min": 0.9,
+    "path_fidelity_min": 0.9
+  }
+}

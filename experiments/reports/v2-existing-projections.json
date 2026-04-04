@@ -1,0 +1,170 @@
+{
+  "tasks": [
+    {
+      "actions": 77,
+      "conf": 0.95,
+      "edges": 77,
+      "family": "TF1",
+      "hint": "clue_only",
+      "nodes": 80,
+      "of": "OF1",
+      "repo": "pallets/flask",
+      "task_id": "flask-tf1-001"
+    },
+    {
+      "actions": 71,
+      "conf": 0.4874,
+      "edges": 84,
+      "family": "TF2",
+      "hint": "expanded_lookup",
+      "nodes": 68,
+      "of": "OF2",
+      "repo": "pallets/flask",
+      "task_id": "flask-tf2-001"
+    },
+    {
+      "actions": 41,
+      "conf": 0.9048,
+      "edges": 74,
+      "family": "TF3",
+      "hint": "clue_only",
+      "nodes": 42,
+      "of": "OF3",
+      "repo": "pallets/flask",
+      "task_id": "flask-tf3-001"
+    },
+    {
+      "actions": 73,
+      "conf": 0.9452,
+      "edges": 115,
+      "family": "TF4",
+      "hint": "clue_only",
+      "nodes": 73,
+      "of": "OF4",
+      "repo": "pallets/flask",
+      "task_id": "flask-tf4-001"
+    },
+    {
+      "actions": 123,
+      "conf": 1.0,
+      "edges": 128,
+      "family": "TF5",
+      "hint": "clue_only",
+      "nodes": 123,
+      "of": "OF5",
+      "repo": "pallets/flask",
+      "task_id": "flask-tf5-001"
+    },
+    {
+      "actions": 101,
+      "conf": 0.9714,
+      "edges": 101,
+      "family": "TF1",
+      "hint": "clue_only",
+      "nodes": 105,
+      "of": "OF1",
+      "repo": "pallets/flask",
+      "task_id": "flask-tf1-002"
+    },
+    {
+      "actions": 29,
+      "conf": 0.65,
+      "edges": 36,
+      "family": "TF2",
+      "hint": "targeted_lookup",
+      "nodes": 27,
+      "of": "OF2",
+      "repo": "pallets/flask",
+      "task_id": "flask-tf2-002"
+    },
+    {
+      "actions": 60,
+      "conf": 0.8033,
+      "edges": 58,
+      "family": "TF1",
+      "hint": "targeted_lookup",
+      "nodes": 61,
+      "of": "OF1",
+      "repo": "fastapi/fastapi",
+      "task_id": "fastapi-tf1-001"
+    },
+    {
+      "actions": 5,
+      "conf": 1.0,
+      "edges": 5,
+      "family": "TF3",
+      "hint": "clue_only",
+      "nodes": 6,
+      "of": "OF3",
+      "repo": "fastapi/fastapi",
+      "task_id": "fastapi-tf3-001"
+    },
+    {
+      "actions": 71,
+      "conf": 0.8514,
+      "edges": 100,
+      "family": "TF4",
+      "hint": "clue_only",
+      "nodes": 74,
+      "of": "OF4",
+      "repo": "fastapi/fastapi",
+      "task_id": "fastapi-tf4-001"
+    },
+    {
+      "actions": 40,
+      "conf": 1.0,
+      "edges": 39,
+      "family": "TF5",
+      "hint": "clue_only",
+      "nodes": 40,
+      "of": "OF5",
+      "repo": "fastapi/fastapi",
+      "task_id": "fastapi-tf5-001"
+    },
+    {
+      "actions": 27,
+      "conf": 0.9688,
+      "edges": 26,
+      "family": "TF1",
+      "hint": "clue_only",
+      "nodes": 32,
+      "of": "OF1",
+      "repo": "nestjs/nest",
+      "task_id": "nest-tf1-001"
+    },
+    {
+      "actions": 2,
+      "conf": 0.0,
+      "edges": 0,
+      "family": "TF2",
+      "hint": "expanded_lookup",
+      "nodes": 1,
+      "of": "OF2",
+      "repo": "nestjs/nest",
+      "task_id": "nest-tf2-001"
+    },
+    {
+      "actions": 14,
+      "conf": 0.9286,
+      "edges": 15,
+      "family": "TF4",
+      "hint": "clue_only",
+      "nodes": 14,
+      "of": "OF4",
+      "repo": "nestjs/nest",
+      "task_id": "nest-tf4-001"
+    },
+    {
+      "actions": 4,
+      "conf": 1.0,
+      "edges": 2,
+      "family": "TF5",
+      "hint": "clue_only",
+      "nodes": 4,
+      "of": "OF5",
+      "repo": "nestjs/nest",
+      "task_id": "nest-tf5-001"
+    }
+  ],
+  "version": "v2-fixes"
+}

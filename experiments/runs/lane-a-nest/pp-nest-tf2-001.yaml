@@ -1,0 +1,13 @@
+profile_id: nest-impact-guards-v1
+intent: impact-analysis
+constraints:
+  max_context: balanced
+focus_files:
+- packages/core/guards/guards-consumer.ts
+focus_symbols:
+- GuardsConsumer
+- tryActivate
+focus_keywords:
+- guard
+- activate
+- canActivate

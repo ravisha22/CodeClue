@@ -1,0 +1,10 @@
+profile_id: security-audit-v1
+intent: security-and-compliance
+constraints:
+  max_context: focused
+  require_security_terms: true
+focus_keywords:
+  - auth
+  - token
+  - secret
+strict_mode: true

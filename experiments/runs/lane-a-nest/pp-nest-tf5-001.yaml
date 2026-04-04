@@ -1,0 +1,14 @@
+profile_id: nest-security-guards-v1
+intent: security-compliance
+constraints:
+  max_context: balanced
+focus_keywords:
+- guard
+- authorize
+- security
+- canActivate
+- bypass
+focus_symbols:
+- GuardsConsumer
+- CanActivate
+- ExecutionContextHost

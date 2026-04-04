@@ -1,0 +1,17 @@
+profile_id: fastapi-behavior-sync-v1
+intent: behavior-debugging
+constraints:
+  max_context: balanced
+focus_files:
+- fastapi/concurrency.py
+- fastapi/dependencies/utils.py
+focus_keywords:
+- sync
+- async
+- threadpool
+- blocking
+- event loop
+focus_symbols:
+- run_in_threadpool
+- contextmanager_in_threadpool
+- solve_dependencies

@@ -1,0 +1,16 @@
+profile_id: gin-security-auth-v1
+intent: security-compliance
+constraints:
+  max_context: balanced
+focus_files:
+- auth.go
+focus_keywords:
+- auth
+- basic
+- password
+- credential
+- security
+- token
+focus_symbols:
+- BasicAuth
+- Accounts

@@ -1,0 +1,16 @@
+profile_id: gin-arch-flow-v1
+intent: architecture-comprehension
+constraints:
+  max_context: balanced
+focus_keywords:
+- engine
+- context
+- router
+- handle
+- serve
+- tree
+- next
+focus_symbols:
+- Engine
+- Context
+- RouterGroup

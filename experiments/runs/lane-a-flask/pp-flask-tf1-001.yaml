@@ -1,0 +1,12 @@
+profile_id: flask-architecture-v1
+intent: architecture-comprehension
+constraints:
+  max_context: broad
+focus_files:
+- src/flask/app.py
+- src/flask/ctx.py
+focus_keywords:
+- wsgi_app
+- dispatch
+- request
+- response

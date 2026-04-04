@@ -1,0 +1,12 @@
+profile_id: typeorm-edit-driver-v1
+intent: edit-localization
+constraints:
+  max_context: focused
+focus_keywords:
+- driver
+- factory
+- connection
+- database
+- query runner
+focus_symbols:
+- DriverFactory
