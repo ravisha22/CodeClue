@@ -33,7 +33,7 @@ This design is informed by three lines of prior work:
 1. A graph-structured comprehension artifact format with two-tier semantic contracts (structural and behavioral) and per-node confidence scoring with suggested drill-down actions.
 2. An empirical evaluation across 7 repositories and 3 programming languages showing 81% token reduction with zero hallucination.
 3. A confidence system validated against Information Foraging Theory (IFT alignment 0.65) that correctly differentiates task families requiring different comprehension depths.
-4. A three-model cross-evaluation protocol (generator/consumer/judge) that confirms findings are not artifacts of self-evaluation.
+4. A three-model cross-evaluation protocol (generator/consumer/judge) that provides partial external validation against self-evaluation bias.
 
 ## 2 System Design
 
@@ -166,7 +166,7 @@ Across all 23 tasks: **TRR = 81.0%** (clue tokens average 19% of raw source toke
 
 Mean Arm B fidelity of 0.54 is below the 0.85 target, as expected at Tier 1 (structural contracts only). The 0.40 gap represents the available headroom for confidence-gated drill-down.
 
-**Edit localization (TF3) is the only family where Tier 1 clues are sufficient** (mean FS 0.80, 3/3 tasks). This confirms that structural information (where symbols are, what contains what) is exactly what edit localization requires.
+**Edit localization (TF3) is the only family where Tier 1 clues are sufficient** (mean FS 0.80, 3/3 tasks). This supports the hypothesis that structural information (where symbols are, what contains what) is what edit localization primarily requires.
 
 **Impact analysis (TF2) shows the largest gap** (0.60), confirming it fundamentally requires tracing call chains and dependency effects — behavioral semantics only available at Tier 2.
 
@@ -243,11 +243,29 @@ The cross-model evaluation revealed that GPT 5.4 declared 12/23 tasks "clue suff
 
 4. **Language extraction parity:** Python extraction uses full AST parsing; TypeScript and Go use regex patterns, which miss nested definitions and complex patterns. Tree-sitter integration is designed but not implemented.
 
-5. **No delta/drift testing:** Hypotheses H3 (delta non-inferiority) and H4 (50-commit drift resilience) are specified but untested.
+5. **No delta/drift testing:** Hypotheses H3 (delta non-inferiority) and H4 (50-commit drift resilience) are specified and test scaffolds exist, but end-to-end drift protocol execution on external repositories has not been completed.
+
+6. **End-to-end drill-down not measured:** The MCP tool server is implemented and tested (93 unit/integration tests passing across 7 repos), but the full loop — clue projection → low confidence → tool call → improved answer → fidelity re-measurement — has not been executed as a measured trial. H5 (drill-down fidelity lift) and H7 (effective TRR after drill-down) remain untested.
+
+### Threats to Validity
+
+**Internal:** Claude's Arm B/A fidelity scores were self-evaluated, while GPT 5.4's were Gemini-judged. Judge calibration differences (Arm A delta 0.35) may inflate or deflate the cross-model comparison. Task ground truth was written by the system author, introducing potential bias toward clue-favorable question framing.
+
+**External:** All 7 repositories are popular open-source projects with clean structure. Private enterprise codebases with legacy code, monorepos, or generated files may produce different results. The 23-task sample provides directional evidence but insufficient statistical power for per-family claims.
+
+**Construct:** Fidelity scores are rubric-based and subjective. The zero-hallucination finding is strong (binary, verifiable) but the continuous fidelity scores carry measurement uncertainty not captured by the current protocol.
+
+### Reproducibility
+
+All task definitions, prompt profiles, projection outputs, cross-model evaluation results, and scoring artifacts are committed to the repository. The evaluation can be reproduced by:
+
+1. Cloning the 7 external repositories at the pinned commit SHAs in `experiments/reports/pr-replay-set-v1.json`.
+2. Running `codeclue extract` and `codeclue project` with the prompt profiles in `tests/fixtures/`.
+3. Following the cross-model protocol in `docs/CROSS-MODEL-EVALUATION-PROTOCOL.md`.
 
 ## 7 Related Work
 
-**Long-context management.** MemWalker (Chen et al., 2023) constructs navigable tree structures over documents. ReSum (Wu et al., 2025) adds summarization-triggered compaction. These are *lossy* — CodeClue is designed to be lossless at the structural level, with explicit lossy boundaries tracked by confidence scores.
+**Long-context management.** MemWalker (Chen et al., 2023) constructs navigable tree structures over documents. ReSum (Wu et al., 2025) adds summarization-triggered compaction. These are *lossy* — CodeClue aims for structural completeness at Tier 1 (all AST-extractable symbols and edges are preserved), though Tier 1 extraction for TypeScript and Go uses regex patterns that may miss nested or complex definitions. Explicit lossy boundaries are tracked by confidence scores.
 
 **Recursive Language Models.** Berman et al. (2025) demonstrate that offloading context as a symbolic variable and selectively querying sub-LMs outperforms both direct context loading and summarization agents. CodeClue's clue-as-symbolic-handle with drill-down tools follows this paradigm: the clue is the symbolic representation, and tool calls are the selective queries.
 
@@ -255,7 +273,7 @@ The cross-model evaluation revealed that GPT 5.4 declared 12/23 tasks "clue suff
 
 **Developer cognition.** Sillito et al. (2006, 2008) categorized 44 question types developers ask during code evolution, finding that question complexity predicts information-seeking behavior. Our operation families (OF1–OF5) directly map to their categories, and our callback distribution measurement validates against their published frequency data.
 
-**Information Foraging Theory.** Piorkowski et al. (2016) and Lawrance et al. (2013) validated IFT for software engineering contexts, showing that developers follow information scent when navigating code. Our IFT scent alignment metric (0.65, ρ = −0.30) confirms that the confidence system produces scent-like signals that correlate with drill-down behavior.
+**Information Foraging Theory.** Piorkowski et al. (2016) and Lawrance et al. (2013) validated IFT for software engineering contexts, showing that developers follow information scent when navigating code. Our IFT scent alignment metric (0.65, ρ = −0.30) is consistent with the confidence system producing scent-like signals, though the Sillito callback distribution (KL = 0.29) does not yet fully align with the reference distribution.
 
 ## 8 Conclusion
 
@@ -263,7 +281,7 @@ CodeClue demonstrates that persistent code comprehension artifacts can achieve 8
 
 The two-tier contract design provides a principled degradation path: Tier 1 (AST-extractable) serves as a safe, always-available floor; Tier 2 (LLM-generated behavioral semantics) unlocks the high-value task families. The zero hallucination property at Tier 1 — arising from the constraint that contracts contain only verified structural facts — may be the most practically significant finding: it suggests under the current benchmark that comprehension artifacts are reliable at the structural level, though adversarial or production cases necessitate explicit verification.
 
-Code and evaluation artifacts are available at: [repository URL].
+Code and evaluation artifacts are available at: https://github.com/ravisha22/CodeClue
 
 ## References
 

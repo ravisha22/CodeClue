@@ -100,12 +100,12 @@ class TestResetTrigger:
         assert detect_reset_trigger(history, floor=0.80) is True
 
     def test_no_trigger_above_floor(self):
-        """No reset when all FS above floor."""
+        """No reset when all FS above floor and slope is gentle."""
         history = [
             {"fidelity": 0.92},
-            {"fidelity": 0.90},
-            {"fidelity": 0.88},
-            {"fidelity": 0.85},
+            {"fidelity": 0.92},
+            {"fidelity": 0.92},
+            {"fidelity": 0.915},
         ]
         assert detect_reset_trigger(history, floor=0.80) is False
 

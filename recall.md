@@ -826,6 +826,44 @@ All 5 tools work on all 7 repos:
 
 All 93 tests pass. Zero blue regressions. MCP server is ready for integration with Epics 2-4.
 
+## 23) Epic 2+4 Completion and Paper Remediation (2026-04-05)
+
+### Epic 4 (Calibration): COMPLETE
+
+- `src/codeclue_research/calibration.py` implemented with:
+  - `fit_calibration_profile()`: temperature scaling + Platt scaling, auto-select best ECE
+  - `apply_calibration()`: transforms raw → calibrated, returns None for fallback
+  - `load_calibration_profile()`: disk load with staleness/version mismatch → fallback
+- 9 calibration tests passing (tests/calibration/test_calibration.py)
+- Total: 102 tests (93 MCP + 9 calibration)
+
+### Epic 2 (Drift): PARTIALLY COMPLETE
+
+- `src/codeclue_research/drift.py` implemented with:
+  - `apply_single_delta()`: checkout commit, re-extract, compare projections, compute DNG
+  - `run_drift_protocol()`: sequential N-commit drift with fidelity tracking and slope
+  - `detect_reset_trigger()`: floor + slope guard band checks
+- 3 unit tests passing (TestResetTrigger: floor breach, gentle slope, steep slope)
+- Integration tests (TestSingleDelta, TestSequentialDrift, TestFullDriftProtocol) require git operations on external repos — ready to run but not executed in this session
+- Total: 105 tests (93 MCP + 9 calibration + 3 drift unit)
+
+### Paper Remediation (ARXIV-REMEDIATION-PLAN.md)
+
+Workstream A applied to paper/codeclue-arxiv-final.md:
+
+1. **"confirms" → "provides partial external validation"** — contribution #4 and IFT claim softened
+2. **"lossless" → "structural completeness"** — qualified with regex extractor limitation
+3. **Repository URL**: updated to https://github.com/ravisha22/CodeClue (real, published)
+4. **Threats-to-validity section added**: internal (judge calibration, author bias), external (OSS-only), construct (rubric subjectivity)
+5. **Reproducibility section added**: pinned SHAs, prompt profile paths, cross-model protocol reference
+6. **Limitation #6 added**: end-to-end drill-down not measured (MCP built but H5/H7 untested)
+7. **IFT claim tempered**: KL divergence acknowledged as not fully aligned
+8. PDF regenerated (332KB)
+
+### Claim tier assessment: Tier C
+
+Per remediation plan: drill-down evidence is incomplete. Paper correctly centers on persistent structural comprehension artifacts and safe Tier 1 behavior. Tier 2 and drill-down are positioned as validated mechanisms with preliminary support, not proven results.
+
 ### Blue snapshot created
 - `experiments/revert-point-pre-mcp/` contains all `src/codeclue_research/*.py` files pre-MCP.
 - New directories: `tests/mcp/`, `src/codeclue_mcp/`.
