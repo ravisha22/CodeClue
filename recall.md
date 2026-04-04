@@ -860,9 +860,71 @@ Workstream A applied to paper/codeclue-arxiv-final.md:
 7. **IFT claim tempered**: KL divergence acknowledged as not fully aligned
 8. PDF regenerated (332KB)
 
-### Claim tier assessment: Tier C
+### Claim tier assessment: Updated to Tier B
 
-Per remediation plan: drill-down evidence is incomplete. Paper correctly centers on persistent structural comprehension artifacts and safe Tier 1 behavior. Tier 2 and drill-down are positioned as validated mechanisms with preliminary support, not proven results.
+Drill-down evidence is now partially available. MCP server is built and tested. End-to-end drill-down trial executed with real token measurements. Paper can claim drill-down is a validated mechanism with measured (mixed) results.
+
+## 24) Epic 2+3 Execution and Drill-Down Trial Results (2026-04-05 continued)
+
+### Drift Protocol (Epic 2): 10-step on Flask — COMPLETE
+
+Artifact: `experiments/reports/drift-flask-10step.json`
+
+| Metric | Value | Target | Status |
+| --- | ---: | --- | --- |
+| Steps completed | 10 | 10 | PASS |
+| Slope | 0.0 | >= -0.002 | PASS |
+| Floor maintained | True | True | PASS |
+| DNG (all steps) | 0.0 | <= 0.05 | PASS |
+| Reset triggered | False | — | Correct |
+
+Note: Each step re-extracts the full graph, so fidelity is always 1.0. This validates the pipeline machinery. A true "stale graph vs fresh" comparison would show degradation — but the re-extraction approach means H3 trivially passes.
+
+### End-to-End Drill-Down Trial — COMPLETE
+
+Artifacts: `experiments/reports/drill-down-trial/`, `experiments/reports/drill-down-trial-sec/`
+
+| Trial | Family | Confidence | Actions | Clue Tokens | Drill-Down Tokens | ETRR | H7 Pass? |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Impact (OF2) | TF2 | 0.41 | 15 (budget exhausted) | 8,958 | 44,102 | 0.64 | **No** (0.01 below 0.65) |
+| Security (OF5) | TF5 | 1.00 | 30 (budget exhausted) | — | — | 0.73 | **Yes** |
+
+**H5 assessment**: The 0.40 fidelity gap exists for drill-down to close. Both trials exhausted their tool call budgets, meaning the system correctly identifies there's more to drill into. Whether the drill-down actually IMPROVES the answer requires re-scoring after reading tool outputs — which we did for the benchmark tasks manually (Claude self-as-consumer).
+
+**H7 assessment**: OF5 (security) passes ETRR at 0.73. OF2 (impact) barely misses at 0.64If. The budget exhaustion on OF2 suggests the budget cap (15) may be too low for impact analysis, or the confidence system is recommending too many suggested actions.
+
+### Scale Testing (Epic 3): Django — COMPLETE (with critical findings)
+
+Artifact: `experiments/reports/scale-django-summary.json`
+
+| Metric | Value | Target | Status |
+| --- | --- | --- | --- |
+| Nodes | 45,457 | > 1,000 | PASS |
+| Edges | 55,208 | — | — |
+| Extraction time | 164 seconds | < 30 minutes | PASS |
+| Graph size | 64.6 MB | <= 15 MB | **FAIL** |
+| TRR (full graph) | -0.30 | >= 0.80 | **FAIL** |
+
+**CRITICAL FINDING**: At django scale (45K nodes), the full canonical graph JSON (64.6 MB) is LARGER than the estimated raw source token count. The 81% TRR measured on smaller repos does NOT hold at this scale.
+
+**Root cause**: Every node carries a full `semantic_contract` dict with `calls`, `called_by`, `complexity_indicators` fields. With 45K nodes, the per-node overhead dominates.
+
+**Implication**: TRR should be measured on PROJECTIONS (task-conditioned subgraphs), not the full canonical graph. Projections are small (80-160 nodes out of 45K), which restores the TRR advantage. The paper's TRR claim needs to be reframed: "81% TRR for task-conditioned projections on repositories up to ~6K nodes; full canonical graph TRR degrades at scale."
+
+**File budget**: 64.6 MB >> 15 MB budget. The per-module split strategy from PRD Section 6.1 is needed at this scale.
+
+### Syntax Error Handling Fix
+
+`extractor.py` now catches `SyntaxError` during AST parsing and skips unparseable files (e.g., django's intentional syntax error test fixtures). This fix exposed by the scale test — blue regression check confirmed 105 tests still pass.
+
+### Updated Test Counts
+
+| Suite | Passed | Skipped | Failed |
+| --- | ---: | ---: | ---: |
+| MCP | 93 | 1 | 0 |
+| Calibration | 9 | 0 | 0 |
+| Drift (unit) | 3 | 0 | 0 |
+| **Total** | **105** | **1** | **0** |
 
 ### Blue snapshot created
 - `experiments/revert-point-pre-mcp/` contains all `src/codeclue_research/*.py` files pre-MCP.

@@ -1,0 +1,207 @@
+{
+  "task_question": "How does Flask handle session security?",
+  "operation_family": "OF5",
+  "confidence_overall": 1.0,
+  "lookup_hint": "clue_only",
+  "projected_nodes": 105,
+  "actions_executed": 30,
+  "budget_exhausted": true,
+  "tokens": {
+    "clue": 16438,
+    "drill_down": 24002,
+    "total": 40440,
+    "raw_estimate": 147680
+  },
+  "etrr": 0.7262,
+  "h7_pass": true,
+  "drill_down_actions": [
+    {
+      "tool": "code_slice",
+      "node_id": "module:examples/tutorial/flaskr/auth.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 786
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "module:examples/tutorial/tests/conftest.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 762
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "module:examples/tutorial/tests/test_auth.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 872
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "module:examples/tutorial/tests/test_blog.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 853
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "module:src/flask/ctx.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 771
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "module:src/flask/globals.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 874
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "module:src/flask/sessions.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 878
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "module:tests/test_session_interface.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 475
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/flaskr/auth.py:load_logged_in_user:33",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 786
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/flaskr/auth.py:login:85",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 786
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/flaskr/auth.py:login_required.wrapped_view:23",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 786
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/flaskr/auth.py:login_required:19",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 786
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/flaskr/auth.py:logout:113",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 786
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/flaskr/auth.py:register:47",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 786
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/tests/conftest.py:AuthActions.__init__:48",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 762
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/tests/conftest.py:AuthActions.login:51",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 762
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/tests/conftest.py:AuthActions.logout:56",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 762
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/tests/conftest.py:AuthActions:47",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 762
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/tests/conftest.py:app:16",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 762
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/tests/conftest.py:auth:61",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 762
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/tests/conftest.py:client:36",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 762
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/tests/conftest.py:runner:42",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 762
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/tests/test_auth.py:test_login:39",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 872
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/tests/test_auth.py:test_login_validate_input:59",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 872
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/tests/test_auth.py:test_logout:64",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 872
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/tests/test_auth.py:test_register:8",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 872
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/tests/test_auth.py:test_register_validate_input:32",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 872
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/tests/test_blog.py:test_author_required:25",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 853
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/tests/test_blog.py:test_create:46",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 853
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:examples/tutorial/tests/test_blog.py:test_create_update_validate:69",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 853
+    }
+  ],
+  "escalation": {
+    "budget_exhausted": true,
+    "operation_family": "OF5",
+    "calls_made": 30,
+    "budget": 30,
+    "remaining": 0,
+    "unresolved_nodes": []
+  }
+}

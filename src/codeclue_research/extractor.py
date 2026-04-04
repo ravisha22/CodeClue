@@ -125,7 +125,11 @@ def extract_python_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]
             )
         )
 
-        tree = ast.parse(text, filename=rel_path)
+        try:
+            tree = ast.parse(text, filename=rel_path)
+        except SyntaxError:
+            # Skip files that can't be parsed (e.g., intentional syntax error test fixtures)
+            continue
         collector = SymbolCollector(rel_path)
         collector.visit(tree)
 

@@ -1,0 +1,117 @@
+{
+  "task_question": "If I change the push method in RequestContext to be async, what components would be impacted?",
+  "operation_family": "OF2",
+  "confidence_overall": 0.410368,
+  "lookup_hint": "expanded_lookup",
+  "projected_nodes": 48,
+  "actions_executed": 15,
+  "budget_exhausted": true,
+  "tokens": {
+    "clue": 8958,
+    "drill_down": 44102,
+    "total": 53060,
+    "raw_estimate": 147680
+  },
+  "etrr": 0.6407,
+  "h7_pass": false,
+  "drill_down_actions": [
+    {
+      "tool": "resolve_dependency",
+      "node_id": "module:src/flask/app.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 12938
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "module:src/flask/app.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 876
+    },
+    {
+      "tool": "resolve_dependency",
+      "node_id": "module:src/flask/cli.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 13028
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "module:src/flask/cli.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 779
+    },
+    {
+      "tool": "resolve_dependency",
+      "node_id": "module:src/flask/ctx.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 7826
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "module:src/flask/ctx.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 771
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:src/flask/app.py:Flask.__call__:1618",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 876
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:src/flask/app.py:Flask.__init__:310",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 876
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:src/flask/app.py:Flask.__init_subclass__:254",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 876
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:src/flask/app.py:Flask.async_to_sync:1079",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 876
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:src/flask/app.py:Flask.create_url_adapter:509",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 876
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:src/flask/app.py:Flask.dispatch_request:966",
+      "confidence_trigger": 0.57,
+      "output_size_tokens": 876
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:src/flask/app.py:Flask.do_teardown_appcontext:1453",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 876
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:src/flask/app.py:Flask.do_teardown_request:1420",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 876
+    },
+    {
+      "tool": "code_slice",
+      "node_id": "symbol:src/flask/app.py:Flask.ensure_sync:1065",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 876
+    }
+  ],
+  "escalation": {
+    "budget_exhausted": true,
+    "operation_family": "OF2",
+    "calls_made": 15,
+    "budget": 15,
+    "remaining": 0,
+    "unresolved_nodes": []
+  }
+}

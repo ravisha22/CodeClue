@@ -1,0 +1,90 @@
+{
+  "steps_completed": 10,
+  "total_commits": 10,
+  "operation_family": "OF2",
+  "steps": [
+    {
+      "index": 1,
+      "from_commit": "d98eb69a",
+      "to_commit": "27be9338",
+      "fidelity": 1.0,
+      "dng": 0.0,
+      "changed_files": 1098
+    },
+    {
+      "index": 2,
+      "from_commit": "27be9338",
+      "to_commit": "c17f3793",
+      "fidelity": 1.0,
+      "dng": 0.0,
+      "changed_files": 370
+    },
+    {
+      "index": 3,
+      "from_commit": "c17f3793",
+      "to_commit": "089cb86d",
+      "fidelity": 1.0,
+      "dng": 0.0,
+      "changed_files": 0
+    },
+    {
+      "index": 4,
+      "from_commit": "089cb86d",
+      "to_commit": "22d92470",
+      "fidelity": 1.0,
+      "dng": 0.0,
+      "changed_files": 0
+    },
+    {
+      "index": 5,
+      "from_commit": "22d92470",
+      "to_commit": "f00ad424",
+      "fidelity": 1.0,
+      "dng": 0.0,
+      "changed_files": 0
+    },
+    {
+      "index": 6,
+      "from_commit": "f00ad424",
+      "to_commit": "daca74d9",
+      "fidelity": 1.0,
+      "dng": 0.0,
+      "changed_files": 1143
+    },
+    {
+      "index": 7,
+      "from_commit": "daca74d9",
+      "to_commit": "a411a243",
+      "fidelity": 1.0,
+      "dng": 0.0,
+      "changed_files": 31
+    },
+    {
+      "index": 8,
+      "from_commit": "a411a243",
+      "to_commit": "7b008869",
+      "fidelity": 1.0,
+      "dng": 0.0,
+      "changed_files": 42
+    },
+    {
+      "index": 9,
+      "from_commit": "7b008869",
+      "to_commit": "fbb6f0bc",
+      "fidelity": 1.0,
+      "dng": 0.0,
+      "changed_files": 677
+    },
+    {
+      "index": 10,
+      "from_commit": "fbb6f0bc",
+      "to_commit": "c34d6e81",
+      "fidelity": 1.0,
+      "dng": 0.0,
+      "changed_files": 0
+    }
+  ],
+  "slope": 0.0,
+  "floor_maintained": true,
+  "reset_triggered": false
+}
