@@ -28,4 +28,13 @@ def load_graph(path: Path) -> CanonicalClueGraph:
 
 
 def save_graph(path: Path, graph: CanonicalClueGraph) -> None:
-    save_data(path, graph.to_dict())
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.suffix.lower() in {".yaml", ".yml"}:
+        save_data(path, graph.to_dict())
+        return
+
+    payload = graph.to_storage_dict()
+    path.write_text(
+        json.dumps(payload, separators=(",", ":"), sort_keys=False),
+        encoding="utf-8",
+    )

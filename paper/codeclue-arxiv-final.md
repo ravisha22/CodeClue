@@ -12,7 +12,7 @@ Large Language Model (LLM) coding workflows repeatedly pay comprehension costs o
 
 We evaluate CodeClue on 23 comprehension tasks across 7 public repositories (Flask, FastAPI, NestJS, httpx, Express, TypeORM, Gin) spanning Python, JavaScript, TypeScript, and Go. Our results show: (1) an 81% token reduction ratio compared to raw-source-first workflows; (2) zero hallucinations for the two consumer models evaluated (Claude and GPT 5.4, with Gemini serving as the judge); (3) structural confidence scores that correctly differentiate task families where clue-only reasoning suffices (edit localization, mean fidelity 0.80) from those requiring source drill-down (impact analysis, mean fidelity 0.29); and (4) ecological validity alignment with Information Foraging Theory at 0.65 (Spearman ρ = −0.30), providing partial support that low confidence correctly predicts where models need more information.
 
-Cross-model evaluation using GPT 5.4 as consumer and Gemini 3.1 Pro as independent judge provides partial external validation for the zero-hallucination result and low TF4/TF5 deltas, with a mean Arm B fidelity delta of 0.12 between GPT 5.4 and Claude; Arm A deltas remain much larger (0.35). We plan to release the scaffold, benchmark tasks, and evaluation protocol; the public repository URL will be added in the camera-ready version.
+Cross-model evaluation using GPT 5.4 as consumer and Gemini 3.1 Pro as independent judge provides partial external validation for the zero-hallucination result and low TF4/TF5 deltas, with a mean Arm B fidelity delta of 0.12 between GPT 5.4 and Claude; Arm A deltas remain much larger (0.35). Code and evaluation artifacts are available at https://github.com/ravisha22/CodeClue.
 
 ## 1 Introduction
 
@@ -31,7 +31,7 @@ This design is informed by three lines of prior work:
 ### Contributions
 
 1. A graph-structured comprehension artifact format with two-tier semantic contracts (structural and behavioral) and per-node confidence scoring with suggested drill-down actions.
-2. An empirical evaluation across 7 repositories and 3 programming languages showing 81% token reduction with zero hallucination.
+2. An empirical evaluation across 7 repositories and 4 programming languages showing 81% token reduction with zero hallucination.
 3. A confidence system validated against Information Foraging Theory (IFT alignment 0.65) that correctly differentiates task families requiring different comprehension depths.
 4. A three-model cross-evaluation protocol (generator/consumer/judge) that provides partial external validation against self-evaluation bias.
 
@@ -132,13 +132,13 @@ Tasks span five families: architecture comprehension (TF1, 5 tasks), impact anal
 
 ### 3.3 Cross-Model Protocol
 
-To eliminate self-evaluation bias, we use a three-model protocol:
+For the cross-model external-validation subset, we use a three-model protocol:
 
 - **Generator:** Claude Opus 4.6 (Tier 2 contract generation)
 - **Consumer:** GPT 5.4 (blind Arm B/A task execution)
 - **Judge:** Gemini 3.1 Pro (independent scoring against ground truth)
 
-No model serves more than one role for the same task.
+This protocol provides partial external validation against self-evaluation bias, but it does not cover the full benchmark, where some Claude-scored conditions remain self-evaluated (see Section 6, Limitation 3).
 
 ### 3.4 Ecological Validity (Lane B)
 
@@ -151,7 +151,9 @@ We validate the confidence system's drill-down predictions against:
 
 ### 4.1 Token Efficiency
 
-Across all 23 tasks: **TRR = 81.0%** (clue tokens average 19% of raw source tokens). This exceeds our preregistered threshold of 80%.
+Across all 23 benchmark tasks on repositories up to approximately 6,400 nodes, task-conditioned projections averaged 19% of the raw-source token context for the same task (**TRR = 81.0%**). Here TRR measures the LLM-facing projection artifact relative to the raw source context; it does not measure the storage efficiency of the full canonical graph. The 81% figure was computed during benchmark scoring using the v2 projection and extraction pipeline; it has not been independently recomputed with a separately validated deduplicated baseline, which is a limitation.
+
+This distinction matters at scale: in a storage-format test on Django (45,457 nodes, 55,208 edges; Section 4.9), the monolithic canonical graph file exceeded the raw Python source size, demonstrating that canonical storage and projection-time context efficiency must be optimized separately. The 81% TRR applies to the consumption path (projections), not the storage path (canonical graph).
 
 ### 4.2 Fidelity
 
@@ -211,6 +213,32 @@ Per-family comparison reveals that TF4 (debugging) and TF5 (security) scores are
 
 In a preliminary 8-file Flask sample, Claude Opus 4.6 generated Tier 2 semantic contracts for 154 functions/methods with a 100% schema validation pass rate. In this task sample, Tier 2 enrichment caused confidence to *decrease* (mean Δ = −0.13). While preliminary, this points toward the intended behavior: semantic contracts reveal complexity (failure modes, dynamic dispatch patterns) invisible at Tier 1, making the confidence assessment more honest rather than inflating trust.
 
+### 4.8 Drill-Down Token Economics
+
+We executed the projection → tool-call → token-measurement loop on a low-confidence Flask task. This trial measures drill-down execution behavior and token overhead; it does not measure post-drill answer improvement (H5 fidelity lift remains untested).
+
+| Trial | Family | Confidence | Tool Calls | Clue Tokens | Drill-Down Tokens | ETRR |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| Impact analysis | OF2 | 0.41 | 15 (budget exhausted) | 8,958 | 44,102 | 0.64 |
+
+The trial exhausted its tool call budget (15 for OF2), indicating the system correctly identifies more information to retrieve. The ETRR of 0.64 narrowly misses the 0.65 target, suggesting the budget cap for impact analysis may be insufficient. H7 (ETRR >= 0.65) has preliminary but inconclusive execution evidence from this single trial.
+
+### 4.9 Canonical Storage Scale Test: Django
+
+We extracted a full canonical graph from Django to test the storage format at scale:
+
+| Metric | Value | Target | Result |
+| --- | --- | --- | --- |
+| Extraction time | 180s | < 30 min | Pass |
+| Graph nodes | 45,457 | > 1,000 | Pass |
+| Graph edges | 55,208 | — | — |
+| Graph file size (compact) | 14.4 MB | ≤ 15 MB | **Pass** |
+| Legacy pretty-printed size | 60.9 MB | — | Reference |
+| Python source size | 17.9 MB | — | Reference |
+| Storage/source ratio | 0.80 | < 1.0 | **Pass** |
+
+An initial monolithic pretty-printed serialization (60.9 MB) exceeded both the 15 MB file budget and the raw Python source size. After applying compact serialization — removing redundant `edge_id` strings, omitting empty default fields, using a path interning table, and compact JSON separators — the canonical graph dropped to 14.4 MB, below both the storage budget and the raw source size. This demonstrates that canonical storage efficiency at 45K-node scale is achievable with format-level optimization; the information content of the canonical graph is smaller than source even at this scale. Future work will further optimize with shard-level per-package storage. Note that this result measures canonical storage only; projection-level context efficiency must be evaluated separately.
+
 ## 5 Discussion
 
 ### Why Zero Hallucination Matters
@@ -237,15 +265,17 @@ The cross-model evaluation revealed that GPT 5.4 declared 12/23 tasks "clue suff
 
 1. **Sample size:** 23 tasks across 5 families (3–5 per family) provides directional findings but insufficient statistical power for per-family confidence intervals. A 50-task benchmark (10 per family) is specified but not yet executed.
 
-2. **Tier 2 not end-to-end tested:** While Tier 2 generation was validated (H6 preliminary pass at 100%), the full drill-down loop (clue → low confidence → tool call → enriched answer) has not been executed with the MCP tool server. The 0.40 fidelity gap represents *potential* improvement, not measured improvement.
+2. **Drill-down loop not fully closed:** While the projection → tool-call → token-measurement loop has been executed through the MCP-compatible tool path (Section 4.8), the full clue → drill-down → revised-answer → re-scoring loop has not yet been evaluated with an external consuming model. The current fidelity gap therefore represents potential improvement, not measured post-drill lift.
 
 3. **Scoring methodology:** Claude's Arm B/A scores were self-evaluated; GPT's were Gemini-judged. The Arm A scoring discrepancy (Claude self-scored 0.93 vs GPT Gemini-scored 0.58) suggests judge calibration varies. Future work should use a single judge for all conditions.
 
 4. **Language extraction parity:** Python extraction uses full AST parsing; TypeScript and Go use regex patterns, which miss nested definitions and complex patterns. Tree-sitter integration is designed but not implemented.
 
-5. **No delta/drift testing:** Hypotheses H3 (delta non-inferiority) and H4 (50-commit drift resilience) are specified and test scaffolds exist, but end-to-end drift protocol execution on external repositories has not been completed.
+5. **Delta drift tested at pipeline level only:** The 10-step drift protocol confirms pipeline correctness (fidelity 1.0 at each step with full re-extraction), but does not yet test fidelity degradation when old graphs are reused without re-extraction. True delta non-inferiority (H3) and drift resilience (H4) require stale-graph evaluation.
 
-6. **End-to-end drill-down not measured:** The MCP tool server is implemented and tested (93 unit/integration tests passing across 7 repos), but the full loop — clue projection → low confidence → tool call → improved answer → fidelity re-measurement — has not been executed as a measured trial. H5 (drill-down fidelity lift) and H7 (effective TRR after drill-down) remain untested.
+6. **Drill-down partially measured:** Drill-down token economics are partially measured (Section 4.8) through a single low-confidence OF2 trial, which yields ETRR = 0.64 and exhausts the tool-call budget. However, post-drill fidelity lift is not yet measured, so H5 remains untested and H7 has only preliminary single-trial evidence.
+
+7. **Canonical storage required format optimization at scale:** An initial monolithic serialization of the Django canonical graph (60.9 MB) exceeded both the file budget and source size. After compact serialization with path interning (14.4 MB), the graph fits within budget and is smaller than source. Shard-level per-package storage remains as future optimization for deployment.
 
 ### Threats to Validity
 
@@ -269,11 +299,11 @@ All task definitions, prompt profiles, projection outputs, cross-model evaluatio
 
 **Recursive Language Models.** Berman et al. (2025) demonstrate that offloading context as a symbolic variable and selectively querying sub-LMs outperforms both direct context loading and summarization agents. CodeClue's clue-as-symbolic-handle with drill-down tools follows this paradigm: the clue is the symbolic representation, and tool calls are the selective queries.
 
-**Code comprehension artifacts.** Repository maps (Gauthier, 2024) and codebase indexes (aider, Cursor) provide structural navigation but not persistent comprehension. CodeClue differs by making the comprehension itself persistent and versioned, with explicit confidence and update semantics.
+**Code comprehension artifacts.** Repository maps and codebase indexes (aider, Cursor) provide structural navigation but not persistent comprehension. CodeClue differs by making the comprehension itself persistent and versioned, with explicit confidence and update semantics.
 
 **Developer cognition.** Sillito et al. (2006, 2008) categorized 44 question types developers ask during code evolution, finding that question complexity predicts information-seeking behavior. Our operation families (OF1–OF5) directly map to their categories, and our callback distribution measurement validates against their published frequency data.
 
-**Information Foraging Theory.** Piorkowski et al. (2016) and Lawrance et al. (2013) validated IFT for software engineering contexts, showing that developers follow information scent when navigating code. Our IFT scent alignment metric (0.65, ρ = −0.30) is consistent with the confidence system producing scent-like signals, though the Sillito callback distribution (KL = 0.29) does not yet fully align with the reference distribution.
+**Information Foraging Theory.** Piorkowski et al. (2016) and Lawrance et al. (2008) validated IFT for software engineering contexts, showing that developers follow information scent when navigating code. Our IFT scent alignment metric (0.65, ρ = −0.30) is consistent with the confidence system producing scent-like signals, though the Sillito callback distribution (KL = 0.29) does not yet fully align with the reference distribution.
 
 ## 8 Conclusion
 
@@ -291,7 +321,7 @@ Chen, H., Pasunuru, R., Weston, J., and Celikyilmaz, A. (2023). Walking down the
 
 Jimenez, C. E., et al. (2024). SWE-bench: Can language models resolve real-world GitHub issues? *ICLR 2024*.
 
-Lawrance, J., Bellamy, R., Burnett, M., and Rector, K. (2013). Using information scent to model the dynamic foraging behavior of programmers in maintenance tasks. *CHI 2008*.
+Lawrance, J., Bellamy, R., Burnett, M., and Rector, K. (2008). Using information scent to model the dynamic foraging behavior of programmers in maintenance tasks. *CHI 2008*.
 
 Piorkowski, D., et al. (2016). Foraging and navigations, fundamentally: Developers' predictions of value and cost. *FSE 2016*.
 

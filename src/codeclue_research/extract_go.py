@@ -9,7 +9,7 @@ from .models import Edge, Node, SourceAnchor
 def _hash_text(text: str) -> str:
     import hashlib
 
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
 
 
 def _line_offsets(text: str) -> list[int]:

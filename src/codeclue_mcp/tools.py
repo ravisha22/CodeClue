@@ -20,6 +20,12 @@ def _safe_resolve(repo_root: str, file_path: str) -> Path | None:
     return target
 
 
+def _hashes_match(current_hash: str, stored_hash: str) -> bool:
+    if not current_hash or not stored_hash:
+        return False
+    return current_hash.startswith(stored_hash) or stored_hash.startswith(current_hash)
+
+
 def code_slice(
     repo_root: str,
     file_path: str,
@@ -125,9 +131,9 @@ def check_freshness(
     current_hash = override_hash
     if current_hash is None:
         content = target.read_text(encoding="utf-8")
-        current_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()
+        current_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()[:16]
 
-    stale = current_hash != anchor.content_hash
+    stale = not _hashes_match(current_hash, anchor.content_hash)
 
     return {
         "status": "ok",

@@ -1,10 +1,9 @@
-"""Scale test: extract django, measure time, file size, TRR."""
+"""Scale test: extract django and measure canonical storage footprint."""
 import time
 import json
 from pathlib import Path
 from codeclue_research.extractor import extract_graph
 from codeclue_research.io import save_graph
-from codeclue_research.operation_projection import project_operation
 
 repo_root = Path("experiments/external-repos/django")
 out_dir = Path("experiments/runs/scale-django")
@@ -24,27 +23,22 @@ save_graph(graph_path, graph)
 graph_size_mb = graph_path.stat().st_size / (1024 * 1024)
 print(f"  Graph size: {graph_size_mb:.1f}MB")
 
-# Step 2: Token estimate
-total_source_bytes = sum(
-    n.source_anchor.byte_end - n.source_anchor.byte_start
-    for n in graph.nodes
+# Step 2: Storage metrics
+python_source_bytes = sum(
+    path.stat().st_size for path in repo_root.rglob("*.py") if path.is_file()
 )
-raw_tokens_est = total_source_bytes / 4
-clue_tokens_est = graph_path.stat().st_size / 4
-trr = 1 - (clue_tokens_est / max(raw_tokens_est, 1))
-print(f"  Raw tokens (est): {raw_tokens_est:.0f}")
-print(f"  Clue tokens (est): {clue_tokens_est:.0f}")
-print(f"  TRR: {trr:.4f}")
+legacy_pretty_bytes = len(
+    json.dumps(graph.to_dict(), indent=2, sort_keys=True).encode("utf-8")
+)
+compact_bytes = graph_path.stat().st_size
+storage_ratio = compact_bytes / max(python_source_bytes, 1)
+reduction_pct = 1 - (compact_bytes / max(legacy_pretty_bytes, 1))
 
-# Step 3: Project OF1-OF5
-for of in ["OF1", "OF2", "OF3", "OF4", "OF5"]:
-    start = time.time()
-    trace = project_operation(graph=graph, operation_family=of)
-    proj_time = time.time() - start
-    conf = trace.get("confidence", {})
-    print(f"  {of}: nodes={trace['stats']['projected_node_count']}, "
-          f"conf={conf.get('confidence_overall', -1):.3f}, "
-          f"time={proj_time:.1f}s")
+print(f"  Persisted graph size: {compact_bytes / (1024 * 1024):.1f}MB")
+print(f"  Legacy pretty JSON: {legacy_pretty_bytes / (1024 * 1024):.1f}MB")
+print(f"  Python source size: {python_source_bytes / (1024 * 1024):.1f}MB")
+print(f"  Storage/source ratio: {storage_ratio:.2f}x")
+print(f"  Reduction vs legacy serializer: {reduction_pct:.1%}")
 
 # Save summary
 summary = {
@@ -52,13 +46,19 @@ summary = {
     "nodes": len(graph.nodes),
     "edges": len(graph.edges),
     "extract_time_s": round(extract_time, 1),
-    "graph_size_mb": round(graph_size_mb, 2),
-    "raw_tokens_est": int(raw_tokens_est),
-    "clue_tokens_est": int(clue_tokens_est),
-    "trr": round(trr, 4),
-    "h1_pass": trr >= 0.80,
+    "graph_size_mb": round(compact_bytes / (1024 * 1024), 2),
+    "legacy_pretty_graph_mb": round(legacy_pretty_bytes / (1024 * 1024), 2),
+    "python_source_mb": round(python_source_bytes / (1024 * 1024), 2),
+    "storage_source_ratio": round(storage_ratio, 4),
+    "reduction_vs_legacy_pct": round(reduction_pct * 100, 2),
+    "under_source_size": compact_bytes <= python_source_bytes,
     "file_budget_pass": graph_size_mb <= 15,
+    "measurement_scope": "canonical_storage",
+    "measurement_note": (
+        "This report measures persisted canonical graph storage only. "
+        "Projection-level context efficiency must be evaluated separately."
+    ),
 }
 Path("experiments/reports/scale-django-summary.json").write_text(json.dumps(summary, indent=2))
-print(f"\nH1 (TRR >= 80%): {'PASS' if trr >= 0.80 else 'FAIL'} ({trr:.1%})")
+print(f"\nUnder source size: {'PASS' if compact_bytes <= python_source_bytes else 'FAIL'}")
 print(f"File budget (<= 15MB): {'PASS' if graph_size_mb <= 15 else 'FAIL'} ({graph_size_mb:.1f}MB)")

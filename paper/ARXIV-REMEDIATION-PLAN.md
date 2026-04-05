@@ -117,10 +117,24 @@ Required outputs for paper use:
 
 Current scaffold: `tests/scale/test_scale.py`
 
+Current diagnosis from the Django run:
+
+1. The serialized canonical graph is larger than the Django Python source set at current settings.
+2. This is not just an extractor issue; it is amplified by pretty-printed JSON, long repeated identifiers, redundant `edge_id` storage, and duplicated `calls` / `called_by` references.
+3. The current scale harness also uses an invalid raw-token estimator for paper purposes because it sums overlapping node spans rather than deduplicated source files.
+
+Implication:
+
+1. Do not use the current Django scale result as paper evidence for H1-style token efficiency.
+2. Separate canonical storage budget from clue-context budget.
+3. Measure task-conditioned projections against deduplicated raw source bytes or files, not against overlapping node spans.
+4. Keep scale out of the headline claim set unless the representation or measurement path is fixed.
+
 Rule:
 
 1. Treat scale as optional strengthening for arXiv.
 2. Do not block the paper on scale unless the title or abstract is widened to make scale a central claim.
+3. If scale is kept in the paper later, the serializer and scale harness must be revised before any Django-scale number is cited.
 
 ## 5. Claim Ladder and Decision Rules
 

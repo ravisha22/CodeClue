@@ -25,7 +25,7 @@ class SymbolRecord:
 
 
 def _hash_text(text: str) -> str:
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
 
 
 def _line_col_to_offset(text: str, line: int, col: int) -> int:
