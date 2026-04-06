@@ -1,0 +1,248 @@
+[
+  {
+    "task_id": "action-flask-refactor-001",
+    "family": "TF1-Action",
+    "task": "Refactor Flask's request handling to support async middleware. List every file and function that must be modified.",
+    "gold_type": "localization",
+    "arm_a_prompt": "action-flask-refactor-001_arm-a.prompt.md",
+    "arm_a_response": "action-flask-refactor-001_arm-a.response.md",
+    "arm_b_prompt": "action-flask-refactor-001_arm-b.prompt.md",
+    "arm_b_response": "action-flask-refactor-001_arm-b.response.md",
+    "clue_file": "action-flask-refactor-001_arm-b.clue.json",
+    "arm_a_tokens": 8192,
+    "arm_b_tokens": 1967,
+    "clue_tokens": 1274,
+    "gold_files": [
+      "src/flask/app.py",
+      "src/flask/ctx.py"
+    ],
+    "gold_symbols": [
+      "wsgi_app",
+      "full_dispatch_request",
+      "finalize_request",
+      "preprocess_request",
+      "process_response",
+      "__call__",
+      "request_context"
+    ]
+  },
+  {
+    "task_id": "action-express-navigate-001",
+    "family": "TF1-Action",
+    "task": "A developer new to Express needs to understand the middleware pipeline to add rate limiting. Identify the entry point, middleware registration, and execution flow.",
+    "gold_type": "localization",
+    "arm_a_prompt": "action-express-navigate-001_arm-a.prompt.md",
+    "arm_a_response": "action-express-navigate-001_arm-a.response.md",
+    "arm_b_prompt": "action-express-navigate-001_arm-b.prompt.md",
+    "arm_b_response": "action-express-navigate-001_arm-b.response.md",
+    "clue_file": "action-express-navigate-001_arm-b.clue.json",
+    "arm_a_tokens": 2867,
+    "arm_b_tokens": 1586,
+    "clue_tokens": 921,
+    "gold_files": [
+      "lib/application.js"
+    ],
+    "gold_symbols": [
+      "app.handle",
+      "router.handle",
+      "app.use",
+      "router.use"
+    ]
+  },
+  {
+    "task_id": "action-flask-impact-001",
+    "family": "TF2-Action",
+    "task": "We're modifying Flask.wsgi_app to add request logging. List ALL functions that could be affected by this change and explain the propagation path.",
+    "gold_type": "impact",
+    "arm_a_prompt": "action-flask-impact-001_arm-a.prompt.md",
+    "arm_a_response": "action-flask-impact-001_arm-a.response.md",
+    "arm_b_prompt": "action-flask-impact-001_arm-b.prompt.md",
+    "arm_b_response": "action-flask-impact-001_arm-b.response.md",
+    "clue_file": "action-flask-impact-001_arm-b.clue.json",
+    "arm_a_tokens": 4416,
+    "arm_b_tokens": 2897,
+    "clue_tokens": 1787,
+    "gold_files": [
+      "src/flask/app.py"
+    ],
+    "gold_symbols": [
+      "wsgi_app",
+      "full_dispatch_request",
+      "dispatch_request",
+      "finalize_request",
+      "handle_exception",
+      "handle_user_exception",
+      "request_context",
+      "preprocess_request",
+      "process_response"
+    ]
+  },
+  {
+    "task_id": "action-httpx-impact-001",
+    "family": "TF2-Action",
+    "task": "We need to add HTTP/3 support to httpx. Identify every component in the transport layer that would need modification.",
+    "gold_type": "impact",
+    "arm_a_prompt": "action-httpx-impact-001_arm-a.prompt.md",
+    "arm_a_response": "action-httpx-impact-001_arm-a.response.md",
+    "arm_b_prompt": "action-httpx-impact-001_arm-b.prompt.md",
+    "arm_b_response": "action-httpx-impact-001_arm-b.response.md",
+    "clue_file": "action-httpx-impact-001_arm-b.clue.json",
+    "arm_a_tokens": 6552,
+    "arm_b_tokens": 3092,
+    "clue_tokens": 1927,
+    "gold_files": [
+      "httpx/_transports/default.py",
+      "httpx/_client.py"
+    ],
+    "gold_symbols": [
+      "handle_request",
+      "_transport_for_url",
+      "_send_single_request",
+      "Client"
+    ]
+  },
+  {
+    "task_id": "action-flask-edit-001",
+    "family": "TF3-Action",
+    "task": "Add a new 'after_dispatch' hook that runs after the view function returns but before after_request hooks. Specify the exact file and insertion point.",
+    "gold_type": "localization",
+    "arm_a_prompt": "action-flask-edit-001_arm-a.prompt.md",
+    "arm_a_response": "action-flask-edit-001_arm-a.response.md",
+    "arm_b_prompt": "action-flask-edit-001_arm-b.prompt.md",
+    "arm_b_response": "action-flask-edit-001_arm-b.response.md",
+    "clue_file": "action-flask-edit-001_arm-b.clue.json",
+    "arm_a_tokens": 8628,
+    "arm_b_tokens": 2604,
+    "clue_tokens": 1611,
+    "gold_files": [
+      "src/flask/app.py",
+      "src/flask/sansio/scaffold.py"
+    ],
+    "gold_symbols": [
+      "full_dispatch_request",
+      "finalize_request",
+      "dispatch_request",
+      "after_request",
+      "before_request"
+    ]
+  },
+  {
+    "task_id": "action-fastapi-edit-001",
+    "family": "TF3-Action",
+    "task": "Add request body size limiting middleware to FastAPI. Which files define middleware registration and where should the new middleware be inserted?",
+    "gold_type": "localization",
+    "arm_a_prompt": "action-fastapi-edit-001_arm-a.prompt.md",
+    "arm_a_response": "action-fastapi-edit-001_arm-a.response.md",
+    "arm_b_prompt": "action-fastapi-edit-001_arm-b.prompt.md",
+    "arm_b_response": "action-fastapi-edit-001_arm-b.response.md",
+    "clue_file": "action-fastapi-edit-001_arm-b.clue.json",
+    "arm_a_tokens": 3414,
+    "arm_b_tokens": 1037,
+    "clue_tokens": 561,
+    "gold_files": [
+      "fastapi/applications.py"
+    ],
+    "gold_symbols": [
+      "add_middleware",
+      "build_middleware_stack"
+    ]
+  },
+  {
+    "task_id": "action-flask-trace-001",
+    "family": "TF4-Action",
+    "task": "A user reports that their after_request handler silently fails when an exception occurs during dispatch. Trace the execution path to identify where the exception is caught and why the handler might not execute.",
+    "gold_type": "trace",
+    "arm_a_prompt": "action-flask-trace-001_arm-a.prompt.md",
+    "arm_a_response": "action-flask-trace-001_arm-a.response.md",
+    "arm_b_prompt": "action-flask-trace-001_arm-b.prompt.md",
+    "arm_b_response": "action-flask-trace-001_arm-b.response.md",
+    "clue_file": "action-flask-trace-001_arm-b.clue.json",
+    "arm_a_tokens": 4424,
+    "arm_b_tokens": 2618,
+    "clue_tokens": 1618,
+    "gold_files": [
+      "src/flask/app.py"
+    ],
+    "gold_symbols": [
+      "full_dispatch_request",
+      "finalize_request",
+      "handle_user_exception",
+      "handle_exception",
+      "after_request"
+    ]
+  },
+  {
+    "task_id": "action-nest-trace-001",
+    "family": "TF4-Action",
+    "task": "A NestJS middleware is not executing for certain routes. Trace the middleware resolution and binding flow to identify why route-specific middleware might be skipped.",
+    "gold_type": "trace",
+    "arm_a_prompt": "action-nest-trace-001_arm-a.prompt.md",
+    "arm_a_response": "action-nest-trace-001_arm-a.response.md",
+    "arm_b_prompt": "action-nest-trace-001_arm-b.prompt.md",
+    "arm_b_response": "action-nest-trace-001_arm-b.response.md",
+    "clue_file": "action-nest-trace-001_arm-b.clue.json",
+    "arm_a_tokens": 1162,
+    "arm_b_tokens": 1256,
+    "clue_tokens": 697,
+    "gold_files": [
+      "packages/core/middleware/resolver.ts",
+      "packages/core/middleware/builder.ts"
+    ],
+    "gold_symbols": [
+      "resolveInstances",
+      "apply",
+      "forRoutes",
+      "exclude"
+    ]
+  },
+  {
+    "task_id": "action-flask-security-001",
+    "family": "TF5-Action",
+    "task": "Audit Flask's session handling for security vulnerabilities. List every file involved in session creation, signing, and cookie setting.",
+    "gold_type": "localization",
+    "arm_a_prompt": "action-flask-security-001_arm-a.prompt.md",
+    "arm_a_response": "action-flask-security-001_arm-a.response.md",
+    "arm_b_prompt": "action-flask-security-001_arm-b.prompt.md",
+    "arm_b_response": "action-flask-security-001_arm-b.response.md",
+    "clue_file": "action-flask-security-001_arm-b.clue.json",
+    "arm_a_tokens": 3395,
+    "arm_b_tokens": 1616,
+    "clue_tokens": 909,
+    "gold_files": [
+      "src/flask/sessions.py"
+    ],
+    "gold_symbols": [
+      "SecureCookieSessionInterface",
+      "save_session",
+      "open_session",
+      "get_signing_serializer",
+      "should_set_cookie"
+    ]
+  },
+  {
+    "task_id": "action-gin-security-001",
+    "family": "TF5-Action",
+    "task": "Audit Gin's middleware chain for security risks. Identify where auth middleware runs relative to route handlers and whether middleware can be bypassed.",
+    "gold_type": "localization",
+    "arm_a_prompt": "action-gin-security-001_arm-a.prompt.md",
+    "arm_a_response": "action-gin-security-001_arm-a.response.md",
+    "arm_b_prompt": "action-gin-security-001_arm-b.prompt.md",
+    "arm_b_response": "action-gin-security-001_arm-b.response.md",
+    "clue_file": "action-gin-security-001_arm-b.clue.json",
+    "arm_a_tokens": 9270,
+    "arm_b_tokens": 1601,
+    "clue_tokens": 936,
+    "gold_files": [
+      "gin.go",
+      "context.go",
+      "auth.go"
+    ],
+    "gold_symbols": [
+      "ServeHTTP",
+      "handleHTTPRequest",
+      "Next",
+      "Abort",
+      "BasicAuth"
+    ]
+  }
+]
