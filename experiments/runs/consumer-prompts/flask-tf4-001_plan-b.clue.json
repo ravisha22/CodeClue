@@ -1,0 +1,327 @@
+{
+  "task": {
+    "id": "trace-OF4-20260403093047",
+    "repo": "",
+    "family": "OF4",
+    "operation_family": "OF4",
+    "question": "What behavioral gotcha exists in Flask's request dispatch path?"
+  },
+  "clue_summary": {
+    "system_behavior": [
+      "__call__: Function __call__.",
+      "__init__: Middleware between __init__ and __init__.",
+      "__init_subclass__: Function __init_subclass__.",
+      "app_context: Function app_context.",
+      "async_to_sync: Async Leaf handler invoked by ensure_sync."
+    ],
+    "key_files": [
+      "src/flask/app.py"
+    ],
+    "key_symbols": [
+      "__call__",
+      "__init__",
+      "__init_subclass__",
+      "app_context",
+      "async_to_sync"
+    ],
+    "risk_summary": "Detected risks: broad_exception_handler, state_mutation_outside_init."
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "function",
+      "name": "__call__",
+      "summary": "Function __call__.",
+      "file": "src/flask/app.py",
+      "lines": [
+        1618,
+        1625
+      ],
+      "importance": 1,
+      "role": "utility",
+      "sig": "def __call__( self, environ: WSGIEnvironment, start_response: StartResponse ) -> cabc.Iterable[bytes]:"
+    },
+    {
+      "id": "n2",
+      "type": "function",
+      "name": "__init__",
+      "summary": "Middleware between __init__ and __init__.",
+      "file": "src/flask/app.py",
+      "lines": [
+        310,
+        363
+      ],
+      "importance": 2,
+      "role": "middleware",
+      "sig": "def __init__( self, import_name: str, static_url_path: str | None = None, static_folder: str | os.PathLike[str] | None = \"static\", static_host: str | None = None, host_matching: bool = False, subdo..."
+    },
+    {
+      "id": "n3",
+      "type": "function",
+      "name": "__init_subclass__",
+      "summary": "Function __init_subclass__.",
+      "file": "src/flask/app.py",
+      "lines": [
+        254,
+        308
+      ],
+      "importance": 3,
+      "role": "utility",
+      "sig": "def __init_subclass__(cls, **kwargs: t.Any) -> None:"
+    },
+    {
+      "id": "n4",
+      "type": "function",
+      "name": "app_context",
+      "summary": "Function app_context.",
+      "file": "src/flask/app.py",
+      "lines": [
+        1481,
+        1499
+      ],
+      "importance": 4,
+      "role": "utility",
+      "sig": "def app_context(self) -> AppContext:"
+    },
+    {
+      "id": "n5",
+      "type": "function",
+      "name": "async_to_sync",
+      "summary": "Async Leaf handler invoked by ensure_sync.",
+      "file": "src/flask/app.py",
+      "lines": [
+        1079,
+        1100
+      ],
+      "importance": 5,
+      "role": "handler",
+      "sig": "def async_to_sync( self, func: t.Callable[..., t.Coroutine[t.Any, t.Any, t.Any]] ) -> t.Callable[..., t.Any]:"
+    },
+    {
+      "id": "n6",
+      "type": "function",
+      "name": "create_jinja_environment",
+      "summary": "Function create_jinja_environment.",
+      "file": "src/flask/app.py",
+      "lines": [
+        469,
+        507
+      ],
+      "importance": 6,
+      "role": "utility",
+      "sig": "def create_jinja_environment(self) -> Environment:"
+    },
+    {
+      "id": "n7",
+      "type": "function",
+      "name": "create_url_adapter",
+      "summary": "Function create_url_adapter.",
+      "file": "src/flask/app.py",
+      "lines": [
+        509,
+        560
+      ],
+      "importance": 7,
+      "role": "utility",
+      "sig": "def create_url_adapter(self, request: Request | None) -> MapAdapter | None:"
+    },
+    {
+      "id": "n8",
+      "type": "function",
+      "name": "dispatch_request",
+      "summary": "Middleware between full_dispatch_request and ensure_sync.",
+      "file": "src/flask/app.py",
+      "lines": [
+        966,
+        990
+      ],
+      "importance": 8,
+      "role": "middleware",
+      "sig": "def dispatch_request(self, ctx: AppContext) -> ft.ResponseReturnValue:"
+    },
+    {
+      "id": "n9",
+      "type": "function",
+      "name": "do_teardown_appcontext",
+      "summary": "Entrypoint that delegates to ensure_sync.",
+      "file": "src/flask/app.py",
+      "lines": [
+        1453,
+        1479
+      ],
+      "importance": 9,
+      "role": "entrypoint",
+      "sig": "def do_teardown_appcontext( self, ctx: AppContext, exc: BaseException | None = None ) -> None:"
+    },
+    {
+      "id": "n10",
+      "type": "function",
+      "name": "do_teardown_request",
+      "summary": "Entrypoint that delegates to ensure_sync.",
+      "file": "src/flask/app.py",
+      "lines": [
+        1420,
+        1451
+      ],
+      "importance": 10,
+      "role": "entrypoint",
+      "sig": "def do_teardown_request( self, ctx: AppContext, exc: BaseException | None = None ) -> None:"
+    },
+    {
+      "id": "n11",
+      "type": "function",
+      "name": "ensure_sync",
+      "summary": "Function ensure_sync.",
+      "file": "src/flask/app.py",
+      "lines": [
+        1065,
+        1077
+      ],
+      "importance": 11,
+      "role": "utility",
+      "sig": "def ensure_sync(self, func: t.Callable[..., t.Any]) -> t.Callable[..., t.Any]:"
+    },
+    {
+      "id": "n12",
+      "type": "function",
+      "name": "finalize_request",
+      "summary": "Error handler; produces error response; catches broad exceptions.",
+      "file": "src/flask/app.py",
+      "lines": [
+        1021,
+        1051
+      ],
+      "importance": 12,
+      "role": "error_handler",
+      "sig": "def finalize_request( self, ctx: AppContext, rv: ft.ResponseReturnValue | HTTPException, from_error_handler: bool = False, ) -> Response:",
+      "risks": [
+        "broad_exception_handler"
+      ]
+    },
+    {
+      "id": "n13",
+      "type": "function",
+      "name": "full_dispatch_request",
+      "summary": "Error handler; produces dispatch_request, finalize_request; catches broad exceptions; mutates state outside __init__.",
+      "file": "src/flask/app.py",
+      "lines": [
+        992,
+        1019
+      ],
+      "importance": 13,
+      "role": "error_handler",
+      "sig": "def full_dispatch_request(self, ctx: AppContext) -> Response:",
+      "risks": [
+        "broad_exception_handler",
+        "state_mutation_outside_init"
+      ]
+    },
+    {
+      "id": "n14",
+      "type": "function",
+      "name": "get_send_file_max_age",
+      "summary": "Function get_send_file_max_age.",
+      "file": "src/flask/app.py",
+      "lines": [
+        365,
+        390
+      ],
+      "importance": 14,
+      "role": "utility",
+      "sig": "def get_send_file_max_age(self, filename: str | None) -> int | None:"
+    },
+    {
+      "id": "n15",
+      "type": "function",
+      "name": "handle_exception",
+      "summary": "Error handler; produces ensure_sync, finalize_request.",
+      "file": "src/flask/app.py",
+      "lines": [
+        897,
+        948
+      ],
+      "importance": 15,
+      "role": "error_handler",
+      "sig": "def handle_exception(self, ctx: AppContext, e: Exception) -> Response:"
+    }
+  ],
+  "relations": [
+    {
+      "type": "calls",
+      "from": "n2",
+      "to": "n2",
+      "note": "__init__ calls __init__"
+    },
+    {
+      "type": "calls",
+      "from": "n8",
+      "to": "n11",
+      "note": "dispatch_request calls ensure_sync"
+    },
+    {
+      "type": "calls",
+      "from": "n9",
+      "to": "n11",
+      "note": "do_teardown_appcontext calls ensure_sync"
+    },
+    {
+      "type": "calls",
+      "from": "n10",
+      "to": "n11",
+      "note": "do_teardown_request calls ensure_sync"
+    },
+    {
+      "type": "calls",
+      "from": "n11",
+      "to": "n5",
+      "note": "ensure_sync calls async_to_sync"
+    },
+    {
+      "type": "calls",
+      "from": "n13",
+      "to": "n8",
+      "note": "full_dispatch_request calls dispatch_request"
+    },
+    {
+      "type": "calls",
+      "from": "n13",
+      "to": "n12",
+      "note": "full_dispatch_request calls finalize_request"
+    },
+    {
+      "type": "calls",
+      "from": "n15",
+      "to": "n11",
+      "note": "handle_exception calls ensure_sync"
+    },
+    {
+      "type": "calls",
+      "from": "n15",
+      "to": "n12",
+      "note": "handle_exception calls finalize_request"
+    }
+  ],
+  "assertions": [
+    {
+      "path": [
+        "n12"
+      ],
+      "fact": "finalize_request catches broad exceptions; specific errors may be masked."
+    },
+    {
+      "path": [
+        "n13"
+      ],
+      "fact": "full_dispatch_request catches broad exceptions; specific errors may be masked."
+    }
+  ],
+  "uncertainty": {
+    "overall_confidence": 0.95,
+    "lookup_hint": "clue_only",
+    "known_gaps": [
+      "Low confidence on this node; source verification recommended",
+      "Low confidence on this node; source verification recommended",
+      "Low confidence on this node; source verification recommended"
+    ]
+  }
+}

@@ -1,0 +1,277 @@
+# Plan B: Flat-Table Consumer Prompt
+
+You are a senior software engineer answering a code comprehension question.
+You will receive a **compact clue artifact** with separate node, relation, and assertion tables.
+
+## Instructions
+1. Read the task question carefully.
+2. Use ONLY the information in the clue artifact to answer.
+3. Cite node IDs (n1, n2, etc.) as evidence for your claims.
+4. Cross-reference the relations and assertions tables for behavioral context.
+5. Do NOT speculate about code not described in the clue.
+6. Structure your answer clearly.
+
+## Task Question
+Express middleware architecture?
+
+## Clue Artifact (Flat-Table)
+```json
+{
+  "task": {
+    "id": "trace-OF1-20260403094653",
+    "repo": "",
+    "family": "OF1",
+    "operation_family": "OF1",
+    "question": "Express middleware architecture?"
+  },
+  "clue_summary": {
+    "system_behavior": [
+      "andRestrictTo: Function andRestrictTo.",
+      "andRestrictToSelf: Function andRestrictToSelf.",
+      "loadUser: Function loadUser.",
+      "testMethod: Function testMethod.",
+      "fn1: Function fn1."
+    ],
+    "key_files": [
+      "examples/route-middleware/index.js",
+      "test/Route.js",
+      "test/Router.js",
+      "test/app.route.js"
+    ],
+    "key_symbols": [
+      "andRestrictTo",
+      "andRestrictToSelf",
+      "loadUser",
+      "testMethod",
+      "fn1"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "function",
+      "name": "andRestrictTo",
+      "summary": "Function andRestrictTo.",
+      "file": "examples/route-middleware/index.js",
+      "lines": [
+        50,
+        50
+      ],
+      "importance": 1,
+      "role": "utility",
+      "sig": "function andRestrictTo(role)"
+    },
+    {
+      "id": "n2",
+      "type": "function",
+      "name": "andRestrictToSelf",
+      "summary": "Function andRestrictToSelf.",
+      "file": "examples/route-middleware/index.js",
+      "lines": [
+        36,
+        36
+      ],
+      "importance": 2,
+      "role": "utility",
+      "sig": "function andRestrictToSelf(req, res, next)"
+    },
+    {
+      "id": "n3",
+      "type": "function",
+      "name": "loadUser",
+      "summary": "Function loadUser.",
+      "file": "examples/route-middleware/index.js",
+      "lines": [
+        25,
+        25
+      ],
+      "importance": 3,
+      "role": "utility",
+      "sig": "function loadUser(req, res, next)"
+    },
+    {
+      "id": "n4",
+      "type": "function",
+      "name": "testMethod",
+      "summary": "Function testMethod.",
+      "file": "test/Route.js",
+      "lines": [
+        78,
+        78
+      ],
+      "importance": 4,
+      "role": "utility",
+      "sig": "function testMethod(method)"
+    },
+    {
+      "id": "n5",
+      "type": "function",
+      "name": "fn1",
+      "summary": "Function fn1.",
+      "file": "test/Router.js",
+      "lines": [
+        481,
+        481
+      ],
+      "importance": 5,
+      "role": "utility",
+      "sig": "function fn1(req, res, next)"
+    },
+    {
+      "id": "n6",
+      "type": "function",
+      "name": "fn2",
+      "summary": "Function fn2.",
+      "file": "test/Router.js",
+      "lines": [
+        486,
+        486
+      ],
+      "importance": 6,
+      "role": "utility",
+      "sig": "function fn2(req, res, next)"
+    },
+    {
+      "id": "n7",
+      "type": "function",
+      "name": "no",
+      "summary": "Function no.",
+      "file": "test/Router.js",
+      "lines": [
+        463,
+        463
+      ],
+      "importance": 7,
+      "role": "utility",
+      "sig": "function no()"
+    },
+    {
+      "id": "n8",
+      "type": "function",
+      "name": "testMethod",
+      "summary": "Function testMethod.",
+      "file": "test/Router.js",
+      "lines": [
+        424,
+        424
+      ],
+      "importance": 8,
+      "role": "utility",
+      "sig": "function testMethod(method)"
+    },
+    {
+      "id": "n9",
+      "type": "function",
+      "name": "createError",
+      "summary": "Error handler; produces error response.",
+      "file": "test/app.route.js",
+      "lines": [
+        114,
+        114
+      ],
+      "importance": 9,
+      "role": "error_handler",
+      "sig": "function createError (req, res, next)"
+    },
+    {
+      "id": "n10",
+      "type": "function",
+      "name": "createError",
+      "summary": "Error handler; produces error response.",
+      "file": "test/app.route.js",
+      "lines": [
+        133,
+        133
+      ],
+      "importance": 10,
+      "role": "error_handler",
+      "sig": "function createError (req, res, next)"
+    },
+    {
+      "id": "n11",
+      "type": "function",
+      "name": "createError",
+      "summary": "Error handler; produces error response.",
+      "file": "test/app.route.js",
+      "lines": [
+        155,
+        155
+      ],
+      "importance": 11,
+      "role": "error_handler",
+      "sig": "function createError (req, res, next)"
+    },
+    {
+      "id": "n12",
+      "type": "function",
+      "name": "createError",
+      "summary": "Error handler; produces error response.",
+      "file": "test/app.route.js",
+      "lines": [
+        177,
+        177
+      ],
+      "importance": 12,
+      "role": "error_handler",
+      "sig": "function createError (req, res, next)"
+    },
+    {
+      "id": "n13",
+      "type": "function",
+      "name": "createError",
+      "summary": "Error handler; produces error response.",
+      "file": "test/app.route.js",
+      "lines": [
+        70,
+        70
+      ],
+      "importance": 13,
+      "role": "error_handler",
+      "sig": "function createError (req, res, next)"
+    },
+    {
+      "id": "n14",
+      "type": "function",
+      "name": "createError",
+      "summary": "Error handler; produces error response.",
+      "file": "test/app.route.js",
+      "lines": [
+        92,
+        92
+      ],
+      "importance": 14,
+      "role": "error_handler",
+      "sig": "function createError (req, res, next)"
+    },
+    {
+      "id": "n15",
+      "type": "function",
+      "name": "handleError",
+      "summary": "Error handler; produces error response.",
+      "file": "test/app.route.js",
+      "lines": [
+        100,
+        100
+      ],
+      "importance": 15,
+      "role": "error_handler",
+      "sig": "function handleError (err, req, res, next)"
+    }
+  ],
+  "relations": [],
+  "assertions": [],
+  "uncertainty": {
+    "overall_confidence": 1.0,
+    "lookup_hint": "clue_only",
+    "known_gaps": []
+  }
+}
+```
+
+## Required Answer Format
+Provide a structured answer with:
+- **Answer**: Your response to the question (2-5 sentences)
+- **Key nodes**: List the node IDs most relevant to your answer
+- **Evidence**: Brief explanation of how nodes, relations, and assertions support your answer
+- **Confidence**: How confident you are (high/medium/low) based on the clue alone
+- **Gaps**: Any information you would need but is missing from the clue

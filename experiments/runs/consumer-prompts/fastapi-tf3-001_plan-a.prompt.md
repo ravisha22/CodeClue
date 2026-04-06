@@ -1,0 +1,170 @@
+# Plan A: Entity-Centric Consumer Prompt
+
+You are a senior software engineer answering a code comprehension question.
+You will receive a **compact clue artifact** describing a code subsystem as a set of typed entities.
+
+## Instructions
+1. Read the task question carefully.
+2. Use ONLY the information in the clue artifact to answer.
+3. Cite entity IDs (n1, n2, etc.) as evidence for your claims.
+4. Do NOT speculate about code not described in the clue.
+5. Structure your answer clearly.
+
+## Task Question
+Where to edit to add middleware in FastAPI?
+
+## Clue Artifact (Entity-Centric)
+```json
+{
+  "task": {
+    "id": "trace-OF3-20260403093149",
+    "repo": "",
+    "family": "OF3",
+    "operation_family": "OF3",
+    "question": "Where to edit to add middleware in FastAPI?"
+  },
+  "summary": "EventSourceResponse: Leaf handler invoked by dispatcher. _check_data_exclusive: Validates input before processing. ServerSentEvent: Leaf handler invoked by dispatcher.",
+  "entities": [
+    {
+      "id": "n1",
+      "class": "handler",
+      "name": "EventSourceResponse",
+      "file": "fastapi/sse.py",
+      "lines": [
+        20,
+        33
+      ],
+      "weight": 0.92,
+      "behavior": "Leaf handler invoked by dispatcher.",
+      "inflow": [
+        {
+          "from": "n6",
+          "via": "contains"
+        }
+      ]
+    },
+    {
+      "id": "n2",
+      "class": "validator",
+      "name": "_check_data_exclusive",
+      "file": "fastapi/sse.py",
+      "lines": [
+        136,
+        143
+      ],
+      "weight": 0.77,
+      "behavior": "Validates input before processing.",
+      "sig": "def _check_data_exclusive(self) -> \"ServerSentEvent\":",
+      "inflow": [
+        {
+          "from": "n6",
+          "via": "contains"
+        }
+      ]
+    },
+    {
+      "id": "n3",
+      "class": "handler",
+      "name": "ServerSentEvent",
+      "file": "fastapi/sse.py",
+      "lines": [
+        42,
+        143
+      ],
+      "weight": 0.61,
+      "behavior": "Leaf handler invoked by dispatcher.",
+      "sig": "@model_validator(mode=\"after\") def _check_data_exclusive(self) -> \"ServerSentEvent\":",
+      "inflow": [
+        {
+          "from": "n6",
+          "via": "contains"
+        }
+      ]
+    },
+    {
+      "id": "n4",
+      "class": "validator",
+      "name": "_check_id_no_null",
+      "file": "fastapi/sse.py",
+      "lines": [
+        36,
+        39
+      ],
+      "weight": 0.46,
+      "behavior": "Validates input before processing.",
+      "sig": "def _check_id_no_null(v: str | None) -> str | None:",
+      "inflow": [
+        {
+          "from": "n6",
+          "via": "contains"
+        }
+      ]
+    },
+    {
+      "id": "n5",
+      "class": "handler",
+      "name": "format_sse_event",
+      "file": "fastapi/sse.py",
+      "lines": [
+        146,
+        214
+      ],
+      "weight": 0.31,
+      "behavior": "Leaf handler invoked by dispatcher.",
+      "inflow": [
+        {
+          "from": "n6",
+          "via": "contains"
+        }
+      ]
+    },
+    {
+      "id": "n6",
+      "class": "module_root",
+      "name": "fastapi/sse.py",
+      "file": "fastapi/sse.py",
+      "lines": [
+        1,
+        223
+      ],
+      "weight": 0.17,
+      "behavior": "Module containing 5 projected symbol(s).",
+      "outflow": [
+        {
+          "to": "n1",
+          "via": "contains"
+        },
+        {
+          "to": "n2",
+          "via": "contains"
+        },
+        {
+          "to": "n3",
+          "via": "contains"
+        },
+        {
+          "to": "n4",
+          "via": "contains"
+        },
+        {
+          "to": "n5",
+          "via": "contains"
+        }
+      ]
+    }
+  ],
+  "uncertainty": {
+    "confidence": 1.0,
+    "hint": "clue_only",
+    "gaps": []
+  }
+}
+```
+
+## Required Answer Format
+Provide a structured answer with:
+- **Answer**: Your response to the question (2-5 sentences)
+- **Key entities**: List the entity IDs most relevant to your answer
+- **Evidence**: Brief explanation of how the clue entities support your answer
+- **Confidence**: How confident you are (high/medium/low) based on the clue alone
+- **Gaps**: Any information you would need but is missing from the clue

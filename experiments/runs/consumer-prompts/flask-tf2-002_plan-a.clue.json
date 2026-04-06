@@ -1,0 +1,413 @@
+{
+  "task": {
+    "id": "trace-OF2-20260403093106",
+    "repo": "",
+    "family": "OF2",
+    "operation_family": "OF2",
+    "question": "What is the impact of changing Flask.dispatch_request?"
+  },
+  "summary": "__repr__: Middleware between __repr__ and __repr__. from_envvar: Entrypoint that delegates to from_pyfile. from_file: Entrypoint that delegates to from_mapping.",
+  "entities": [
+    {
+      "id": "n1",
+      "class": "middleware",
+      "name": "__repr__",
+      "file": "src/flask/config.py",
+      "lines": [
+        366,
+        367
+      ],
+      "weight": 0.92,
+      "behavior": "Middleware between __repr__ and __repr__.",
+      "sig": "def __repr__(self) -> str:",
+      "inflow": [
+        {
+          "from": "n1",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ],
+      "outflow": [
+        {
+          "to": "n1",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ]
+    },
+    {
+      "id": "n2",
+      "class": "entrypoint",
+      "name": "from_envvar",
+      "file": "src/flask/config.py",
+      "lines": [
+        102,
+        124
+      ],
+      "weight": 0.86,
+      "behavior": "Entrypoint that delegates to from_pyfile.",
+      "sig": "def from_envvar(self, variable_name: str, silent: bool = False) -> bool:",
+      "outflow": [
+        {
+          "to": "n6",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ],
+      "invariants": [
+        "Entry point; all request paths flow through here."
+      ]
+    },
+    {
+      "id": "n3",
+      "class": "entrypoint",
+      "name": "from_file",
+      "file": "src/flask/config.py",
+      "lines": [
+        256,
+        302
+      ],
+      "weight": 0.8,
+      "behavior": "Entrypoint that delegates to from_mapping.",
+      "sig": "def from_file( self, filename: str | os.PathLike[str], load: t.Callable[[t.IO[t.Any]], t.Mapping[str, t.Any]], silent: bool = False, text: bool = True, ) -> bool:",
+      "outflow": [
+        {
+          "to": "n4",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ],
+      "invariants": [
+        "Entry point; all request paths flow through here."
+      ]
+    },
+    {
+      "id": "n4",
+      "class": "handler",
+      "name": "from_mapping",
+      "file": "src/flask/config.py",
+      "lines": [
+        304,
+        321
+      ],
+      "weight": 0.74,
+      "behavior": "Leaf handler invoked by from_file.",
+      "sig": "def from_mapping( self, mapping: t.Mapping[str, t.Any] | None = None, **kwargs: t.Any ) -> bool:",
+      "inflow": [
+        {
+          "from": "n3",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ]
+    },
+    {
+      "id": "n5",
+      "class": "handler",
+      "name": "from_object",
+      "file": "src/flask/config.py",
+      "lines": [
+        218,
+        254
+      ],
+      "weight": 0.67,
+      "behavior": "Leaf handler invoked by from_pyfile.",
+      "sig": "def from_object(self, obj: object | str) -> None:",
+      "inflow": [
+        {
+          "from": "n6",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ]
+    },
+    {
+      "id": "n6",
+      "class": "middleware",
+      "name": "from_pyfile",
+      "file": "src/flask/config.py",
+      "lines": [
+        187,
+        216
+      ],
+      "weight": 0.61,
+      "behavior": "Middleware between from_envvar and from_object.",
+      "sig": "def from_pyfile( self, filename: str | os.PathLike[str], silent: bool = False ) -> bool:",
+      "inflow": [
+        {
+          "from": "n2",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ],
+      "outflow": [
+        {
+          "to": "n5",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ]
+    },
+    {
+      "id": "n7",
+      "class": "hub",
+      "name": "common_object_test",
+      "file": "tests/test_config.py",
+      "lines": [
+        13,
+        16
+      ],
+      "weight": 0.55,
+      "behavior": "Hub called by test_config_from_class, test_config_from_envvar; routes to multiple targets.",
+      "sig": "def common_object_test(app):",
+      "inflow": [
+        {
+          "from": "n8",
+          "via": "calls",
+          "condition": "normal"
+        },
+        {
+          "from": "n9",
+          "via": "calls",
+          "condition": "normal"
+        },
+        {
+          "from": "n11",
+          "via": "calls",
+          "condition": "normal"
+        },
+        {
+          "from": "n12",
+          "via": "calls",
+          "condition": "normal"
+        },
+        {
+          "from": "n13",
+          "via": "calls",
+          "condition": "normal"
+        },
+        {
+          "from": "n13",
+          "via": "calls",
+          "condition": "normal"
+        },
+        {
+          "from": "n13",
+          "via": "calls",
+          "condition": "normal"
+        },
+        {
+          "from": "n13",
+          "via": "calls",
+          "condition": "normal"
+        },
+        {
+          "from": "n14",
+          "via": "calls",
+          "condition": "normal"
+        },
+        {
+          "from": "n15",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ]
+    },
+    {
+      "id": "n8",
+      "class": "entrypoint",
+      "name": "test_config_from_class",
+      "file": "tests/test_config.py",
+      "lines": [
+        132,
+        141
+      ],
+      "weight": 0.49,
+      "behavior": "Entrypoint that delegates to common_object_test.",
+      "sig": "def test_config_from_class():",
+      "outflow": [
+        {
+          "to": "n7",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ],
+      "invariants": [
+        "Entry point; all request paths flow through here."
+      ]
+    },
+    {
+      "id": "n9",
+      "class": "entrypoint",
+      "name": "test_config_from_envvar",
+      "file": "tests/test_config.py",
+      "lines": [
+        144,
+        158
+      ],
+      "weight": 0.43,
+      "behavior": "Entrypoint that delegates to common_object_test.",
+      "sig": "def test_config_from_envvar(monkeypatch):",
+      "outflow": [
+        {
+          "to": "n7",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ],
+      "invariants": [
+        "Entry point; all request paths flow through here."
+      ]
+    },
+    {
+      "id": "n10",
+      "class": "utility",
+      "name": "test_config_from_envvar_missing",
+      "file": "tests/test_config.py",
+      "lines": [
+        161,
+        171
+      ],
+      "weight": 0.37,
+      "behavior": "Function test_config_from_envvar_missing.",
+      "sig": "def test_config_from_envvar_missing(monkeypatch):"
+    },
+    {
+      "id": "n11",
+      "class": "entrypoint",
+      "name": "test_config_from_file_json",
+      "file": "tests/test_config.py",
+      "lines": [
+        31,
+        35
+      ],
+      "weight": 0.31,
+      "behavior": "Entrypoint that delegates to common_object_test.",
+      "sig": "def test_config_from_file_json():",
+      "outflow": [
+        {
+          "to": "n7",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ],
+      "invariants": [
+        "Entry point; all request paths flow through here."
+      ]
+    },
+    {
+      "id": "n12",
+      "class": "entrypoint",
+      "name": "test_config_from_file_toml",
+      "file": "tests/test_config.py",
+      "lines": [
+        38,
+        45
+      ],
+      "weight": 0.25,
+      "behavior": "Entrypoint that delegates to common_object_test.",
+      "sig": "def test_config_from_file_toml():",
+      "outflow": [
+        {
+          "to": "n7",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ],
+      "invariants": [
+        "Entry point; all request paths flow through here."
+      ]
+    },
+    {
+      "id": "n13",
+      "class": "entrypoint",
+      "name": "test_config_from_mapping",
+      "file": "tests/test_config.py",
+      "lines": [
+        110,
+        129
+      ],
+      "weight": 0.18,
+      "behavior": "Entrypoint that delegates to common_object_test, common_object_test, common_object_test.",
+      "sig": "def test_config_from_mapping():",
+      "outflow": [
+        {
+          "to": "n7",
+          "via": "calls",
+          "condition": "normal"
+        },
+        {
+          "to": "n7",
+          "via": "calls",
+          "condition": "normal"
+        },
+        {
+          "to": "n7",
+          "via": "calls",
+          "condition": "normal"
+        },
+        {
+          "to": "n7",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ],
+      "invariants": [
+        "Entry point; all request paths flow through here."
+      ]
+    },
+    {
+      "id": "n14",
+      "class": "entrypoint",
+      "name": "test_config_from_object",
+      "file": "tests/test_config.py",
+      "lines": [
+        25,
+        28
+      ],
+      "weight": 0.12,
+      "behavior": "Entrypoint that delegates to common_object_test.",
+      "sig": "def test_config_from_object():",
+      "outflow": [
+        {
+          "to": "n7",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ],
+      "invariants": [
+        "Entry point; all request paths flow through here."
+      ]
+    },
+    {
+      "id": "n15",
+      "class": "entrypoint",
+      "name": "test_config_from_pyfile",
+      "file": "tests/test_config.py",
+      "lines": [
+        19,
+        22
+      ],
+      "weight": 0.06,
+      "behavior": "Entrypoint that delegates to common_object_test.",
+      "sig": "def test_config_from_pyfile():",
+      "outflow": [
+        {
+          "to": "n7",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ],
+      "invariants": [
+        "Entry point; all request paths flow through here."
+      ]
+    }
+  ],
+  "uncertainty": {
+    "confidence": 0.65,
+    "hint": "targeted_lookup",
+    "gaps": [
+      "Low confidence on this node; source verification recommended"
+    ]
+  }
+}

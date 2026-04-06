@@ -1,0 +1,396 @@
+# Plan B: Flat-Table Consumer Prompt
+
+You are a senior software engineer answering a code comprehension question.
+You will receive a **compact clue artifact** with separate node, relation, and assertion tables.
+
+## Instructions
+1. Read the task question carefully.
+2. Use ONLY the information in the clue artifact to answer.
+3. Cite node IDs (n1, n2, etc.) as evidence for your claims.
+4. Cross-reference the relations and assertions tables for behavioral context.
+5. Do NOT speculate about code not described in the clue.
+6. Structure your answer clearly.
+
+## Task Question
+Impact of modifying httpx transport layer?
+
+## Clue Artifact (Flat-Table)
+```json
+{
+  "task": {
+    "id": "trace-OF2-20260403094647",
+    "repo": "",
+    "family": "OF2",
+    "operation_family": "OF2",
+    "question": "Impact of modifying httpx transport layer?"
+  },
+  "clue_summary": {
+    "system_behavior": [
+      "__aenter__: Async Middleware between __aenter__, __aenter__ and __aenter__, __aenter__; mutates state outside __init__.",
+      "__aexit__: Async Middleware between __aexit__, __aexit__ and __aexit__, __aexit__; mutates state outside __init__.",
+      "_build_auth: Leaf handler invoked by _build_request_auth.",
+      "_build_redirect_request: Entrypoint that delegates to _redirect_headers, _redirect_method, _redirect_stream.",
+      "_build_request_auth: Entrypoint that delegates to _build_auth."
+    ],
+    "key_files": [
+      "httpx/_client.py"
+    ],
+    "key_symbols": [
+      "__aenter__",
+      "__aexit__",
+      "_build_auth",
+      "_build_redirect_request",
+      "_build_request_auth"
+    ],
+    "risk_summary": "Detected risks: state_mutation_outside_init."
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "async_function",
+      "name": "__aenter__",
+      "summary": "Async Middleware between __aenter__, __aenter__ and __aenter__, __aenter__; mutates state outside __init__.",
+      "file": "httpx/_client.py",
+      "lines": [
+        1990,
+        2006
+      ],
+      "importance": 1,
+      "role": "middleware",
+      "sig": "async def __aenter__(self: U) -> U:",
+      "risks": [
+        "state_mutation_outside_init"
+      ]
+    },
+    {
+      "id": "n2",
+      "type": "async_function",
+      "name": "__aexit__",
+      "summary": "Async Middleware between __aexit__, __aexit__ and __aexit__, __aexit__; mutates state outside __init__.",
+      "file": "httpx/_client.py",
+      "lines": [
+        2008,
+        2019
+      ],
+      "importance": 2,
+      "role": "middleware",
+      "sig": "async def __aexit__( self, exc_type: type[BaseException] | None = None, exc_value: BaseException | None = None, traceback: TracebackType | None = None, ) -> None:",
+      "risks": [
+        "state_mutation_outside_init"
+      ]
+    },
+    {
+      "id": "n3",
+      "type": "function",
+      "name": "_build_auth",
+      "summary": "Leaf handler invoked by _build_request_auth.",
+      "file": "httpx/_client.py",
+      "lines": [
+        445,
+        455
+      ],
+      "importance": 3,
+      "role": "handler",
+      "sig": "def _build_auth(self, auth: AuthTypes | None) -> Auth | None:"
+    },
+    {
+      "id": "n4",
+      "type": "function",
+      "name": "_build_redirect_request",
+      "summary": "Entrypoint that delegates to _redirect_headers, _redirect_method, _redirect_stream.",
+      "file": "httpx/_client.py",
+      "lines": [
+        475,
+        492
+      ],
+      "importance": 4,
+      "role": "entrypoint",
+      "sig": "def _build_redirect_request(self, request: Request, response: Response) -> Request:"
+    },
+    {
+      "id": "n5",
+      "type": "function",
+      "name": "_build_request_auth",
+      "summary": "Entrypoint that delegates to _build_auth.",
+      "file": "httpx/_client.py",
+      "lines": [
+        457,
+        473
+      ],
+      "importance": 5,
+      "role": "entrypoint",
+      "sig": "def _build_request_auth( self, request: Request, auth: AuthTypes | UseClientDefault | None = USE_CLIENT_DEFAULT, ) -> Auth:"
+    },
+    {
+      "id": "n6",
+      "type": "function",
+      "name": "_merge_cookies",
+      "summary": "Leaf handler invoked by build_request.",
+      "file": "httpx/_client.py",
+      "lines": [
+        413,
+        422
+      ],
+      "importance": 6,
+      "role": "handler",
+      "sig": "def _merge_cookies(self, cookies: CookieTypes | None = None) -> CookieTypes | None:"
+    },
+    {
+      "id": "n7",
+      "type": "function",
+      "name": "_merge_headers",
+      "summary": "Leaf handler invoked by build_request.",
+      "file": "httpx/_client.py",
+      "lines": [
+        424,
+        431
+      ],
+      "importance": 7,
+      "role": "handler",
+      "sig": "def _merge_headers(self, headers: HeaderTypes | None = None) -> HeaderTypes | None:"
+    },
+    {
+      "id": "n8",
+      "type": "function",
+      "name": "_merge_queryparams",
+      "summary": "Leaf handler invoked by build_request.",
+      "file": "httpx/_client.py",
+      "lines": [
+        433,
+        443
+      ],
+      "importance": 8,
+      "role": "handler",
+      "sig": "def _merge_queryparams( self, params: QueryParamTypes | None = None ) -> QueryParamTypes | None:"
+    },
+    {
+      "id": "n9",
+      "type": "function",
+      "name": "_merge_url",
+      "summary": "Leaf handler invoked by build_request.",
+      "file": "httpx/_client.py",
+      "lines": [
+        391,
+        411
+      ],
+      "importance": 9,
+      "role": "handler",
+      "sig": "def _merge_url(self, url: URL | str) -> URL:"
+    },
+    {
+      "id": "n10",
+      "type": "function",
+      "name": "_redirect_headers",
+      "summary": "Leaf handler invoked by _build_redirect_request.",
+      "file": "httpx/_client.py",
+      "lines": [
+        546,
+        571
+      ],
+      "importance": 10,
+      "role": "handler",
+      "sig": "def _redirect_headers(self, request: Request, url: URL, method: str) -> Headers:"
+    },
+    {
+      "id": "n11",
+      "type": "function",
+      "name": "_redirect_method",
+      "summary": "Leaf handler invoked by _build_redirect_request.",
+      "file": "httpx/_client.py",
+      "lines": [
+        494,
+        515
+      ],
+      "importance": 11,
+      "role": "handler",
+      "sig": "def _redirect_method(self, request: Request, response: Response) -> str:"
+    },
+    {
+      "id": "n12",
+      "type": "function",
+      "name": "_redirect_stream",
+      "summary": "Async Leaf handler invoked by _build_redirect_request.",
+      "file": "httpx/_client.py",
+      "lines": [
+        573,
+        582
+      ],
+      "importance": 12,
+      "role": "handler",
+      "sig": "def _redirect_stream( self, request: Request, method: str ) -> SyncByteStream | AsyncByteStream | None:"
+    },
+    {
+      "id": "n13",
+      "type": "function",
+      "name": "_redirect_url",
+      "summary": "Leaf handler invoked by _build_redirect_request.",
+      "file": "httpx/_client.py",
+      "lines": [
+        517,
+        544
+      ],
+      "importance": 13,
+      "role": "handler",
+      "sig": "def _redirect_url(self, request: Request, response: Response) -> URL:"
+    },
+    {
+      "id": "n14",
+      "type": "function",
+      "name": "build_request",
+      "summary": "Entrypoint that delegates to _merge_cookies, _merge_headers, _merge_queryparams.",
+      "file": "httpx/_client.py",
+      "lines": [
+        340,
+        389
+      ],
+      "importance": 14,
+      "role": "entrypoint",
+      "sig": "def build_request( self, method: str, url: URL | str, *, content: RequestContent | None = None, data: RequestData | None = None, files: RequestFiles | None = None, json: typing.Any | None = None, p..."
+    },
+    {
+      "id": "n15",
+      "type": "function",
+      "name": "__enter__",
+      "summary": "Middleware between __enter__, __enter__ and __enter__, __enter__; mutates state outside __init__.",
+      "file": "httpx/_client.py",
+      "lines": [
+        1275,
+        1291
+      ],
+      "importance": 15,
+      "role": "middleware",
+      "sig": "def __enter__(self: T) -> T:",
+      "risks": [
+        "state_mutation_outside_init"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "calls",
+      "from": "n1",
+      "to": "n1",
+      "note": "__aenter__ calls __aenter__"
+    },
+    {
+      "type": "calls",
+      "from": "n1",
+      "to": "n1",
+      "note": "__aenter__ calls __aenter__"
+    },
+    {
+      "type": "calls",
+      "from": "n2",
+      "to": "n2",
+      "note": "__aexit__ calls __aexit__"
+    },
+    {
+      "type": "calls",
+      "from": "n2",
+      "to": "n2",
+      "note": "__aexit__ calls __aexit__"
+    },
+    {
+      "type": "calls",
+      "from": "n4",
+      "to": "n10",
+      "note": "_build_redirect_request calls _redirect_headers"
+    },
+    {
+      "type": "calls",
+      "from": "n4",
+      "to": "n11",
+      "note": "_build_redirect_request calls _redirect_method"
+    },
+    {
+      "type": "calls",
+      "from": "n4",
+      "to": "n12",
+      "note": "_build_redirect_request calls _redirect_stream"
+    },
+    {
+      "type": "calls",
+      "from": "n4",
+      "to": "n13",
+      "note": "_build_redirect_request calls _redirect_url"
+    },
+    {
+      "type": "calls",
+      "from": "n5",
+      "to": "n3",
+      "note": "_build_request_auth calls _build_auth"
+    },
+    {
+      "type": "calls",
+      "from": "n14",
+      "to": "n6",
+      "note": "build_request calls _merge_cookies"
+    },
+    {
+      "type": "calls",
+      "from": "n14",
+      "to": "n7",
+      "note": "build_request calls _merge_headers"
+    },
+    {
+      "type": "calls",
+      "from": "n14",
+      "to": "n8",
+      "note": "build_request calls _merge_queryparams"
+    },
+    {
+      "type": "calls",
+      "from": "n14",
+      "to": "n9",
+      "note": "build_request calls _merge_url"
+    },
+    {
+      "type": "calls",
+      "from": "n15",
+      "to": "n15",
+      "note": "__enter__ calls __enter__"
+    },
+    {
+      "type": "calls",
+      "from": "n15",
+      "to": "n15",
+      "note": "__enter__ calls __enter__"
+    }
+  ],
+  "assertions": [
+    {
+      "path": [
+        "n1",
+        "n1",
+        "n1"
+      ],
+      "fact": "Call chain: __aenter__ → __aenter__ → __aenter__."
+    },
+    {
+      "path": [
+        "n2",
+        "n2",
+        "n2"
+      ],
+      "fact": "Call chain: __aexit__ → __aexit__ → __aexit__."
+    }
+  ],
+  "uncertainty": {
+    "overall_confidence": 0.08,
+    "lookup_hint": "expanded_lookup",
+    "known_gaps": [
+      "Low confidence on this node; source verification recommended",
+      "Low confidence on this node; source verification recommended",
+      "Low confidence on this node; source verification recommended"
+    ]
+  }
+}
+```
+
+## Required Answer Format
+Provide a structured answer with:
+- **Answer**: Your response to the question (2-5 sentences)
+- **Key nodes**: List the node IDs most relevant to your answer
+- **Evidence**: Brief explanation of how nodes, relations, and assertions support your answer
+- **Confidence**: How confident you are (high/medium/low) based on the clue alone
+- **Gaps**: Any information you would need but is missing from the clue

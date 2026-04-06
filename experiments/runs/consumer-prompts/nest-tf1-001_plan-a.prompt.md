@@ -1,0 +1,224 @@
+# Plan A: Entity-Centric Consumer Prompt
+
+You are a senior software engineer answering a code comprehension question.
+You will receive a **compact clue artifact** describing a code subsystem as a set of typed entities.
+
+## Instructions
+1. Read the task question carefully.
+2. Use ONLY the information in the clue artifact to answer.
+3. Cite entity IDs (n1, n2, etc.) as evidence for your claims.
+4. Do NOT speculate about code not described in the clue.
+5. Structure your answer clearly.
+
+## Task Question
+What is NestJS module architecture?
+
+## Clue Artifact (Entity-Centric)
+```json
+{
+  "task": {
+    "id": "trace-OF1-20260403093354",
+    "repo": "",
+    "family": "OF1",
+    "operation_family": "OF1",
+    "question": "What is NestJS module architecture?"
+  },
+  "summary": "Module: Function Module. as: Class as. Injector: Class Injector.",
+  "entities": [
+    {
+      "id": "n1",
+      "class": "utility",
+      "name": "Module",
+      "file": "packages/common/decorators/modules/module.decorator.ts",
+      "lines": [
+        18,
+        18
+      ],
+      "weight": 0.86,
+      "behavior": "Function Module.",
+      "sig": "export function Module(metadata: ModuleMetadata): ClassDecorator"
+    },
+    {
+      "id": "n2",
+      "class": "utility",
+      "name": "as",
+      "file": "packages/common/decorators/modules/module.decorator.ts",
+      "lines": [
+        5,
+        5
+      ],
+      "weight": 0.8,
+      "behavior": "Class as."
+    },
+    {
+      "id": "n3",
+      "class": "utility",
+      "name": "Injector",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        86,
+        86
+      ],
+      "weight": 0.75,
+      "behavior": "Class Injector."
+    },
+    {
+      "id": "n4",
+      "class": "utility",
+      "name": "callback",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        167,
+        167
+      ],
+      "weight": 0.69,
+      "behavior": "Function callback."
+    },
+    {
+      "id": "n5",
+      "class": "utility",
+      "name": "factoryReturnValue",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        854,
+        854
+      ],
+      "weight": 0.63,
+      "behavior": "Function factoryReturnValue."
+    },
+    {
+      "id": "n6",
+      "class": "utility",
+      "name": "identity",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        650,
+        650
+      ],
+      "weight": 0.57,
+      "behavior": "Function identity."
+    },
+    {
+      "id": "n7",
+      "class": "utility",
+      "name": "injectionToken",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        873,
+        873
+      ],
+      "weight": 0.52,
+      "behavior": "Function injectionToken."
+    },
+    {
+      "id": "n8",
+      "class": "utility",
+      "name": "isOptionalFactoryDependency",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        409,
+        409
+      ],
+      "weight": 0.46,
+      "behavior": "Function isOptionalFactoryDependency."
+    },
+    {
+      "id": "n9",
+      "class": "utility",
+      "name": "loadEnhancer",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        892,
+        892
+      ],
+      "weight": 0.4,
+      "behavior": "Function loadEnhancer."
+    },
+    {
+      "id": "n10",
+      "class": "utility",
+      "name": "mapFactoryProviderInjectArray",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        419,
+        419
+      ],
+      "weight": 0.34,
+      "behavior": "Function mapFactoryProviderInjectArray."
+    },
+    {
+      "id": "n11",
+      "class": "utility",
+      "name": "resolveParam",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        318,
+        318
+      ],
+      "weight": 0.29,
+      "behavior": "Function resolveParam."
+    },
+    {
+      "id": "n12",
+      "class": "utility",
+      "name": "InstanceWrapper",
+      "file": "packages/core/injector/instance-wrapper.ts",
+      "lines": [
+        61,
+        61
+      ],
+      "weight": 0.23,
+      "behavior": "Class InstanceWrapper."
+    },
+    {
+      "id": "n13",
+      "class": "utility",
+      "name": "reference",
+      "file": "packages/core/injector/instance-wrapper.ts",
+      "lines": [
+        27,
+        27
+      ],
+      "weight": 0.17,
+      "behavior": "Class reference."
+    },
+    {
+      "id": "n14",
+      "class": "utility",
+      "name": "Module",
+      "file": "packages/core/injector/module.ts",
+      "lines": [
+        44,
+        44
+      ],
+      "weight": 0.11,
+      "behavior": "Class Module."
+    },
+    {
+      "id": "n15",
+      "class": "utility",
+      "name": "addExportedUnit",
+      "file": "packages/core/injector/module.ts",
+      "lines": [
+        460,
+        460
+      ],
+      "weight": 0.06,
+      "behavior": "Function addExportedUnit."
+    }
+  ],
+  "uncertainty": {
+    "confidence": 0.97,
+    "hint": "clue_only",
+    "gaps": []
+  }
+}
+```
+
+## Required Answer Format
+Provide a structured answer with:
+- **Answer**: Your response to the question (2-5 sentences)
+- **Key entities**: List the entity IDs most relevant to your answer
+- **Evidence**: Brief explanation of how the clue entities support your answer
+- **Confidence**: How confident you are (high/medium/low) based on the clue alone
+- **Gaps**: Any information you would need but is missing from the clue

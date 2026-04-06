@@ -1,0 +1,53 @@
+{
+  "task": {
+    "id": "trace-OF3-20260403094654",
+    "repo": "",
+    "family": "OF3",
+    "operation_family": "OF3",
+    "question": "Where to add TypeORM migration support?"
+  },
+  "summary": "DriverFactory: Leaf handler invoked by dispatcher. src/driver/DriverFactory.ts: Module containing 1 projected symbol(s).",
+  "entities": [
+    {
+      "id": "n1",
+      "class": "handler",
+      "name": "DriverFactory",
+      "file": "src/driver/DriverFactory.ts",
+      "lines": [
+        25,
+        25
+      ],
+      "weight": 0.86,
+      "behavior": "Leaf handler invoked by dispatcher.",
+      "inflow": [
+        {
+          "from": "n2",
+          "via": "contains"
+        }
+      ]
+    },
+    {
+      "id": "n2",
+      "class": "module_root",
+      "name": "src/driver/DriverFactory.ts",
+      "file": "src/driver/DriverFactory.ts",
+      "lines": [
+        1,
+        95
+      ],
+      "weight": 0.5,
+      "behavior": "Module containing 1 projected symbol(s).",
+      "outflow": [
+        {
+          "to": "n1",
+          "via": "contains"
+        }
+      ]
+    }
+  ],
+  "uncertainty": {
+    "confidence": 1.0,
+    "hint": "clue_only",
+    "gaps": []
+  }
+}

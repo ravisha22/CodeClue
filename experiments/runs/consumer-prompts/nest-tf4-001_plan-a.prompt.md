@@ -1,0 +1,199 @@
+# Plan A: Entity-Centric Consumer Prompt
+
+You are a senior software engineer answering a code comprehension question.
+You will receive a **compact clue artifact** describing a code subsystem as a set of typed entities.
+
+## Instructions
+1. Read the task question carefully.
+2. Use ONLY the information in the clue artifact to answer.
+3. Cite entity IDs (n1, n2, etc.) as evidence for your claims.
+4. Do NOT speculate about code not described in the clue.
+5. Structure your answer clearly.
+
+## Task Question
+Behavioral gotchas in NestJS middleware pipeline?
+
+## Clue Artifact (Entity-Centric)
+```json
+{
+  "task": {
+    "id": "trace-OF4-20260403093421",
+    "repo": "",
+    "family": "OF4",
+    "operation_family": "OF4",
+    "question": "Behavioral gotchas in NestJS middleware pipeline?"
+  },
+  "summary": "CircularDependencyException: Error handler; produces error response. Barrier: Class Barrier. Injector: Class Injector.",
+  "entities": [
+    {
+      "id": "n1",
+      "class": "error_handler",
+      "name": "CircularDependencyException",
+      "file": "packages/core/errors/exceptions/circular-dependency.exception.ts",
+      "lines": [
+        3,
+        3
+      ],
+      "weight": 0.86,
+      "behavior": "Error handler; produces error response.",
+      "inflow": [
+        {
+          "from": "n12",
+          "via": "contains"
+        }
+      ]
+    },
+    {
+      "id": "n2",
+      "class": "utility",
+      "name": "Barrier",
+      "file": "packages/core/helpers/barrier.ts",
+      "lines": [
+        4,
+        4
+      ],
+      "weight": 0.79,
+      "behavior": "Class Barrier."
+    },
+    {
+      "id": "n3",
+      "class": "utility",
+      "name": "Injector",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        86,
+        86
+      ],
+      "weight": 0.72,
+      "behavior": "Class Injector."
+    },
+    {
+      "id": "n4",
+      "class": "utility",
+      "name": "callback",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        167,
+        167
+      ],
+      "weight": 0.65,
+      "behavior": "Function callback."
+    },
+    {
+      "id": "n5",
+      "class": "utility",
+      "name": "factoryReturnValue",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        854,
+        854
+      ],
+      "weight": 0.57,
+      "behavior": "Function factoryReturnValue."
+    },
+    {
+      "id": "n6",
+      "class": "utility",
+      "name": "identity",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        650,
+        650
+      ],
+      "weight": 0.5,
+      "behavior": "Function identity."
+    },
+    {
+      "id": "n7",
+      "class": "utility",
+      "name": "injectionToken",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        873,
+        873
+      ],
+      "weight": 0.43,
+      "behavior": "Function injectionToken."
+    },
+    {
+      "id": "n8",
+      "class": "utility",
+      "name": "isOptionalFactoryDependency",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        409,
+        409
+      ],
+      "weight": 0.36,
+      "behavior": "Function isOptionalFactoryDependency."
+    },
+    {
+      "id": "n9",
+      "class": "utility",
+      "name": "loadEnhancer",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        892,
+        892
+      ],
+      "weight": 0.29,
+      "behavior": "Function loadEnhancer."
+    },
+    {
+      "id": "n10",
+      "class": "utility",
+      "name": "mapFactoryProviderInjectArray",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        419,
+        419
+      ],
+      "weight": 0.21,
+      "behavior": "Function mapFactoryProviderInjectArray."
+    },
+    {
+      "id": "n11",
+      "class": "utility",
+      "name": "resolveParam",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        318,
+        318
+      ],
+      "weight": 0.14,
+      "behavior": "Function resolveParam."
+    },
+    {
+      "id": "n12",
+      "class": "module_root",
+      "name": "packages/core/errors/exceptions/circular-dependency.exception.ts",
+      "file": "packages/core/errors/exceptions/circular-dependency.exception.ts",
+      "lines": [
+        1,
+        11
+      ],
+      "weight": 0.08,
+      "behavior": "Module containing 1 projected symbol(s).",
+      "outflow": [
+        {
+          "to": "n1",
+          "via": "contains"
+        }
+      ]
+    }
+  ],
+  "uncertainty": {
+    "confidence": 0.93,
+    "hint": "clue_only",
+    "gaps": []
+  }
+}
+```
+
+## Required Answer Format
+Provide a structured answer with:
+- **Answer**: Your response to the question (2-5 sentences)
+- **Key entities**: List the entity IDs most relevant to your answer
+- **Evidence**: Brief explanation of how the clue entities support your answer
+- **Confidence**: How confident you are (high/medium/low) based on the clue alone
+- **Gaps**: Any information you would need but is missing from the clue

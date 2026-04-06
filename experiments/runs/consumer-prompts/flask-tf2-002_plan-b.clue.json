@@ -1,0 +1,335 @@
+{
+  "task": {
+    "id": "trace-OF2-20260403093106",
+    "repo": "",
+    "family": "OF2",
+    "operation_family": "OF2",
+    "question": "What is the impact of changing Flask.dispatch_request?"
+  },
+  "clue_summary": {
+    "system_behavior": [
+      "__repr__: Middleware between __repr__ and __repr__.",
+      "from_envvar: Entrypoint that delegates to from_pyfile.",
+      "from_file: Entrypoint that delegates to from_mapping.",
+      "from_mapping: Leaf handler invoked by from_file.",
+      "from_object: Leaf handler invoked by from_pyfile."
+    ],
+    "key_files": [
+      "src/flask/config.py",
+      "tests/test_config.py"
+    ],
+    "key_symbols": [
+      "__repr__",
+      "from_envvar",
+      "from_file",
+      "from_mapping",
+      "from_object"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "function",
+      "name": "__repr__",
+      "summary": "Middleware between __repr__ and __repr__.",
+      "file": "src/flask/config.py",
+      "lines": [
+        366,
+        367
+      ],
+      "importance": 1,
+      "role": "middleware",
+      "sig": "def __repr__(self) -> str:"
+    },
+    {
+      "id": "n2",
+      "type": "function",
+      "name": "from_envvar",
+      "summary": "Entrypoint that delegates to from_pyfile.",
+      "file": "src/flask/config.py",
+      "lines": [
+        102,
+        124
+      ],
+      "importance": 2,
+      "role": "entrypoint",
+      "sig": "def from_envvar(self, variable_name: str, silent: bool = False) -> bool:"
+    },
+    {
+      "id": "n3",
+      "type": "function",
+      "name": "from_file",
+      "summary": "Entrypoint that delegates to from_mapping.",
+      "file": "src/flask/config.py",
+      "lines": [
+        256,
+        302
+      ],
+      "importance": 3,
+      "role": "entrypoint",
+      "sig": "def from_file( self, filename: str | os.PathLike[str], load: t.Callable[[t.IO[t.Any]], t.Mapping[str, t.Any]], silent: bool = False, text: bool = True, ) -> bool:"
+    },
+    {
+      "id": "n4",
+      "type": "function",
+      "name": "from_mapping",
+      "summary": "Leaf handler invoked by from_file.",
+      "file": "src/flask/config.py",
+      "lines": [
+        304,
+        321
+      ],
+      "importance": 4,
+      "role": "handler",
+      "sig": "def from_mapping( self, mapping: t.Mapping[str, t.Any] | None = None, **kwargs: t.Any ) -> bool:"
+    },
+    {
+      "id": "n5",
+      "type": "function",
+      "name": "from_object",
+      "summary": "Leaf handler invoked by from_pyfile.",
+      "file": "src/flask/config.py",
+      "lines": [
+        218,
+        254
+      ],
+      "importance": 5,
+      "role": "handler",
+      "sig": "def from_object(self, obj: object | str) -> None:"
+    },
+    {
+      "id": "n6",
+      "type": "function",
+      "name": "from_pyfile",
+      "summary": "Middleware between from_envvar and from_object.",
+      "file": "src/flask/config.py",
+      "lines": [
+        187,
+        216
+      ],
+      "importance": 6,
+      "role": "middleware",
+      "sig": "def from_pyfile( self, filename: str | os.PathLike[str], silent: bool = False ) -> bool:"
+    },
+    {
+      "id": "n7",
+      "type": "function",
+      "name": "common_object_test",
+      "summary": "Hub called by test_config_from_class, test_config_from_envvar; routes to multiple targets.",
+      "file": "tests/test_config.py",
+      "lines": [
+        13,
+        16
+      ],
+      "importance": 7,
+      "role": "hub",
+      "sig": "def common_object_test(app):"
+    },
+    {
+      "id": "n8",
+      "type": "function",
+      "name": "test_config_from_class",
+      "summary": "Entrypoint that delegates to common_object_test.",
+      "file": "tests/test_config.py",
+      "lines": [
+        132,
+        141
+      ],
+      "importance": 8,
+      "role": "entrypoint",
+      "sig": "def test_config_from_class():"
+    },
+    {
+      "id": "n9",
+      "type": "function",
+      "name": "test_config_from_envvar",
+      "summary": "Entrypoint that delegates to common_object_test.",
+      "file": "tests/test_config.py",
+      "lines": [
+        144,
+        158
+      ],
+      "importance": 9,
+      "role": "entrypoint",
+      "sig": "def test_config_from_envvar(monkeypatch):"
+    },
+    {
+      "id": "n10",
+      "type": "function",
+      "name": "test_config_from_envvar_missing",
+      "summary": "Function test_config_from_envvar_missing.",
+      "file": "tests/test_config.py",
+      "lines": [
+        161,
+        171
+      ],
+      "importance": 10,
+      "role": "utility",
+      "sig": "def test_config_from_envvar_missing(monkeypatch):"
+    },
+    {
+      "id": "n11",
+      "type": "function",
+      "name": "test_config_from_file_json",
+      "summary": "Entrypoint that delegates to common_object_test.",
+      "file": "tests/test_config.py",
+      "lines": [
+        31,
+        35
+      ],
+      "importance": 11,
+      "role": "entrypoint",
+      "sig": "def test_config_from_file_json():"
+    },
+    {
+      "id": "n12",
+      "type": "function",
+      "name": "test_config_from_file_toml",
+      "summary": "Entrypoint that delegates to common_object_test.",
+      "file": "tests/test_config.py",
+      "lines": [
+        38,
+        45
+      ],
+      "importance": 12,
+      "role": "entrypoint",
+      "sig": "def test_config_from_file_toml():"
+    },
+    {
+      "id": "n13",
+      "type": "function",
+      "name": "test_config_from_mapping",
+      "summary": "Entrypoint that delegates to common_object_test, common_object_test, common_object_test.",
+      "file": "tests/test_config.py",
+      "lines": [
+        110,
+        129
+      ],
+      "importance": 13,
+      "role": "entrypoint",
+      "sig": "def test_config_from_mapping():"
+    },
+    {
+      "id": "n14",
+      "type": "function",
+      "name": "test_config_from_object",
+      "summary": "Entrypoint that delegates to common_object_test.",
+      "file": "tests/test_config.py",
+      "lines": [
+        25,
+        28
+      ],
+      "importance": 14,
+      "role": "entrypoint",
+      "sig": "def test_config_from_object():"
+    },
+    {
+      "id": "n15",
+      "type": "function",
+      "name": "test_config_from_pyfile",
+      "summary": "Entrypoint that delegates to common_object_test.",
+      "file": "tests/test_config.py",
+      "lines": [
+        19,
+        22
+      ],
+      "importance": 15,
+      "role": "entrypoint",
+      "sig": "def test_config_from_pyfile():"
+    }
+  ],
+  "relations": [
+    {
+      "type": "calls",
+      "from": "n1",
+      "to": "n1",
+      "note": "__repr__ calls __repr__"
+    },
+    {
+      "type": "calls",
+      "from": "n2",
+      "to": "n6",
+      "note": "from_envvar calls from_pyfile"
+    },
+    {
+      "type": "calls",
+      "from": "n3",
+      "to": "n4",
+      "note": "from_file calls from_mapping"
+    },
+    {
+      "type": "calls",
+      "from": "n6",
+      "to": "n5",
+      "note": "from_pyfile calls from_object"
+    },
+    {
+      "type": "calls",
+      "from": "n8",
+      "to": "n7",
+      "note": "test_config_from_class calls common_object_test"
+    },
+    {
+      "type": "calls",
+      "from": "n9",
+      "to": "n7",
+      "note": "test_config_from_envvar calls common_object_test"
+    },
+    {
+      "type": "calls",
+      "from": "n11",
+      "to": "n7",
+      "note": "test_config_from_file_json calls common_object_test"
+    },
+    {
+      "type": "calls",
+      "from": "n12",
+      "to": "n7",
+      "note": "test_config_from_file_toml calls common_object_test"
+    },
+    {
+      "type": "calls",
+      "from": "n13",
+      "to": "n7",
+      "note": "test_config_from_mapping calls common_object_test"
+    },
+    {
+      "type": "calls",
+      "from": "n13",
+      "to": "n7",
+      "note": "test_config_from_mapping calls common_object_test"
+    },
+    {
+      "type": "calls",
+      "from": "n13",
+      "to": "n7",
+      "note": "test_config_from_mapping calls common_object_test"
+    },
+    {
+      "type": "calls",
+      "from": "n13",
+      "to": "n7",
+      "note": "test_config_from_mapping calls common_object_test"
+    },
+    {
+      "type": "calls",
+      "from": "n14",
+      "to": "n7",
+      "note": "test_config_from_object calls common_object_test"
+    },
+    {
+      "type": "calls",
+      "from": "n15",
+      "to": "n7",
+      "note": "test_config_from_pyfile calls common_object_test"
+    }
+  ],
+  "assertions": [],
+  "uncertainty": {
+    "overall_confidence": 0.65,
+    "lookup_hint": "targeted_lookup",
+    "known_gaps": [
+      "Low confidence on this node; source verification recommended"
+    ]
+  }
+}

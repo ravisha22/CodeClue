@@ -1,0 +1,29 @@
+{
+  "task": {
+    "id": "trace-OF2-20260403093408",
+    "repo": "",
+    "family": "OF2",
+    "operation_family": "OF2",
+    "question": "Impact of changing NestJS dependency injection container?"
+  },
+  "summary": "packages/core/guards/guards-consumer.ts: Module containing 0 projected symbol(s).",
+  "entities": [
+    {
+      "id": "n1",
+      "class": "module_root",
+      "name": "packages/core/guards/guards-consumer.ts",
+      "file": "packages/core/guards/guards-consumer.ts",
+      "lines": [
+        1,
+        58
+      ],
+      "weight": 1.0,
+      "behavior": "Module containing 0 projected symbol(s)."
+    }
+  ],
+  "uncertainty": {
+    "confidence": 0.0,
+    "hint": "expanded_lookup",
+    "gaps": []
+  }
+}

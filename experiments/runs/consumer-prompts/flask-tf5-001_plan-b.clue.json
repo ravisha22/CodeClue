@@ -1,0 +1,256 @@
+{
+  "task": {
+    "id": "trace-OF5-20260403093054",
+    "repo": "",
+    "family": "OF5",
+    "operation_family": "OF5",
+    "question": "What security concerns exist in Flask's session handling?"
+  },
+  "clue_summary": {
+    "system_behavior": [
+      "load_logged_in_user: Function load_logged_in_user.",
+      "login: Function login.",
+      "wrapped_view: Function wrapped_view.",
+      "login_required: Function login_required.",
+      "logout: Function logout."
+    ],
+    "key_files": [
+      "examples/tutorial/flaskr/auth.py",
+      "examples/tutorial/tests/conftest.py",
+      "examples/tutorial/tests/test_auth.py"
+    ],
+    "key_symbols": [
+      "load_logged_in_user",
+      "login",
+      "wrapped_view",
+      "login_required",
+      "logout"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "function",
+      "name": "load_logged_in_user",
+      "summary": "Function load_logged_in_user.",
+      "file": "examples/tutorial/flaskr/auth.py",
+      "lines": [
+        33,
+        43
+      ],
+      "importance": 1,
+      "role": "utility",
+      "sig": "def load_logged_in_user():"
+    },
+    {
+      "id": "n2",
+      "type": "function",
+      "name": "login",
+      "summary": "Function login.",
+      "file": "examples/tutorial/flaskr/auth.py",
+      "lines": [
+        85,
+        109
+      ],
+      "importance": 2,
+      "role": "utility",
+      "sig": "def login():"
+    },
+    {
+      "id": "n3",
+      "type": "function",
+      "name": "wrapped_view",
+      "summary": "Function wrapped_view.",
+      "file": "examples/tutorial/flaskr/auth.py",
+      "lines": [
+        23,
+        27
+      ],
+      "importance": 3,
+      "role": "utility",
+      "sig": "def wrapped_view(**kwargs):"
+    },
+    {
+      "id": "n4",
+      "type": "function",
+      "name": "login_required",
+      "summary": "Function login_required.",
+      "file": "examples/tutorial/flaskr/auth.py",
+      "lines": [
+        19,
+        29
+      ],
+      "importance": 4,
+      "role": "utility",
+      "sig": "def login_required(view):"
+    },
+    {
+      "id": "n5",
+      "type": "function",
+      "name": "logout",
+      "summary": "Function logout.",
+      "file": "examples/tutorial/flaskr/auth.py",
+      "lines": [
+        113,
+        116
+      ],
+      "importance": 5,
+      "role": "utility",
+      "sig": "def logout():"
+    },
+    {
+      "id": "n6",
+      "type": "function",
+      "name": "register",
+      "summary": "Function register.",
+      "file": "examples/tutorial/flaskr/auth.py",
+      "lines": [
+        47,
+        81
+      ],
+      "importance": 6,
+      "role": "utility",
+      "sig": "def register():"
+    },
+    {
+      "id": "n7",
+      "type": "function",
+      "name": "__init__",
+      "summary": "Function __init__.",
+      "file": "examples/tutorial/tests/conftest.py",
+      "lines": [
+        48,
+        49
+      ],
+      "importance": 7,
+      "role": "utility",
+      "sig": "def __init__(self, client):"
+    },
+    {
+      "id": "n8",
+      "type": "function",
+      "name": "login",
+      "summary": "Function login.",
+      "file": "examples/tutorial/tests/conftest.py",
+      "lines": [
+        51,
+        54
+      ],
+      "importance": 8,
+      "role": "utility",
+      "sig": "def login(self, username=\"test\", password=\"test\"):"
+    },
+    {
+      "id": "n9",
+      "type": "function",
+      "name": "logout",
+      "summary": "Function logout.",
+      "file": "examples/tutorial/tests/conftest.py",
+      "lines": [
+        56,
+        57
+      ],
+      "importance": 9,
+      "role": "utility",
+      "sig": "def logout(self):"
+    },
+    {
+      "id": "n10",
+      "type": "class",
+      "name": "AuthActions",
+      "summary": "Leaf handler invoked by auth.",
+      "file": "examples/tutorial/tests/conftest.py",
+      "lines": [
+        47,
+        57
+      ],
+      "importance": 10,
+      "role": "handler",
+      "sig": "def __init__(self, client):"
+    },
+    {
+      "id": "n11",
+      "type": "function",
+      "name": "app",
+      "summary": "Function app.",
+      "file": "examples/tutorial/tests/conftest.py",
+      "lines": [
+        16,
+        32
+      ],
+      "importance": 11,
+      "role": "utility",
+      "sig": "def app():"
+    },
+    {
+      "id": "n12",
+      "type": "function",
+      "name": "auth",
+      "summary": "Entrypoint that delegates to AuthActions.",
+      "file": "examples/tutorial/tests/conftest.py",
+      "lines": [
+        61,
+        62
+      ],
+      "importance": 12,
+      "role": "entrypoint",
+      "sig": "def auth(client):"
+    },
+    {
+      "id": "n13",
+      "type": "function",
+      "name": "client",
+      "summary": "Function client.",
+      "file": "examples/tutorial/tests/conftest.py",
+      "lines": [
+        36,
+        38
+      ],
+      "importance": 13,
+      "role": "utility",
+      "sig": "def client(app):"
+    },
+    {
+      "id": "n14",
+      "type": "function",
+      "name": "runner",
+      "summary": "Function runner.",
+      "file": "examples/tutorial/tests/conftest.py",
+      "lines": [
+        42,
+        44
+      ],
+      "importance": 14,
+      "role": "utility",
+      "sig": "def runner(app):"
+    },
+    {
+      "id": "n15",
+      "type": "function",
+      "name": "test_login",
+      "summary": "Function test_login.",
+      "file": "examples/tutorial/tests/test_auth.py",
+      "lines": [
+        39,
+        52
+      ],
+      "importance": 15,
+      "role": "utility",
+      "sig": "def test_login(client, auth):"
+    }
+  ],
+  "relations": [
+    {
+      "type": "calls",
+      "from": "n12",
+      "to": "n10",
+      "note": "auth calls AuthActions"
+    }
+  ],
+  "assertions": [],
+  "uncertainty": {
+    "overall_confidence": 1.0,
+    "lookup_hint": "clue_only",
+    "known_gaps": []
+  }
+}

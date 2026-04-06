@@ -1,0 +1,40 @@
+{
+  "task": {
+    "id": "trace-OF2-20260403094757",
+    "repo": "",
+    "family": "OF2",
+    "operation_family": "OF2",
+    "question": "Impact of TypeORM connection changes?"
+  },
+  "clue_summary": {
+    "system_behavior": [
+      "src/metadata/EntityMetadata.ts: Module containing 0 projected symbol(s)."
+    ],
+    "key_files": [
+      "src/metadata/EntityMetadata.ts"
+    ],
+    "key_symbols": []
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "module",
+      "name": "src/metadata/EntityMetadata.ts",
+      "summary": "Module containing 0 projected symbol(s).",
+      "file": "src/metadata/EntityMetadata.ts",
+      "lines": [
+        1,
+        1170
+      ],
+      "importance": 1,
+      "role": "module_root"
+    }
+  ],
+  "relations": [],
+  "assertions": [],
+  "uncertainty": {
+    "overall_confidence": 0.0,
+    "lookup_hint": "expanded_lookup",
+    "known_gaps": []
+  }
+}

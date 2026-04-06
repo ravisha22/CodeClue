@@ -1,0 +1,236 @@
+{
+  "task": {
+    "id": "trace-OF1-20260403093354",
+    "repo": "",
+    "family": "OF1",
+    "operation_family": "OF1",
+    "question": "What is NestJS module architecture?"
+  },
+  "clue_summary": {
+    "system_behavior": [
+      "Module: Function Module.",
+      "as: Class as.",
+      "Injector: Class Injector.",
+      "callback: Function callback.",
+      "factoryReturnValue: Function factoryReturnValue."
+    ],
+    "key_files": [
+      "packages/common/decorators/modules/module.decorator.ts",
+      "packages/core/injector/injector.ts",
+      "packages/core/injector/instance-wrapper.ts",
+      "packages/core/injector/module.ts"
+    ],
+    "key_symbols": [
+      "Module",
+      "as",
+      "Injector",
+      "callback",
+      "factoryReturnValue"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "function",
+      "name": "Module",
+      "summary": "Function Module.",
+      "file": "packages/common/decorators/modules/module.decorator.ts",
+      "lines": [
+        18,
+        18
+      ],
+      "importance": 1,
+      "role": "utility",
+      "sig": "export function Module(metadata: ModuleMetadata): ClassDecorator"
+    },
+    {
+      "id": "n2",
+      "type": "class",
+      "name": "as",
+      "summary": "Class as.",
+      "file": "packages/common/decorators/modules/module.decorator.ts",
+      "lines": [
+        5,
+        5
+      ],
+      "importance": 2,
+      "role": "utility"
+    },
+    {
+      "id": "n3",
+      "type": "class",
+      "name": "Injector",
+      "summary": "Class Injector.",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        86,
+        86
+      ],
+      "importance": 3,
+      "role": "utility"
+    },
+    {
+      "id": "n4",
+      "type": "function",
+      "name": "callback",
+      "summary": "Function callback.",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        167,
+        167
+      ],
+      "importance": 4,
+      "role": "utility"
+    },
+    {
+      "id": "n5",
+      "type": "function",
+      "name": "factoryReturnValue",
+      "summary": "Function factoryReturnValue.",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        854,
+        854
+      ],
+      "importance": 5,
+      "role": "utility"
+    },
+    {
+      "id": "n6",
+      "type": "function",
+      "name": "identity",
+      "summary": "Function identity.",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        650,
+        650
+      ],
+      "importance": 6,
+      "role": "utility"
+    },
+    {
+      "id": "n7",
+      "type": "function",
+      "name": "injectionToken",
+      "summary": "Function injectionToken.",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        873,
+        873
+      ],
+      "importance": 7,
+      "role": "utility"
+    },
+    {
+      "id": "n8",
+      "type": "function",
+      "name": "isOptionalFactoryDependency",
+      "summary": "Function isOptionalFactoryDependency.",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        409,
+        409
+      ],
+      "importance": 8,
+      "role": "utility"
+    },
+    {
+      "id": "n9",
+      "type": "function",
+      "name": "loadEnhancer",
+      "summary": "Function loadEnhancer.",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        892,
+        892
+      ],
+      "importance": 9,
+      "role": "utility"
+    },
+    {
+      "id": "n10",
+      "type": "function",
+      "name": "mapFactoryProviderInjectArray",
+      "summary": "Function mapFactoryProviderInjectArray.",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        419,
+        419
+      ],
+      "importance": 10,
+      "role": "utility"
+    },
+    {
+      "id": "n11",
+      "type": "function",
+      "name": "resolveParam",
+      "summary": "Function resolveParam.",
+      "file": "packages/core/injector/injector.ts",
+      "lines": [
+        318,
+        318
+      ],
+      "importance": 11,
+      "role": "utility"
+    },
+    {
+      "id": "n12",
+      "type": "class",
+      "name": "InstanceWrapper",
+      "summary": "Class InstanceWrapper.",
+      "file": "packages/core/injector/instance-wrapper.ts",
+      "lines": [
+        61,
+        61
+      ],
+      "importance": 12,
+      "role": "utility"
+    },
+    {
+      "id": "n13",
+      "type": "class",
+      "name": "reference",
+      "summary": "Class reference.",
+      "file": "packages/core/injector/instance-wrapper.ts",
+      "lines": [
+        27,
+        27
+      ],
+      "importance": 13,
+      "role": "utility"
+    },
+    {
+      "id": "n14",
+      "type": "class",
+      "name": "Module",
+      "summary": "Class Module.",
+      "file": "packages/core/injector/module.ts",
+      "lines": [
+        44,
+        44
+      ],
+      "importance": 14,
+      "role": "utility"
+    },
+    {
+      "id": "n15",
+      "type": "function",
+      "name": "addExportedUnit",
+      "summary": "Function addExportedUnit.",
+      "file": "packages/core/injector/module.ts",
+      "lines": [
+        460,
+        460
+      ],
+      "importance": 15,
+      "role": "utility"
+    }
+  ],
+  "relations": [],
+  "assertions": [],
+  "uncertainty": {
+    "overall_confidence": 0.97,
+    "lookup_hint": "clue_only",
+    "known_gaps": []
+  }
+}

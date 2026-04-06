@@ -1,0 +1,237 @@
+# Plan A: Entity-Centric Consumer Prompt
+
+You are a senior software engineer answering a code comprehension question.
+You will receive a **compact clue artifact** describing a code subsystem as a set of typed entities.
+
+## Instructions
+1. Read the task question carefully.
+2. Use ONLY the information in the clue artifact to answer.
+3. Cite entity IDs (n1, n2, etc.) as evidence for your claims.
+4. Do NOT speculate about code not described in the clue.
+5. Structure your answer clearly.
+
+## Task Question
+Gin router architecture?
+
+## Clue Artifact (Entity-Centric)
+```json
+{
+  "task": {
+    "id": "trace-OF1-20260403094853",
+    "repo": "",
+    "family": "OF1",
+    "operation_family": "OF1",
+    "question": "Gin router architecture?"
+  },
+  "summary": "Engine: Function Engine. Error: Error handler; produces error response. ValidateStruct: Function ValidateStruct.",
+  "entities": [
+    {
+      "id": "n1",
+      "class": "utility",
+      "name": "Engine",
+      "file": "binding/default_validator.go",
+      "lines": [
+        85,
+        85
+      ],
+      "weight": 0.86,
+      "behavior": "Function Engine.",
+      "sig": "func (v *defaultValidator) Engine() any"
+    },
+    {
+      "id": "n2",
+      "class": "error_handler",
+      "name": "Error",
+      "file": "binding/default_validator.go",
+      "lines": [
+        24,
+        24
+      ],
+      "weight": 0.8,
+      "behavior": "Error handler; produces error response.",
+      "sig": "func (err SliceValidationError) Error() string"
+    },
+    {
+      "id": "n3",
+      "class": "utility",
+      "name": "ValidateStruct",
+      "file": "binding/default_validator.go",
+      "lines": [
+        44,
+        44
+      ],
+      "weight": 0.75,
+      "behavior": "Function ValidateStruct.",
+      "sig": "func (v *defaultValidator) ValidateStruct(obj any) error"
+    },
+    {
+      "id": "n4",
+      "class": "utility",
+      "name": "defaultValidator",
+      "file": "binding/default_validator.go",
+      "lines": [
+        16,
+        16
+      ],
+      "weight": 0.69,
+      "behavior": "Struct defaultValidator."
+    },
+    {
+      "id": "n5",
+      "class": "utility",
+      "name": "lazyinit",
+      "file": "binding/default_validator.go",
+      "lines": [
+        90,
+        90
+      ],
+      "weight": 0.63,
+      "behavior": "Function lazyinit.",
+      "sig": "func (v *defaultValidator) lazyinit()"
+    },
+    {
+      "id": "n6",
+      "class": "utility",
+      "name": "validateStruct",
+      "file": "binding/default_validator.go",
+      "lines": [
+        76,
+        76
+      ],
+      "weight": 0.57,
+      "behavior": "Function validateStruct.",
+      "sig": "func (v *defaultValidator) validateStruct(obj any) error"
+    },
+    {
+      "id": "n7",
+      "class": "utility",
+      "name": "Abort",
+      "file": "context.go",
+      "lines": [
+        207,
+        207
+      ],
+      "weight": 0.52,
+      "behavior": "Function Abort.",
+      "sig": "func (c *Context) Abort()"
+    },
+    {
+      "id": "n8",
+      "class": "error_handler",
+      "name": "AbortWithError",
+      "file": "context.go",
+      "lines": [
+        238,
+        238
+      ],
+      "weight": 0.46,
+      "behavior": "Error handler; produces error response.",
+      "sig": "func (c *Context) AbortWithError(code int, err error)"
+    },
+    {
+      "id": "n9",
+      "class": "utility",
+      "name": "AbortWithStatus",
+      "file": "context.go",
+      "lines": [
+        213,
+        213
+      ],
+      "weight": 0.4,
+      "behavior": "Function AbortWithStatus.",
+      "sig": "func (c *Context) AbortWithStatus(code int)"
+    },
+    {
+      "id": "n10",
+      "class": "utility",
+      "name": "AbortWithStatusJSON",
+      "file": "context.go",
+      "lines": [
+        230,
+        230
+      ],
+      "weight": 0.34,
+      "behavior": "Function AbortWithStatusJSON.",
+      "sig": "func (c *Context) AbortWithStatusJSON(code int, jsonObj any)"
+    },
+    {
+      "id": "n11",
+      "class": "utility",
+      "name": "AbortWithStatusPureJSON",
+      "file": "context.go",
+      "lines": [
+        222,
+        222
+      ],
+      "weight": 0.29,
+      "behavior": "Function AbortWithStatusPureJSON.",
+      "sig": "func (c *Context) AbortWithStatusPureJSON(code int, jsonObj any)"
+    },
+    {
+      "id": "n12",
+      "class": "utility",
+      "name": "AddParam",
+      "file": "context.go",
+      "lines": [
+        512,
+        512
+      ],
+      "weight": 0.23,
+      "behavior": "Function AddParam.",
+      "sig": "func (c *Context) AddParam(key, value string)"
+    },
+    {
+      "id": "n13",
+      "class": "utility",
+      "name": "AsciiJSON",
+      "file": "context.go",
+      "lines": [
+        1211,
+        1211
+      ],
+      "weight": 0.17,
+      "behavior": "Function AsciiJSON.",
+      "sig": "func (c *Context) AsciiJSON(code int, obj any)"
+    },
+    {
+      "id": "n14",
+      "class": "utility",
+      "name": "BSON",
+      "file": "context.go",
+      "lines": [
+        1249,
+        1249
+      ],
+      "weight": 0.11,
+      "behavior": "Function BSON.",
+      "sig": "func (c *Context) BSON(code int, obj any)"
+    },
+    {
+      "id": "n15",
+      "class": "utility",
+      "name": "Bind",
+      "file": "context.go",
+      "lines": [
+        757,
+        757
+      ],
+      "weight": 0.06,
+      "behavior": "Function Bind.",
+      "sig": "func (c *Context) Bind(obj any) error"
+    }
+  ],
+  "uncertainty": {
+    "confidence": 0.73,
+    "hint": "targeted_lookup",
+    "gaps": []
+  }
+}
+```
+
+## Required Answer Format
+Provide a structured answer with:
+- **Answer**: Your response to the question (2-5 sentences)
+- **Key entities**: List the entity IDs most relevant to your answer
+- **Evidence**: Brief explanation of how the clue entities support your answer
+- **Confidence**: How confident you are (high/medium/low) based on the clue alone
+- **Gaps**: Any information you would need but is missing from the clue

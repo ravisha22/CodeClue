@@ -1,0 +1,280 @@
+# Plan B: Flat-Table Consumer Prompt
+
+You are a senior software engineer answering a code comprehension question.
+You will receive a **compact clue artifact** with separate node, relation, and assertion tables.
+
+## Instructions
+1. Read the task question carefully.
+2. Use ONLY the information in the clue artifact to answer.
+3. Cite node IDs (n1, n2, etc.) as evidence for your claims.
+4. Cross-reference the relations and assertions tables for behavioral context.
+5. Do NOT speculate about code not described in the clue.
+6. Structure your answer clearly.
+
+## Task Question
+What is FastAPI's request routing architecture?
+
+## Clue Artifact (Flat-Table)
+```json
+{
+  "task": {
+    "id": "trace-OF1-20260403093112",
+    "repo": "",
+    "family": "OF1",
+    "operation_family": "OF1",
+    "question": "What is FastAPI's request routing architecture?"
+  },
+  "clue_summary": {
+    "system_behavior": [
+      "ParamDetails: Leaf handler invoked by dispatcher.",
+      "SolvedDependency: Class SolvedDependency.",
+      "_extract_form_body: Async Entrypoint that delegates to downstream handlers.",
+      "_get_flat_fields_from_params: Function _get_flat_fields_from_params.",
+      "_get_multidict_value: Middleware between upstream and downstream; may return None implicitly."
+    ],
+    "key_files": [
+      "fastapi/dependencies/utils.py"
+    ],
+    "key_symbols": [
+      "ParamDetails",
+      "SolvedDependency",
+      "_extract_form_body",
+      "_get_flat_fields_from_params",
+      "_get_multidict_value"
+    ],
+    "risk_summary": "Detected risks: implicit_none_return."
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "class",
+      "name": "ParamDetails",
+      "summary": "Leaf handler invoked by dispatcher.",
+      "file": "fastapi/dependencies/utils.py",
+      "lines": [
+        384,
+        387
+      ],
+      "importance": 1,
+      "role": "handler"
+    },
+    {
+      "id": "n2",
+      "type": "class",
+      "name": "SolvedDependency",
+      "summary": "Class SolvedDependency.",
+      "file": "fastapi/dependencies/utils.py",
+      "lines": [
+        587,
+        592
+      ],
+      "importance": 2,
+      "role": "utility"
+    },
+    {
+      "id": "n3",
+      "type": "async_function",
+      "name": "_extract_form_body",
+      "summary": "Async Entrypoint that delegates to downstream handlers.",
+      "file": "fastapi/dependencies/utils.py",
+      "lines": [
+        909,
+        945
+      ],
+      "importance": 3,
+      "role": "entrypoint",
+      "sig": "async def _extract_form_body( body_fields: list[ModelField], received_body: FormData, ) -> dict[str, Any]:"
+    },
+    {
+      "id": "n4",
+      "type": "function",
+      "name": "_get_flat_fields_from_params",
+      "summary": "Function _get_flat_fields_from_params.",
+      "file": "fastapi/dependencies/utils.py",
+      "lines": [
+        190,
+        199
+      ],
+      "importance": 4,
+      "role": "utility",
+      "sig": "def _get_flat_fields_from_params(fields: list[ModelField]) -> list[ModelField]:"
+    },
+    {
+      "id": "n5",
+      "type": "function",
+      "name": "_get_multidict_value",
+      "summary": "Middleware between upstream and downstream; may return None implicitly.",
+      "file": "fastapi/dependencies/utils.py",
+      "lines": [
+        750,
+        778
+      ],
+      "importance": 5,
+      "role": "middleware",
+      "sig": "def _get_multidict_value( field: ModelField, values: Mapping[str, Any], alias: str | None = None ) -> Any:",
+      "risks": [
+        "implicit_none_return"
+      ]
+    },
+    {
+      "id": "n6",
+      "type": "function",
+      "name": "_get_signature",
+      "summary": "Function _get_signature.",
+      "file": "fastapi/dependencies/utils.py",
+      "lines": [
+        211,
+        223
+      ],
+      "importance": 6,
+      "role": "utility",
+      "sig": "def _get_signature(call: Callable[..., Any]) -> inspect.Signature:"
+    },
+    {
+      "id": "n7",
+      "type": "function",
+      "name": "_is_json_field",
+      "summary": "Leaf handler invoked by dispatcher.",
+      "file": "fastapi/dependencies/utils.py",
+      "lines": [
+        746,
+        747
+      ],
+      "importance": 7,
+      "role": "handler",
+      "sig": "def _is_json_field(field: ModelField) -> bool:"
+    },
+    {
+      "id": "n8",
+      "type": "function",
+      "name": "_should_embed_body_fields",
+      "summary": "Function _should_embed_body_fields.",
+      "file": "fastapi/dependencies/utils.py",
+      "lines": [
+        885,
+        906
+      ],
+      "importance": 8,
+      "role": "utility",
+      "sig": "def _should_embed_body_fields(fields: list[ModelField]) -> bool:"
+    },
+    {
+      "id": "n9",
+      "type": "async_function",
+      "name": "_solve_generator",
+      "summary": "Async Async_function _solve_generator.",
+      "file": "fastapi/dependencies/utils.py",
+      "lines": [
+        575,
+        583
+      ],
+      "importance": 9,
+      "role": "utility",
+      "sig": "async def _solve_generator( *, dependant: Dependant, stack: AsyncExitStack, sub_values: dict[str, Any] ) -> Any:"
+    },
+    {
+      "id": "n10",
+      "type": "function",
+      "name": "_validate_value_with_model_field",
+      "summary": "Validates input before processing.",
+      "file": "fastapi/dependencies/utils.py",
+      "lines": [
+        735,
+        743
+      ],
+      "importance": 10,
+      "role": "validator",
+      "sig": "def _validate_value_with_model_field( *, field: ModelField, value: Any, values: dict[str, Any], loc: tuple[str, ...] ) -> tuple[Any, list[Any]]:"
+    },
+    {
+      "id": "n11",
+      "type": "function",
+      "name": "add_non_field_param_to_dependency",
+      "summary": "Function add_non_field_param_to_dependency.",
+      "file": "fastapi/dependencies/utils.py",
+      "lines": [
+        359,
+        380
+      ],
+      "importance": 11,
+      "role": "utility",
+      "sig": "def add_non_field_param_to_dependency( *, param_name: str, type_annotation: Any, dependant: Dependant ) -> bool | None:"
+    },
+    {
+      "id": "n12",
+      "type": "function",
+      "name": "add_param_to_fields",
+      "summary": "Function add_param_to_fields.",
+      "file": "fastapi/dependencies/utils.py",
+      "lines": [
+        559,
+        572
+      ],
+      "importance": 12,
+      "role": "utility",
+      "sig": "def add_param_to_fields(*, field: ModelField, dependant: Dependant) -> None:"
+    },
+    {
+      "id": "n13",
+      "type": "function",
+      "name": "analyze_param",
+      "summary": "Entrypoint that delegates to downstream handlers.",
+      "file": "fastapi/dependencies/utils.py",
+      "lines": [
+        390,
+        556
+      ],
+      "importance": 13,
+      "role": "entrypoint",
+      "sig": "def analyze_param( *, param_name: str, annotation: Any, value: Any, is_path_param: bool, ) -> ParamDetails:"
+    },
+    {
+      "id": "n14",
+      "type": "function",
+      "name": "ensure_multipart_is_installed",
+      "summary": "Leaf handler invoked by dispatcher.",
+      "file": "fastapi/dependencies/utils.py",
+      "lines": [
+        94,
+        118
+      ],
+      "importance": 14,
+      "role": "handler",
+      "sig": "def ensure_multipart_is_installed() -> None:"
+    },
+    {
+      "id": "n15",
+      "type": "function",
+      "name": "get_body_field",
+      "summary": "Validates input before processing.",
+      "file": "fastapi/dependencies/utils.py",
+      "lines": [
+        998,
+        1049
+      ],
+      "importance": 15,
+      "role": "validator",
+      "sig": "def get_body_field( *, flat_dependant: Dependant, name: str, embed_body_fields: bool ) -> ModelField | None:"
+    }
+  ],
+  "relations": [],
+  "assertions": [],
+  "uncertainty": {
+    "overall_confidence": 0.8,
+    "lookup_hint": "targeted_lookup",
+    "known_gaps": [
+      "Low confidence on this node; source verification recommended",
+      "Low confidence on this node; source verification recommended",
+      "Low confidence on this node; source verification recommended"
+    ]
+  }
+}
+```
+
+## Required Answer Format
+Provide a structured answer with:
+- **Answer**: Your response to the question (2-5 sentences)
+- **Key nodes**: List the node IDs most relevant to your answer
+- **Evidence**: Brief explanation of how nodes, relations, and assertions support your answer
+- **Confidence**: How confident you are (high/medium/low) based on the clue alone
+- **Gaps**: Any information you would need but is missing from the clue

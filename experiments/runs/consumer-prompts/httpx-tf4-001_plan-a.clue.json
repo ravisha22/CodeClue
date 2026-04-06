@@ -1,0 +1,295 @@
+{
+  "task": {
+    "id": "trace-OF4-20260403094649",
+    "repo": "",
+    "family": "OF4",
+    "operation_family": "OF4",
+    "question": "Gotchas in httpx connection pooling?"
+  },
+  "summary": "__aenter__: Async Middleware between __aenter__, __aenter__ and __aenter__, __aenter__; mutates state outside __init__. __aexit__: Async Middleware between __aexit__, __aexit__ and __aexit__, __aexit__; mutates state outside __init__. __init__: Function __init__.",
+  "entities": [
+    {
+      "id": "n1",
+      "class": "middleware",
+      "name": "__aenter__",
+      "file": "httpx/_client.py",
+      "lines": [
+        1990,
+        2006
+      ],
+      "weight": 0.92,
+      "behavior": "Async Middleware between __aenter__, __aenter__ and __aenter__, __aenter__; mutates state outside __init__.",
+      "sig": "async def __aenter__(self: U) -> U:",
+      "inflow": [
+        {
+          "from": "n1",
+          "via": "calls",
+          "condition": "normal"
+        },
+        {
+          "from": "n1",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ],
+      "outflow": [
+        {
+          "to": "n1",
+          "via": "calls",
+          "condition": "normal"
+        },
+        {
+          "to": "n1",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ],
+      "risks": [
+        "state_mutation_outside_init"
+      ],
+      "invariants": [
+        "Mutates instance state outside constructor."
+      ]
+    },
+    {
+      "id": "n2",
+      "class": "middleware",
+      "name": "__aexit__",
+      "file": "httpx/_client.py",
+      "lines": [
+        2008,
+        2019
+      ],
+      "weight": 0.86,
+      "behavior": "Async Middleware between __aexit__, __aexit__ and __aexit__, __aexit__; mutates state outside __init__.",
+      "sig": "async def __aexit__( self, exc_type: type[BaseException] | None = None, exc_value: BaseException | None = None, traceback: TracebackType | None = None, ) -> None:",
+      "inflow": [
+        {
+          "from": "n2",
+          "via": "calls",
+          "condition": "normal"
+        },
+        {
+          "from": "n2",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ],
+      "outflow": [
+        {
+          "to": "n2",
+          "via": "calls",
+          "condition": "normal"
+        },
+        {
+          "to": "n2",
+          "via": "calls",
+          "condition": "normal"
+        }
+      ],
+      "risks": [
+        "state_mutation_outside_init"
+      ],
+      "invariants": [
+        "Mutates instance state outside constructor."
+      ]
+    },
+    {
+      "id": "n3",
+      "class": "utility",
+      "name": "__init__",
+      "file": "httpx/_client.py",
+      "lines": [
+        1353,
+        1430
+      ],
+      "weight": 0.8,
+      "behavior": "Function __init__."
+    },
+    {
+      "id": "n4",
+      "class": "utility",
+      "name": "_init_proxy_transport",
+      "file": "httpx/_client.py",
+      "lines": [
+        1454,
+        1472
+      ],
+      "weight": 0.74,
+      "behavior": "Function _init_proxy_transport.",
+      "sig": "def _init_proxy_transport( self, proxy: Proxy, verify: ssl.SSLContext | str | bool = True, cert: CertTypes | None = None, trust_env: bool = True, http1: bool = True, http2: bool = False, limits: Li..."
+    },
+    {
+      "id": "n5",
+      "class": "utility",
+      "name": "_init_transport",
+      "file": "httpx/_client.py",
+      "lines": [
+        1432,
+        1452
+      ],
+      "weight": 0.67,
+      "behavior": "Function _init_transport.",
+      "sig": "def _init_transport( self, verify: ssl.SSLContext | str | bool = True, cert: CertTypes | None = None, trust_env: bool = True, http1: bool = True, http2: bool = False, limits: Limits = DEFAULT_LIMIT..."
+    },
+    {
+      "id": "n6",
+      "class": "error_handler",
+      "name": "_send_handling_auth",
+      "file": "httpx/_client.py",
+      "lines": [
+        1645,
+        1677
+      ],
+      "weight": 0.61,
+      "behavior": "Async Error handler; produces error response; catches broad exceptions; runs in finally block.",
+      "sig": "async def _send_handling_auth( self, request: Request, auth: Auth, follow_redirects: bool, history: list[Response], ) -> Response:",
+      "risks": [
+        "broad_exception_handler",
+        "runs_in_finally"
+      ],
+      "invariants": [
+        "Executes unconditionally (in finally block).",
+        "Catches broad exceptions; specific errors may be masked."
+      ]
+    },
+    {
+      "id": "n7",
+      "class": "error_handler",
+      "name": "_send_handling_redirects",
+      "file": "httpx/_client.py",
+      "lines": [
+        1679,
+        1715
+      ],
+      "weight": 0.55,
+      "behavior": "Async Error handler; produces error response; catches broad exceptions.",
+      "sig": "async def _send_handling_redirects( self, request: Request, follow_redirects: bool, history: list[Response], ) -> Response:",
+      "risks": [
+        "broad_exception_handler"
+      ],
+      "invariants": [
+        "Catches broad exceptions; specific errors may be masked."
+      ]
+    },
+    {
+      "id": "n8",
+      "class": "utility",
+      "name": "_send_single_request",
+      "file": "httpx/_client.py",
+      "lines": [
+        1717,
+        1749
+      ],
+      "weight": 0.49,
+      "behavior": "Async Async_function _send_single_request.",
+      "sig": "async def _send_single_request(self, request: Request) -> Response:"
+    },
+    {
+      "id": "n9",
+      "class": "utility",
+      "name": "_transport_for_url",
+      "file": "httpx/_client.py",
+      "lines": [
+        1474,
+        1483
+      ],
+      "weight": 0.43,
+      "behavior": "Async Function _transport_for_url.",
+      "sig": "def _transport_for_url(self, url: URL) -> AsyncBaseTransport:"
+    },
+    {
+      "id": "n10",
+      "class": "utility",
+      "name": "aclose",
+      "file": "httpx/_client.py",
+      "lines": [
+        1978,
+        1988
+      ],
+      "weight": 0.37,
+      "behavior": "Async Async_function aclose; mutates state outside __init__.",
+      "sig": "async def aclose(self) -> None:",
+      "risks": [
+        "state_mutation_outside_init"
+      ],
+      "invariants": [
+        "Mutates instance state outside constructor."
+      ]
+    },
+    {
+      "id": "n11",
+      "class": "data_accessor",
+      "name": "delete",
+      "file": "httpx/_client.py",
+      "lines": [
+        1949,
+        1976
+      ],
+      "weight": 0.31,
+      "behavior": "Async Accesses data store.",
+      "sig": "async def delete( self, url: URL | str, *, params: QueryParamTypes | None = None, headers: HeaderTypes | None = None, cookies: CookieTypes | None = None, auth: AuthTypes | UseClientDefault = USE_CL..."
+    },
+    {
+      "id": "n12",
+      "class": "utility",
+      "name": "get",
+      "file": "httpx/_client.py",
+      "lines": [
+        1751,
+        1778
+      ],
+      "weight": 0.25,
+      "behavior": "Async Async_function get.",
+      "sig": "async def get( self, url: URL | str, *, params: QueryParamTypes | None = None, headers: HeaderTypes | None = None, cookies: CookieTypes | None = None, auth: AuthTypes | UseClientDefault | None = US..."
+    },
+    {
+      "id": "n13",
+      "class": "utility",
+      "name": "head",
+      "file": "httpx/_client.py",
+      "lines": [
+        1809,
+        1836
+      ],
+      "weight": 0.18,
+      "behavior": "Async Async_function head.",
+      "sig": "async def head( self, url: URL | str, *, params: QueryParamTypes | None = None, headers: HeaderTypes | None = None, cookies: CookieTypes | None = None, auth: AuthTypes | UseClientDefault = USE_CLIE..."
+    },
+    {
+      "id": "n14",
+      "class": "utility",
+      "name": "options",
+      "file": "httpx/_client.py",
+      "lines": [
+        1780,
+        1807
+      ],
+      "weight": 0.12,
+      "behavior": "Async Async_function options.",
+      "sig": "async def options( self, url: URL | str, *, params: QueryParamTypes | None = None, headers: HeaderTypes | None = None, cookies: CookieTypes | None = None, auth: AuthTypes | UseClientDefault = USE_C..."
+    },
+    {
+      "id": "n15",
+      "class": "utility",
+      "name": "patch",
+      "file": "httpx/_client.py",
+      "lines": [
+        1912,
+        1947
+      ],
+      "weight": 0.06,
+      "behavior": "Async Async_function patch.",
+      "sig": "async def patch( self, url: URL | str, *, content: RequestContent | None = None, data: RequestData | None = None, files: RequestFiles | None = None, json: typing.Any | None = None, params: QueryPar..."
+    }
+  ],
+  "uncertainty": {
+    "confidence": 0.93,
+    "hint": "clue_only",
+    "gaps": [
+      "Low confidence on this node; source verification recommended",
+      "Low confidence on this node; source verification recommended",
+      "Low confidence on this node; source verification recommended"
+    ]
+  }
+}

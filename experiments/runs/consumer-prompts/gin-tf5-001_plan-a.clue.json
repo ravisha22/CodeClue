@@ -1,0 +1,211 @@
+{
+  "task": {
+    "id": "trace-OF5-20260403094901",
+    "repo": "",
+    "family": "OF5",
+    "operation_family": "OF5",
+    "question": "Security in Gin middleware chain?"
+  },
+  "summary": "BasicAuth: Function BasicAuth. BasicAuthForProxy: Function BasicAuthForProxy. BasicAuthForRealm: Function BasicAuthForRealm.",
+  "entities": [
+    {
+      "id": "n1",
+      "class": "utility",
+      "name": "BasicAuth",
+      "file": "auth.go",
+      "lines": [
+        72,
+        72
+      ],
+      "weight": 0.86,
+      "behavior": "Function BasicAuth.",
+      "sig": "func BasicAuth(accounts Accounts) HandlerFunc"
+    },
+    {
+      "id": "n2",
+      "class": "utility",
+      "name": "BasicAuthForProxy",
+      "file": "auth.go",
+      "lines": [
+        98,
+        98
+      ],
+      "weight": 0.8,
+      "behavior": "Function BasicAuthForProxy.",
+      "sig": "func BasicAuthForProxy(accounts Accounts, realm string) HandlerFunc"
+    },
+    {
+      "id": "n3",
+      "class": "utility",
+      "name": "BasicAuthForRealm",
+      "file": "auth.go",
+      "lines": [
+        48,
+        48
+      ],
+      "weight": 0.75,
+      "behavior": "Function BasicAuthForRealm.",
+      "sig": "func BasicAuthForRealm(accounts Accounts, realm string) HandlerFunc"
+    },
+    {
+      "id": "n4",
+      "class": "utility",
+      "name": "authPair",
+      "file": "auth.go",
+      "lines": [
+        25,
+        25
+      ],
+      "weight": 0.69,
+      "behavior": "Struct authPair."
+    },
+    {
+      "id": "n5",
+      "class": "utility",
+      "name": "authorizationHeader",
+      "file": "auth.go",
+      "lines": [
+        91,
+        91
+      ],
+      "weight": 0.63,
+      "behavior": "Function authorizationHeader.",
+      "sig": "func authorizationHeader(user, password string) string"
+    },
+    {
+      "id": "n6",
+      "class": "utility",
+      "name": "processAccounts",
+      "file": "auth.go",
+      "lines": [
+        76,
+        76
+      ],
+      "weight": 0.57,
+      "behavior": "Function processAccounts.",
+      "sig": "func processAccounts(accounts Accounts) authPairs"
+    },
+    {
+      "id": "n7",
+      "class": "utility",
+      "name": "searchCredential",
+      "file": "auth.go",
+      "lines": [
+        32,
+        32
+      ],
+      "weight": 0.52,
+      "behavior": "Function searchCredential.",
+      "sig": "func (a authPairs) searchCredential(authValue string) (string, bool)"
+    },
+    {
+      "id": "n8",
+      "class": "utility",
+      "name": "TestBasicAuth401",
+      "file": "auth_test.go",
+      "lines": [
+        101,
+        101
+      ],
+      "weight": 0.46,
+      "behavior": "Function TestBasicAuth401.",
+      "sig": "func TestBasicAuth401(t *testing.T)"
+    },
+    {
+      "id": "n9",
+      "class": "utility",
+      "name": "TestBasicAuth401WithCustomRealm",
+      "file": "auth_test.go",
+      "lines": [
+        121,
+        121
+      ],
+      "weight": 0.4,
+      "behavior": "Function TestBasicAuth401WithCustomRealm.",
+      "sig": "func TestBasicAuth401WithCustomRealm(t *testing.T)"
+    },
+    {
+      "id": "n10",
+      "class": "utility",
+      "name": "TestBasicAuth",
+      "file": "auth_test.go",
+      "lines": [
+        16,
+        16
+      ],
+      "weight": 0.34,
+      "behavior": "Function TestBasicAuth.",
+      "sig": "func TestBasicAuth(t *testing.T)"
+    },
+    {
+      "id": "n11",
+      "class": "utility",
+      "name": "TestBasicAuthAuthorizationHeader",
+      "file": "auth_test.go",
+      "lines": [
+        80,
+        80
+      ],
+      "weight": 0.29,
+      "behavior": "Function TestBasicAuthAuthorizationHeader.",
+      "sig": "func TestBasicAuthAuthorizationHeader(t *testing.T)"
+    },
+    {
+      "id": "n12",
+      "class": "utility",
+      "name": "TestBasicAuthFails",
+      "file": "auth_test.go",
+      "lines": [
+        38,
+        38
+      ],
+      "weight": 0.23,
+      "behavior": "Function TestBasicAuthFails.",
+      "sig": "func TestBasicAuthFails(t *testing.T)"
+    },
+    {
+      "id": "n13",
+      "class": "utility",
+      "name": "TestBasicAuthForProxy407",
+      "file": "auth_test.go",
+      "lines": [
+        158,
+        158
+      ],
+      "weight": 0.17,
+      "behavior": "Function TestBasicAuthForProxy407.",
+      "sig": "func TestBasicAuthForProxy407(t *testing.T)"
+    },
+    {
+      "id": "n14",
+      "class": "utility",
+      "name": "TestBasicAuthForProxySucceed",
+      "file": "auth_test.go",
+      "lines": [
+        141,
+        141
+      ],
+      "weight": 0.11,
+      "behavior": "Function TestBasicAuthForProxySucceed.",
+      "sig": "func TestBasicAuthForProxySucceed(t *testing.T)"
+    },
+    {
+      "id": "n15",
+      "class": "utility",
+      "name": "TestBasicAuthSearchCredential",
+      "file": "auth_test.go",
+      "lines": [
+        48,
+        48
+      ],
+      "weight": 0.06,
+      "behavior": "Function TestBasicAuthSearchCredential.",
+      "sig": "func TestBasicAuthSearchCredential(t *testing.T)"
+    }
+  ],
+  "uncertainty": {
+    "confidence": 0.64,
+    "hint": "targeted_lookup",
+    "gaps": []
+  }
+}

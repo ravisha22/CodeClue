@@ -1,0 +1,78 @@
+{
+  "task": {
+    "id": "trace-OF5-20260403093436",
+    "repo": "",
+    "family": "OF5",
+    "operation_family": "OF5",
+    "question": "Security concerns in NestJS guards?"
+  },
+  "clue_summary": {
+    "system_behavior": [
+      "GuardsConsumer: Leaf handler invoked by dispatcher.",
+      "ExecutionContextHost: Class ExecutionContextHost.",
+      "packages/core/guards/guards-consumer.ts: Module containing 1 projected symbol(s)."
+    ],
+    "key_files": [
+      "packages/core/guards/guards-consumer.ts",
+      "packages/core/helpers/execution-context-host.ts"
+    ],
+    "key_symbols": [
+      "GuardsConsumer",
+      "ExecutionContextHost"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "class",
+      "name": "GuardsConsumer",
+      "summary": "Leaf handler invoked by dispatcher.",
+      "file": "packages/core/guards/guards-consumer.ts",
+      "lines": [
+        7,
+        7
+      ],
+      "importance": 1,
+      "role": "handler"
+    },
+    {
+      "id": "n2",
+      "type": "class",
+      "name": "ExecutionContextHost",
+      "summary": "Class ExecutionContextHost.",
+      "file": "packages/core/helpers/execution-context-host.ts",
+      "lines": [
+        10,
+        10
+      ],
+      "importance": 2,
+      "role": "utility"
+    },
+    {
+      "id": "n3",
+      "type": "module",
+      "name": "packages/core/guards/guards-consumer.ts",
+      "summary": "Module containing 1 projected symbol(s).",
+      "file": "packages/core/guards/guards-consumer.ts",
+      "lines": [
+        1,
+        58
+      ],
+      "importance": 3,
+      "role": "module_root"
+    }
+  ],
+  "relations": [
+    {
+      "type": "contains",
+      "from": "n3",
+      "to": "n1"
+    }
+  ],
+  "assertions": [],
+  "uncertainty": {
+    "overall_confidence": 1.0,
+    "lookup_hint": "clue_only",
+    "known_gaps": []
+  }
+}
