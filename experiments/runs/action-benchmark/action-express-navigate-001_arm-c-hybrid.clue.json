@@ -1,0 +1,253 @@
+{
+  "task": {
+    "id": "trace-OF1-20260403094653",
+    "repo": "",
+    "family": "OF1",
+    "question": "A developer new to Express needs to understand the middleware pipeline to add rate limiting. Identify the entry point, middleware registration, and execution flow."
+  },
+  "summary": "andRestrictTo: Function andRestrictTo. andRestrictToSelf: Function andRestrictToSelf. loadUser: Function loadUser.",
+  "entities": [
+    {
+      "id": "n1",
+      "class": "utility",
+      "name": "andRestrictTo",
+      "file": "examples/route-middleware/index.js",
+      "lines": [
+        50,
+        50
+      ],
+      "confidence": 0.71,
+      "purpose": "function andRestrictTo",
+      "behavior": "Function andRestrictTo.",
+      "sig": "function andRestrictTo(role)",
+      "called_by": [
+        "examples/route-middleware/index.js"
+      ]
+    },
+    {
+      "id": "n2",
+      "class": "utility",
+      "name": "andRestrictToSelf",
+      "file": "examples/route-middleware/index.js",
+      "lines": [
+        36,
+        36
+      ],
+      "confidence": 0.71,
+      "purpose": "function andRestrictToSelf",
+      "behavior": "Function andRestrictToSelf.",
+      "sig": "function andRestrictToSelf(req, res, next)",
+      "called_by": [
+        "examples/route-middleware/index.js"
+      ]
+    },
+    {
+      "id": "n3",
+      "class": "utility",
+      "name": "loadUser",
+      "file": "examples/route-middleware/index.js",
+      "lines": [
+        25,
+        25
+      ],
+      "confidence": 0.71,
+      "purpose": "function loadUser",
+      "behavior": "Function loadUser.",
+      "sig": "function loadUser(req, res, next)",
+      "called_by": [
+        "examples/route-middleware/index.js"
+      ]
+    },
+    {
+      "id": "n4",
+      "class": "utility",
+      "name": "testMethod",
+      "file": "test/Route.js",
+      "lines": [
+        78,
+        78
+      ],
+      "confidence": 0.71,
+      "purpose": "function testMethod",
+      "behavior": "Function testMethod.",
+      "sig": "function testMethod(method)",
+      "called_by": [
+        "test/Route.js"
+      ]
+    },
+    {
+      "id": "n5",
+      "class": "utility",
+      "name": "fn1",
+      "file": "test/Router.js",
+      "lines": [
+        481,
+        481
+      ],
+      "confidence": 0.71,
+      "purpose": "function fn1",
+      "behavior": "Function fn1.",
+      "sig": "function fn1(req, res, next)",
+      "called_by": [
+        "test/Router.js"
+      ]
+    },
+    {
+      "id": "n6",
+      "class": "utility",
+      "name": "fn2",
+      "file": "test/Router.js",
+      "lines": [
+        486,
+        486
+      ],
+      "confidence": 0.71,
+      "purpose": "function fn2",
+      "behavior": "Function fn2.",
+      "sig": "function fn2(req, res, next)",
+      "called_by": [
+        "test/Router.js"
+      ]
+    },
+    {
+      "id": "n7",
+      "class": "utility",
+      "name": "no",
+      "file": "test/Router.js",
+      "lines": [
+        463,
+        463
+      ],
+      "confidence": 0.71,
+      "purpose": "function no",
+      "behavior": "Function no.",
+      "sig": "function no()",
+      "called_by": [
+        "test/Router.js"
+      ]
+    },
+    {
+      "id": "n8",
+      "class": "utility",
+      "name": "testMethod",
+      "file": "test/Router.js",
+      "lines": [
+        424,
+        424
+      ],
+      "confidence": 0.71,
+      "purpose": "function testMethod",
+      "behavior": "Function testMethod.",
+      "sig": "function testMethod(method)",
+      "called_by": [
+        "test/Router.js"
+      ]
+    },
+    {
+      "id": "n9",
+      "class": "error_handler",
+      "name": "createError",
+      "file": "test/app.route.js",
+      "lines": [
+        114,
+        114
+      ],
+      "confidence": 0.71,
+      "purpose": "function createError",
+      "behavior": "Error handler; produces error response.",
+      "sig": "function createError (req, res, next)"
+    },
+    {
+      "id": "n10",
+      "class": "error_handler",
+      "name": "createError",
+      "file": "test/app.route.js",
+      "lines": [
+        133,
+        133
+      ],
+      "confidence": 0.71,
+      "purpose": "function createError",
+      "behavior": "Error handler; produces error response.",
+      "sig": "function createError (req, res, next)"
+    },
+    {
+      "id": "n11",
+      "class": "error_handler",
+      "name": "createError",
+      "file": "test/app.route.js",
+      "lines": [
+        155,
+        155
+      ],
+      "confidence": 0.71,
+      "purpose": "function createError",
+      "behavior": "Error handler; produces error response.",
+      "sig": "function createError (req, res, next)"
+    },
+    {
+      "id": "n12",
+      "class": "error_handler",
+      "name": "createError",
+      "file": "test/app.route.js",
+      "lines": [
+        177,
+        177
+      ],
+      "confidence": 0.71,
+      "purpose": "function createError",
+      "behavior": "Error handler; produces error response.",
+      "sig": "function createError (req, res, next)",
+      "called_by": [
+        "test/app.route.js"
+      ]
+    },
+    {
+      "id": "n13",
+      "class": "error_handler",
+      "name": "createError",
+      "file": "test/app.route.js",
+      "lines": [
+        70,
+        70
+      ],
+      "confidence": 0.71,
+      "purpose": "function createError",
+      "behavior": "Error handler; produces error response.",
+      "sig": "function createError (req, res, next)"
+    },
+    {
+      "id": "n14",
+      "class": "error_handler",
+      "name": "createError",
+      "file": "test/app.route.js",
+      "lines": [
+        92,
+        92
+      ],
+      "confidence": 0.71,
+      "purpose": "function createError",
+      "behavior": "Error handler; produces error response.",
+      "sig": "function createError (req, res, next)"
+    },
+    {
+      "id": "n15",
+      "class": "error_handler",
+      "name": "handleError",
+      "file": "test/app.route.js",
+      "lines": [
+        100,
+        100
+      ],
+      "confidence": 0.71,
+      "purpose": "function handleError",
+      "behavior": "Error handler; produces error response.",
+      "sig": "function handleError (err, req, res, next)"
+    }
+  ],
+  "uncertainty": {
+    "confidence": 1.0,
+    "hint": "clue_only",
+    "gaps": []
+  }
+}

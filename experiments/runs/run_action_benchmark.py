@@ -28,6 +28,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from codeclue_research.io import load_graph
 from codeclue_research.clue_view_plan_a import render_clue_plan_a
+from codeclue_research.clue_view_hybrid import render_clue_hybrid
 from codeclue_research.token_counter import count_tokens
 
 
@@ -304,27 +305,47 @@ def main() -> None:
         # Render Plan A clue
         clue = render_clue_plan_a(projection, graph, task["task"], str(repo_root))
 
-        # Score clue content directly against gold (automated — no LLM needed)
+        # Render Hybrid clue
+        clue_hybrid = render_clue_hybrid(projection, graph, task["task"], str(repo_root))
+
+        # Score Plan A clue content directly against gold
         clue_text = json.dumps(clue, ensure_ascii=False)
         clue_score = _score_action_task(clue_text, task)
         clue_score["task_id"] = task_id
         clue_score["family"] = family
         clue_score["clue_tokens"] = count_tokens(clue)
+        clue_score["format"] = "plan_a"
         clue_scores.append(clue_score)
+
+        # Score Hybrid clue content directly against gold
+        hybrid_text = json.dumps(clue_hybrid, ensure_ascii=False)
+        hybrid_score = _score_action_task(hybrid_text, task)
+        hybrid_score["task_id"] = task_id
+        hybrid_score["family"] = family
+        hybrid_score["clue_tokens"] = count_tokens(clue_hybrid)
+        hybrid_score["format"] = "hybrid"
+        clue_scores.append(hybrid_score)
 
         # Generate Arm A prompt (raw source)
         arm_a = _build_arm_a_prompt(task, repo_root)
         arm_a_fname = f"{task_id}_arm-a.prompt.md"
         (out_dir / arm_a_fname).write_text(arm_a, encoding="utf-8")
 
-        # Generate Arm B prompt (clue)
+        # Generate Arm B prompt (Plan A clue)
         arm_b = _build_arm_b_prompt(task, clue)
         arm_b_fname = f"{task_id}_arm-b.prompt.md"
         (out_dir / arm_b_fname).write_text(arm_b, encoding="utf-8")
 
-        # Save clue for scoring
+        # Generate Arm C prompt (Hybrid clue)
+        arm_c = _build_arm_b_prompt(task, clue_hybrid)
+        arm_c_fname = f"{task_id}_arm-c-hybrid.prompt.md"
+        (out_dir / arm_c_fname).write_text(arm_c, encoding="utf-8")
+
+        # Save clues for scoring
         clue_fname = f"{task_id}_arm-b.clue.json"
         (out_dir / clue_fname).write_text(json.dumps(clue, indent=2), encoding="utf-8")
+        hybrid_fname = f"{task_id}_arm-c-hybrid.clue.json"
+        (out_dir / hybrid_fname).write_text(json.dumps(clue_hybrid, indent=2), encoding="utf-8")
 
         manifest.append({
             "task_id": task_id,
@@ -335,64 +356,87 @@ def main() -> None:
             "arm_a_response": arm_a_fname.replace(".prompt.md", ".response.md"),
             "arm_b_prompt": arm_b_fname,
             "arm_b_response": arm_b_fname.replace(".prompt.md", ".response.md"),
+            "arm_c_prompt": arm_c_fname,
+            "arm_c_response": arm_c_fname.replace(".prompt.md", ".response.md"),
             "clue_file": clue_fname,
+            "hybrid_file": hybrid_fname,
             "arm_a_tokens": count_tokens(arm_a),
             "arm_b_tokens": count_tokens(arm_b),
+            "arm_c_tokens": count_tokens(arm_c),
             "clue_tokens": count_tokens(clue),
+            "hybrid_tokens": count_tokens(clue_hybrid),
             "gold_files": task["gold_files"],
             "gold_symbols": task["gold_symbols"],
         })
 
-        print(f"  {task_id}: clue_loc={clue_score['localization_accuracy']:.3f} "
-              f"(files={clue_score['file_recall']:.2f} sym={clue_score['symbol_recall']:.2f}) "
-              f"tokens: arm_a={count_tokens(arm_a)} arm_b={count_tokens(arm_b)}")
+        print(f"  {task_id}: plan_a={clue_score['localization_accuracy']:.3f} "
+              f"hybrid={hybrid_score['localization_accuracy']:.3f} "
+              f"tokens: a={count_tokens(arm_a)} b={count_tokens(arm_b)} c={count_tokens(arm_c)}")
 
     # Save manifest
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
-    # Aggregate clue-content scores (automated, no LLM needed)
-    families = sorted(set(s["family"] for s in clue_scores))
-    print(f"\n{'='*70}")
-    print(f"AUTOMATED CLUE-CONTENT SCORING (clue artifact vs gold localization)")
-    print(f"{'='*70}")
-    print(f"\n{'Task':<35} {'Fam':<12} {'FilRec':>7} {'SymRec':>7} {'LocAcc':>7} {'Suff':>5}")
-    print(f"{'-'*35} {'-'*12} {'-'*7} {'-'*7} {'-'*7} {'-'*5}")
+    # Aggregate by format
+    for fmt in ["plan_a", "hybrid"]:
+        fmt_scores = [s for s in clue_scores if s.get("format") == fmt]
+        if not fmt_scores:
+            continue
+        print(f"\n--- {fmt.upper()} ---")
+        print(f"{'Task':<35} {'Fam':<12} {'FilRec':>7} {'SymRec':>7} {'LocAcc':>7} {'Suff':>5} {'Tokens':>7}")
+        print(f"{'-'*35} {'-'*12} {'-'*7} {'-'*7} {'-'*7} {'-'*5} {'-'*7}")
+        for s in fmt_scores:
+            suff = "YES" if s["sufficient"] else "no"
+            print(f"{s['task_id']:<35} {s['family']:<12} {s['file_recall']:>7.3f} {s['symbol_recall']:>7.3f} {s['localization_accuracy']:>7.3f} {suff:>5} {s['clue_tokens']:>7}")
 
-    for s in clue_scores:
-        suff = "YES" if s["sufficient"] else "no"
-        print(f"{s['task_id']:<35} {s['family']:<12} {s['file_recall']:>7.3f} {s['symbol_recall']:>7.3f} {s['localization_accuracy']:>7.3f} {suff:>5}")
+        overall_loc = sum(s["localization_accuracy"] for s in fmt_scores) / len(fmt_scores)
+        overall_suff = sum(1 for s in fmt_scores if s["sufficient"])
+        mean_tok = sum(s["clue_tokens"] for s in fmt_scores) / len(fmt_scores)
+        print(f"\n  {fmt.upper()} OVERALL: loc={overall_loc:.3f}, sufficient={overall_suff}/{len(fmt_scores)} ({overall_suff*100/len(fmt_scores):.0f}%), mean_tokens={mean_tok:.0f}")
 
-    # Per-family summary
-    print(f"\nPer-Family:")
-    for fam in families:
-        fam_scores = [s for s in clue_scores if s["family"] == fam]
-        mean_loc = sum(s["localization_accuracy"] for s in fam_scores) / len(fam_scores)
-        mean_file = sum(s["file_recall"] for s in fam_scores) / len(fam_scores)
-        mean_sym = sum(s["symbol_recall"] for s in fam_scores) / len(fam_scores)
-        suff_count = sum(1 for s in fam_scores if s["sufficient"])
-        print(f"  {fam}: loc={mean_loc:.3f} file={mean_file:.3f} sym={mean_sym:.3f} suff={suff_count}/{len(fam_scores)}")
+    # Head-to-head comparison
+    plan_a_scores = {s["task_id"]: s for s in clue_scores if s.get("format") == "plan_a"}
+    hybrid_scores = {s["task_id"]: s for s in clue_scores if s.get("format") == "hybrid"}
+    common_tasks = set(plan_a_scores.keys()) & set(hybrid_scores.keys())
 
-    # Overall
-    overall_loc = sum(s["localization_accuracy"] for s in clue_scores) / len(clue_scores)
-    overall_suff = sum(1 for s in clue_scores if s["sufficient"])
-    print(f"\n  OVERALL: loc={overall_loc:.3f}, sufficient={overall_suff}/{len(clue_scores)} ({overall_suff*100/len(clue_scores):.0f}%)")
+    if common_tasks:
+        print(f"\n--- HEAD-TO-HEAD (Plan A vs Hybrid) ---")
+        print(f"{'Task':<35} {'PlanA':>7} {'Hybrid':>7} {'Delta':>7} {'Winner':>7}")
+        print(f"{'-'*35} {'-'*7} {'-'*7} {'-'*7} {'-'*7}")
+        hybrid_wins = 0
+        plan_a_wins = 0
+        for tid in sorted(common_tasks):
+            a_loc = plan_a_scores[tid]["localization_accuracy"]
+            h_loc = hybrid_scores[tid]["localization_accuracy"]
+            delta = h_loc - a_loc
+            winner = "HYBRID" if delta > 0.01 else ("PLAN_A" if delta < -0.01 else "TIE")
+            if delta > 0.01:
+                hybrid_wins += 1
+            elif delta < -0.01:
+                plan_a_wins += 1
+            print(f"{tid:<35} {a_loc:>7.3f} {h_loc:>7.3f} {delta:>+7.3f} {winner:>7}")
+        print(f"\n  Hybrid wins: {hybrid_wins}, Plan A wins: {plan_a_wins}, Ties: {len(common_tasks) - hybrid_wins - plan_a_wins}")
 
     # Token comparison
     if manifest:
         mean_a = sum(m["arm_a_tokens"] for m in manifest) / len(manifest)
         mean_b = sum(m["arm_b_tokens"] for m in manifest) / len(manifest)
-        mean_clue = sum(m["clue_tokens"] for m in manifest) / len(manifest)
-        print(f"\n  Token comparison: Arm A (raw)={mean_a:.0f}t, Arm B (clue)={mean_b:.0f}t, ratio={mean_b/mean_a:.2f}")
+        mean_c = sum(m["arm_c_tokens"] for m in manifest) / len(manifest)
+        print(f"\n  Token comparison: Arm A (raw)={mean_a:.0f}t, Arm B (plan_a)={mean_b:.0f}t, Arm C (hybrid)={mean_c:.0f}t")
+        print(f"  Ratio B/A={mean_b/mean_a:.2f}, C/A={mean_c/mean_a:.2f}")
 
     # Save results
+    overall_plan_a = [s for s in clue_scores if s.get("format") == "plan_a"]
+    overall_hybrid = [s for s in clue_scores if s.get("format") == "hybrid"]
     results_path = reports_dir / "action-benchmark-results.json"
     with open(results_path, "w") as f:
         json.dump({
             "clue_content_scores": clue_scores,
             "manifest": manifest,
-            "overall_localization": overall_loc,
-            "overall_sufficient": overall_suff,
-            "total_tasks": len(clue_scores),
+            "plan_a_overall": sum(s["localization_accuracy"] for s in overall_plan_a) / len(overall_plan_a) if overall_plan_a else 0,
+            "hybrid_overall": sum(s["localization_accuracy"] for s in overall_hybrid) / len(overall_hybrid) if overall_hybrid else 0,
+            "plan_a_sufficient": sum(1 for s in overall_plan_a if s["sufficient"]),
+            "hybrid_sufficient": sum(1 for s in overall_hybrid if s["sufficient"]),
+            "total_tasks": len(overall_plan_a),
         }, f, indent=2)
 
     print(f"\nSaved: {results_path}")

@@ -1,0 +1,97 @@
+{
+  "task": {
+    "id": "trace-OF3-20260403093149",
+    "repo": "",
+    "family": "OF3",
+    "question": "Add request body size limiting middleware to FastAPI. Which files define middleware registration and where should the new middleware be inserted?"
+  },
+  "summary": "fastapi/sse.py: Module containing 5 projected symbol(s). EventSourceResponse: Leaf handler invoked by dispatcher. _check_data_exclusive: Validates input before processing.",
+  "entities": [
+    {
+      "id": "n1",
+      "class": "handler",
+      "name": "EventSourceResponse",
+      "file": "fastapi/sse.py",
+      "lines": [
+        20,
+        33
+      ],
+      "confidence": 0.77,
+      "purpose": "class EventSourceResponse",
+      "behavior": "Leaf handler invoked by dispatcher."
+    },
+    {
+      "id": "n2",
+      "class": "validator",
+      "name": "_check_data_exclusive",
+      "file": "fastapi/sse.py",
+      "lines": [
+        136,
+        143
+      ],
+      "confidence": 0.77,
+      "purpose": "function _check_data_exclusive",
+      "behavior": "Validates input before processing.",
+      "sig": "def _check_data_exclusive(self) -> \"ServerSentEvent\":"
+    },
+    {
+      "id": "n3",
+      "class": "handler",
+      "name": "ServerSentEvent",
+      "file": "fastapi/sse.py",
+      "lines": [
+        42,
+        143
+      ],
+      "confidence": 0.77,
+      "purpose": "class ServerSentEvent",
+      "behavior": "Leaf handler invoked by dispatcher.",
+      "sig": "@model_validator(mode=\"after\") def _check_data_exclusive(self) -> \"ServerSentEvent\":"
+    },
+    {
+      "id": "n4",
+      "class": "validator",
+      "name": "_check_id_no_null",
+      "file": "fastapi/sse.py",
+      "lines": [
+        36,
+        39
+      ],
+      "confidence": 0.77,
+      "purpose": "function _check_id_no_null",
+      "behavior": "Validates input before processing.",
+      "sig": "def _check_id_no_null(v: str | None) -> str | None:"
+    },
+    {
+      "id": "n5",
+      "class": "handler",
+      "name": "format_sse_event",
+      "file": "fastapi/sse.py",
+      "lines": [
+        146,
+        214
+      ],
+      "confidence": 0.77,
+      "purpose": "function format_sse_event",
+      "behavior": "Leaf handler invoked by dispatcher."
+    },
+    {
+      "id": "n6",
+      "class": "module_root",
+      "name": "fastapi/sse.py",
+      "file": "fastapi/sse.py",
+      "lines": [
+        1,
+        223
+      ],
+      "confidence": 0.85,
+      "purpose": "Module-level semantic container",
+      "behavior": "Module containing 5 projected symbol(s)."
+    }
+  ],
+  "uncertainty": {
+    "confidence": 1.0,
+    "hint": "clue_only",
+    "gaps": []
+  }
+}
