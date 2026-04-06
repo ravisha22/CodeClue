@@ -143,7 +143,7 @@ def main() -> None:
 
         with open(proj_path, "r", encoding="utf-8") as f:
             projection = json.load(f)
-        graph = load_graph(str(graph_path))
+        graph = load_graph(graph_path)
 
         gold_spec = _load_gold_spec(family)
         if not gold_spec:

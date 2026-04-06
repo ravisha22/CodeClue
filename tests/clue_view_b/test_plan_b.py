@@ -216,7 +216,7 @@ class TestNodeTable:
     def test_nodes_have_required_fields(self, tmp_path: Path) -> None:
         graph, proj = _make_graph_and_projection(tmp_path)
         clue = render_clue_plan_b(proj, graph, "Test?", str(tmp_path))
-        required = {"id", "type", "name", "summary", "file", "lines", "importance", "sig", "role", "risks"}
+        required = {"id", "type", "name", "summary", "file", "lines", "importance", "role"}
         for node in clue["nodes"]:
             missing = required - set(node.keys())
             assert not missing, f"Node {node.get('id')} missing: {missing}"

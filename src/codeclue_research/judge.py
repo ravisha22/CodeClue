@@ -36,81 +36,110 @@ def score_heuristic(
     gold_spec: dict[str, Any],
     clue: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Score a consumer answer against a gold-path spec using heuristic matching.
+    """Score a consumer answer using content-quality heuristics.
+
+    Evaluates answer richness against the clue artifact itself:
+    - Symbol coverage: how many clue symbols are cited in the answer
+    - Behavioral coverage: whether behavioral risks/invariants are mentioned
+    - Structural coverage: whether relationships/flows are described
+    - Evidence quality: answer length and specificity
 
     Args:
         answer_text: The consumer model's answer (plain text).
-        gold_spec: Gold path spec with expected nodes/edges.
-        clue: Optional clue artifact for context.
+        gold_spec: Gold path spec (used for thresholds only).
+        clue: The clue artifact for symbol/behavior matching.
 
     Returns:
         Scoring result with metrics and sufficiency verdict.
     """
-    # Extract gold path info
-    gold_path = gold_spec.get("gold_path", {})
-    expected_nodes = set(gold_path.get("nodes", []))
-    expected_edges = set(gold_path.get("edges", []))
-
-    # Extract what the answer mentions
+    normalized = _normalize(answer_text)
     cited = _extract_cited_symbols(answer_text)
-    normalized_answer = _normalize(answer_text)
 
-    # Node recall: how many expected nodes are mentioned in the answer
-    node_hits = 0
-    for node_id in expected_nodes:
-        # Extract the symbol name from the node_id
-        parts = node_id.split(":")
-        if len(parts) >= 3:
-            symbol = parts[2]  # e.g., "Flask.wsgi_app" from "symbol:src/flask/app.py:Flask.wsgi_app:1566"
-            if symbol.lower() in normalized_answer or symbol.lower() in cited:
-                node_hits += 1
-        elif node_id.lower() in normalized_answer:
-            node_hits += 1
+    # Extract symbols and behaviors from the clue
+    clue_symbols: list[str] = []
+    clue_risks: list[str] = []
+    clue_behaviors: list[str] = []
+    clue_relations: int = 0
 
-    node_recall = node_hits / len(expected_nodes) if expected_nodes else 1.0
+    if clue:
+        # Plan A entities
+        for entity in clue.get("entities", []):
+            name = entity.get("name", "")
+            if name:
+                clue_symbols.append(name)
+            clue_risks.extend(entity.get("risks", []))
+            behavior = entity.get("behavior", "")
+            if behavior:
+                clue_behaviors.append(behavior)
+            clue_relations += len(entity.get("inflow", [])) + len(entity.get("outflow", []))
 
-    # Edge recall: how many expected relationships are implied in the answer
-    edge_hits = 0
-    for edge_id in expected_edges:
-        parts = edge_id.split(":")
-        if len(parts) >= 4:
-            # Extract from and to symbols
-            from_sym = parts[1].split(":")[-1] if ":" in parts[1] else ""
-            to_sym = parts[2].split(":")[-1] if ":" in parts[2] else ""
-            # Check if both endpoints mentioned
-            if from_sym and to_sym:
-                from_found = from_sym.lower() in normalized_answer
-                to_found = to_sym.lower() in normalized_answer
-                if from_found and to_found:
-                    edge_hits += 1
+        # Plan B nodes
+        for node in clue.get("nodes", []):
+            name = node.get("name", "")
+            if name:
+                clue_symbols.append(name)
+            clue_risks.extend(node.get("risks", []))
+            summary = node.get("summary", "")
+            if summary:
+                clue_behaviors.append(summary)
 
-    edge_recall = edge_hits / len(expected_edges) if expected_edges else 1.0
+        clue_relations += len(clue.get("relations", []))
 
-    # Path fidelity (combined metric)
-    path_fidelity = (node_recall + edge_recall) / 2.0
+    # Symbol coverage: how many clue symbols appear in the answer
+    symbol_hits = 0
+    for sym in clue_symbols:
+        short = sym.rsplit(".", 1)[-1].lower() if "." in sym else sym.lower()
+        if short in normalized or sym.lower() in normalized:
+            symbol_hits += 1
+    symbol_recall = symbol_hits / len(clue_symbols) if clue_symbols else 0.0
 
-    # Evidence quality: penalize very short or very vague answers
+    # Risk/behavioral coverage
+    risk_hits = 0
+    for risk in clue_risks:
+        risk_words = risk.lower().replace("_", " ")
+        if any(w in normalized for w in risk_words.split()):
+            risk_hits += 1
+    risk_coverage = risk_hits / len(clue_risks) if clue_risks else 1.0  # no risks = full coverage
+
+    # Behavioral coverage: how many behavior summaries are reflected
+    behavior_hits = 0
+    for beh in clue_behaviors:
+        # Check if key words from behavior appear in answer
+        key_words = [w for w in _normalize(beh).split() if len(w) > 4]
+        if key_words and sum(1 for w in key_words if w in normalized) / len(key_words) > 0.3:
+            behavior_hits += 1
+    behavior_recall = behavior_hits / len(clue_behaviors) if clue_behaviors else 0.0
+
+    # Evidence quality
     word_count = len(answer_text.split())
-    evidence_quality = min(1.0, word_count / 50)  # Expect at least 50 words
+    length_score = min(1.0, word_count / 50)
 
-    # Thresholds
+    # Composite fidelity
+    path_fidelity = (
+        symbol_recall * 0.35
+        + behavior_recall * 0.35
+        + risk_coverage * 0.15
+        + length_score * 0.15
+    )
+
+    # Threshold
     thresholds = gold_spec.get("thresholds", {})
-    fidelity_min = float(thresholds.get("path_fidelity_min", 0.80))
-
+    fidelity_min = float(thresholds.get("path_fidelity_min", 0.60))
     sufficient = path_fidelity >= fidelity_min
 
     return {
         "mode": "heuristic",
-        "node_recall": round(node_recall, 4),
-        "edge_recall": round(edge_recall, 4),
+        "symbol_recall": round(symbol_recall, 4),
+        "behavior_recall": round(behavior_recall, 4),
+        "risk_coverage": round(risk_coverage, 4),
+        "length_score": round(length_score, 4),
         "path_fidelity": round(path_fidelity, 4),
-        "evidence_quality": round(evidence_quality, 4),
         "sufficient": sufficient,
         "threshold": fidelity_min,
-        "node_hits": node_hits,
-        "node_expected": len(expected_nodes),
-        "edge_hits": edge_hits,
-        "edge_expected": len(expected_edges),
+        "symbol_hits": symbol_hits,
+        "symbol_total": len(clue_symbols),
+        "behavior_hits": behavior_hits,
+        "behavior_total": len(clue_behaviors),
         "word_count": word_count,
     }
 

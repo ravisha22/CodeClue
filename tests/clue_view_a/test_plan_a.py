@@ -157,11 +157,15 @@ class TestEntityCompleteness:
     def test_entities_have_all_dimensions(self, tmp_path: Path) -> None:
         graph, proj = _make_graph_and_projection(tmp_path)
         clue = render_clue_plan_a(proj, graph, "Test?", str(tmp_path))
-        required = {"id", "class", "name", "file", "lines", "sig", "weight",
-                     "behavior", "inflow", "outflow", "risks", "invariants"}
+        required = {"id", "class", "name", "file", "lines", "weight", "behavior"}
+        optional = {"sig", "inflow", "outflow", "risks", "invariants"}
         for entity in clue["entities"]:
             missing = required - set(entity.keys())
-            assert not missing, f"Entity {entity.get('id')} missing: {missing}"
+            assert not missing, f"Entity {entity.get('id')} missing required: {missing}"
+            # Optional fields must be valid types if present
+            for opt in optional:
+                if opt in entity:
+                    assert isinstance(entity[opt], (str, list)), f"Bad type for {opt}"
 
     def test_entities_not_empty(self, tmp_path: Path) -> None:
         graph, proj = _make_graph_and_projection(tmp_path)

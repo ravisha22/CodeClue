@@ -61,15 +61,26 @@ def _extract_task_info(projection: dict[str, Any], question: str | None) -> dict
 
 def _select_top_nodes(
     projected_nodes: list[dict[str, Any]],
-    max_nodes: int = 20,
+    max_nodes: int = 15,
 ) -> list[dict[str, Any]]:
-    """Select top projected nodes by confidence, capped at max_nodes."""
+    """Select top projected nodes by confidence, capped adaptively.
+
+    Filters out module nodes (low semantic value) and caps at min(max_nodes, projected).
+    """
+    # Prefer non-module nodes (modules add tokens but little semantic value for LLMs)
+    non_module = [n for n in projected_nodes if n.get("node_type") != "module"]
+    modules = [n for n in projected_nodes if n.get("node_type") == "module"]
+
     sorted_nodes = sorted(
-        projected_nodes,
+        non_module,
         key=lambda n: n.get("confidence", 0),
         reverse=True,
     )
-    return sorted_nodes[:max_nodes]
+    # Include at most 1 module for context, only if we have room
+    result = sorted_nodes[:max_nodes]
+    if modules and len(result) < max_nodes:
+        result.append(modules[0])
+    return result
 
 
 def _build_edge_index(
@@ -313,14 +324,20 @@ def render_clue_plan_a(
             "name": sc.get("symbol_name", nid),
             "file": file_path,
             "lines": [start_line, end_line],
-            "sig": sig,
             "weight": weight,
             "behavior": behavior,
-            "inflow": inflow_enriched,
-            "outflow": outflow_enriched,
-            "risks": risks,
-            "invariants": invariants,
         }
+        # Only include non-empty optional fields to save tokens
+        if sig:
+            entity["sig"] = sig
+        if inflow_enriched:
+            entity["inflow"] = inflow_enriched
+        if outflow_enriched:
+            entity["outflow"] = outflow_enriched
+        if risks:
+            entity["risks"] = risks
+        if invariants:
+            entity["invariants"] = invariants
         entities.append(entity)
 
     # Step 8: Task info and summary

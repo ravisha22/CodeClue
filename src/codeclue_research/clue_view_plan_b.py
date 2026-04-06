@@ -59,14 +59,20 @@ def _extract_task_info(projection: dict[str, Any], question: str | None) -> dict
 
 def _select_top_nodes(
     projected_nodes: list[dict[str, Any]],
-    max_nodes: int = 20,
+    max_nodes: int = 15,
 ) -> list[dict[str, Any]]:
+    """Select top projected nodes by confidence, capped adaptively."""
+    non_module = [n for n in projected_nodes if n.get("node_type") != "module"]
+    modules = [n for n in projected_nodes if n.get("node_type") == "module"]
     sorted_nodes = sorted(
-        projected_nodes,
+        non_module,
         key=lambda n: n.get("confidence", 0),
         reverse=True,
     )
-    return sorted_nodes[:max_nodes]
+    result = sorted_nodes[:max_nodes]
+    if modules and len(result) < max_nodes:
+        result.append(modules[0])
+    return result
 
 
 def _generate_system_behavior(
@@ -234,7 +240,7 @@ def render_clue_plan_b(
             start_line = 1
             end_line = 1
 
-        node_entry = {
+        node_entry: dict[str, Any] = {
             "id": short_id,
             "type": node.get("node_type", ""),
             "name": sc.get("symbol_name", nid),
@@ -242,10 +248,12 @@ def render_clue_plan_b(
             "file": file_path,
             "lines": [start_line, end_line],
             "importance": i + 1,
-            "sig": sig,
             "role": role,
-            "risks": risks,
         }
+        if sig:
+            node_entry["sig"] = sig
+        if risks:
+            node_entry["risks"] = risks
         nodes_table.append(node_entry)
         node_risks[short_id] = risks
 

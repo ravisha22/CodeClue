@@ -92,7 +92,7 @@ def main() -> None:
         with open(proj_path, "r", encoding="utf-8") as f:
             projection = json.load(f)
 
-        graph = load_graph(str(graph_path))
+        graph = load_graph(graph_path)
 
         # Render Plan A
         clue_a = render_clue_plan_a(projection, graph, question, str(repo_root))

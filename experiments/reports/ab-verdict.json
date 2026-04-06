@@ -1,0 +1,125 @@
+{
+  "table1_per_family": [
+    {
+      "family": "TF1",
+      "a_mean_ccr": 0.94,
+      "a_dfcr": 1.0,
+      "a_mean_fidelity": 1.0,
+      "b_mean_ccr": 0.9327,
+      "b_dfcr": 1.0,
+      "b_mean_fidelity": 1.0,
+      "winner": "TIE"
+    },
+    {
+      "family": "TF2",
+      "a_mean_ccr": 0.804,
+      "a_dfcr": 1.0,
+      "a_mean_fidelity": 0.97,
+      "b_mean_ccr": 0.7833,
+      "b_dfcr": 1.0,
+      "b_mean_fidelity": 0.9688,
+      "winner": "TIE"
+    },
+    {
+      "family": "TF3",
+      "a_mean_ccr": 0.739,
+      "a_dfcr": 1.0,
+      "a_mean_fidelity": 0.984,
+      "b_mean_ccr": 0.7149,
+      "b_dfcr": 1.0,
+      "b_mean_fidelity": 0.982,
+      "winner": "TIE"
+    },
+    {
+      "family": "TF4",
+      "a_mean_ccr": 0.9085,
+      "a_dfcr": 1.0,
+      "a_mean_fidelity": 1.0,
+      "b_mean_ccr": 0.8975,
+      "b_dfcr": 1.0,
+      "b_mean_fidelity": 1.0,
+      "winner": "TIE"
+    },
+    {
+      "family": "TF5",
+      "a_mean_ccr": 0.808,
+      "a_dfcr": 1.0,
+      "a_mean_fidelity": 0.9934,
+      "b_mean_ccr": 0.7826,
+      "b_dfcr": 1.0,
+      "b_mean_fidelity": 0.9916,
+      "winner": "TIE"
+    }
+  ],
+  "table2_pillar_scorecard": [
+    {
+      "pillar": "1-Compression",
+      "plan": "A",
+      "target": "CCR \u2265 0.85 for \u226570% of tasks",
+      "value": "73.9% (17/23)",
+      "pass": true
+    },
+    {
+      "pillar": "2-ClueOnly",
+      "plan": "A",
+      "target": "DFCR \u2265 0.60 per family",
+      "value": "Overall=100.0% (23/23), per-family=PASS",
+      "pass": true
+    },
+    {
+      "pillar": "3-DrillDependence",
+      "plan": "A",
+      "target": "DDR \u2264 0.40",
+      "value": "DDR=0.0% (0/23) \u2014 all clue-only sufficient",
+      "pass": true
+    },
+    {
+      "pillar": "4-PostDrillValue",
+      "plan": "A",
+      "target": "FU \u2265 0.10",
+      "value": "N/A \u2014 no tasks needed drill-down",
+      "pass": true
+    },
+    {
+      "pillar": "1-Compression",
+      "plan": "B",
+      "target": "CCR \u2265 0.85 for \u226570% of tasks",
+      "value": "73.9% (17/23)",
+      "pass": true
+    },
+    {
+      "pillar": "2-ClueOnly",
+      "plan": "B",
+      "target": "DFCR \u2265 0.60 per family",
+      "value": "Overall=100.0% (23/23), per-family=PASS",
+      "pass": true
+    },
+    {
+      "pillar": "3-DrillDependence",
+      "plan": "B",
+      "target": "DDR \u2264 0.40",
+      "value": "DDR=0.0% (0/23) \u2014 all clue-only sufficient",
+      "pass": true
+    },
+    {
+      "pillar": "4-PostDrillValue",
+      "plan": "B",
+      "target": "FU \u2265 0.10",
+      "value": "N/A \u2014 no tasks needed drill-down",
+      "pass": true
+    }
+  ],
+  "verdict": {
+    "plan_a": {
+      "all_pillars_pass": true,
+      "pillars_passed": 4,
+      "pillars_total": 4
+    },
+    "plan_b": {
+      "all_pillars_pass": true,
+      "pillars_passed": 4,
+      "pillars_total": 4
+    },
+    "overall_winner": "TIE"
+  }
+}

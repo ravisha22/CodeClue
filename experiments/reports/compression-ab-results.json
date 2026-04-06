@@ -1,0 +1,915 @@
+{
+  "per_task": [
+    {
+      "task_id": "flask-tf1-001",
+      "plan": "a",
+      "raw_first_tokens": 18253,
+      "clue_tokens": 1265,
+      "projection_tokens": 37507,
+      "drilldown_tokens": 0,
+      "ccr": 0.9307,
+      "trcr": 0.9307,
+      "poisoned_vs_clean_ratio": 29.65,
+      "source_files": [
+        "src/flask/app.py",
+        "src/flask/ctx.py",
+        "tests/test_request.py"
+      ],
+      "source_file_count": 3,
+      "family": "TF1"
+    },
+    {
+      "task_id": "flask-tf1-001",
+      "plan": "b",
+      "raw_first_tokens": 18253,
+      "clue_tokens": 1404,
+      "projection_tokens": 37507,
+      "drilldown_tokens": 0,
+      "ccr": 0.9231,
+      "trcr": 0.9231,
+      "poisoned_vs_clean_ratio": 26.71,
+      "source_files": [
+        "src/flask/app.py",
+        "src/flask/ctx.py",
+        "tests/test_request.py"
+      ],
+      "source_file_count": 3,
+      "family": "TF1"
+    },
+    {
+      "task_id": "flask-tf1-002",
+      "plan": "a",
+      "raw_first_tokens": 17577,
+      "clue_tokens": 1293,
+      "projection_tokens": 53864,
+      "drilldown_tokens": 0,
+      "ccr": 0.9264,
+      "trcr": 0.9264,
+      "poisoned_vs_clean_ratio": 41.66,
+      "source_files": [
+        "src/flask/blueprints.py",
+        "src/flask/sansio/app.py",
+        "src/flask/sansio/blueprints.py",
+        "src/flask/wrappers.py"
+      ],
+      "source_file_count": 4,
+      "family": "TF1"
+    },
+    {
+      "task_id": "flask-tf1-002",
+      "plan": "b",
+      "raw_first_tokens": 17577,
+      "clue_tokens": 1415,
+      "projection_tokens": 53864,
+      "drilldown_tokens": 0,
+      "ccr": 0.9195,
+      "trcr": 0.9195,
+      "poisoned_vs_clean_ratio": 38.07,
+      "source_files": [
+        "src/flask/blueprints.py",
+        "src/flask/sansio/app.py",
+        "src/flask/sansio/blueprints.py",
+        "src/flask/wrappers.py"
+      ],
+      "source_file_count": 4,
+      "family": "TF1"
+    },
+    {
+      "task_id": "flask-tf2-001",
+      "plan": "a",
+      "raw_first_tokens": 26202,
+      "clue_tokens": 1771,
+      "projection_tokens": 41050,
+      "drilldown_tokens": 0,
+      "ccr": 0.9324,
+      "trcr": 0.9324,
+      "poisoned_vs_clean_ratio": 23.18,
+      "source_files": [
+        "src/flask/app.py",
+        "src/flask/cli.py",
+        "src/flask/ctx.py"
+      ],
+      "source_file_count": 3,
+      "family": "TF2"
+    },
+    {
+      "task_id": "flask-tf2-001",
+      "plan": "b",
+      "raw_first_tokens": 26202,
+      "clue_tokens": 1783,
+      "projection_tokens": 41050,
+      "drilldown_tokens": 0,
+      "ccr": 0.932,
+      "trcr": 0.932,
+      "poisoned_vs_clean_ratio": 23.02,
+      "source_files": [
+        "src/flask/app.py",
+        "src/flask/cli.py",
+        "src/flask/ctx.py"
+      ],
+      "source_file_count": 3,
+      "family": "TF2"
+    },
+    {
+      "task_id": "flask-tf2-002",
+      "plan": "a",
+      "raw_first_tokens": 4865,
+      "clue_tokens": 1658,
+      "projection_tokens": 16009,
+      "drilldown_tokens": 0,
+      "ccr": 0.6592,
+      "trcr": 0.6592,
+      "poisoned_vs_clean_ratio": 9.66,
+      "source_files": [
+        "src/flask/config.py",
+        "tests/test_config.py"
+      ],
+      "source_file_count": 2,
+      "family": "TF2"
+    },
+    {
+      "task_id": "flask-tf2-002",
+      "plan": "b",
+      "raw_first_tokens": 4865,
+      "clue_tokens": 1573,
+      "projection_tokens": 16009,
+      "drilldown_tokens": 0,
+      "ccr": 0.6767,
+      "trcr": 0.6767,
+      "poisoned_vs_clean_ratio": 10.18,
+      "source_files": [
+        "src/flask/config.py",
+        "tests/test_config.py"
+      ],
+      "source_file_count": 2,
+      "family": "TF2"
+    },
+    {
+      "task_id": "flask-tf3-001",
+      "plan": "a",
+      "raw_first_tokens": 13727,
+      "clue_tokens": 1595,
+      "projection_tokens": 25179,
+      "drilldown_tokens": 0,
+      "ccr": 0.8838,
+      "trcr": 0.8838,
+      "poisoned_vs_clean_ratio": 15.79,
+      "source_files": [
+        "src/flask/app.py"
+      ],
+      "source_file_count": 1,
+      "family": "TF3"
+    },
+    {
+      "task_id": "flask-tf3-001",
+      "plan": "b",
+      "raw_first_tokens": 13727,
+      "clue_tokens": 1632,
+      "projection_tokens": 25179,
+      "drilldown_tokens": 0,
+      "ccr": 0.8811,
+      "trcr": 0.8811,
+      "poisoned_vs_clean_ratio": 15.43,
+      "source_files": [
+        "src/flask/app.py"
+      ],
+      "source_file_count": 1,
+      "family": "TF3"
+    },
+    {
+      "task_id": "flask-tf4-001",
+      "plan": "a",
+      "raw_first_tokens": 17763,
+      "clue_tokens": 1594,
+      "projection_tokens": 41185,
+      "drilldown_tokens": 0,
+      "ccr": 0.9103,
+      "trcr": 0.9103,
+      "poisoned_vs_clean_ratio": 25.84,
+      "source_files": [
+        "src/flask/app.py",
+        "src/flask/ctx.py"
+      ],
+      "source_file_count": 2,
+      "family": "TF4"
+    },
+    {
+      "task_id": "flask-tf4-001",
+      "plan": "b",
+      "raw_first_tokens": 17763,
+      "clue_tokens": 1631,
+      "projection_tokens": 41185,
+      "drilldown_tokens": 0,
+      "ccr": 0.9082,
+      "trcr": 0.9082,
+      "poisoned_vs_clean_ratio": 25.25,
+      "source_files": [
+        "src/flask/app.py",
+        "src/flask/ctx.py"
+      ],
+      "source_file_count": 2,
+      "family": "TF4"
+    },
+    {
+      "task_id": "flask-tf5-001",
+      "plan": "a",
+      "raw_first_tokens": 10747,
+      "clue_tokens": 896,
+      "projection_tokens": 57919,
+      "drilldown_tokens": 0,
+      "ccr": 0.9166,
+      "trcr": 0.9166,
+      "poisoned_vs_clean_ratio": 64.64,
+      "source_files": [
+        "examples/tutorial/flaskr/auth.py",
+        "examples/tutorial/tests/conftest.py",
+        "examples/tutorial/tests/test_auth.py",
+        "examples/tutorial/tests/test_blog.py",
+        "src/flask/ctx.py",
+        "src/flask/sessions.py",
+        "src/flask/signals.py",
+        "tests/test_session_interface.py",
+        "tests/test_signals.py"
+      ],
+      "source_file_count": 9,
+      "family": "TF5"
+    },
+    {
+      "task_id": "flask-tf5-001",
+      "plan": "b",
+      "raw_first_tokens": 10747,
+      "clue_tokens": 987,
+      "projection_tokens": 57919,
+      "drilldown_tokens": 0,
+      "ccr": 0.9082,
+      "trcr": 0.9082,
+      "poisoned_vs_clean_ratio": 58.68,
+      "source_files": [
+        "examples/tutorial/flaskr/auth.py",
+        "examples/tutorial/tests/conftest.py",
+        "examples/tutorial/tests/test_auth.py",
+        "examples/tutorial/tests/test_blog.py",
+        "src/flask/ctx.py",
+        "src/flask/sessions.py",
+        "src/flask/signals.py",
+        "tests/test_session_interface.py",
+        "tests/test_signals.py"
+      ],
+      "source_file_count": 9,
+      "family": "TF5"
+    },
+    {
+      "task_id": "fastapi-tf1-001",
+      "plan": "a",
+      "raw_first_tokens": 28478,
+      "clue_tokens": 1188,
+      "projection_tokens": 29660,
+      "drilldown_tokens": 0,
+      "ccr": 0.9583,
+      "trcr": 0.9583,
+      "poisoned_vs_clean_ratio": 24.97,
+      "source_files": [
+        "fastapi/dependencies/utils.py",
+        "fastapi/param_functions.py",
+        "fastapi/params.py"
+      ],
+      "source_file_count": 3,
+      "family": "TF1"
+    },
+    {
+      "task_id": "fastapi-tf1-001",
+      "plan": "b",
+      "raw_first_tokens": 28478,
+      "clue_tokens": 1334,
+      "projection_tokens": 29660,
+      "drilldown_tokens": 0,
+      "ccr": 0.9532,
+      "trcr": 0.9532,
+      "poisoned_vs_clean_ratio": 22.23,
+      "source_files": [
+        "fastapi/dependencies/utils.py",
+        "fastapi/param_functions.py",
+        "fastapi/params.py"
+      ],
+      "source_file_count": 3,
+      "family": "TF1"
+    },
+    {
+      "task_id": "fastapi-tf3-001",
+      "plan": "a",
+      "raw_first_tokens": 1460,
+      "clue_tokens": 547,
+      "projection_tokens": 2842,
+      "drilldown_tokens": 0,
+      "ccr": 0.6253,
+      "trcr": 0.6253,
+      "poisoned_vs_clean_ratio": 5.2,
+      "source_files": [
+        "fastapi/sse.py"
+      ],
+      "source_file_count": 1,
+      "family": "TF3"
+    },
+    {
+      "task_id": "fastapi-tf3-001",
+      "plan": "b",
+      "raw_first_tokens": 1460,
+      "clue_tokens": 595,
+      "projection_tokens": 2842,
+      "drilldown_tokens": 0,
+      "ccr": 0.5925,
+      "trcr": 0.5925,
+      "poisoned_vs_clean_ratio": 4.78,
+      "source_files": [
+        "fastapi/sse.py"
+      ],
+      "source_file_count": 1,
+      "family": "TF3"
+    },
+    {
+      "task_id": "fastapi-tf4-001",
+      "plan": "a",
+      "raw_first_tokens": 10415,
+      "clue_tokens": 894,
+      "projection_tokens": 40232,
+      "drilldown_tokens": 0,
+      "ccr": 0.9142,
+      "trcr": 0.9142,
+      "poisoned_vs_clean_ratio": 45.0,
+      "source_files": [
+        "docs_src/additional_responses/tutorial001_py310.py",
+        "docs_src/additional_responses/tutorial002_py310.py",
+        "docs_src/additional_responses/tutorial003_py310.py",
+        "docs_src/additional_responses/tutorial004_py310.py",
+        "docs_src/additional_status_codes/tutorial001_an_py310.py",
+        "docs_src/additional_status_codes/tutorial001_py310.py",
+        "docs_src/advanced_middleware/tutorial001_py310.py",
+        "docs_src/advanced_middleware/tutorial002_py310.py",
+        "docs_src/advanced_middleware/tutorial003_py310.py",
+        "docs_src/app_testing/app_a_py310/main.py",
+        "docs_src/app_testing/app_b_an_py310/main.py",
+        "docs_src/async_tests/__init__.py",
+        "docs_src/async_tests/app_a_py310/__init__.py",
+        "docs_src/async_tests/app_a_py310/main.py",
+        "docs_src/async_tests/app_a_py310/test_main.py",
+        "fastapi/concurrency.py",
+        "fastapi/dependencies/utils.py",
+        "fastapi/middleware/asyncexitstack.py",
+        "tests/test_tutorial/test_async_tests/__init__.py",
+        "tests/test_tutorial/test_async_tests/test_main_a.py"
+      ],
+      "source_file_count": 20,
+      "family": "TF4"
+    },
+    {
+      "task_id": "fastapi-tf4-001",
+      "plan": "b",
+      "raw_first_tokens": 10415,
+      "clue_tokens": 1095,
+      "projection_tokens": 40232,
+      "drilldown_tokens": 0,
+      "ccr": 0.8949,
+      "trcr": 0.8949,
+      "poisoned_vs_clean_ratio": 36.74,
+      "source_files": [
+        "docs_src/additional_responses/tutorial001_py310.py",
+        "docs_src/additional_responses/tutorial002_py310.py",
+        "docs_src/additional_responses/tutorial003_py310.py",
+        "docs_src/additional_responses/tutorial004_py310.py",
+        "docs_src/additional_status_codes/tutorial001_an_py310.py",
+        "docs_src/additional_status_codes/tutorial001_py310.py",
+        "docs_src/advanced_middleware/tutorial001_py310.py",
+        "docs_src/advanced_middleware/tutorial002_py310.py",
+        "docs_src/advanced_middleware/tutorial003_py310.py",
+        "docs_src/app_testing/app_a_py310/main.py",
+        "docs_src/app_testing/app_b_an_py310/main.py",
+        "docs_src/async_tests/__init__.py",
+        "docs_src/async_tests/app_a_py310/__init__.py",
+        "docs_src/async_tests/app_a_py310/main.py",
+        "docs_src/async_tests/app_a_py310/test_main.py",
+        "fastapi/concurrency.py",
+        "fastapi/dependencies/utils.py",
+        "fastapi/middleware/asyncexitstack.py",
+        "tests/test_tutorial/test_async_tests/__init__.py",
+        "tests/test_tutorial/test_async_tests/test_main_a.py"
+      ],
+      "source_file_count": 20,
+      "family": "TF4"
+    },
+    {
+      "task_id": "fastapi-tf5-001",
+      "plan": "a",
+      "raw_first_tokens": 2354,
+      "clue_tokens": 1034,
+      "projection_tokens": 18814,
+      "drilldown_tokens": 0,
+      "ccr": 0.5607,
+      "trcr": 0.5607,
+      "poisoned_vs_clean_ratio": 18.2,
+      "source_files": [
+        "fastapi/exception_handlers.py",
+        "fastapi/exceptions.py",
+        "tests/test_exception_handlers.py"
+      ],
+      "source_file_count": 3,
+      "family": "TF5"
+    },
+    {
+      "task_id": "fastapi-tf5-001",
+      "plan": "b",
+      "raw_first_tokens": 2354,
+      "clue_tokens": 1153,
+      "projection_tokens": 18814,
+      "drilldown_tokens": 0,
+      "ccr": 0.5102,
+      "trcr": 0.5102,
+      "poisoned_vs_clean_ratio": 16.32,
+      "source_files": [
+        "fastapi/exception_handlers.py",
+        "fastapi/exceptions.py",
+        "tests/test_exception_handlers.py"
+      ],
+      "source_file_count": 3,
+      "family": "TF5"
+    },
+    {
+      "task_id": "nest-tf1-001",
+      "plan": "a",
+      "raw_first_tokens": 16290,
+      "clue_tokens": 767,
+      "projection_tokens": 16733,
+      "drilldown_tokens": 0,
+      "ccr": 0.9529,
+      "trcr": 0.9529,
+      "poisoned_vs_clean_ratio": 21.82,
+      "source_files": [
+        "packages/common/decorators/modules/module.decorator.ts",
+        "packages/core/injector/injector.ts",
+        "packages/core/injector/instance-wrapper.ts",
+        "packages/core/injector/module.ts",
+        "packages/core/test/injector/opaque-key-factory/by-reference-module-opaque-key-factory.spec.ts",
+        "packages/core/test/injector/opaque-key-factory/deep-hashed-module-opaque-key-factory.spec.ts"
+      ],
+      "source_file_count": 6,
+      "family": "TF1"
+    },
+    {
+      "task_id": "nest-tf1-001",
+      "plan": "b",
+      "raw_first_tokens": 16290,
+      "clue_tokens": 884,
+      "projection_tokens": 16733,
+      "drilldown_tokens": 0,
+      "ccr": 0.9457,
+      "trcr": 0.9457,
+      "poisoned_vs_clean_ratio": 18.93,
+      "source_files": [
+        "packages/common/decorators/modules/module.decorator.ts",
+        "packages/core/injector/injector.ts",
+        "packages/core/injector/instance-wrapper.ts",
+        "packages/core/injector/module.ts",
+        "packages/core/test/injector/opaque-key-factory/by-reference-module-opaque-key-factory.spec.ts",
+        "packages/core/test/injector/opaque-key-factory/deep-hashed-module-opaque-key-factory.spec.ts"
+      ],
+      "source_file_count": 6,
+      "family": "TF1"
+    },
+    {
+      "task_id": "nest-tf2-001",
+      "plan": "a",
+      "raw_first_tokens": 327,
+      "clue_tokens": 141,
+      "projection_tokens": 748,
+      "drilldown_tokens": 0,
+      "ccr": 0.5688,
+      "trcr": 0.5688,
+      "poisoned_vs_clean_ratio": 5.3,
+      "source_files": [
+        "packages/core/guards/guards-consumer.ts"
+      ],
+      "source_file_count": 1,
+      "family": "TF2"
+    },
+    {
+      "task_id": "nest-tf2-001",
+      "plan": "b",
+      "raw_first_tokens": 327,
+      "clue_tokens": 178,
+      "projection_tokens": 748,
+      "drilldown_tokens": 0,
+      "ccr": 0.4557,
+      "trcr": 0.4557,
+      "poisoned_vs_clean_ratio": 4.2,
+      "source_files": [
+        "packages/core/guards/guards-consumer.ts"
+      ],
+      "source_file_count": 1,
+      "family": "TF2"
+    },
+    {
+      "task_id": "nest-tf4-001",
+      "plan": "a",
+      "raw_first_tokens": 7406,
+      "clue_tokens": 679,
+      "projection_tokens": 7437,
+      "drilldown_tokens": 0,
+      "ccr": 0.9083,
+      "trcr": 0.9083,
+      "poisoned_vs_clean_ratio": 10.95,
+      "source_files": [
+        "packages/core/errors/exceptions/circular-dependency.exception.ts",
+        "packages/core/helpers/barrier.ts",
+        "packages/core/injector/injector.ts"
+      ],
+      "source_file_count": 3,
+      "family": "TF4"
+    },
+    {
+      "task_id": "nest-tf4-001",
+      "plan": "b",
+      "raw_first_tokens": 7406,
+      "clue_tokens": 770,
+      "projection_tokens": 7437,
+      "drilldown_tokens": 0,
+      "ccr": 0.896,
+      "trcr": 0.896,
+      "poisoned_vs_clean_ratio": 9.66,
+      "source_files": [
+        "packages/core/errors/exceptions/circular-dependency.exception.ts",
+        "packages/core/helpers/barrier.ts",
+        "packages/core/injector/injector.ts"
+      ],
+      "source_file_count": 3,
+      "family": "TF4"
+    },
+    {
+      "task_id": "nest-tf5-001",
+      "plan": "a",
+      "raw_first_tokens": 741,
+      "clue_tokens": 275,
+      "projection_tokens": 1921,
+      "drilldown_tokens": 0,
+      "ccr": 0.6289,
+      "trcr": 0.6289,
+      "poisoned_vs_clean_ratio": 6.99,
+      "source_files": [
+        "packages/core/guards/guards-consumer.ts",
+        "packages/core/helpers/execution-context-host.ts"
+      ],
+      "source_file_count": 2,
+      "family": "TF5"
+    },
+    {
+      "task_id": "nest-tf5-001",
+      "plan": "b",
+      "raw_first_tokens": 741,
+      "clue_tokens": 319,
+      "projection_tokens": 1921,
+      "drilldown_tokens": 0,
+      "ccr": 0.5695,
+      "trcr": 0.5695,
+      "poisoned_vs_clean_ratio": 6.02,
+      "source_files": [
+        "packages/core/guards/guards-consumer.ts",
+        "packages/core/helpers/execution-context-host.ts"
+      ],
+      "source_file_count": 2,
+      "family": "TF5"
+    },
+    {
+      "task_id": "httpx-tf2-001",
+      "plan": "a",
+      "raw_first_tokens": 15564,
+      "clue_tokens": 1911,
+      "projection_tokens": 15421,
+      "drilldown_tokens": 0,
+      "ccr": 0.8772,
+      "trcr": 0.8772,
+      "poisoned_vs_clean_ratio": 8.07,
+      "source_files": [
+        "httpx/_client.py",
+        "httpx/_config.py"
+      ],
+      "source_file_count": 2,
+      "family": "TF2"
+    },
+    {
+      "task_id": "httpx-tf2-001",
+      "plan": "b",
+      "raw_first_tokens": 15564,
+      "clue_tokens": 1956,
+      "projection_tokens": 15421,
+      "drilldown_tokens": 0,
+      "ccr": 0.8743,
+      "trcr": 0.8743,
+      "poisoned_vs_clean_ratio": 7.88,
+      "source_files": [
+        "httpx/_client.py",
+        "httpx/_config.py"
+      ],
+      "source_file_count": 2,
+      "family": "TF2"
+    },
+    {
+      "task_id": "httpx-tf4-001",
+      "plan": "a",
+      "raw_first_tokens": 17557,
+      "clue_tokens": 1737,
+      "projection_tokens": 58562,
+      "drilldown_tokens": 0,
+      "ccr": 0.9011,
+      "trcr": 0.9011,
+      "poisoned_vs_clean_ratio": 33.71,
+      "source_files": [
+        "httpx/_client.py",
+        "tests/client/test_redirects.py"
+      ],
+      "source_file_count": 2,
+      "family": "TF4"
+    },
+    {
+      "task_id": "httpx-tf4-001",
+      "plan": "b",
+      "raw_first_tokens": 17557,
+      "clue_tokens": 1915,
+      "projection_tokens": 58562,
+      "drilldown_tokens": 0,
+      "ccr": 0.8909,
+      "trcr": 0.8909,
+      "poisoned_vs_clean_ratio": 30.58,
+      "source_files": [
+        "httpx/_client.py",
+        "tests/client/test_redirects.py"
+      ],
+      "source_file_count": 2,
+      "family": "TF4"
+    },
+    {
+      "task_id": "express-tf1-001",
+      "plan": "a",
+      "raw_first_tokens": 10221,
+      "clue_tokens": 897,
+      "projection_tokens": 14372,
+      "drilldown_tokens": 0,
+      "ccr": 0.9122,
+      "trcr": 0.9122,
+      "poisoned_vs_clean_ratio": 16.02,
+      "source_files": [
+        "examples/multi-router/controllers/api_v1.js",
+        "examples/multi-router/controllers/api_v2.js",
+        "examples/multi-router/index.js",
+        "examples/route-map/index.js",
+        "examples/route-middleware/index.js",
+        "examples/route-separation/index.js",
+        "examples/route-separation/post.js",
+        "examples/route-separation/site.js",
+        "examples/route-separation/user.js",
+        "test/Route.js",
+        "test/Router.js",
+        "test/acceptance/multi-router.js",
+        "test/acceptance/route-map.js",
+        "test/acceptance/route-separation.js",
+        "test/app.route.js"
+      ],
+      "source_file_count": 15,
+      "family": "TF1"
+    },
+    {
+      "task_id": "express-tf1-001",
+      "plan": "b",
+      "raw_first_tokens": 10221,
+      "clue_tokens": 1023,
+      "projection_tokens": 14372,
+      "drilldown_tokens": 0,
+      "ccr": 0.8999,
+      "trcr": 0.8999,
+      "poisoned_vs_clean_ratio": 14.05,
+      "source_files": [
+        "examples/multi-router/controllers/api_v1.js",
+        "examples/multi-router/controllers/api_v2.js",
+        "examples/multi-router/index.js",
+        "examples/route-map/index.js",
+        "examples/route-middleware/index.js",
+        "examples/route-separation/index.js",
+        "examples/route-separation/post.js",
+        "examples/route-separation/site.js",
+        "examples/route-separation/user.js",
+        "test/Route.js",
+        "test/Router.js",
+        "test/acceptance/multi-router.js",
+        "test/acceptance/route-map.js",
+        "test/acceptance/route-separation.js",
+        "test/app.route.js"
+      ],
+      "source_file_count": 15,
+      "family": "TF1"
+    },
+    {
+      "task_id": "express-tf5-001",
+      "plan": "a",
+      "raw_first_tokens": 18131,
+      "clue_tokens": 739,
+      "projection_tokens": 41157,
+      "drilldown_tokens": 0,
+      "ccr": 0.9592,
+      "trcr": 0.9592,
+      "poisoned_vs_clean_ratio": 55.69,
+      "source_files": [
+        "examples/auth/index.js",
+        "lib/request.js",
+        "lib/response.js",
+        "test/acceptance/auth.js",
+        "test/res.append.js",
+        "test/res.sendFile.js",
+        "test/support/utils.js"
+      ],
+      "source_file_count": 7,
+      "family": "TF5"
+    },
+    {
+      "task_id": "express-tf5-001",
+      "plan": "b",
+      "raw_first_tokens": 18131,
+      "clue_tokens": 838,
+      "projection_tokens": 41157,
+      "drilldown_tokens": 0,
+      "ccr": 0.9538,
+      "trcr": 0.9538,
+      "poisoned_vs_clean_ratio": 49.11,
+      "source_files": [
+        "examples/auth/index.js",
+        "lib/request.js",
+        "lib/response.js",
+        "test/acceptance/auth.js",
+        "test/res.append.js",
+        "test/res.sendFile.js",
+        "test/support/utils.js"
+      ],
+      "source_file_count": 7,
+      "family": "TF5"
+    },
+    {
+      "task_id": "typeorm-tf2-001",
+      "plan": "a",
+      "raw_first_tokens": 7645,
+      "clue_tokens": 134,
+      "projection_tokens": 934,
+      "drilldown_tokens": 0,
+      "ccr": 0.9825,
+      "trcr": 0.9825,
+      "poisoned_vs_clean_ratio": 6.97,
+      "source_files": [
+        "src/metadata/EntityMetadata.ts"
+      ],
+      "source_file_count": 1,
+      "family": "TF2"
+    },
+    {
+      "task_id": "typeorm-tf2-001",
+      "plan": "b",
+      "raw_first_tokens": 7645,
+      "clue_tokens": 169,
+      "projection_tokens": 934,
+      "drilldown_tokens": 0,
+      "ccr": 0.9779,
+      "trcr": 0.9779,
+      "poisoned_vs_clean_ratio": 5.53,
+      "source_files": [
+        "src/metadata/EntityMetadata.ts"
+      ],
+      "source_file_count": 1,
+      "family": "TF2"
+    },
+    {
+      "task_id": "typeorm-tf3-001",
+      "plan": "a",
+      "raw_first_tokens": 736,
+      "clue_tokens": 215,
+      "projection_tokens": 1044,
+      "drilldown_tokens": 0,
+      "ccr": 0.7079,
+      "trcr": 0.7079,
+      "poisoned_vs_clean_ratio": 4.86,
+      "source_files": [
+        "src/driver/DriverFactory.ts"
+      ],
+      "source_file_count": 1,
+      "family": "TF3"
+    },
+    {
+      "task_id": "typeorm-tf3-001",
+      "plan": "b",
+      "raw_first_tokens": 736,
+      "clue_tokens": 242,
+      "projection_tokens": 1044,
+      "drilldown_tokens": 0,
+      "ccr": 0.6712,
+      "trcr": 0.6712,
+      "poisoned_vs_clean_ratio": 4.31,
+      "source_files": [
+        "src/driver/DriverFactory.ts"
+      ],
+      "source_file_count": 1,
+      "family": "TF3"
+    },
+    {
+      "task_id": "gin-tf1-001",
+      "plan": "a",
+      "raw_first_tokens": 21675,
+      "clue_tokens": 884,
+      "projection_tokens": 80603,
+      "drilldown_tokens": 0,
+      "ccr": 0.9592,
+      "trcr": 0.9592,
+      "poisoned_vs_clean_ratio": 91.18,
+      "source_files": [
+        "binding/default_validator.go",
+        "context.go",
+        "gin.go",
+        "routergroup.go"
+      ],
+      "source_file_count": 4,
+      "family": "TF1"
+    },
+    {
+      "task_id": "gin-tf1-001",
+      "plan": "b",
+      "raw_first_tokens": 21675,
+      "clue_tokens": 987,
+      "projection_tokens": 80603,
+      "drilldown_tokens": 0,
+      "ccr": 0.9545,
+      "trcr": 0.9545,
+      "poisoned_vs_clean_ratio": 81.66,
+      "source_files": [
+        "binding/default_validator.go",
+        "context.go",
+        "gin.go",
+        "routergroup.go"
+      ],
+      "source_file_count": 4,
+      "family": "TF1"
+    },
+    {
+      "task_id": "gin-tf5-001",
+      "plan": "a",
+      "raw_first_tokens": 35803,
+      "clue_tokens": 916,
+      "projection_tokens": 130638,
+      "drilldown_tokens": 0,
+      "ccr": 0.9744,
+      "trcr": 0.9744,
+      "poisoned_vs_clean_ratio": 142.62,
+      "source_files": [
+        "auth.go",
+        "auth_test.go",
+        "context_test.go",
+        "routergroup_test.go"
+      ],
+      "source_file_count": 4,
+      "family": "TF5"
+    },
+    {
+      "task_id": "gin-tf5-001",
+      "plan": "b",
+      "raw_first_tokens": 35803,
+      "clue_tokens": 1024,
+      "projection_tokens": 130638,
+      "drilldown_tokens": 0,
+      "ccr": 0.9714,
+      "trcr": 0.9714,
+      "poisoned_vs_clean_ratio": 127.58,
+      "source_files": [
+        "auth.go",
+        "auth_test.go",
+        "context_test.go",
+        "routergroup_test.go"
+      ],
+      "source_file_count": 4,
+      "family": "TF5"
+    }
+  ],
+  "summary_a": {
+    "plan": "A",
+    "task_count": 23,
+    "mean_ccr": 0.85,
+    "min_ccr": 0.5607,
+    "max_ccr": 0.9825,
+    "pass_count_85": 17,
+    "pass_rate_85": 0.7391,
+    "mean_clue_tokens": 1001,
+    "mean_raw_tokens": 13215
+  },
+  "summary_b": {
+    "plan": "B",
+    "task_count": 23,
+    "mean_ccr": 0.8331,
+    "min_ccr": 0.4557,
+    "max_ccr": 0.9779,
+    "pass_count_85": 17,
+    "pass_rate_85": 0.7391,
+    "mean_clue_tokens": 1083,
+    "mean_raw_tokens": 13215
+  },
+  "skipped": []
+}
