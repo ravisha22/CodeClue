@@ -1,0 +1,239 @@
+{
+  "task": {
+    "id": "trace-fixed-reproject",
+    "repo": "",
+    "family": "OF3",
+    "question": "Audit Gin's middleware chain for security risks. Identify where auth middleware runs relative to route handlers and whether middleware can be bypassed."
+  },
+  "summary": "combineHandlers: Function combineHandlers. header: Struct header. Handle: Function Handle.",
+  "entities": [
+    {
+      "id": "n1",
+      "class": "utility",
+      "name": "combineHandlers",
+      "file": "routergroup.go",
+      "lines": [
+        241,
+        241
+      ],
+      "confidence": 0.86,
+      "purpose": "function combineHandlers",
+      "behavior": "Function combineHandlers.",
+      "sig": "func (group *RouterGroup) combineHandlers(handlers HandlersChain) HandlersChain"
+    },
+    {
+      "id": "n2",
+      "class": "utility",
+      "name": "header",
+      "file": "routes_test.go",
+      "lines": [
+        19,
+        19
+      ],
+      "confidence": 0.86,
+      "purpose": "struct header",
+      "behavior": "Struct header."
+    },
+    {
+      "id": "n3",
+      "class": "utility",
+      "name": "Handle",
+      "file": "routergroup.go",
+      "lines": [
+        103,
+        103
+      ],
+      "confidence": 0.86,
+      "purpose": "function Handle",
+      "behavior": "Function Handle.",
+      "sig": "func (group *RouterGroup) Handle(httpMethod, relativePath string, handlers ...HandlerFunc) IRoutes"
+    },
+    {
+      "id": "n4",
+      "class": "utility",
+      "name": "OPTIONS",
+      "file": "routergroup.go",
+      "lines": [
+        136,
+        136
+      ],
+      "confidence": 0.86,
+      "purpose": "function OPTIONS",
+      "behavior": "Function OPTIONS.",
+      "sig": "func (group *RouterGroup) OPTIONS(relativePath string, handlers ...HandlerFunc) IRoutes"
+    },
+    {
+      "id": "n5",
+      "class": "utility",
+      "name": "authPair",
+      "file": "auth.go",
+      "lines": [
+        25,
+        25
+      ],
+      "confidence": 0.86,
+      "purpose": "struct authPair",
+      "behavior": "Struct authPair."
+    },
+    {
+      "id": "n6",
+      "class": "utility",
+      "name": "rebuild404Handlers",
+      "file": "gin.go",
+      "lines": [
+        356,
+        356
+      ],
+      "confidence": 0.86,
+      "purpose": "function rebuild404Handlers",
+      "behavior": "Function rebuild404Handlers.",
+      "sig": "func (engine *Engine) rebuild404Handlers()",
+      "called_by": [
+        "gin.go"
+      ]
+    },
+    {
+      "id": "n7",
+      "class": "utility",
+      "name": "BasicAuthForProxy",
+      "file": "auth.go",
+      "lines": [
+        98,
+        98
+      ],
+      "confidence": 0.86,
+      "purpose": "function BasicAuthForProxy",
+      "behavior": "Function BasicAuthForProxy.",
+      "sig": "func BasicAuthForProxy(accounts Accounts, realm string) HandlerFunc",
+      "called_by": [
+        "auth.go"
+      ]
+    },
+    {
+      "id": "n8",
+      "class": "utility",
+      "name": "handle",
+      "file": "routergroup.go",
+      "lines": [
+        86,
+        86
+      ],
+      "confidence": 0.86,
+      "purpose": "function handle",
+      "behavior": "Function handle.",
+      "sig": "func (group *RouterGroup) handle(httpMethod, relativePath string, handlers HandlersChain) IRoutes"
+    },
+    {
+      "id": "n9",
+      "class": "utility",
+      "name": "staticFileHandler",
+      "file": "routergroup.go",
+      "lines": [
+        181,
+        181
+      ],
+      "confidence": 0.86,
+      "purpose": "function staticFileHandler",
+      "behavior": "Function staticFileHandler.",
+      "sig": "func (group *RouterGroup) staticFileHandler(relativePath string, handler HandlerFunc) IRoutes"
+    },
+    {
+      "id": "n10",
+      "class": "utility",
+      "name": "NoRoute",
+      "file": "gin.go",
+      "lines": [
+        326,
+        326
+      ],
+      "confidence": 0.86,
+      "purpose": "function NoRoute",
+      "behavior": "Function NoRoute.",
+      "sig": "func (engine *Engine) NoRoute(handlers ...HandlerFunc)",
+      "called_by": [
+        "gin.go"
+      ]
+    },
+    {
+      "id": "n11",
+      "class": "utility",
+      "name": "updateRouteTree",
+      "file": "gin.go",
+      "lines": [
+        504,
+        504
+      ],
+      "confidence": 0.86,
+      "purpose": "function updateRouteTree",
+      "behavior": "Function updateRouteTree.",
+      "sig": "func updateRouteTree(n *node)",
+      "called_by": [
+        "gin.go"
+      ]
+    },
+    {
+      "id": "n12",
+      "class": "utility",
+      "name": "Static",
+      "file": "routergroup.go",
+      "lines": [
+        197,
+        197
+      ],
+      "confidence": 0.86,
+      "purpose": "function Static",
+      "behavior": "Function Static.",
+      "sig": "func (group *RouterGroup) Static(relativePath, root string) IRoutes"
+    },
+    {
+      "id": "n13",
+      "class": "utility",
+      "name": "calculateAbsolutePath",
+      "file": "routergroup.go",
+      "lines": [
+        250,
+        250
+      ],
+      "confidence": 0.86,
+      "purpose": "function calculateAbsolutePath",
+      "behavior": "Function calculateAbsolutePath.",
+      "sig": "func (group *RouterGroup) calculateAbsolutePath(relativePath string) string"
+    },
+    {
+      "id": "n14",
+      "class": "utility",
+      "name": "BenchmarkRecoveryMiddleware",
+      "file": "benchmarks_test.go",
+      "lines": [
+        20,
+        20
+      ],
+      "confidence": 0.86,
+      "purpose": "function BenchmarkRecoveryMiddleware",
+      "behavior": "Function BenchmarkRecoveryMiddleware.",
+      "sig": "func BenchmarkRecoveryMiddleware(B *testing.B)"
+    },
+    {
+      "id": "n15",
+      "class": "utility",
+      "name": "rebuild405Handlers",
+      "file": "gin.go",
+      "lines": [
+        360,
+        360
+      ],
+      "confidence": 0.86,
+      "purpose": "function rebuild405Handlers",
+      "behavior": "Function rebuild405Handlers.",
+      "sig": "func (engine *Engine) rebuild405Handlers()",
+      "called_by": [
+        "gin.go"
+      ]
+    }
+  ],
+  "uncertainty": {
+    "confidence": 0.7,
+    "hint": "targeted_lookup",
+    "gaps": []
+  }
+}

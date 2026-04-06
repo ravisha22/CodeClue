@@ -14,10 +14,156 @@ A user reports that their after_request handler silently fails when an exception
     "family": "OF4",
     "question": "A user reports that their after_request handler silently fails when an exception occurs during dispatch. Trace the execution path to identify where the exception is caught and why the handler might not execute."
   },
-  "summary": "__call__: Function __call__. __init__: Middleware between __init__ and __init__. __init_subclass__: Function __init_subclass__.",
+  "summary": "handle_user_exception: Error handler; produces handle_http_exception. handle_http_exception: Error handler; produces error response. log_exception: Error handler; produces error response.",
   "entities": [
     {
       "id": "n1",
+      "class": "error_handler",
+      "name": "handle_user_exception",
+      "file": "src/flask/app.py",
+      "lines": [
+        865,
+        895
+      ],
+      "confidence": 0.77,
+      "purpose": "function handle_user_exception",
+      "behavior": "Error handler; produces handle_http_exception.",
+      "sig": "def handle_user_exception( self, ctx: AppContext, e: Exception ) -> HTTPException | ft.ResponseReturnValue:",
+      "calls": [
+        "ensure_sync",
+        "n5"
+      ],
+      "called_by": [
+        "n3"
+      ]
+    },
+    {
+      "id": "n2",
+      "class": "middleware",
+      "name": "dispatch_request",
+      "file": "src/flask/app.py",
+      "lines": [
+        966,
+        990
+      ],
+      "confidence": 0.57,
+      "purpose": "function dispatch_request",
+      "behavior": "Middleware between full_dispatch_request and raise_routing_exception.",
+      "sig": "def dispatch_request(self, ctx: AppContext) -> ft.ResponseReturnValue:",
+      "calls": [
+        "ensure_sync",
+        "make_default_options_response",
+        "n7"
+      ],
+      "called_by": [
+        "n3"
+      ]
+    },
+    {
+      "id": "n3",
+      "class": "error_handler",
+      "name": "full_dispatch_request",
+      "file": "src/flask/app.py",
+      "lines": [
+        992,
+        1019
+      ],
+      "confidence": 0.57,
+      "purpose": "function full_dispatch_request",
+      "behavior": "Error handler; produces dispatch_request, handle_user_exception; catches broad exceptions; mutates state outside __init__.",
+      "sig": "def full_dispatch_request(self, ctx: AppContext) -> Response:",
+      "calls": [
+        "n2",
+        "finalize_request",
+        "n1",
+        "preprocess_request"
+      ],
+      "called_by": [
+        "wsgi_app"
+      ],
+      "risks": [
+        "broad_exception_handler",
+        "state_mutation_outside_init"
+      ]
+    },
+    {
+      "id": "n4",
+      "class": "error_handler",
+      "name": "handle_exception",
+      "file": "src/flask/app.py",
+      "lines": [
+        897,
+        948
+      ],
+      "confidence": 0.57,
+      "purpose": "function handle_exception",
+      "behavior": "Error handler; produces log_exception.",
+      "sig": "def handle_exception(self, ctx: AppContext, e: Exception) -> Response:",
+      "calls": [
+        "ensure_sync",
+        "finalize_request",
+        "n6"
+      ],
+      "called_by": [
+        "wsgi_app"
+      ]
+    },
+    {
+      "id": "n5",
+      "class": "error_handler",
+      "name": "handle_http_exception",
+      "file": "src/flask/app.py",
+      "lines": [
+        830,
+        863
+      ],
+      "confidence": 0.77,
+      "purpose": "function handle_http_exception",
+      "behavior": "Error handler; produces error response.",
+      "sig": "def handle_http_exception( self, ctx: AppContext, e: HTTPException ) -> HTTPException | ft.ResponseReturnValue:",
+      "calls": [
+        "ensure_sync"
+      ],
+      "called_by": [
+        "n1"
+      ]
+    },
+    {
+      "id": "n6",
+      "class": "error_handler",
+      "name": "log_exception",
+      "file": "src/flask/app.py",
+      "lines": [
+        950,
+        964
+      ],
+      "confidence": 0.77,
+      "purpose": "function log_exception",
+      "behavior": "Error handler; produces error response.",
+      "sig": "def log_exception( self, ctx: AppContext, exc_info: tuple[type, BaseException, TracebackType] | tuple[None, None, None], ) -> None:",
+      "called_by": [
+        "n4"
+      ]
+    },
+    {
+      "id": "n7",
+      "class": "error_handler",
+      "name": "raise_routing_exception",
+      "file": "src/flask/app.py",
+      "lines": [
+        562,
+        588
+      ],
+      "confidence": 0.77,
+      "purpose": "function raise_routing_exception",
+      "behavior": "Error handler; produces error response.",
+      "sig": "def raise_routing_exception(self, request: Request) -> t.NoReturn:",
+      "called_by": [
+        "n2"
+      ]
+    },
+    {
+      "id": "n8",
       "class": "utility",
       "name": "__call__",
       "file": "src/flask/app.py",
@@ -34,7 +180,7 @@ A user reports that their after_request handler silently fails when an exception
       ]
     },
     {
-      "id": "n2",
+      "id": "n9",
       "class": "middleware",
       "name": "__init__",
       "file": "src/flask/app.py",
@@ -47,15 +193,15 @@ A user reports that their after_request handler silently fails when an exception
       "behavior": "Middleware between __init__ and __init__.",
       "sig": "def __init__( self, import_name: str, static_url_path: str | None = None, static_folder: str | os.PathLike[str] | None = \"static\", static_host: str | None = None, host_matching: bool = False, subdo...",
       "calls": [
-        "n2",
+        "n9",
         "send_static_file"
       ],
       "called_by": [
-        "n2"
+        "n9"
       ]
     },
     {
-      "id": "n3",
+      "id": "n10",
       "class": "utility",
       "name": "__init_subclass__",
       "file": "src/flask/app.py",
@@ -73,7 +219,7 @@ A user reports that their after_request handler silently fails when an exception
       ]
     },
     {
-      "id": "n4",
+      "id": "n11",
       "class": "utility",
       "name": "app_context",
       "file": "src/flask/app.py",
@@ -87,8 +233,8 @@ A user reports that their after_request handler silently fails when an exception
       "sig": "def app_context(self) -> AppContext:"
     },
     {
-      "id": "n5",
-      "class": "handler",
+      "id": "n12",
+      "class": "utility",
       "name": "async_to_sync",
       "file": "src/flask/app.py",
       "lines": [
@@ -97,14 +243,14 @@ A user reports that their after_request handler silently fails when an exception
       ],
       "confidence": 0.77,
       "purpose": "function async_to_sync",
-      "behavior": "Async Leaf handler invoked by ensure_sync.",
+      "behavior": "Async Function async_to_sync.",
       "sig": "def async_to_sync( self, func: t.Callable[..., t.Coroutine[t.Any, t.Any, t.Any]] ) -> t.Callable[..., t.Any]:",
       "called_by": [
-        "n11"
+        "ensure_sync"
       ]
     },
     {
-      "id": "n6",
+      "id": "n13",
       "class": "utility",
       "name": "create_jinja_environment",
       "file": "src/flask/app.py",
@@ -118,7 +264,7 @@ A user reports that their after_request handler silently fails when an exception
       "sig": "def create_jinja_environment(self) -> Environment:"
     },
     {
-      "id": "n7",
+      "id": "n14",
       "class": "utility",
       "name": "create_url_adapter",
       "file": "src/flask/app.py",
@@ -135,30 +281,8 @@ A user reports that their after_request handler silently fails when an exception
       ]
     },
     {
-      "id": "n8",
-      "class": "middleware",
-      "name": "dispatch_request",
-      "file": "src/flask/app.py",
-      "lines": [
-        966,
-        990
-      ],
-      "confidence": 0.57,
-      "purpose": "function dispatch_request",
-      "behavior": "Middleware between full_dispatch_request and ensure_sync.",
-      "sig": "def dispatch_request(self, ctx: AppContext) -> ft.ResponseReturnValue:",
-      "calls": [
-        "n11",
-        "make_default_options_response",
-        "raise_routing_exception"
-      ],
-      "called_by": [
-        "n13"
-      ]
-    },
-    {
-      "id": "n9",
-      "class": "entrypoint",
+      "id": "n15",
+      "class": "utility",
       "name": "do_teardown_appcontext",
       "file": "src/flask/app.py",
       "lines": [
@@ -167,146 +291,10 @@ A user reports that their after_request handler silently fails when an exception
       ],
       "confidence": 0.77,
       "purpose": "function do_teardown_appcontext",
-      "behavior": "Entrypoint that delegates to ensure_sync.",
+      "behavior": "Function do_teardown_appcontext.",
       "sig": "def do_teardown_appcontext( self, ctx: AppContext, exc: BaseException | None = None ) -> None:",
       "calls": [
-        "n11"
-      ]
-    },
-    {
-      "id": "n10",
-      "class": "entrypoint",
-      "name": "do_teardown_request",
-      "file": "src/flask/app.py",
-      "lines": [
-        1420,
-        1451
-      ],
-      "confidence": 0.77,
-      "purpose": "function do_teardown_request",
-      "behavior": "Entrypoint that delegates to ensure_sync.",
-      "sig": "def do_teardown_request( self, ctx: AppContext, exc: BaseException | None = None ) -> None:",
-      "calls": [
-        "n11"
-      ]
-    },
-    {
-      "id": "n11",
-      "class": "utility",
-      "name": "ensure_sync",
-      "file": "src/flask/app.py",
-      "lines": [
-        1065,
-        1077
-      ],
-      "confidence": 0.77,
-      "purpose": "function ensure_sync",
-      "behavior": "Function ensure_sync.",
-      "sig": "def ensure_sync(self, func: t.Callable[..., t.Any]) -> t.Callable[..., t.Any]:",
-      "calls": [
-        "n5"
-      ],
-      "called_by": [
-        "n8",
-        "n9",
-        "n10",
-        "n15",
-        "handle_http_exception",
-        "handle_user_exception",
-        "preprocess_request",
-        "process_response",
-        "update_template_context"
-      ]
-    },
-    {
-      "id": "n12",
-      "class": "error_handler",
-      "name": "finalize_request",
-      "file": "src/flask/app.py",
-      "lines": [
-        1021,
-        1051
-      ],
-      "confidence": 0.77,
-      "purpose": "function finalize_request",
-      "behavior": "Error handler; produces error response; catches broad exceptions.",
-      "sig": "def finalize_request( self, ctx: AppContext, rv: ft.ResponseReturnValue | HTTPException, from_error_handler: bool = False, ) -> Response:",
-      "calls": [
-        "make_response",
-        "process_response"
-      ],
-      "called_by": [
-        "n13",
-        "n15"
-      ],
-      "risks": [
-        "broad_exception_handler"
-      ]
-    },
-    {
-      "id": "n13",
-      "class": "error_handler",
-      "name": "full_dispatch_request",
-      "file": "src/flask/app.py",
-      "lines": [
-        992,
-        1019
-      ],
-      "confidence": 0.57,
-      "purpose": "function full_dispatch_request",
-      "behavior": "Error handler; produces dispatch_request, finalize_request; catches broad exceptions; mutates state outside __init__.",
-      "sig": "def full_dispatch_request(self, ctx: AppContext) -> Response:",
-      "calls": [
-        "n8",
-        "n12",
-        "handle_user_exception",
-        "preprocess_request"
-      ],
-      "called_by": [
-        "wsgi_app"
-      ],
-      "risks": [
-        "broad_exception_handler",
-        "state_mutation_outside_init"
-      ]
-    },
-    {
-      "id": "n14",
-      "class": "utility",
-      "name": "get_send_file_max_age",
-      "file": "src/flask/app.py",
-      "lines": [
-        365,
-        390
-      ],
-      "confidence": 0.77,
-      "purpose": "function get_send_file_max_age",
-      "behavior": "Function get_send_file_max_age.",
-      "sig": "def get_send_file_max_age(self, filename: str | None) -> int | None:",
-      "called_by": [
-        "send_static_file"
-      ]
-    },
-    {
-      "id": "n15",
-      "class": "error_handler",
-      "name": "handle_exception",
-      "file": "src/flask/app.py",
-      "lines": [
-        897,
-        948
-      ],
-      "confidence": 0.57,
-      "purpose": "function handle_exception",
-      "behavior": "Error handler; produces ensure_sync, finalize_request.",
-      "sig": "def handle_exception(self, ctx: AppContext, e: Exception) -> Response:",
-      "calls": [
-        "n11",
-        "n12",
-        "log_exception"
-      ],
-      "called_by": [
-        "wsgi_app"
+        "ensure_sync"
       ]
     }
   ],

@@ -14,9 +14,9 @@
     "hybrid_file": "action-flask-refactor-001_arm-c-hybrid.clue.json",
     "arm_a_tokens": 8192,
     "arm_b_tokens": 1967,
-    "arm_c_tokens": 2407,
+    "arm_c_tokens": 2216,
     "clue_tokens": 1274,
-    "hybrid_tokens": 1525,
+    "hybrid_tokens": 1361,
     "gold_files": [
       "src/flask/app.py",
       "src/flask/ctx.py"
@@ -46,9 +46,9 @@
     "hybrid_file": "action-express-navigate-001_arm-c-hybrid.clue.json",
     "arm_a_tokens": 2867,
     "arm_b_tokens": 1586,
-    "arm_c_tokens": 1860,
+    "arm_c_tokens": 1848,
     "clue_tokens": 921,
-    "hybrid_tokens": 1090,
+    "hybrid_tokens": 1092,
     "gold_files": [
       "lib/application.js"
     ],
@@ -74,9 +74,9 @@
     "hybrid_file": "action-flask-impact-001_arm-c-hybrid.clue.json",
     "arm_a_tokens": 4416,
     "arm_b_tokens": 2897,
-    "arm_c_tokens": 2545,
+    "arm_c_tokens": 2471,
     "clue_tokens": 1787,
-    "hybrid_tokens": 1628,
+    "hybrid_tokens": 1555,
     "gold_files": [
       "src/flask/app.py"
     ],
@@ -136,9 +136,9 @@
     "hybrid_file": "action-flask-edit-001_arm-c-hybrid.clue.json",
     "arm_a_tokens": 8628,
     "arm_b_tokens": 2604,
-    "arm_c_tokens": 2440,
+    "arm_c_tokens": 2426,
     "clue_tokens": 1611,
-    "hybrid_tokens": 1550,
+    "hybrid_tokens": 1541,
     "gold_files": [
       "src/flask/app.py",
       "src/flask/sansio/scaffold.py"
@@ -192,9 +192,9 @@
     "hybrid_file": "action-flask-trace-001_arm-c-hybrid.clue.json",
     "arm_a_tokens": 4424,
     "arm_b_tokens": 2618,
-    "arm_c_tokens": 2454,
+    "arm_c_tokens": 2377,
     "clue_tokens": 1618,
-    "hybrid_tokens": 1557,
+    "hybrid_tokens": 1505,
     "gold_files": [
       "src/flask/app.py"
     ],
@@ -250,9 +250,9 @@
     "hybrid_file": "action-flask-security-001_arm-c-hybrid.clue.json",
     "arm_a_tokens": 3395,
     "arm_b_tokens": 1616,
-    "arm_c_tokens": 1673,
+    "arm_c_tokens": 1920,
     "clue_tokens": 909,
-    "hybrid_tokens": 951,
+    "hybrid_tokens": 1192,
     "gold_files": [
       "src/flask/sessions.py"
     ],
@@ -279,9 +279,9 @@
     "hybrid_file": "action-gin-security-001_arm-c-hybrid.clue.json",
     "arm_a_tokens": 9270,
     "arm_b_tokens": 1601,
-    "arm_c_tokens": 1947,
+    "arm_c_tokens": 1882,
     "clue_tokens": 936,
-    "hybrid_tokens": 1146,
+    "hybrid_tokens": 1084,
     "gold_files": [
       "gin.go",
       "context.go",

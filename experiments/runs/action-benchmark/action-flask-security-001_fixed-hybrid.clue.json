@@ -1,0 +1,245 @@
+{
+  "task": {
+    "id": "trace-fixed-reproject",
+    "repo": "",
+    "family": "OF3",
+    "question": "Audit Flask's session handling for security vulnerabilities. List every file involved in session creation, signing, and cookie setting."
+  },
+  "summary": "get_signing_serializer: Function get_signing_serializer. get_cookie_secure: Function get_cookie_secure. get_cookie_name: Function get_cookie_name.",
+  "entities": [
+    {
+      "id": "n1",
+      "class": "utility",
+      "name": "get_signing_serializer",
+      "file": "src/flask/sessions.py",
+      "lines": [
+        303,
+        321
+      ],
+      "confidence": 0.92,
+      "purpose": "function get_signing_serializer",
+      "behavior": "Function get_signing_serializer. [returns None; returns URLSafeTimedSerializer(]",
+      "sig": "def get_signing_serializer(self, app: Flask) -> URLSafeTimedSerializer | None:"
+    },
+    {
+      "id": "n2",
+      "class": "utility",
+      "name": "get_cookie_secure",
+      "file": "src/flask/sessions.py",
+      "lines": [
+        202,
+        206
+      ],
+      "confidence": 0.92,
+      "purpose": "function get_cookie_secure",
+      "behavior": "Function get_cookie_secure.",
+      "sig": "def get_cookie_secure(self, app: Flask) -> bool:"
+    },
+    {
+      "id": "n3",
+      "class": "utility",
+      "name": "get_cookie_name",
+      "file": "src/flask/sessions.py",
+      "lines": [
+        171,
+        173
+      ],
+      "confidence": 0.92,
+      "purpose": "function get_cookie_name",
+      "behavior": "Function get_cookie_name.",
+      "sig": "def get_cookie_name(self, app: Flask) -> str:"
+    },
+    {
+      "id": "n4",
+      "class": "utility",
+      "name": "get_cookie_partitioned",
+      "file": "src/flask/sessions.py",
+      "lines": [
+        215,
+        221
+      ],
+      "confidence": 0.92,
+      "purpose": "function get_cookie_partitioned",
+      "behavior": "Function get_cookie_partitioned.",
+      "sig": "def get_cookie_partitioned(self, app: Flask) -> bool:"
+    },
+    {
+      "id": "n5",
+      "class": "utility",
+      "name": "get_cookie_path",
+      "file": "src/flask/sessions.py",
+      "lines": [
+        187,
+        193
+      ],
+      "confidence": 0.92,
+      "purpose": "function get_cookie_path",
+      "behavior": "Function get_cookie_path.",
+      "sig": "def get_cookie_path(self, app: Flask) -> str:"
+    },
+    {
+      "id": "n6",
+      "class": "utility",
+      "name": "get_cookie_domain",
+      "file": "src/flask/sessions.py",
+      "lines": [
+        175,
+        185
+      ],
+      "confidence": 0.92,
+      "purpose": "function get_cookie_domain",
+      "behavior": "Function get_cookie_domain.",
+      "sig": "def get_cookie_domain(self, app: Flask) -> str | None:"
+    },
+    {
+      "id": "n7",
+      "class": "utility",
+      "name": "get_cookie_samesite",
+      "file": "src/flask/sessions.py",
+      "lines": [
+        208,
+        213
+      ],
+      "confidence": 0.92,
+      "purpose": "function get_cookie_samesite",
+      "behavior": "Function get_cookie_samesite.",
+      "sig": "def get_cookie_samesite(self, app: Flask) -> str | None:"
+    },
+    {
+      "id": "n8",
+      "class": "data_accessor",
+      "name": "save_session",
+      "file": "src/flask/sessions.py",
+      "lines": [
+        263,
+        270
+      ],
+      "confidence": 0.92,
+      "purpose": "function save_session",
+      "behavior": "Accesses data store. [raises NotImplementedError]",
+      "sig": "def save_session( self, app: Flask, session: SessionMixin, response: Response ) -> None:"
+    },
+    {
+      "id": "n9",
+      "class": "handler",
+      "name": "get_send_file_max_age",
+      "file": "src/flask/app.py",
+      "lines": [
+        365,
+        390
+      ],
+      "confidence": 0.92,
+      "purpose": "function get_send_file_max_age",
+      "behavior": "Leaf handler invoked by send_static_file.",
+      "sig": "def get_send_file_max_age(self, filename: str | None) -> int | None:",
+      "called_by": [
+        "n14"
+      ]
+    },
+    {
+      "id": "n10",
+      "class": "middleware",
+      "name": "get_cookie_name",
+      "file": "tests/test_reqctx.py",
+      "lines": [
+        233,
+        237
+      ],
+      "confidence": 0.92,
+      "purpose": "function get_cookie_name",
+      "behavior": "Middleware between get_cookie_name and get_cookie_name. [returns \"dynamic_cookie_name\"; returns super().get_cookie_name(app)]",
+      "sig": "def get_cookie_name(self, app):",
+      "calls": [
+        "n10"
+      ],
+      "called_by": [
+        "n10",
+        "test_session_dynamic_cookie_name"
+      ]
+    },
+    {
+      "id": "n11",
+      "class": "data_accessor",
+      "name": "is_null_session",
+      "file": "src/flask/sessions.py",
+      "lines": [
+        162,
+        169
+      ],
+      "confidence": 0.92,
+      "purpose": "function is_null_session",
+      "behavior": "Accesses data store. [returns isinstance(obj, self.null_session_class)]",
+      "sig": "def is_null_session(self, obj: object) -> bool:"
+    },
+    {
+      "id": "n12",
+      "class": "data_accessor",
+      "name": "session",
+      "file": "src/flask/ctx.py",
+      "lines": [
+        396,
+        403
+      ],
+      "confidence": 0.92,
+      "purpose": "function session",
+      "behavior": "Accesses data store. [calls self._get_session; returns session]",
+      "sig": "def session(self) -> SessionMixin:"
+    },
+    {
+      "id": "n13",
+      "class": "data_accessor",
+      "name": "session_transaction",
+      "file": "src/flask/testing.py",
+      "lines": [
+        136,
+        183
+      ],
+      "confidence": 0.92,
+      "purpose": "function session_transaction",
+      "behavior": "Accesses data store; may return None implicitly. [uses context manager]",
+      "sig": "def session_transaction( self, *args: t.Any, **kwargs: t.Any ) -> t.Iterator[SessionMixin]:",
+      "risks": [
+        "implicit_none_return"
+      ]
+    },
+    {
+      "id": "n14",
+      "class": "entrypoint",
+      "name": "send_static_file",
+      "file": "src/flask/app.py",
+      "lines": [
+        392,
+        412
+      ],
+      "confidence": 0.92,
+      "purpose": "function send_static_file",
+      "behavior": "Entrypoint that delegates to get_send_file_max_age. [raises RuntimeError; calls self.get_send_file_max_age; returns send_from_directory(]",
+      "sig": "def send_static_file(self, filename: str) -> Response:",
+      "calls": [
+        "n9"
+      ],
+      "called_by": [
+        "__init__"
+      ]
+    },
+    {
+      "id": "n15",
+      "class": "utility",
+      "name": "max_cookie_size",
+      "file": "src/flask/wrappers.py",
+      "lines": [
+        247,
+        257
+      ],
+      "confidence": 0.92,
+      "purpose": "function max_cookie_size",
+      "behavior": "Function max_cookie_size. [returns super().max_cookie_size]",
+      "sig": "def max_cookie_size(self) -> int:"
+    }
+  ],
+  "uncertainty": {
+    "confidence": 0.7,
+    "hint": "targeted_lookup",
+    "gaps": []
+  }
+}

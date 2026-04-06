@@ -125,6 +125,107 @@
     {
       "id": "n8",
       "class": "utility",
+      "name": "BenchmarkGetMapFromFormData",
+      "file": "context_test.go",
+      "lines": [
+        3727,
+        3727
+      ],
+      "confidence": 0.71,
+      "purpose": "function BenchmarkGetMapFromFormData",
+      "behavior": "Function BenchmarkGetMapFromFormData.",
+      "sig": "func BenchmarkGetMapFromFormData(b *testing.B)",
+      "called_by": [
+        "context_test.go"
+      ]
+    },
+    {
+      "id": "n9",
+      "class": "utility",
+      "name": "CloseNotify",
+      "file": "context_test.go",
+      "lines": [
+        3029,
+        3029
+      ],
+      "confidence": 0.71,
+      "purpose": "function CloseNotify",
+      "behavior": "Function CloseNotify.",
+      "sig": "func (r *TestResponseRecorder) CloseNotify()",
+      "called_by": [
+        "context_test.go"
+      ]
+    },
+    {
+      "id": "n10",
+      "class": "utility",
+      "name": "File",
+      "file": "context_test.go",
+      "lines": [
+        44,
+        44
+      ],
+      "confidence": 0.71,
+      "purpose": "function File",
+      "behavior": "Function File.",
+      "sig": "func (c *Context) File(filepath string)",
+      "called_by": [
+        "context_test.go"
+      ]
+    },
+    {
+      "id": "n11",
+      "class": "utility",
+      "name": "Negotiate",
+      "file": "context_test.go",
+      "lines": [
+        45,
+        45
+      ],
+      "confidence": 0.71,
+      "purpose": "function Negotiate",
+      "behavior": "Function Negotiate.",
+      "sig": "func (c *Context) Negotiate(code int, config Negotiate)",
+      "called_by": [
+        "context_test.go"
+      ]
+    },
+    {
+      "id": "n12",
+      "class": "utility",
+      "name": "New",
+      "file": "context_test.go",
+      "lines": [
+        1509,
+        1509
+      ],
+      "confidence": 0.71,
+      "purpose": "function New",
+      "behavior": "Function New.",
+      "sig": "func New(opts ...OptionFunc)",
+      "called_by": [
+        "context_test.go"
+      ]
+    },
+    {
+      "id": "n13",
+      "class": "utility",
+      "name": "Render",
+      "file": "context_test.go",
+      "lines": [
+        1043,
+        1043
+      ],
+      "confidence": 0.71,
+      "purpose": "function Render",
+      "behavior": "Function Render.",
+      "called_by": [
+        "context_test.go"
+      ]
+    },
+    {
+      "id": "n14",
+      "class": "utility",
       "name": "TestBasicAuth401",
       "file": "auth_test.go",
       "lines": [
@@ -140,7 +241,7 @@
       ]
     },
     {
-      "id": "n9",
+      "id": "n15",
       "class": "utility",
       "name": "TestBasicAuth401WithCustomRealm",
       "file": "auth_test.go",
@@ -152,108 +253,6 @@
       "purpose": "function TestBasicAuth401WithCustomRealm",
       "behavior": "Function TestBasicAuth401WithCustomRealm.",
       "sig": "func TestBasicAuth401WithCustomRealm(t *testing.T)",
-      "called_by": [
-        "auth_test.go"
-      ]
-    },
-    {
-      "id": "n10",
-      "class": "utility",
-      "name": "TestBasicAuth",
-      "file": "auth_test.go",
-      "lines": [
-        16,
-        16
-      ],
-      "confidence": 0.71,
-      "purpose": "function TestBasicAuth",
-      "behavior": "Function TestBasicAuth.",
-      "sig": "func TestBasicAuth(t *testing.T)",
-      "called_by": [
-        "auth_test.go"
-      ]
-    },
-    {
-      "id": "n11",
-      "class": "utility",
-      "name": "TestBasicAuthAuthorizationHeader",
-      "file": "auth_test.go",
-      "lines": [
-        80,
-        80
-      ],
-      "confidence": 0.71,
-      "purpose": "function TestBasicAuthAuthorizationHeader",
-      "behavior": "Function TestBasicAuthAuthorizationHeader.",
-      "sig": "func TestBasicAuthAuthorizationHeader(t *testing.T)",
-      "called_by": [
-        "auth_test.go"
-      ]
-    },
-    {
-      "id": "n12",
-      "class": "utility",
-      "name": "TestBasicAuthFails",
-      "file": "auth_test.go",
-      "lines": [
-        38,
-        38
-      ],
-      "confidence": 0.71,
-      "purpose": "function TestBasicAuthFails",
-      "behavior": "Function TestBasicAuthFails.",
-      "sig": "func TestBasicAuthFails(t *testing.T)",
-      "called_by": [
-        "auth_test.go"
-      ]
-    },
-    {
-      "id": "n13",
-      "class": "utility",
-      "name": "TestBasicAuthForProxy407",
-      "file": "auth_test.go",
-      "lines": [
-        158,
-        158
-      ],
-      "confidence": 0.71,
-      "purpose": "function TestBasicAuthForProxy407",
-      "behavior": "Function TestBasicAuthForProxy407.",
-      "sig": "func TestBasicAuthForProxy407(t *testing.T)",
-      "called_by": [
-        "auth_test.go"
-      ]
-    },
-    {
-      "id": "n14",
-      "class": "utility",
-      "name": "TestBasicAuthForProxySucceed",
-      "file": "auth_test.go",
-      "lines": [
-        141,
-        141
-      ],
-      "confidence": 0.71,
-      "purpose": "function TestBasicAuthForProxySucceed",
-      "behavior": "Function TestBasicAuthForProxySucceed.",
-      "sig": "func TestBasicAuthForProxySucceed(t *testing.T)",
-      "called_by": [
-        "auth_test.go"
-      ]
-    },
-    {
-      "id": "n15",
-      "class": "utility",
-      "name": "TestBasicAuthSearchCredential",
-      "file": "auth_test.go",
-      "lines": [
-        48,
-        48
-      ],
-      "confidence": 0.71,
-      "purpose": "function TestBasicAuthSearchCredential",
-      "behavior": "Function TestBasicAuthSearchCredential.",
-      "sig": "func TestBasicAuthSearchCredential(t *testing.T)",
       "called_by": [
         "auth_test.go"
       ]

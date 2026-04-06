@@ -34,10 +34,37 @@ def _byte_to_line(source: str, byte_offset: int) -> int:
 def _select_top_nodes(
     projected_nodes: list[dict[str, Any]],
     max_nodes: int = 15,
+    question: str = "",
 ) -> list[dict[str, Any]]:
+    """Select top nodes, preferring those relevant to the task question."""
     non_module = [n for n in projected_nodes if n.get("node_type") != "module"]
     modules = [n for n in projected_nodes if n.get("node_type") == "module"]
-    sorted_nodes = sorted(non_module, key=lambda n: n.get("confidence", 0), reverse=True)
+
+    # Extract keywords from question for relevance boosting
+    q_words = set()
+    if question:
+        import re
+        q_words = {w.lower() for w in re.findall(r"[a-zA-Z_]\w+", question) if len(w) > 3}
+
+    def _relevance_score(node: dict) -> float:
+        """Score: confidence + keyword relevance boost."""
+        conf = node.get("confidence", 0)
+        name = node.get("semantic_contract", {}).get("symbol_name", "").lower()
+        nid = node.get("node_id", "").lower()
+
+        # Boost if symbol name matches question keywords
+        name_parts = set(name.replace(".", "_").split("_"))
+        overlap = len(name_parts & q_words) if q_words else 0
+        # Also check if any question word is a substring of the name
+        substr_match = sum(1 for qw in q_words if qw in name or qw in nid) if q_words else 0
+
+        # Penalize test functions
+        is_test = "test" in name or name.startswith("test_")
+        test_penalty = 0.5 if is_test else 0
+
+        return conf + (overlap * 0.3) + (substr_match * 0.2) - test_penalty
+
+    sorted_nodes = sorted(non_module, key=_relevance_score, reverse=True)
     result = sorted_nodes[:max_nodes]
     if modules and len(result) < max_nodes:
         result.append(modules[0])
@@ -60,7 +87,7 @@ def render_clue_hybrid(
     }
 
     # Select top nodes
-    selected = _select_top_nodes(projected_nodes)
+    selected = _select_top_nodes(projected_nodes, question=question or "")
     selected_ids = {n["node_id"] for n in selected}
 
     # Short ID mapping

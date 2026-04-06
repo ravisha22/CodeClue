@@ -1,0 +1,78 @@
+{
+  "before": [
+    {
+      "task_id": "action-fastapi-edit-001",
+      "family": "TF3-Action",
+      "file_recall": 0.5,
+      "symbol_recall": 0.0,
+      "localization_accuracy": 0.2,
+      "sufficient": false
+    },
+    {
+      "task_id": "action-nest-trace-001",
+      "family": "TF4-Action",
+      "file_recall": 0.5,
+      "symbol_recall": 0.0,
+      "localization_accuracy": 0.2,
+      "sufficient": false
+    },
+    {
+      "task_id": "action-flask-security-001",
+      "family": "TF5-Action",
+      "file_recall": 0.5,
+      "symbol_recall": 0.0,
+      "localization_accuracy": 0.2,
+      "sufficient": false
+    },
+    {
+      "task_id": "action-gin-security-001",
+      "family": "TF5-Action",
+      "file_recall": 0.3333,
+      "symbol_recall": 0.2,
+      "localization_accuracy": 0.2533,
+      "sufficient": false
+    }
+  ],
+  "after": [
+    {
+      "task_id": "action-fastapi-edit-001",
+      "family": "TF3-Action",
+      "file_recall": 1.0,
+      "symbol_recall": 0.5,
+      "localization_accuracy": 0.7,
+      "sufficient": true,
+      "clue_tokens": 1411,
+      "entity_count": 15
+    },
+    {
+      "task_id": "action-nest-trace-001",
+      "family": "TF4-Action",
+      "file_recall": 0.5,
+      "symbol_recall": 0.0,
+      "localization_accuracy": 0.2,
+      "sufficient": false,
+      "clue_tokens": 940,
+      "entity_count": 15
+    },
+    {
+      "task_id": "action-flask-security-001",
+      "family": "TF5-Action",
+      "file_recall": 1.0,
+      "symbol_recall": 0.4,
+      "localization_accuracy": 0.64,
+      "sufficient": true,
+      "clue_tokens": 1281,
+      "entity_count": 15
+    },
+    {
+      "task_id": "action-gin-security-001",
+      "family": "TF5-Action",
+      "file_recall": 0.6667,
+      "symbol_recall": 0.2,
+      "localization_accuracy": 0.3867,
+      "sufficient": false,
+      "clue_tokens": 1034,
+      "entity_count": 15
+    }
+  ]
+}

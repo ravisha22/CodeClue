@@ -70,23 +70,6 @@ A developer new to Express needs to understand the middleware pipeline to add ra
     {
       "id": "n4",
       "class": "utility",
-      "name": "testMethod",
-      "file": "test/Route.js",
-      "lines": [
-        78,
-        78
-      ],
-      "confidence": 0.71,
-      "purpose": "function testMethod",
-      "behavior": "Function testMethod.",
-      "sig": "function testMethod(method)",
-      "called_by": [
-        "test/Route.js"
-      ]
-    },
-    {
-      "id": "n5",
-      "class": "utility",
       "name": "fn1",
       "file": "test/Router.js",
       "lines": [
@@ -102,7 +85,7 @@ A developer new to Express needs to understand the middleware pipeline to add ra
       ]
     },
     {
-      "id": "n6",
+      "id": "n5",
       "class": "utility",
       "name": "fn2",
       "file": "test/Router.js",
@@ -119,7 +102,7 @@ A developer new to Express needs to understand the middleware pipeline to add ra
       ]
     },
     {
-      "id": "n7",
+      "id": "n6",
       "class": "utility",
       "name": "no",
       "file": "test/Router.js",
@@ -136,24 +119,7 @@ A developer new to Express needs to understand the middleware pipeline to add ra
       ]
     },
     {
-      "id": "n8",
-      "class": "utility",
-      "name": "testMethod",
-      "file": "test/Router.js",
-      "lines": [
-        424,
-        424
-      ],
-      "confidence": 0.71,
-      "purpose": "function testMethod",
-      "behavior": "Function testMethod.",
-      "sig": "function testMethod(method)",
-      "called_by": [
-        "test/Router.js"
-      ]
-    },
-    {
-      "id": "n9",
+      "id": "n7",
       "class": "error_handler",
       "name": "createError",
       "file": "test/app.route.js",
@@ -167,7 +133,7 @@ A developer new to Express needs to understand the middleware pipeline to add ra
       "sig": "function createError (req, res, next)"
     },
     {
-      "id": "n10",
+      "id": "n8",
       "class": "error_handler",
       "name": "createError",
       "file": "test/app.route.js",
@@ -181,7 +147,7 @@ A developer new to Express needs to understand the middleware pipeline to add ra
       "sig": "function createError (req, res, next)"
     },
     {
-      "id": "n11",
+      "id": "n9",
       "class": "error_handler",
       "name": "createError",
       "file": "test/app.route.js",
@@ -195,7 +161,7 @@ A developer new to Express needs to understand the middleware pipeline to add ra
       "sig": "function createError (req, res, next)"
     },
     {
-      "id": "n12",
+      "id": "n10",
       "class": "error_handler",
       "name": "createError",
       "file": "test/app.route.js",
@@ -212,7 +178,7 @@ A developer new to Express needs to understand the middleware pipeline to add ra
       ]
     },
     {
-      "id": "n13",
+      "id": "n11",
       "class": "error_handler",
       "name": "createError",
       "file": "test/app.route.js",
@@ -226,7 +192,7 @@ A developer new to Express needs to understand the middleware pipeline to add ra
       "sig": "function createError (req, res, next)"
     },
     {
-      "id": "n14",
+      "id": "n12",
       "class": "error_handler",
       "name": "createError",
       "file": "test/app.route.js",
@@ -240,13 +206,41 @@ A developer new to Express needs to understand the middleware pipeline to add ra
       "sig": "function createError (req, res, next)"
     },
     {
-      "id": "n15",
+      "id": "n13",
       "class": "error_handler",
       "name": "handleError",
       "file": "test/app.route.js",
       "lines": [
         100,
         100
+      ],
+      "confidence": 0.71,
+      "purpose": "function handleError",
+      "behavior": "Error handler; produces error response.",
+      "sig": "function handleError (err, req, res, next)"
+    },
+    {
+      "id": "n14",
+      "class": "error_handler",
+      "name": "handleError",
+      "file": "test/app.route.js",
+      "lines": [
+        137,
+        137
+      ],
+      "confidence": 0.71,
+      "purpose": "function handleError",
+      "behavior": "Error handler; produces error response.",
+      "sig": "function handleError (err, req, res, next)"
+    },
+    {
+      "id": "n15",
+      "class": "error_handler",
+      "name": "handleError",
+      "file": "test/app.route.js",
+      "lines": [
+        141,
+        141
       ],
       "confidence": 0.71,
       "purpose": "function handleError",

@@ -5,223 +5,230 @@
     "family": "OF5",
     "question": "Audit Flask's session handling for security vulnerabilities. List every file involved in session creation, signing, and cookie setting."
   },
-  "summary": "load_logged_in_user: Function load_logged_in_user. login: Function login. wrapped_view: Function wrapped_view.",
+  "summary": "get_signing_serializer: Function get_signing_serializer. open_session: Accesses data store. save_session: Accesses data store; may return None implicitly.",
   "entities": [
     {
       "id": "n1",
       "class": "utility",
-      "name": "load_logged_in_user",
-      "file": "examples/tutorial/flaskr/auth.py",
+      "name": "get_signing_serializer",
+      "file": "src/flask/sessions.py",
       "lines": [
-        33,
-        43
+        303,
+        321
       ],
       "confidence": 0.77,
-      "purpose": "function load_logged_in_user",
-      "behavior": "Function load_logged_in_user.",
-      "sig": "def load_logged_in_user():"
+      "purpose": "function get_signing_serializer",
+      "behavior": "Function get_signing_serializer.",
+      "sig": "def get_signing_serializer(self, app: Flask) -> URLSafeTimedSerializer | None:"
     },
     {
       "id": "n2",
-      "class": "utility",
-      "name": "login",
-      "file": "examples/tutorial/flaskr/auth.py",
+      "class": "data_accessor",
+      "name": "open_session",
+      "file": "src/flask/sessions.py",
       "lines": [
-        85,
-        109
+        323,
+        335
       ],
       "confidence": 0.77,
-      "purpose": "function login",
-      "behavior": "Function login.",
-      "sig": "def login():"
+      "purpose": "function open_session",
+      "behavior": "Accesses data store.",
+      "sig": "def open_session(self, app: Flask, request: Request) -> SecureCookieSession | None:"
     },
     {
       "id": "n3",
-      "class": "utility",
-      "name": "wrapped_view",
-      "file": "examples/tutorial/flaskr/auth.py",
+      "class": "data_accessor",
+      "name": "save_session",
+      "file": "src/flask/sessions.py",
       "lines": [
-        23,
-        27
+        337,
+        385
       ],
       "confidence": 0.77,
-      "purpose": "function wrapped_view",
-      "behavior": "Function wrapped_view.",
-      "sig": "def wrapped_view(**kwargs):"
+      "purpose": "function save_session",
+      "behavior": "Accesses data store; may return None implicitly.",
+      "sig": "def save_session( self, app: Flask, session: SessionMixin, response: Response ) -> None:",
+      "risks": [
+        "implicit_none_return"
+      ]
     },
     {
       "id": "n4",
       "class": "utility",
-      "name": "login_required",
-      "file": "examples/tutorial/flaskr/auth.py",
+      "name": "get_cookie_domain",
+      "file": "src/flask/sessions.py",
       "lines": [
-        19,
-        29
+        175,
+        185
       ],
       "confidence": 0.77,
-      "purpose": "function login_required",
-      "behavior": "Function login_required.",
-      "sig": "def login_required(view):"
+      "purpose": "function get_cookie_domain",
+      "behavior": "Function get_cookie_domain.",
+      "sig": "def get_cookie_domain(self, app: Flask) -> str | None:"
     },
     {
       "id": "n5",
       "class": "utility",
-      "name": "logout",
-      "file": "examples/tutorial/flaskr/auth.py",
+      "name": "get_cookie_httponly",
+      "file": "src/flask/sessions.py",
       "lines": [
-        113,
-        116
+        195,
+        200
       ],
       "confidence": 0.77,
-      "purpose": "function logout",
-      "behavior": "Function logout.",
-      "sig": "def logout():"
+      "purpose": "function get_cookie_httponly",
+      "behavior": "Function get_cookie_httponly.",
+      "sig": "def get_cookie_httponly(self, app: Flask) -> bool:"
     },
     {
       "id": "n6",
       "class": "utility",
-      "name": "register",
-      "file": "examples/tutorial/flaskr/auth.py",
+      "name": "get_cookie_name",
+      "file": "src/flask/sessions.py",
       "lines": [
-        47,
-        81
+        171,
+        173
       ],
       "confidence": 0.77,
-      "purpose": "function register",
-      "behavior": "Function register.",
-      "sig": "def register():"
+      "purpose": "function get_cookie_name",
+      "behavior": "Function get_cookie_name.",
+      "sig": "def get_cookie_name(self, app: Flask) -> str:"
     },
     {
       "id": "n7",
       "class": "utility",
-      "name": "__init__",
-      "file": "examples/tutorial/tests/conftest.py",
+      "name": "get_cookie_partitioned",
+      "file": "src/flask/sessions.py",
       "lines": [
-        48,
-        49
+        215,
+        221
       ],
       "confidence": 0.77,
-      "purpose": "function __init__",
-      "behavior": "Function __init__.",
-      "sig": "def __init__(self, client):"
+      "purpose": "function get_cookie_partitioned",
+      "behavior": "Function get_cookie_partitioned.",
+      "sig": "def get_cookie_partitioned(self, app: Flask) -> bool:"
     },
     {
       "id": "n8",
       "class": "utility",
-      "name": "login",
-      "file": "examples/tutorial/tests/conftest.py",
+      "name": "get_cookie_path",
+      "file": "src/flask/sessions.py",
       "lines": [
-        51,
-        54
+        187,
+        193
       ],
       "confidence": 0.77,
-      "purpose": "function login",
-      "behavior": "Function login.",
-      "sig": "def login(self, username=\"test\", password=\"test\"):"
+      "purpose": "function get_cookie_path",
+      "behavior": "Function get_cookie_path.",
+      "sig": "def get_cookie_path(self, app: Flask) -> str:"
     },
     {
       "id": "n9",
       "class": "utility",
-      "name": "logout",
-      "file": "examples/tutorial/tests/conftest.py",
+      "name": "get_cookie_samesite",
+      "file": "src/flask/sessions.py",
       "lines": [
-        56,
-        57
+        208,
+        213
       ],
       "confidence": 0.77,
-      "purpose": "function logout",
-      "behavior": "Function logout.",
-      "sig": "def logout(self):"
+      "purpose": "function get_cookie_samesite",
+      "behavior": "Function get_cookie_samesite.",
+      "sig": "def get_cookie_samesite(self, app: Flask) -> str | None:"
     },
     {
       "id": "n10",
-      "class": "handler",
-      "name": "AuthActions",
-      "file": "examples/tutorial/tests/conftest.py",
+      "class": "utility",
+      "name": "get_cookie_secure",
+      "file": "src/flask/sessions.py",
       "lines": [
-        47,
-        57
+        202,
+        206
       ],
       "confidence": 0.77,
-      "purpose": "class AuthActions",
-      "behavior": "Leaf handler invoked by auth.",
-      "sig": "def __init__(self, client):",
-      "called_by": [
-        "n12"
-      ]
+      "purpose": "function get_cookie_secure",
+      "behavior": "Function get_cookie_secure.",
+      "sig": "def get_cookie_secure(self, app: Flask) -> bool:"
     },
     {
       "id": "n11",
       "class": "utility",
-      "name": "app",
-      "file": "examples/tutorial/tests/conftest.py",
+      "name": "should_set_cookie",
+      "file": "src/flask/sessions.py",
       "lines": [
-        16,
-        32
+        233,
+        247
       ],
       "confidence": 0.77,
-      "purpose": "function app",
-      "behavior": "Function app.",
-      "sig": "def app():"
+      "purpose": "function should_set_cookie",
+      "behavior": "Function should_set_cookie.",
+      "sig": "def should_set_cookie(self, app: Flask, session: SessionMixin) -> bool:"
     },
     {
       "id": "n12",
-      "class": "entrypoint",
-      "name": "auth",
-      "file": "examples/tutorial/tests/conftest.py",
+      "class": "data_accessor",
+      "name": "_get_session",
+      "file": "src/flask/ctx.py",
       "lines": [
-        61,
-        62
+        381,
+        393
       ],
       "confidence": 0.77,
-      "purpose": "function auth",
-      "behavior": "Entrypoint that delegates to AuthActions.",
-      "sig": "def auth(client):",
-      "calls": [
-        "n10"
+      "purpose": "function _get_session",
+      "behavior": "Accesses data store; mutates state outside __init__.",
+      "sig": "def _get_session(self) -> SessionMixin:",
+      "called_by": [
+        "push",
+        "n13"
+      ],
+      "risks": [
+        "state_mutation_outside_init"
       ]
     },
     {
       "id": "n13",
-      "class": "utility",
-      "name": "client",
-      "file": "examples/tutorial/tests/conftest.py",
+      "class": "data_accessor",
+      "name": "session",
+      "file": "src/flask/ctx.py",
       "lines": [
-        36,
-        38
+        396,
+        403
       ],
       "confidence": 0.77,
-      "purpose": "function client",
-      "behavior": "Function client.",
-      "sig": "def client(app):"
+      "purpose": "function session",
+      "behavior": "Accesses data store.",
+      "sig": "def session(self) -> SessionMixin:",
+      "calls": [
+        "n12"
+      ]
     },
     {
       "id": "n14",
-      "class": "utility",
-      "name": "runner",
-      "file": "examples/tutorial/tests/conftest.py",
+      "class": "data_accessor",
+      "name": "is_null_session",
+      "file": "src/flask/sessions.py",
       "lines": [
-        42,
-        44
+        162,
+        169
       ],
       "confidence": 0.77,
-      "purpose": "function runner",
-      "behavior": "Function runner.",
-      "sig": "def runner(app):"
+      "purpose": "function is_null_session",
+      "behavior": "Accesses data store.",
+      "sig": "def is_null_session(self, obj: object) -> bool:"
     },
     {
       "id": "n15",
-      "class": "utility",
-      "name": "test_login",
-      "file": "examples/tutorial/tests/test_auth.py",
+      "class": "data_accessor",
+      "name": "make_null_session",
+      "file": "src/flask/sessions.py",
       "lines": [
-        39,
-        52
+        150,
+        160
       ],
       "confidence": 0.77,
-      "purpose": "function test_login",
-      "behavior": "Function test_login.",
-      "sig": "def test_login(client, auth):"
+      "purpose": "function make_null_session",
+      "behavior": "Accesses data store.",
+      "sig": "def make_null_session(self, app: Flask) -> NullSession:"
     }
   ],
   "uncertainty": {

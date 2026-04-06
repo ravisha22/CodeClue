@@ -15,17 +15,17 @@
       "format": "plan_a"
     },
     {
-      "file_recall": 0.75,
-      "symbol_recall": 0.8571,
-      "localization_accuracy": 0.8143,
-      "file_hits": 1.5,
+      "file_recall": 1.0,
+      "symbol_recall": 1.0,
+      "localization_accuracy": 1.0,
+      "file_hits": 2,
       "file_total": 2,
-      "symbol_hits": 6,
+      "symbol_hits": 7,
       "symbol_total": 7,
       "sufficient": true,
       "task_id": "action-flask-refactor-001",
       "family": "TF1-Action",
-      "clue_tokens": 1525,
+      "clue_tokens": 1361,
       "format": "hybrid"
     },
     {
@@ -53,7 +53,7 @@
       "sufficient": true,
       "task_id": "action-express-navigate-001",
       "family": "TF1-Action",
-      "clue_tokens": 1090,
+      "clue_tokens": 1092,
       "format": "hybrid"
     },
     {
@@ -72,16 +72,16 @@
     },
     {
       "file_recall": 1.0,
-      "symbol_recall": 0.8889,
-      "localization_accuracy": 0.9333,
+      "symbol_recall": 1.0,
+      "localization_accuracy": 1.0,
       "file_hits": 1,
       "file_total": 1,
-      "symbol_hits": 8,
+      "symbol_hits": 9,
       "symbol_total": 9,
       "sufficient": true,
       "task_id": "action-flask-impact-001",
       "family": "TF2-Action",
-      "clue_tokens": 1628,
+      "clue_tokens": 1555,
       "format": "hybrid"
     },
     {
@@ -137,7 +137,7 @@
       "sufficient": true,
       "task_id": "action-flask-edit-001",
       "family": "TF3-Action",
-      "clue_tokens": 1550,
+      "clue_tokens": 1541,
       "format": "hybrid"
     },
     {
@@ -193,7 +193,7 @@
       "sufficient": true,
       "task_id": "action-flask-trace-001",
       "family": "TF4-Action",
-      "clue_tokens": 1557,
+      "clue_tokens": 1505,
       "format": "hybrid"
     },
     {
@@ -239,17 +239,17 @@
       "format": "plan_a"
     },
     {
-      "file_recall": 0.5,
-      "symbol_recall": 0.0,
-      "localization_accuracy": 0.2,
-      "file_hits": 0.5,
+      "file_recall": 1.0,
+      "symbol_recall": 0.8,
+      "localization_accuracy": 0.88,
+      "file_hits": 1,
       "file_total": 1,
-      "symbol_hits": 0,
+      "symbol_hits": 4,
       "symbol_total": 5,
-      "sufficient": false,
+      "sufficient": true,
       "task_id": "action-flask-security-001",
       "family": "TF5-Action",
-      "clue_tokens": 951,
+      "clue_tokens": 1192,
       "format": "hybrid"
     },
     {
@@ -277,7 +277,7 @@
       "sufficient": false,
       "task_id": "action-gin-security-001",
       "family": "TF5-Action",
-      "clue_tokens": 1146,
+      "clue_tokens": 1084,
       "format": "hybrid"
     }
   ],
@@ -297,9 +297,9 @@
       "hybrid_file": "action-flask-refactor-001_arm-c-hybrid.clue.json",
       "arm_a_tokens": 8192,
       "arm_b_tokens": 1967,
-      "arm_c_tokens": 2407,
+      "arm_c_tokens": 2216,
       "clue_tokens": 1274,
-      "hybrid_tokens": 1525,
+      "hybrid_tokens": 1361,
       "gold_files": [
         "src/flask/app.py",
         "src/flask/ctx.py"
@@ -329,9 +329,9 @@
       "hybrid_file": "action-express-navigate-001_arm-c-hybrid.clue.json",
       "arm_a_tokens": 2867,
       "arm_b_tokens": 1586,
-      "arm_c_tokens": 1860,
+      "arm_c_tokens": 1848,
       "clue_tokens": 921,
-      "hybrid_tokens": 1090,
+      "hybrid_tokens": 1092,
       "gold_files": [
         "lib/application.js"
       ],
@@ -357,9 +357,9 @@
       "hybrid_file": "action-flask-impact-001_arm-c-hybrid.clue.json",
       "arm_a_tokens": 4416,
       "arm_b_tokens": 2897,
-      "arm_c_tokens": 2545,
+      "arm_c_tokens": 2471,
       "clue_tokens": 1787,
-      "hybrid_tokens": 1628,
+      "hybrid_tokens": 1555,
       "gold_files": [
         "src/flask/app.py"
       ],
@@ -419,9 +419,9 @@
       "hybrid_file": "action-flask-edit-001_arm-c-hybrid.clue.json",
       "arm_a_tokens": 8628,
       "arm_b_tokens": 2604,
-      "arm_c_tokens": 2440,
+      "arm_c_tokens": 2426,
       "clue_tokens": 1611,
-      "hybrid_tokens": 1550,
+      "hybrid_tokens": 1541,
       "gold_files": [
         "src/flask/app.py",
         "src/flask/sansio/scaffold.py"
@@ -475,9 +475,9 @@
       "hybrid_file": "action-flask-trace-001_arm-c-hybrid.clue.json",
       "arm_a_tokens": 4424,
       "arm_b_tokens": 2618,
-      "arm_c_tokens": 2454,
+      "arm_c_tokens": 2377,
       "clue_tokens": 1618,
-      "hybrid_tokens": 1557,
+      "hybrid_tokens": 1505,
       "gold_files": [
         "src/flask/app.py"
       ],
@@ -533,9 +533,9 @@
       "hybrid_file": "action-flask-security-001_arm-c-hybrid.clue.json",
       "arm_a_tokens": 3395,
       "arm_b_tokens": 1616,
-      "arm_c_tokens": 1673,
+      "arm_c_tokens": 1920,
       "clue_tokens": 909,
-      "hybrid_tokens": 951,
+      "hybrid_tokens": 1192,
       "gold_files": [
         "src/flask/sessions.py"
       ],
@@ -562,9 +562,9 @@
       "hybrid_file": "action-gin-security-001_arm-c-hybrid.clue.json",
       "arm_a_tokens": 9270,
       "arm_b_tokens": 1601,
-      "arm_c_tokens": 1947,
+      "arm_c_tokens": 1882,
       "clue_tokens": 936,
-      "hybrid_tokens": 1146,
+      "hybrid_tokens": 1084,
       "gold_files": [
         "gin.go",
         "context.go",
@@ -580,8 +580,8 @@
     }
   ],
   "plan_a_overall": 0.49204,
-  "hybrid_overall": 0.5430900000000001,
+  "hybrid_overall": 0.63633,
   "plan_a_sufficient": 4,
-  "hybrid_sufficient": 5,
+  "hybrid_sufficient": 6,
   "total_tasks": 10
 }
