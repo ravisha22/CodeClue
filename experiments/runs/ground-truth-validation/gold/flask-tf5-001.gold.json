@@ -1,0 +1,20 @@
+{
+  "task_id": "flask-tf5-001",
+  "family": "TF5",
+  "question": "What security concerns exist in Flask's session handling?",
+  "gold_answer": "Security concerns: (1) No secret_key = NullSession, writes silently fail. (2) Sessions signed with HMAC-SHA1 by default (digest_method = sha1). (3) BadSignature on tampered cookies returns empty session, doesn't reject request. (4) Cookie flags default to httponly=False, secure=False \u2014 XSS/CSRF risk. (5) Nested dict mutations not tracked \u2014 changes silently lost unless session.modified=True set manually. (6) Vary: Cookie only set if session accessed.",
+  "gold_symbols": [
+    "SecureCookieSessionInterface",
+    "NullSession",
+    "get_signing_serializer",
+    "should_set_cookie",
+    "BadSignature"
+  ],
+  "gold_facts": [
+    "no secret_key causes NullSession",
+    "HMAC-SHA1 default",
+    "tampered cookies return empty session",
+    "cookie flags default insecure",
+    "nested mutations not tracked"
+  ]
+}

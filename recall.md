@@ -198,6 +198,118 @@ Implication:
 4. Publish a Lane A summary report and gate verdict file.
 5. Then replicate for Lane B and Lane C for benchmark parity.
 
+---
+
+## 11) Session 2026-04-06: Plan A/B Stress Test and Commercial Pillar Validation
+
+### 11.1 Context and Motivation
+
+User mandate: prove CodeClue's commercial viability through four success factors from doc 12-unpoisoned-clue-study-design.md:
+1. Compression: CCR ≥ 0.85 for 70-80% of tasks across all size bands
+2. Clue-Only Sufficiency: DFCR ≥ 0.60-0.70 per family
+3. Drill-Down Dependence: DDR ≤ 0.40
+4. Post-Drill Value: FU ≥ 0.10, PER ≥ 0.50
+
+### 11.2 Key Finding: Format Poisoning
+
+The prior "clue" artifact was actually the full projection trace + confidence routing payload. 37% of tokens were format overhead. 83% of drill-down output was verbose dicts (6x compressible). The "drill-down is always needed" conclusion was a format artifact.
+
+### 11.3 Design Innovation: Entity-Centric Object Model (Plan A)
+
+Instead of flat tables with cross-referencing, each node became a self-contained typed entity:
+- `class` (entrypoint/dispatcher/handler/middleware/error_handler/validator/data_accessor)
+- `weight` (task-relevance score)
+- `behavior` (one-line summary from role + patterns + sig)
+- `inflow`/`outflow` (embedded relations — zero cross-referencing)
+- `risks` (source-detected behavioral hazards)
+- `invariants` (path-based behavioral assertions)
+
+This was compared against Plan B (flat table with separate nodes/relations/assertions).
+
+### 11.4 Shared Foundation Built (Phase 0)
+
+Four enrichment modules shared by both renderers:
+- `source_patterns.py`: regex/AST risk detection (exception, mutation, security patterns)
+- `role_classifier.py`: topology-based role classification from graph fan-in/fan-out
+- `behavior_summary.py`: deterministic one-line summaries (no LLM)
+- `token_counter.py`: tiktoken cl100k_base wrapper
+
+### 11.5 Versions Committed and Pushed
+
+| Version | Tag | Content |
+|---------|-----|---------|
+| v0.7.0 | Phase 0 | 4 foundation modules, 39 tests |
+| v0.7.1 | Phase 1A | Plan A entity-centric renderer, 13 tests |
+| v0.7.2 | Phase 1B | Plan B flat-table renderer, 14 tests |
+| v0.7.3 | Phases 2-5 | Benchmark infrastructure (token_metrics, judge, drilldown_orchestrator, prompts, batch scripts) |
+| v0.7.4 | Benchmark execution | Optimized renderers (adaptive node selection, omit empty fields), compression + verdict |
+| v0.7.5 | Consumer pipeline | generate_consumer_prompts.py + score_responses.py |
+| v0.7.6 | Real LLM responses | 46 real consumer responses scored — 100% DFCR |
+| v0.7.7 | Django stress test | 45K-node scale: 4/5 tasks CCR ≥ 0.85, 98.7% on large-context tasks |
+
+### 11.6 Benchmark Results
+
+**Compression (Pillar 1):**
+- Plan A: 73.9% pass rate (17/23 at CCR ≥ 0.85), mean CCR 0.85, mean clue 1001 tokens
+- Plan B: 73.9% pass rate (17/23), mean CCR 0.83, mean clue 1083 tokens
+- Django TF1/TF3/TF4: 98.7% CCR (~1000 tokens replaces ~79K raw)
+- 6 failures all from small-repo tasks (raw < 5K tokens)
+
+**Clue-Only Sufficiency (Pillar 2):**
+- 100% DFCR across all families, both plans, real LLM consumer responses
+- CAVEAT: scoring is self-referential (measures entity citation, not answer correctness)
+
+**Drill-Down (Pillar 3):** DDR = 0% (all tasks clue-only sufficient)
+**Post-Drill (Pillar 4):** N/A (no tasks needed drill-down)
+
+### 11.7 Decision: Plan A Selected
+
+Plan A (entity-centric) chosen over Plan B:
+- 8% more token-efficient (1001 vs 1083)
+- Zero cross-referencing → better LLM cognitive load
+- Leads in every per-family CCR metric
+
+### 11.8 Critical Gaps Identified (NOT YET PROVEN)
+
+1. **No ground truth comparison**: DFCR measures clue entity citation, not answer correctness
+2. **No Arm A vs Arm B**: Never compared clue answers vs raw-source answers
+3. **No independent judge**: Gemini judge planned but not executed
+4. **Small-repo CCR failures**: 6/23 tasks fail, violates "all size bands" requirement
+5. **No drift/staleness testing**: Clues not tested after code changes
+6. **Statistical power**: n=3-6 per family, insufficient for per-family claims
+7. **Django consumer answers**: Prompts generated but not scored
+
+### 11.9 Current Action: Close Critical Gaps
+
+In progress: generating gold-truth answers + raw-source baselines + independent judge scoring for 10 tasks (2 per family) to validate Pillar 2 with ground truth.
+
+### 11.10 Files Created This Session
+
+**Source modules (src/codeclue_research/):**
+- source_patterns.py, role_classifier.py, behavior_summary.py, token_counter.py
+- clue_view_plan_a.py, clue_view_plan_b.py
+- token_metrics.py, judge.py, drilldown_orchestrator.py
+
+**Test files (tests/):**
+- tests/foundation/ (4 files, 39 tests)
+- tests/clue_view_a/ (1 file, 13 tests)
+- tests/clue_view_b/ (1 file, 14 tests)
+
+**Experiment scripts (experiments/runs/):**
+- measure_compression_ab.py, run_clue_only_ab.py, run_drilldown_ab.py
+- compile_ab_verdict.py, generate_consumer_prompts.py, score_responses.py
+- run_django_stress_test_v2.py
+
+**Prompt templates (scaffold/prompts/):**
+- arm-plan-a.md, arm-plan-b.md
+
+**Reports generated (experiments/reports/):**
+- compression-ab-results.json, clue-only-ab-results.json
+- ab-verdict.json, ab-verdict.md
+- real-consumer-ab-results.json, django-stress-test-results.json
+
+**Modified:** pyproject.toml (added tiktoken dependency, version 0.7.0)
+
 ## 11) Fidelity guardrails for future compaction
 
 - Do not replace PR-specific references with generic repo-only statements.

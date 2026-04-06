@@ -1,0 +1,20 @@
+{
+  "task_id": "flask-tf3-001",
+  "family": "TF3",
+  "question": "Where should the edit be made to add a new request hook?",
+  "gold_answer": "Hook registration is in sansio/scaffold.py: before_request at line 460, after_request at line 487, teardown_request at line 508. To add a NEW hook type: (1) add a dict in scaffold.py __init__ like self.my_hook_funcs, (2) add a decorator method using setdefault/append pattern, (3) call it in the dispatch chain in app.py at the right moment (between preprocess and dispatch for pre-hooks, in finalize_request for post-hooks). Hook execution order: before_request \u2192 dispatch \u2192 after_request (reversed order) \u2192 teardown_request (reversed order).",
+  "gold_symbols": [
+    "before_request",
+    "after_request",
+    "teardown_request",
+    "teardown_appcontext",
+    "scaffold.py"
+  ],
+  "gold_facts": [
+    "registration in sansio/scaffold.py",
+    "before_request runs before dispatch",
+    "after_request runs after view returns",
+    "teardown runs regardless of exception",
+    "hooks run in reverse registration order"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "task_id": "httpx-tf2-001",
+  "family": "TF2",
+  "question": "Impact of modifying httpx transport layer?",
+  "gold_answer": "The transport layer sits between Client and httpcore connection pool. Client.request() calls send() which calls _send_single_request(). This gets the transport via _transport_for_url(url) and calls transport.handle_request(request). The default transport wraps httpcore: self._pool.handle_request(req). Modifying transport affects: socket pooling, SSL/TLS negotiation, proxy handling, HTTP/1.1 vs HTTP/2, connection limits (max_connections, max_keepalive_connections), all retries and timeouts, and exception mapping.",
+  "gold_symbols": [
+    "Client.request",
+    "send",
+    "_send_single_request",
+    "_transport_for_url",
+    "handle_request",
+    "_pool"
+  ],
+  "gold_facts": [
+    "transport between Client and httpcore",
+    "handle_request is the key method",
+    "wraps httpcore pool",
+    "affects connection pooling",
+    "affects SSL/TLS",
+    "affects timeouts and retries"
+  ]
+}

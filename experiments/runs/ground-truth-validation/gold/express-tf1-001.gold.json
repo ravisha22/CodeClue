@@ -1,0 +1,19 @@
+{
+  "task_id": "express-tf1-001",
+  "family": "TF1",
+  "question": "Express middleware architecture?",
+  "gold_answer": "Express uses a router-based middleware pipeline. app.handle(req, res, callback) at lib/application.js line 143 sets up the request and delegates to this.router.handle(req, res, done) at line 173. Middleware is registered via app.use(path, fn) which delegates to router.use(). The router is lazily created. Each middleware receives (req, res, next) and calls next() to pass to the next handler. Middleware executes in registration order.",
+  "gold_symbols": [
+    "app.handle",
+    "router.handle",
+    "app.use",
+    "router.use"
+  ],
+  "gold_facts": [
+    "router-based middleware pipeline",
+    "app.handle delegates to router.handle",
+    "middleware registered via app.use",
+    "middleware receives req, res, next",
+    "executed in registration order"
+  ]
+}

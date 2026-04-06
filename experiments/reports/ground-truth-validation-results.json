@@ -1,0 +1,790 @@
+{
+  "per_task": [
+    {
+      "task_id": "flask-tf1-001",
+      "family": "TF1",
+      "question": "What is the high-level architecture of Flask's request handling?",
+      "arm_b": {
+        "symbol_recall": 0.5556,
+        "fact_recall": 0.6667,
+        "fidelity": 0.6111,
+        "symbol_hits": 5,
+        "symbol_total": 9,
+        "fact_hits": 4,
+        "fact_total": 6,
+        "answer_tokens": 810,
+        "answer_words": 366,
+        "symbol_details": [
+          {
+            "symbol": "wsgi_app",
+            "found": false
+          },
+          {
+            "symbol": "__call__",
+            "found": true
+          },
+          {
+            "symbol": "full_dispatch_request",
+            "found": true
+          },
+          {
+            "symbol": "dispatch_request",
+            "found": true
+          },
+          {
+            "symbol": "finalize_request",
+            "found": true
+          },
+          {
+            "symbol": "handle_exception",
+            "found": true
+          },
+          {
+            "symbol": "request_context",
+            "found": false
+          },
+          {
+            "symbol": "ctx.push",
+            "found": false
+          },
+          {
+            "symbol": "ctx.pop",
+            "found": false
+          }
+        ],
+        "fact_details": [
+          {
+            "fact": "wsgi_app creates RequestContext",
+            "found": true,
+            "match_ratio": 0.47
+          },
+          {
+            "fact": "context pushed to activate request/session/g globals",
+            "found": true,
+            "match_ratio": 0.34
+          },
+          {
+            "fact": "full_dispatch_request runs before_request hooks",
+            "found": false,
+            "match_ratio": 0.25
+          },
+          {
+            "fact": "dispatch_request calls the view function",
+            "found": true,
+            "match_ratio": 0.5
+          },
+          {
+            "fact": "finalize_request runs after_request hooks",
+            "found": false,
+            "match_ratio": 0.25
+          },
+          {
+            "fact": "teardown runs in finally block",
+            "found": true,
+            "match_ratio": 0.5
+          }
+        ],
+        "arm": "B"
+      }
+    },
+    {
+      "task_id": "express-tf1-001",
+      "family": "TF1",
+      "question": "Express middleware architecture?",
+      "arm_b": {
+        "symbol_recall": 1.0,
+        "fact_recall": 0.4,
+        "fidelity": 0.7,
+        "symbol_hits": 4,
+        "symbol_total": 4,
+        "fact_hits": 2,
+        "fact_total": 5,
+        "answer_tokens": 749,
+        "answer_words": 345,
+        "symbol_details": [
+          {
+            "symbol": "app.handle",
+            "found": true
+          },
+          {
+            "symbol": "router.handle",
+            "found": true
+          },
+          {
+            "symbol": "app.use",
+            "found": true
+          },
+          {
+            "symbol": "router.use",
+            "found": true
+          }
+        ],
+        "fact_details": [
+          {
+            "fact": "router-based middleware pipeline",
+            "found": true,
+            "match_ratio": 0.57
+          },
+          {
+            "fact": "app.handle delegates to router.handle",
+            "found": false,
+            "match_ratio": 0.23
+          },
+          {
+            "fact": "middleware registered via app.use",
+            "found": true,
+            "match_ratio": 0.33
+          },
+          {
+            "fact": "middleware receives req, res, next",
+            "found": false,
+            "match_ratio": 0.2
+          },
+          {
+            "fact": "executed in registration order",
+            "found": false,
+            "match_ratio": 0.0
+          }
+        ],
+        "arm": "B"
+      }
+    },
+    {
+      "task_id": "flask-tf2-001",
+      "family": "TF2",
+      "question": "What is the downstream impact of modifying Flask.wsgi_app?",
+      "arm_b": {
+        "symbol_recall": 0.5,
+        "fact_recall": 0.5714,
+        "fidelity": 0.5357,
+        "symbol_hits": 5,
+        "symbol_total": 10,
+        "fact_hits": 4,
+        "fact_total": 7,
+        "answer_tokens": 1118,
+        "answer_words": 552,
+        "symbol_details": [
+          {
+            "symbol": "wsgi_app",
+            "found": false
+          },
+          {
+            "symbol": "request_context",
+            "found": false
+          },
+          {
+            "symbol": "ctx.push",
+            "found": false
+          },
+          {
+            "symbol": "full_dispatch_request",
+            "found": true
+          },
+          {
+            "symbol": "preprocess_request",
+            "found": false
+          },
+          {
+            "symbol": "dispatch_request",
+            "found": true
+          },
+          {
+            "symbol": "finalize_request",
+            "found": true
+          },
+          {
+            "symbol": "handle_exception",
+            "found": true
+          },
+          {
+            "symbol": "handle_user_exception",
+            "found": true
+          },
+          {
+            "symbol": "ctx.pop",
+            "found": false
+          }
+        ],
+        "fact_details": [
+          {
+            "fact": "impacts context creation",
+            "found": true,
+            "match_ratio": 0.57
+          },
+          {
+            "fact": "impacts dispatch chain",
+            "found": true,
+            "match_ratio": 0.33
+          },
+          {
+            "fact": "impacts before_request hooks",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "impacts view function invocation",
+            "found": false,
+            "match_ratio": 0.25
+          },
+          {
+            "fact": "impacts after_request hooks",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "impacts exception handling",
+            "found": true,
+            "match_ratio": 0.67
+          },
+          {
+            "fact": "finally block ensures teardown",
+            "found": true,
+            "match_ratio": 0.68
+          }
+        ],
+        "arm": "B"
+      }
+    },
+    {
+      "task_id": "httpx-tf2-001",
+      "family": "TF2",
+      "question": "Impact of modifying httpx transport layer?",
+      "arm_b": {
+        "symbol_recall": 0.1667,
+        "fact_recall": 0.3333,
+        "fidelity": 0.25,
+        "symbol_hits": 1,
+        "symbol_total": 6,
+        "fact_hits": 2,
+        "fact_total": 6,
+        "answer_tokens": 1251,
+        "answer_words": 622,
+        "symbol_details": [
+          {
+            "symbol": "Client.request",
+            "found": true
+          },
+          {
+            "symbol": "send",
+            "found": false
+          },
+          {
+            "symbol": "_send_single_request",
+            "found": false
+          },
+          {
+            "symbol": "_transport_for_url",
+            "found": false
+          },
+          {
+            "symbol": "handle_request",
+            "found": false
+          },
+          {
+            "symbol": "_pool",
+            "found": false
+          }
+        ],
+        "fact_details": [
+          {
+            "fact": "transport between Client and httpcore",
+            "found": true,
+            "match_ratio": 0.5
+          },
+          {
+            "fact": "handle_request is the key method",
+            "found": true,
+            "match_ratio": 0.85
+          },
+          {
+            "fact": "wraps httpcore pool",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "affects connection pooling",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "affects SSL/TLS",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "affects timeouts and retries",
+            "found": false,
+            "match_ratio": 0.0
+          }
+        ],
+        "arm": "B"
+      }
+    },
+    {
+      "task_id": "flask-tf3-001",
+      "family": "TF3",
+      "question": "Where should the edit be made to add a new request hook?",
+      "arm_b": {
+        "symbol_recall": 0.6,
+        "fact_recall": 0.2,
+        "fidelity": 0.4,
+        "symbol_hits": 3,
+        "symbol_total": 5,
+        "fact_hits": 1,
+        "fact_total": 5,
+        "answer_tokens": 1017,
+        "answer_words": 486,
+        "symbol_details": [
+          {
+            "symbol": "before_request",
+            "found": false
+          },
+          {
+            "symbol": "after_request",
+            "found": false
+          },
+          {
+            "symbol": "teardown_request",
+            "found": true
+          },
+          {
+            "symbol": "teardown_appcontext",
+            "found": true
+          },
+          {
+            "symbol": "scaffold.py",
+            "found": true
+          }
+        ],
+        "fact_details": [
+          {
+            "fact": "registration in sansio/scaffold.py",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "before_request runs before dispatch",
+            "found": false,
+            "match_ratio": 0.25
+          },
+          {
+            "fact": "after_request runs after view returns",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "teardown runs regardless of exception",
+            "found": true,
+            "match_ratio": 0.5
+          },
+          {
+            "fact": "hooks run in reverse registration order",
+            "found": false,
+            "match_ratio": 0.0
+          }
+        ],
+        "arm": "B"
+      }
+    },
+    {
+      "task_id": "fastapi-tf3-001",
+      "family": "TF3",
+      "question": "Where to edit to add middleware in FastAPI?",
+      "arm_b": {
+        "symbol_recall": 0.0,
+        "fact_recall": 0.2,
+        "fidelity": 0.1,
+        "symbol_hits": 0,
+        "symbol_total": 4,
+        "fact_hits": 1,
+        "fact_total": 5,
+        "answer_tokens": 559,
+        "answer_words": 300,
+        "symbol_details": [
+          {
+            "symbol": "add_middleware",
+            "found": false
+          },
+          {
+            "symbol": "user_middleware",
+            "found": false
+          },
+          {
+            "symbol": "build_middleware_stack",
+            "found": false
+          },
+          {
+            "symbol": "Middleware",
+            "found": false
+          }
+        ],
+        "fact_details": [
+          {
+            "fact": "add_middleware is the API",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "stored in user_middleware list",
+            "found": true,
+            "match_ratio": 0.33
+          },
+          {
+            "fact": "build_middleware_stack composes at startup",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "middleware wraps previous handler",
+            "found": false,
+            "match_ratio": 0.25
+          },
+          {
+            "fact": "order matters",
+            "found": false,
+            "match_ratio": 0.0
+          }
+        ],
+        "arm": "B"
+      }
+    },
+    {
+      "task_id": "flask-tf4-001",
+      "family": "TF4",
+      "question": "What behavioral gotcha exists in Flask's request dispatch path?",
+      "arm_b": {
+        "symbol_recall": 0.4,
+        "fact_recall": 0.3333,
+        "fidelity": 0.3667,
+        "symbol_hits": 2,
+        "symbol_total": 5,
+        "fact_hits": 2,
+        "fact_total": 6,
+        "answer_tokens": 1012,
+        "answer_words": 491,
+        "symbol_details": [
+          {
+            "symbol": "finalize_request",
+            "found": true
+          },
+          {
+            "symbol": "before_request",
+            "found": false
+          },
+          {
+            "symbol": "after_request",
+            "found": false
+          },
+          {
+            "symbol": "teardown_request",
+            "found": true
+          },
+          {
+            "symbol": "PROPAGATE_EXCEPTIONS",
+            "found": false
+          }
+        ],
+        "fact_details": [
+          {
+            "fact": "exception in finalize_request silently logged",
+            "found": true,
+            "match_ratio": 0.5
+          },
+          {
+            "fact": "before_request can short-circuit",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "reverse order of hook execution",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "teardown runs in finally block",
+            "found": true,
+            "match_ratio": 0.5
+          },
+          {
+            "fact": "debug mode re-raises exceptions",
+            "found": false,
+            "match_ratio": 0.25
+          },
+          {
+            "fact": "session save conditional on modification",
+            "found": false,
+            "match_ratio": 0.0
+          }
+        ],
+        "arm": "B"
+      }
+    },
+    {
+      "task_id": "nest-tf4-001",
+      "family": "TF4",
+      "question": "Behavioral gotchas in NestJS middleware pipeline?",
+      "arm_b": {
+        "symbol_recall": 0.0,
+        "fact_recall": 0.2,
+        "fidelity": 0.1,
+        "symbol_hits": 0,
+        "symbol_total": 6,
+        "fact_hits": 1,
+        "fact_total": 5,
+        "answer_tokens": 762,
+        "answer_words": 310,
+        "symbol_details": [
+          {
+            "symbol": "resolveInstances",
+            "found": false
+          },
+          {
+            "symbol": "apply",
+            "found": false
+          },
+          {
+            "symbol": "forRoutes",
+            "found": false
+          },
+          {
+            "symbol": "exclude",
+            "found": false
+          },
+          {
+            "symbol": "MiddlewareBuilder",
+            "found": false
+          },
+          {
+            "symbol": "MiddlewareResolver",
+            "found": false
+          }
+        ],
+        "fact_details": [
+          {
+            "fact": "async initialization",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "exclude order matters",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "route-specific application",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "dependency injection scope",
+            "found": true,
+            "match_ratio": 0.67
+          },
+          {
+            "fact": "no early exit mechanism",
+            "found": false,
+            "match_ratio": 0.0
+          }
+        ],
+        "arm": "B"
+      }
+    },
+    {
+      "task_id": "flask-tf5-001",
+      "family": "TF5",
+      "question": "What security concerns exist in Flask's session handling?",
+      "arm_b": {
+        "symbol_recall": 0.0,
+        "fact_recall": 0.0,
+        "fidelity": 0.0,
+        "symbol_hits": 0,
+        "symbol_total": 5,
+        "fact_hits": 0,
+        "fact_total": 5,
+        "answer_tokens": 774,
+        "answer_words": 343,
+        "symbol_details": [
+          {
+            "symbol": "SecureCookieSessionInterface",
+            "found": false
+          },
+          {
+            "symbol": "NullSession",
+            "found": false
+          },
+          {
+            "symbol": "get_signing_serializer",
+            "found": false
+          },
+          {
+            "symbol": "should_set_cookie",
+            "found": false
+          },
+          {
+            "symbol": "BadSignature",
+            "found": false
+          }
+        ],
+        "fact_details": [
+          {
+            "fact": "no secret_key causes NullSession",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "HMAC-SHA1 default",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "tampered cookies return empty session",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "cookie flags default insecure",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "nested mutations not tracked",
+            "found": false,
+            "match_ratio": 0.0
+          }
+        ],
+        "arm": "B"
+      }
+    },
+    {
+      "task_id": "gin-tf5-001",
+      "family": "TF5",
+      "question": "Security in Gin middleware chain?",
+      "arm_b": {
+        "symbol_recall": 0.1667,
+        "fact_recall": 0.2,
+        "fidelity": 0.1833,
+        "symbol_hits": 1,
+        "symbol_total": 6,
+        "fact_hits": 1,
+        "fact_total": 5,
+        "answer_tokens": 703,
+        "answer_words": 318,
+        "symbol_details": [
+          {
+            "symbol": "ServeHTTP",
+            "found": false
+          },
+          {
+            "symbol": "handleHTTPRequest",
+            "found": false
+          },
+          {
+            "symbol": "Next",
+            "found": false
+          },
+          {
+            "symbol": "Abort",
+            "found": false
+          },
+          {
+            "symbol": "BasicAuth",
+            "found": true
+          },
+          {
+            "symbol": "ConstantTimeCompare",
+            "found": false
+          }
+        ],
+        "fact_details": [
+          {
+            "fact": "BasicAuth uses constant-time comparison",
+            "found": true,
+            "match_ratio": 0.6
+          },
+          {
+            "fact": "Abort doesn't stop current handler",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "middleware order matters",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "global middleware on all routes including errors",
+            "found": false,
+            "match_ratio": 0.0
+          },
+          {
+            "fact": "no built-in RBAC",
+            "found": false,
+            "match_ratio": 0.0
+          }
+        ],
+        "arm": "B"
+      }
+    }
+  ],
+  "summary": {
+    "B_TF1": {
+      "arm": "B",
+      "family": "TF1",
+      "n": 2,
+      "mean_fidelity": 0.6555,
+      "mean_symbol_recall": 0.7778,
+      "mean_fact_recall": 0.5333
+    },
+    "B_TF2": {
+      "arm": "B",
+      "family": "TF2",
+      "n": 2,
+      "mean_fidelity": 0.3928,
+      "mean_symbol_recall": 0.3333,
+      "mean_fact_recall": 0.4524
+    },
+    "B_TF3": {
+      "arm": "B",
+      "family": "TF3",
+      "n": 2,
+      "mean_fidelity": 0.25,
+      "mean_symbol_recall": 0.3,
+      "mean_fact_recall": 0.2
+    },
+    "B_TF4": {
+      "arm": "B",
+      "family": "TF4",
+      "n": 2,
+      "mean_fidelity": 0.2334,
+      "mean_symbol_recall": 0.2,
+      "mean_fact_recall": 0.2666
+    },
+    "B_TF5": {
+      "arm": "B",
+      "family": "TF5",
+      "n": 2,
+      "mean_fidelity": 0.0916,
+      "mean_symbol_recall": 0.0833,
+      "mean_fact_recall": 0.1
+    },
+    "B_overall": {
+      "arm": "B",
+      "family": "ALL",
+      "n": 10,
+      "mean_fidelity": 0.3247
+    }
+  },
+  "arm_a_missing": [
+    "flask-tf1-001",
+    "express-tf1-001",
+    "flask-tf2-001",
+    "httpx-tf2-001",
+    "flask-tf3-001",
+    "fastapi-tf3-001",
+    "flask-tf4-001",
+    "nest-tf4-001",
+    "flask-tf5-001",
+    "gin-tf5-001"
+  ],
+  "arm_b_missing": []
+}

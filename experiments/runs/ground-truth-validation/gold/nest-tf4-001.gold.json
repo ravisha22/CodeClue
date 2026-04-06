@@ -1,0 +1,21 @@
+{
+  "task_id": "nest-tf4-001",
+  "family": "TF4",
+  "question": "Behavioral gotchas in NestJS middleware pipeline?",
+  "gold_answer": "Gotchas: (1) resolveInstances is async \u2014 middleware must be fully initialized before routing begins. (2) exclude() removes routes AFTER forRoutes() \u2014 call order matters. (3) Middleware applies only to specified routes/controllers, not globally by default. (4) Middleware dependencies must be resolvable in current module scope via DI. (5) No built-in early exit mechanism unlike Gin's Abort().",
+  "gold_symbols": [
+    "resolveInstances",
+    "apply",
+    "forRoutes",
+    "exclude",
+    "MiddlewareBuilder",
+    "MiddlewareResolver"
+  ],
+  "gold_facts": [
+    "async initialization",
+    "exclude order matters",
+    "route-specific application",
+    "dependency injection scope",
+    "no early exit mechanism"
+  ]
+}

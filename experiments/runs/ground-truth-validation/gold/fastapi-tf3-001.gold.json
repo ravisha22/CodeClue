@@ -1,0 +1,19 @@
+{
+  "task_id": "fastapi-tf3-001",
+  "family": "TF3",
+  "question": "Where to edit to add middleware in FastAPI?",
+  "gold_answer": "Middleware is added via app.add_middleware(MiddlewareClass, **options). Internally stored in self.user_middleware list. build_middleware_stack() in applications.py reverses the middleware list and wraps the app stack: each middleware wraps the previous as cls(app, *args, **kwargs). All middleware is pre-composed at startup. Changes require reinitializing build_middleware_stack(). To add: instantiate Middleware class from Starlette and append to user_middleware.",
+  "gold_symbols": [
+    "add_middleware",
+    "user_middleware",
+    "build_middleware_stack",
+    "Middleware"
+  ],
+  "gold_facts": [
+    "add_middleware is the API",
+    "stored in user_middleware list",
+    "build_middleware_stack composes at startup",
+    "middleware wraps previous handler",
+    "order matters"
+  ]
+}

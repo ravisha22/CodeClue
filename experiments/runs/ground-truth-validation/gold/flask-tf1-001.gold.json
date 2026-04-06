@@ -1,0 +1,25 @@
+{
+  "task_id": "flask-tf1-001",
+  "family": "TF1",
+  "question": "What is the high-level architecture of Flask's request handling?",
+  "gold_answer": "Flask's HTTP request handling follows a pipeline: (1) __call__ (line 1607) delegates to wsgi_app (line 1567). (2) wsgi_app creates a RequestContext via request_context(environ), pushes it to make request/session/g/current_app available. (3) full_dispatch_request runs before_request hooks, dispatches to the matched view function via dispatch_request, then finalizes via finalize_request. (4) Errors route through handle_exception. (5) Context teardown runs in a finally block via ctx.pop(), which calls do_teardown_request and do_teardown_appcontext. Key files: src/flask/app.py (main pipeline), src/flask/ctx.py (context management).",
+  "gold_symbols": [
+    "wsgi_app",
+    "__call__",
+    "full_dispatch_request",
+    "dispatch_request",
+    "finalize_request",
+    "handle_exception",
+    "request_context",
+    "ctx.push",
+    "ctx.pop"
+  ],
+  "gold_facts": [
+    "wsgi_app creates RequestContext",
+    "context pushed to activate request/session/g globals",
+    "full_dispatch_request runs before_request hooks",
+    "dispatch_request calls the view function",
+    "finalize_request runs after_request hooks",
+    "teardown runs in finally block"
+  ]
+}

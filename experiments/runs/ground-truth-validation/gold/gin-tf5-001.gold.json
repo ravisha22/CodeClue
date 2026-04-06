@@ -1,0 +1,21 @@
+{
+  "task_id": "gin-tf5-001",
+  "family": "TF5",
+  "question": "Security in Gin middleware chain?",
+  "gold_answer": "Security concerns: (1) BasicAuth uses subtle.ConstantTimeCompare (SAFE against timing). (2) c.Abort() sets index to abortIndex preventing remaining handlers, but does NOT stop the current handler \u2014 code after Abort() still executes. (3) Middleware order matters \u2014 global Use() on Engine applies to ALL routes including 404/405 handlers. (4) Group middleware may execute before/after global middleware depending on route matching. (5) No built-in RBAC \u2014 auth must be manually checked.",
+  "gold_symbols": [
+    "ServeHTTP",
+    "handleHTTPRequest",
+    "Next",
+    "Abort",
+    "BasicAuth",
+    "ConstantTimeCompare"
+  ],
+  "gold_facts": [
+    "BasicAuth uses constant-time comparison",
+    "Abort doesn't stop current handler",
+    "middleware order matters",
+    "global middleware on all routes including errors",
+    "no built-in RBAC"
+  ]
+}

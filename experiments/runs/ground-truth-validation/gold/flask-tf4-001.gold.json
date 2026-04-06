@@ -1,0 +1,21 @@
+{
+  "task_id": "flask-tf4-001",
+  "family": "TF4",
+  "question": "What behavioral gotcha exists in Flask's request dispatch path?",
+  "gold_answer": "Key gotchas: (1) Exception in finalize_request during error handling is silently logged, not re-raised \u2014 can hide bugs. (2) before_request returning non-None short-circuits dispatch entirely \u2014 view never called. (3) after_request runs in reverse registration order. (4) teardown runs in finally block \u2014 always executes even on exception, but teardown itself must not raise. (5) Debug mode with PROPAGATE_EXCEPTIONS re-raises unhandled errors, can crash the server. (6) Session only saves if modified OR (permanent AND SESSION_REFRESH_EACH_REQUEST).",
+  "gold_symbols": [
+    "finalize_request",
+    "before_request",
+    "after_request",
+    "teardown_request",
+    "PROPAGATE_EXCEPTIONS"
+  ],
+  "gold_facts": [
+    "exception in finalize_request silently logged",
+    "before_request can short-circuit",
+    "reverse order of hook execution",
+    "teardown runs in finally block",
+    "debug mode re-raises exceptions",
+    "session save conditional on modification"
+  ]
+}

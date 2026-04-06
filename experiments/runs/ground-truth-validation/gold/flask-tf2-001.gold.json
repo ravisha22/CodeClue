@@ -1,0 +1,27 @@
+{
+  "task_id": "flask-tf2-001",
+  "family": "TF2",
+  "question": "What is the downstream impact of modifying Flask.wsgi_app?",
+  "gold_answer": "Modifying wsgi_app impacts the entire request lifecycle: (1) request_context(environ) \u2014 context creation and route matching. (2) ctx.push() \u2014 activation of context variables. (3) full_dispatch_request \u2014 the complete dispatch chain: preprocess_request (url_value_preprocessors + before_request_funcs), dispatch_request (view invocation), handle_user_exception, and finalize_request (make_response + process_response + after_request_funcs + session save). (4) handle_exception \u2014 error handling and 500 response. (5) ctx.pop(error) \u2014 teardown_request_funcs and teardown_appcontext_funcs. The finally block ensures teardown always runs. Any change to wsgi_app's try/except/finally structure affects exception propagation for all request paths.",
+  "gold_symbols": [
+    "wsgi_app",
+    "request_context",
+    "ctx.push",
+    "full_dispatch_request",
+    "preprocess_request",
+    "dispatch_request",
+    "finalize_request",
+    "handle_exception",
+    "handle_user_exception",
+    "ctx.pop"
+  ],
+  "gold_facts": [
+    "impacts context creation",
+    "impacts dispatch chain",
+    "impacts before_request hooks",
+    "impacts view function invocation",
+    "impacts after_request hooks",
+    "impacts exception handling",
+    "finally block ensures teardown"
+  ]
+}

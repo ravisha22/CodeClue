@@ -1,0 +1,112 @@
+[
+  {
+    "task_id": "flask-tf1-001",
+    "family": "TF1",
+    "question": "What is the high-level architecture of Flask's request handling?",
+    "gold_file": "gold/flask-tf1-001.gold.json",
+    "arm_a_prompt": "prompts/flask-tf1-001_arm-a-raw.prompt.md",
+    "arm_a_response": "prompts/flask-tf1-001_arm-a-raw.response.md",
+    "arm_b_prompt_exists": true,
+    "arm_b_response_exists": true,
+    "raw_prompt_tokens": 8238
+  },
+  {
+    "task_id": "express-tf1-001",
+    "family": "TF1",
+    "question": "Express middleware architecture?",
+    "gold_file": "gold/express-tf1-001.gold.json",
+    "arm_a_prompt": "prompts/express-tf1-001_arm-a-raw.prompt.md",
+    "arm_a_response": "prompts/express-tf1-001_arm-a-raw.response.md",
+    "arm_b_prompt_exists": true,
+    "arm_b_response_exists": true,
+    "raw_prompt_tokens": 2946
+  },
+  {
+    "task_id": "flask-tf2-001",
+    "family": "TF2",
+    "question": "What is the downstream impact of modifying Flask.wsgi_app?",
+    "gold_file": "gold/flask-tf2-001.gold.json",
+    "arm_a_prompt": "prompts/flask-tf2-001_arm-a-raw.prompt.md",
+    "arm_a_response": "prompts/flask-tf2-001_arm-a-raw.response.md",
+    "arm_b_prompt_exists": true,
+    "arm_b_response_exists": true,
+    "raw_prompt_tokens": 4454
+  },
+  {
+    "task_id": "httpx-tf2-001",
+    "family": "TF2",
+    "question": "Impact of modifying httpx transport layer?",
+    "gold_file": "gold/httpx-tf2-001.gold.json",
+    "arm_a_prompt": "prompts/httpx-tf2-001_arm-a-raw.prompt.md",
+    "arm_a_response": "prompts/httpx-tf2-001_arm-a-raw.response.md",
+    "arm_b_prompt_exists": true,
+    "arm_b_response_exists": true,
+    "raw_prompt_tokens": 6590
+  },
+  {
+    "task_id": "flask-tf3-001",
+    "family": "TF3",
+    "question": "Where should the edit be made to add a new request hook?",
+    "gold_file": "gold/flask-tf3-001.gold.json",
+    "arm_a_prompt": "prompts/flask-tf3-001_arm-a-raw.prompt.md",
+    "arm_a_response": "prompts/flask-tf3-001_arm-a-raw.response.md",
+    "arm_b_prompt_exists": true,
+    "arm_b_response_exists": true,
+    "raw_prompt_tokens": 8667
+  },
+  {
+    "task_id": "fastapi-tf3-001",
+    "family": "TF3",
+    "question": "Where to edit to add middleware in FastAPI?",
+    "gold_file": "gold/fastapi-tf3-001.gold.json",
+    "arm_a_prompt": "prompts/fastapi-tf3-001_arm-a-raw.prompt.md",
+    "arm_a_response": "prompts/fastapi-tf3-001_arm-a-raw.response.md",
+    "arm_b_prompt_exists": true,
+    "arm_b_response_exists": true,
+    "raw_prompt_tokens": 3454
+  },
+  {
+    "task_id": "flask-tf4-001",
+    "family": "TF4",
+    "question": "What behavioral gotcha exists in Flask's request dispatch path?",
+    "gold_file": "gold/flask-tf4-001.gold.json",
+    "arm_a_prompt": "prompts/flask-tf4-001_arm-a-raw.prompt.md",
+    "arm_a_response": "prompts/flask-tf4-001_arm-a-raw.response.md",
+    "arm_b_prompt_exists": true,
+    "arm_b_response_exists": true,
+    "raw_prompt_tokens": 7753
+  },
+  {
+    "task_id": "nest-tf4-001",
+    "family": "TF4",
+    "question": "Behavioral gotchas in NestJS middleware pipeline?",
+    "gold_file": "gold/nest-tf4-001.gold.json",
+    "arm_a_prompt": "prompts/nest-tf4-001_arm-a-raw.prompt.md",
+    "arm_a_response": "prompts/nest-tf4-001_arm-a-raw.response.md",
+    "arm_b_prompt_exists": true,
+    "arm_b_response_exists": true,
+    "raw_prompt_tokens": 1197
+  },
+  {
+    "task_id": "flask-tf5-001",
+    "family": "TF5",
+    "question": "What security concerns exist in Flask's session handling?",
+    "gold_file": "gold/flask-tf5-001.gold.json",
+    "arm_a_prompt": "prompts/flask-tf5-001_arm-a-raw.prompt.md",
+    "arm_a_response": "prompts/flask-tf5-001_arm-a-raw.response.md",
+    "arm_b_prompt_exists": true,
+    "arm_b_response_exists": true,
+    "raw_prompt_tokens": 3435
+  },
+  {
+    "task_id": "gin-tf5-001",
+    "family": "TF5",
+    "question": "Security in Gin middleware chain?",
+    "gold_file": "gold/gin-tf5-001.gold.json",
+    "arm_a_prompt": "prompts/gin-tf5-001_arm-a-raw.prompt.md",
+    "arm_a_response": "prompts/gin-tf5-001_arm-a-raw.response.md",
+    "arm_b_prompt_exists": true,
+    "arm_b_response_exists": true,
+    "raw_prompt_tokens": 9305
+  }
+]
