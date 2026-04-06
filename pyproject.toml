@@ -4,12 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "codeclue-research"
-version = "0.1.0"
+version = "0.7.0"
 description = "Phase 1 scaffold for lossless LLM-native code comprehension research"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
   "PyYAML>=6.0",
+  "tiktoken>=0.7.0",
 ]
 
 [project.scripts]
