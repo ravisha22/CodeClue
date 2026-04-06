@@ -1,0 +1,72 @@
+[
+  {
+    "task_id": "django-tf1-001",
+    "family": "TF1",
+    "operation_family": "OF1",
+    "proj_nodes": 160,
+    "proj_edges": 185,
+    "entity_count": 15,
+    "purity_pass": true,
+    "clue_tokens": 1052,
+    "raw_tokens": 79476,
+    "proj_tokens": 40094,
+    "ccr": 0.9868,
+    "ccr_pass": true
+  },
+  {
+    "task_id": "django-tf2-001",
+    "family": "TF2",
+    "operation_family": "OF2",
+    "proj_nodes": 13,
+    "proj_edges": 27,
+    "entity_count": 13,
+    "purity_pass": true,
+    "clue_tokens": 1793,
+    "raw_tokens": 2655,
+    "proj_tokens": 4783,
+    "ccr": 0.3247,
+    "ccr_pass": false
+  },
+  {
+    "task_id": "django-tf3-001",
+    "family": "TF3",
+    "operation_family": "OF3",
+    "proj_nodes": 160,
+    "proj_edges": 179,
+    "entity_count": 15,
+    "purity_pass": true,
+    "clue_tokens": 1053,
+    "raw_tokens": 77789,
+    "proj_tokens": 39386,
+    "ccr": 0.9865,
+    "ccr_pass": true
+  },
+  {
+    "task_id": "django-tf4-001",
+    "family": "TF4",
+    "operation_family": "OF4",
+    "proj_nodes": 160,
+    "proj_edges": 185,
+    "entity_count": 15,
+    "purity_pass": true,
+    "clue_tokens": 1041,
+    "raw_tokens": 78923,
+    "proj_tokens": 40063,
+    "ccr": 0.9868,
+    "ccr_pass": true
+  },
+  {
+    "task_id": "django-tf5-001",
+    "family": "TF5",
+    "operation_family": "OF5",
+    "proj_nodes": 136,
+    "proj_edges": 184,
+    "entity_count": 15,
+    "purity_pass": true,
+    "clue_tokens": 1039,
+    "raw_tokens": 8825,
+    "proj_tokens": 36730,
+    "ccr": 0.8823,
+    "ccr_pass": true
+  }
+]

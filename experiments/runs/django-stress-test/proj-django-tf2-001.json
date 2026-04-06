@@ -1,0 +1,670 @@
+{
+  "trace_id": "trace-django-fast-OF2",
+  "operation_family": "OF2",
+  "prompt_profile": {},
+  "projected_nodes": [
+    {
+      "node_id": "symbol:django/core/handlers/base.py:BaseHandler.get_response_async:154",
+      "node_type": "async_function",
+      "source_anchor": {
+        "file_path": "django/core/handlers/base.py",
+        "byte_start": 5929,
+        "byte_end": 6744,
+        "ast_path": "async_function:BaseHandler.get_response_async",
+        "content_hash": "53e636b286ae6f8e"
+      },
+      "semantic_contract": {
+        "purpose": "async_function get_response_async",
+        "language": "python",
+        "symbol_name": "get_response_async",
+        "symbol_type": "async_function",
+        "tier": 1,
+        "complexity_indicators": {
+          "decorator_depth": 0,
+          "generic_type_param_count": 0
+        },
+        "calls": [],
+        "called_by": []
+      },
+      "confidence": 0.92
+    },
+    {
+      "node_id": "symbol:django/core/handlers/base.py:BaseHandler.check_response:319",
+      "node_type": "function",
+      "source_anchor": {
+        "file_path": "django/core/handlers/base.py",
+        "byte_start": 12630,
+        "byte_end": 13693,
+        "ast_path": "function:BaseHandler.check_response",
+        "content_hash": "fdda1e8a825b9943"
+      },
+      "semantic_contract": {
+        "purpose": "function check_response",
+        "language": "python",
+        "symbol_name": "check_response",
+        "symbol_type": "function",
+        "tier": 1,
+        "complexity_indicators": {
+          "decorator_depth": 0,
+          "generic_type_param_count": 0
+        },
+        "calls": [],
+        "called_by": [
+          {
+            "source": "symbol:django/core/handlers/base.py:BaseHandler._get_response:176"
+          },
+          {
+            "source": "symbol:django/core/handlers/base.py:BaseHandler._get_response_async:230"
+          }
+        ]
+      },
+      "confidence": 0.92
+    },
+    {
+      "node_id": "symbol:django/core/handlers/base.py:BaseHandler.process_exception_by_middleware:358",
+      "node_type": "function",
+      "source_anchor": {
+        "file_path": "django/core/handlers/base.py",
+        "byte_start": 14259,
+        "byte_end": 14676,
+        "ast_path": "function:BaseHandler.process_exception_by_middleware",
+        "content_hash": "1295b7b176f90119"
+      },
+      "semantic_contract": {
+        "purpose": "function process_exception_by_middleware",
+        "language": "python",
+        "symbol_name": "process_exception_by_middleware",
+        "symbol_type": "function",
+        "tier": 1,
+        "complexity_indicators": {
+          "decorator_depth": 0,
+          "generic_type_param_count": 0
+        },
+        "calls": [],
+        "called_by": [
+          {
+            "source": "symbol:django/core/handlers/base.py:BaseHandler._get_response:176"
+          }
+        ]
+      },
+      "confidence": 0.92
+    },
+    {
+      "node_id": "symbol:django/core/handlers/base.py:reset_urlconf:370",
+      "node_type": "function",
+      "source_anchor": {
+        "file_path": "django/core/handlers/base.py",
+        "byte_start": 14679,
+        "byte_end": 14797,
+        "ast_path": "function:reset_urlconf",
+        "content_hash": "4bb512828ef75bbe"
+      },
+      "semantic_contract": {
+        "purpose": "function reset_urlconf",
+        "language": "python",
+        "symbol_name": "reset_urlconf",
+        "symbol_type": "function",
+        "tier": 1,
+        "complexity_indicators": {
+          "decorator_depth": 0,
+          "generic_type_param_count": 0
+        },
+        "calls": [],
+        "called_by": []
+      },
+      "confidence": 0.92
+    },
+    {
+      "node_id": "symbol:django/core/handlers/base.py:BaseHandler.adapt_method_mode:106",
+      "node_type": "function",
+      "source_anchor": {
+        "file_path": "django/core/handlers/base.py",
+        "byte_start": 4225,
+        "byte_end": 5342,
+        "ast_path": "function:BaseHandler.adapt_method_mode",
+        "content_hash": "659d19f130cda0bc"
+      },
+      "semantic_contract": {
+        "purpose": "function adapt_method_mode",
+        "language": "python",
+        "symbol_name": "adapt_method_mode",
+        "symbol_type": "function",
+        "tier": 1,
+        "complexity_indicators": {
+          "decorator_depth": 0,
+          "generic_type_param_count": 0
+        },
+        "calls": [],
+        "called_by": [
+          {
+            "source": "symbol:django/core/handlers/base.py:BaseHandler.load_middleware:27"
+          }
+        ]
+      },
+      "confidence": 0.92
+    },
+    {
+      "node_id": "symbol:django/core/handlers/base.py:BaseHandler.get_response:138",
+      "node_type": "function",
+      "source_anchor": {
+        "file_path": "django/core/handlers/base.py",
+        "byte_start": 5348,
+        "byte_end": 5923,
+        "ast_path": "function:BaseHandler.get_response",
+        "content_hash": "fd7002776dc9eec7"
+      },
+      "semantic_contract": {
+        "purpose": "function get_response",
+        "language": "python",
+        "symbol_name": "get_response",
+        "symbol_type": "function",
+        "tier": 1,
+        "complexity_indicators": {
+          "decorator_depth": 0,
+          "generic_type_param_count": 0
+        },
+        "calls": [],
+        "called_by": []
+      },
+      "confidence": 0.92
+    },
+    {
+      "node_id": "symbol:django/core/handlers/base.py:BaseHandler._get_response:176",
+      "node_type": "function",
+      "source_anchor": {
+        "file_path": "django/core/handlers/base.py",
+        "byte_start": 6750,
+        "byte_end": 8998,
+        "ast_path": "function:BaseHandler._get_response",
+        "content_hash": "cedba29d33483ce3"
+      },
+      "semantic_contract": {
+        "purpose": "function _get_response",
+        "language": "python",
+        "symbol_name": "_get_response",
+        "symbol_type": "function",
+        "tier": 1,
+        "complexity_indicators": {
+          "decorator_depth": 0,
+          "generic_type_param_count": 0
+        },
+        "calls": [
+          {
+            "target": "symbol:django/core/handlers/base.py:BaseHandler.check_response:319",
+            "is_external": false
+          },
+          {
+            "target": "symbol:django/core/handlers/base.py:BaseHandler.make_view_atomic:347",
+            "is_external": false
+          },
+          {
+            "target": "symbol:django/core/handlers/base.py:BaseHandler.process_exception_by_middleware:358",
+            "is_external": false
+          },
+          {
+            "target": "symbol:django/core/handlers/base.py:BaseHandler.resolve_request:302",
+            "is_external": false
+          }
+        ],
+        "called_by": []
+      },
+      "confidence": 0.92
+    },
+    {
+      "node_id": "symbol:django/core/handlers/base.py:BaseHandler:21",
+      "node_type": "class",
+      "source_anchor": {
+        "file_path": "django/core/handlers/base.py",
+        "byte_start": 591,
+        "byte_end": 14676,
+        "ast_path": "class:BaseHandler",
+        "content_hash": "5fc46a2d3c3d949d"
+      },
+      "semantic_contract": {
+        "purpose": "class BaseHandler",
+        "language": "python",
+        "symbol_name": "BaseHandler",
+        "symbol_type": "class",
+        "tier": 1,
+        "complexity_indicators": {
+          "decorator_depth": 0,
+          "generic_type_param_count": 0
+        },
+        "calls": [],
+        "called_by": []
+      },
+      "confidence": 0.92
+    },
+    {
+      "node_id": "symbol:django/core/handlers/base.py:BaseHandler.load_middleware:27",
+      "node_type": "function",
+      "source_anchor": {
+        "file_path": "django/core/handlers/base.py",
+        "byte_start": 746,
+        "byte_end": 4219,
+        "ast_path": "function:BaseHandler.load_middleware",
+        "content_hash": "23f663f8591246ba"
+      },
+      "semantic_contract": {
+        "purpose": "function load_middleware",
+        "language": "python",
+        "symbol_name": "load_middleware",
+        "symbol_type": "function",
+        "tier": 1,
+        "complexity_indicators": {
+          "decorator_depth": 0,
+          "generic_type_param_count": 0
+        },
+        "calls": [
+          {
+            "target": "symbol:django/core/handlers/base.py:BaseHandler.adapt_method_mode:106",
+            "is_external": false
+          }
+        ],
+        "called_by": []
+      },
+      "confidence": 0.92
+    },
+    {
+      "node_id": "symbol:django/core/handlers/base.py:BaseHandler._get_response_async:230",
+      "node_type": "async_function",
+      "source_anchor": {
+        "file_path": "django/core/handlers/base.py",
+        "byte_start": 9004,
+        "byte_end": 11992,
+        "ast_path": "async_function:BaseHandler._get_response_async",
+        "content_hash": "e07a927a3816eae2"
+      },
+      "semantic_contract": {
+        "purpose": "async_function _get_response_async",
+        "language": "python",
+        "symbol_name": "_get_response_async",
+        "symbol_type": "async_function",
+        "tier": 1,
+        "complexity_indicators": {
+          "decorator_depth": 0,
+          "generic_type_param_count": 0
+        },
+        "calls": [
+          {
+            "target": "symbol:django/core/handlers/base.py:BaseHandler.check_response:319",
+            "is_external": false
+          },
+          {
+            "target": "symbol:django/core/handlers/base.py:BaseHandler.make_view_atomic:347",
+            "is_external": false
+          },
+          {
+            "target": "symbol:django/core/handlers/base.py:BaseHandler.resolve_request:302",
+            "is_external": false
+          }
+        ],
+        "called_by": []
+      },
+      "confidence": 0.92
+    },
+    {
+      "node_id": "module:django/core/handlers/base.py",
+      "node_type": "module",
+      "source_anchor": {
+        "file_path": "django/core/handlers/base.py",
+        "byte_start": 0,
+        "byte_end": 14840,
+        "ast_path": "module",
+        "content_hash": "b661b5d782bed13a"
+      },
+      "semantic_contract": {
+        "purpose": "Module-level semantic container",
+        "language": "python",
+        "symbol_name": "django/core/handlers/base.py",
+        "symbol_type": "module",
+        "tier": 1,
+        "complexity_indicators": {
+          "decorator_depth": 0,
+          "generic_type_param_count": 0
+        },
+        "calls": [],
+        "called_by": []
+      },
+      "confidence": 1.0
+    },
+    {
+      "node_id": "symbol:django/core/handlers/base.py:BaseHandler.resolve_request:302",
+      "node_type": "function",
+      "source_anchor": {
+        "file_path": "django/core/handlers/base.py",
+        "byte_start": 11998,
+        "byte_end": 12624,
+        "ast_path": "function:BaseHandler.resolve_request",
+        "content_hash": "9c35f21f6f40b9ba"
+      },
+      "semantic_contract": {
+        "purpose": "function resolve_request",
+        "language": "python",
+        "symbol_name": "resolve_request",
+        "symbol_type": "function",
+        "tier": 1,
+        "complexity_indicators": {
+          "decorator_depth": 0,
+          "generic_type_param_count": 0
+        },
+        "calls": [],
+        "called_by": [
+          {
+            "source": "symbol:django/core/handlers/base.py:BaseHandler._get_response:176"
+          },
+          {
+            "source": "symbol:django/core/handlers/base.py:BaseHandler._get_response_async:230"
+          }
+        ]
+      },
+      "confidence": 0.92
+    },
+    {
+      "node_id": "symbol:django/core/handlers/base.py:BaseHandler.make_view_atomic:347",
+      "node_type": "function",
+      "source_anchor": {
+        "file_path": "django/core/handlers/base.py",
+        "byte_start": 13729,
+        "byte_end": 14253,
+        "ast_path": "function:BaseHandler.make_view_atomic",
+        "content_hash": "6e30d3d3f7bf5730"
+      },
+      "semantic_contract": {
+        "purpose": "function make_view_atomic",
+        "language": "python",
+        "symbol_name": "make_view_atomic",
+        "symbol_type": "function",
+        "tier": 1,
+        "complexity_indicators": {
+          "decorator_depth": 0,
+          "generic_type_param_count": 0
+        },
+        "calls": [],
+        "called_by": [
+          {
+            "source": "symbol:django/core/handlers/base.py:BaseHandler._get_response:176"
+          },
+          {
+            "source": "symbol:django/core/handlers/base.py:BaseHandler._get_response_async:230"
+          }
+        ]
+      },
+      "confidence": 0.92
+    }
+  ],
+  "projected_edges": [
+    {
+      "edge_id": "calls:symbol:django/core/handlers/base.py:BaseHandler._get_response:176:symbol:django/core/handlers/base.py:BaseHandler.check_response:319:206",
+      "edge_type": "calls",
+      "from_node": "symbol:django/core/handlers/base.py:BaseHandler._get_response:176",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.check_response:319",
+      "evidence": {
+        "rel": "ast_call",
+        "line": 206
+      }
+    },
+    {
+      "edge_id": "calls:symbol:django/core/handlers/base.py:BaseHandler._get_response:176:symbol:django/core/handlers/base.py:BaseHandler.check_response:319:215",
+      "edge_type": "calls",
+      "from_node": "symbol:django/core/handlers/base.py:BaseHandler._get_response:176",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.check_response:319",
+      "evidence": {
+        "rel": "ast_call",
+        "line": 215
+      }
+    },
+    {
+      "edge_id": "calls:symbol:django/core/handlers/base.py:BaseHandler._get_response:176:symbol:django/core/handlers/base.py:BaseHandler.make_view_atomic:347:194",
+      "edge_type": "calls",
+      "from_node": "symbol:django/core/handlers/base.py:BaseHandler._get_response:176",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.make_view_atomic:347",
+      "evidence": {
+        "rel": "ast_call",
+        "line": 194
+      }
+    },
+    {
+      "edge_id": "calls:symbol:django/core/handlers/base.py:BaseHandler._get_response:176:symbol:django/core/handlers/base.py:BaseHandler.process_exception_by_middleware:358:201",
+      "edge_type": "calls",
+      "from_node": "symbol:django/core/handlers/base.py:BaseHandler._get_response:176",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.process_exception_by_middleware:358",
+      "evidence": {
+        "rel": "ast_call",
+        "line": 201
+      }
+    },
+    {
+      "edge_id": "calls:symbol:django/core/handlers/base.py:BaseHandler._get_response:176:symbol:django/core/handlers/base.py:BaseHandler.process_exception_by_middleware:358:224",
+      "edge_type": "calls",
+      "from_node": "symbol:django/core/handlers/base.py:BaseHandler._get_response:176",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.process_exception_by_middleware:358",
+      "evidence": {
+        "rel": "ast_call",
+        "line": 224
+      }
+    },
+    {
+      "edge_id": "calls:symbol:django/core/handlers/base.py:BaseHandler._get_response:176:symbol:django/core/handlers/base.py:BaseHandler.resolve_request:302:183",
+      "edge_type": "calls",
+      "from_node": "symbol:django/core/handlers/base.py:BaseHandler._get_response:176",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.resolve_request:302",
+      "evidence": {
+        "rel": "ast_call",
+        "line": 183
+      }
+    },
+    {
+      "edge_id": "calls:symbol:django/core/handlers/base.py:BaseHandler._get_response_async:230:symbol:django/core/handlers/base.py:BaseHandler.check_response:319:267",
+      "edge_type": "calls",
+      "from_node": "symbol:django/core/handlers/base.py:BaseHandler._get_response_async:230",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.check_response:319",
+      "evidence": {
+        "rel": "ast_call",
+        "line": 267
+      }
+    },
+    {
+      "edge_id": "calls:symbol:django/core/handlers/base.py:BaseHandler._get_response_async:230:symbol:django/core/handlers/base.py:BaseHandler.check_response:319:276",
+      "edge_type": "calls",
+      "from_node": "symbol:django/core/handlers/base.py:BaseHandler._get_response_async:230",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.check_response:319",
+      "evidence": {
+        "rel": "ast_call",
+        "line": 276
+      }
+    },
+    {
+      "edge_id": "calls:symbol:django/core/handlers/base.py:BaseHandler._get_response_async:230:symbol:django/core/handlers/base.py:BaseHandler.make_view_atomic:347:248",
+      "edge_type": "calls",
+      "from_node": "symbol:django/core/handlers/base.py:BaseHandler._get_response_async:230",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.make_view_atomic:347",
+      "evidence": {
+        "rel": "ast_call",
+        "line": 248
+      }
+    },
+    {
+      "edge_id": "calls:symbol:django/core/handlers/base.py:BaseHandler._get_response_async:230:symbol:django/core/handlers/base.py:BaseHandler.resolve_request:302:237",
+      "edge_type": "calls",
+      "from_node": "symbol:django/core/handlers/base.py:BaseHandler._get_response_async:230",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.resolve_request:302",
+      "evidence": {
+        "rel": "ast_call",
+        "line": 237
+      }
+    },
+    {
+      "edge_id": "calls:symbol:django/core/handlers/base.py:BaseHandler.load_middleware:27:symbol:django/core/handlers/base.py:BaseHandler.adapt_method_mode:106:101",
+      "edge_type": "calls",
+      "from_node": "symbol:django/core/handlers/base.py:BaseHandler.load_middleware:27",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.adapt_method_mode:106",
+      "evidence": {
+        "rel": "ast_call",
+        "line": 101
+      }
+    },
+    {
+      "edge_id": "calls:symbol:django/core/handlers/base.py:BaseHandler.load_middleware:27:symbol:django/core/handlers/base.py:BaseHandler.adapt_method_mode:106:56",
+      "edge_type": "calls",
+      "from_node": "symbol:django/core/handlers/base.py:BaseHandler.load_middleware:27",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.adapt_method_mode:106",
+      "evidence": {
+        "rel": "ast_call",
+        "line": 56
+      }
+    },
+    {
+      "edge_id": "calls:symbol:django/core/handlers/base.py:BaseHandler.load_middleware:27:symbol:django/core/handlers/base.py:BaseHandler.adapt_method_mode:106:82",
+      "edge_type": "calls",
+      "from_node": "symbol:django/core/handlers/base.py:BaseHandler.load_middleware:27",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.adapt_method_mode:106",
+      "evidence": {
+        "rel": "ast_call",
+        "line": 82
+      }
+    },
+    {
+      "edge_id": "calls:symbol:django/core/handlers/base.py:BaseHandler.load_middleware:27:symbol:django/core/handlers/base.py:BaseHandler.adapt_method_mode:106:86",
+      "edge_type": "calls",
+      "from_node": "symbol:django/core/handlers/base.py:BaseHandler.load_middleware:27",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.adapt_method_mode:106",
+      "evidence": {
+        "rel": "ast_call",
+        "line": 86
+      }
+    },
+    {
+      "edge_id": "calls:symbol:django/core/handlers/base.py:BaseHandler.load_middleware:27:symbol:django/core/handlers/base.py:BaseHandler.adapt_method_mode:106:94",
+      "edge_type": "calls",
+      "from_node": "symbol:django/core/handlers/base.py:BaseHandler.load_middleware:27",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.adapt_method_mode:106",
+      "evidence": {
+        "rel": "ast_call",
+        "line": 94
+      }
+    },
+    {
+      "edge_id": "contains:module:django/core/handlers/base.py:symbol:django/core/handlers/base.py:BaseHandler._get_response:176",
+      "edge_type": "contains",
+      "from_node": "module:django/core/handlers/base.py",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler._get_response:176",
+      "evidence": {
+        "rel": "ast_containment"
+      }
+    },
+    {
+      "edge_id": "contains:module:django/core/handlers/base.py:symbol:django/core/handlers/base.py:BaseHandler._get_response_async:230",
+      "edge_type": "contains",
+      "from_node": "module:django/core/handlers/base.py",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler._get_response_async:230",
+      "evidence": {
+        "rel": "ast_containment"
+      }
+    },
+    {
+      "edge_id": "contains:module:django/core/handlers/base.py:symbol:django/core/handlers/base.py:BaseHandler.adapt_method_mode:106",
+      "edge_type": "contains",
+      "from_node": "module:django/core/handlers/base.py",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.adapt_method_mode:106",
+      "evidence": {
+        "rel": "ast_containment"
+      }
+    },
+    {
+      "edge_id": "contains:module:django/core/handlers/base.py:symbol:django/core/handlers/base.py:BaseHandler.check_response:319",
+      "edge_type": "contains",
+      "from_node": "module:django/core/handlers/base.py",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.check_response:319",
+      "evidence": {
+        "rel": "ast_containment"
+      }
+    },
+    {
+      "edge_id": "contains:module:django/core/handlers/base.py:symbol:django/core/handlers/base.py:BaseHandler.get_response:138",
+      "edge_type": "contains",
+      "from_node": "module:django/core/handlers/base.py",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.get_response:138",
+      "evidence": {
+        "rel": "ast_containment"
+      }
+    },
+    {
+      "edge_id": "contains:module:django/core/handlers/base.py:symbol:django/core/handlers/base.py:BaseHandler.get_response_async:154",
+      "edge_type": "contains",
+      "from_node": "module:django/core/handlers/base.py",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.get_response_async:154",
+      "evidence": {
+        "rel": "ast_containment"
+      }
+    },
+    {
+      "edge_id": "contains:module:django/core/handlers/base.py:symbol:django/core/handlers/base.py:BaseHandler.load_middleware:27",
+      "edge_type": "contains",
+      "from_node": "module:django/core/handlers/base.py",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.load_middleware:27",
+      "evidence": {
+        "rel": "ast_containment"
+      }
+    },
+    {
+      "edge_id": "contains:module:django/core/handlers/base.py:symbol:django/core/handlers/base.py:BaseHandler.make_view_atomic:347",
+      "edge_type": "contains",
+      "from_node": "module:django/core/handlers/base.py",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.make_view_atomic:347",
+      "evidence": {
+        "rel": "ast_containment"
+      }
+    },
+    {
+      "edge_id": "contains:module:django/core/handlers/base.py:symbol:django/core/handlers/base.py:BaseHandler.process_exception_by_middleware:358",
+      "edge_type": "contains",
+      "from_node": "module:django/core/handlers/base.py",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.process_exception_by_middleware:358",
+      "evidence": {
+        "rel": "ast_containment"
+      }
+    },
+    {
+      "edge_id": "contains:module:django/core/handlers/base.py:symbol:django/core/handlers/base.py:BaseHandler.resolve_request:302",
+      "edge_type": "contains",
+      "from_node": "module:django/core/handlers/base.py",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler.resolve_request:302",
+      "evidence": {
+        "rel": "ast_containment"
+      }
+    },
+    {
+      "edge_id": "contains:module:django/core/handlers/base.py:symbol:django/core/handlers/base.py:BaseHandler:21",
+      "edge_type": "contains",
+      "from_node": "module:django/core/handlers/base.py",
+      "to_node": "symbol:django/core/handlers/base.py:BaseHandler:21",
+      "evidence": {
+        "rel": "ast_containment"
+      }
+    },
+    {
+      "edge_id": "contains:module:django/core/handlers/base.py:symbol:django/core/handlers/base.py:reset_urlconf:370",
+      "edge_type": "contains",
+      "from_node": "module:django/core/handlers/base.py",
+      "to_node": "symbol:django/core/handlers/base.py:reset_urlconf:370",
+      "evidence": {
+        "rel": "ast_containment"
+      }
+    }
+  ],
+  "confidence": {
+    "confidence_overall": 0.65,
+    "lookup_decision_hint": "targeted_lookup",
+    "per_node_confidence": [],
+    "per_edge_confidence": []
+  },
+  "reasoning_path": [],
+  "validation": {},
+  "stats": {
+    "seed_count": 13,
+    "projected_node_count": 13,
+    "projected_edge_count": 27,
+    "graph_node_count": 45457
+  }
+}

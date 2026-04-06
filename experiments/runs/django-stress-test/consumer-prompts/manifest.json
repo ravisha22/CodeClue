@@ -1,0 +1,57 @@
+[
+  {
+    "task_id": "django-tf1-001",
+    "family": "TF1",
+    "plan": "a",
+    "prompt_file": "django-tf1-001_plan-a.prompt.md",
+    "response_file": "django-tf1-001_plan-a.response.md",
+    "clue_file": "django-tf1-001_plan-a.clue.json",
+    "question": "What is the high-level architecture of Django's HTTP request handling pipeline from WSGI entry to response?",
+    "prompt_tokens": 1867,
+    "clue_tokens": 1052
+  },
+  {
+    "task_id": "django-tf2-001",
+    "family": "TF2",
+    "plan": "a",
+    "prompt_file": "django-tf2-001_plan-a.prompt.md",
+    "response_file": "django-tf2-001_plan-a.response.md",
+    "clue_file": "django-tf2-001_plan-a.clue.json",
+    "question": "What is the downstream impact of modifying Django's BaseHandler.get_response method?",
+    "prompt_tokens": 3274,
+    "clue_tokens": 1793
+  },
+  {
+    "task_id": "django-tf3-001",
+    "family": "TF3",
+    "plan": "a",
+    "prompt_file": "django-tf3-001_plan-a.prompt.md",
+    "response_file": "django-tf3-001_plan-a.response.md",
+    "clue_file": "django-tf3-001_plan-a.clue.json",
+    "question": "Where in Django's codebase should an edit be made to add a new middleware hook that runs after URL resolution but before view dispatch?",
+    "prompt_tokens": 1874,
+    "clue_tokens": 1053
+  },
+  {
+    "task_id": "django-tf4-001",
+    "family": "TF4",
+    "plan": "a",
+    "prompt_file": "django-tf4-001_plan-a.prompt.md",
+    "response_file": "django-tf4-001_plan-a.response.md",
+    "clue_file": "django-tf4-001_plan-a.clue.json",
+    "question": "What behavioral gotchas exist in Django's middleware exception handling during request processing?",
+    "prompt_tokens": 1850,
+    "clue_tokens": 1041
+  },
+  {
+    "task_id": "django-tf5-001",
+    "family": "TF5",
+    "plan": "a",
+    "prompt_file": "django-tf5-001_plan-a.prompt.md",
+    "response_file": "django-tf5-001_plan-a.response.md",
+    "clue_file": "django-tf5-001_plan-a.clue.json",
+    "question": "What security concerns exist in Django's CSRF middleware implementation?",
+    "prompt_tokens": 1888,
+    "clue_tokens": 1039
+  }
+]
