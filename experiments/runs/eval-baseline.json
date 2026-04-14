@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-04-14",
+  "commit": "pre-generalization",
+  "description": "Baseline before generalization plan implementation",
+  "splits": {
+    "validation": {
+      "mechanistic": {
+        "covered": 1,
+        "total": 32,
+        "accuracy": 0.0312,
+        "ci_lower": 0.0055,
+        "ci_upper": 0.1574
+      }
+    },
+    "dev": {
+      "mechanistic": {
+        "covered": 0,
+        "total": 12,
+        "accuracy": 0.0,
+        "ci_lower": 0.0,
+        "ci_upper": 0.2425
+      }
+    }
+  }
+}

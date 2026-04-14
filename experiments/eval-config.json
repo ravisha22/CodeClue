@@ -1,0 +1,78 @@
+{
+  "version": "1.0.0",
+  "description": "Evaluation configuration for CodeClue MRLF generalization plan",
+  "created": "2026-04-14",
+  "splits": {
+    "dev": {
+      "repos": ["flask", "httpx", "gin", "click"],
+      "purpose": "Iterate freely. All examined repos go here.",
+      "notes": "click was examined during blind-eval debugging (April 13-14) — contaminated, moved to dev"
+    },
+    "validation": {
+      "repos": ["aiohttp", "fiber"],
+      "purpose": "Hyperparameter tuning only. Never examine source code for debugging.",
+      "notes": "Former blind repos promoted to validation. Gold tasks exist."
+    },
+    "blind": {
+      "repos": [],
+      "purpose": "One-time final evaluation. Never examine source code for any reason.",
+      "selection_criteria": [
+        "At least 2 languages (one must differ from dev set languages)",
+        "At least 1 repo with minimal/no docstrings (tests graceful degradation)",
+        "At least 1 repo with 500K+ tokens (tests scale)",
+        "At least 1 repo with non-English or heavily abbreviated naming",
+        "Recommended: requests (Python), echo (Go), zod/prisma (TS)"
+      ]
+    }
+  },
+  "knowledge_types": {
+    "structural": {
+      "description": "File/module layout, directory structure",
+      "levels_needed": ["L0", "L1"],
+      "expected_ceiling_file1": 0.90
+    },
+    "relational": {
+      "description": "Call graph, inheritance, class hierarchy edges",
+      "levels_needed": ["L2", "L3-structure"],
+      "expected_ceiling_file1": 0.80
+    },
+    "declarative": {
+      "description": "Signatures, docstrings, attributes, imports",
+      "levels_needed": ["L2", "L3-metadata"],
+      "expected_ceiling_file1": 0.75
+    },
+    "mechanistic": {
+      "description": "Internal logic, precedence chains, control flow, return construction",
+      "levels_needed": ["L3-behavior", "File2"],
+      "expected_ceiling_file1": 0.40
+    },
+    "invariant": {
+      "description": "Error handling guarantees, security properties, resource lifecycle",
+      "levels_needed": ["L3-behavior", "File2"],
+      "expected_ceiling_file1": 0.30
+    }
+  },
+  "gold_task_protocol": {
+    "per_repo_minimum": 6,
+    "balance": {
+      "structural": 2,
+      "relational": 2,
+      "mechanistic": 2
+    },
+    "requirements": [
+      "Each fact must include: statement, file+lines evidence, knowledge_type",
+      "Facts written by reading source code, not by running the format",
+      "Each fact must include expected_answerable_tier (file1 or file2)"
+    ]
+  },
+  "overfitting_detection": {
+    "max_dev_val_gap_pp": 10,
+    "description": "If Dev accuracy exceeds Validation accuracy by >10 percentage points on any knowledge type, the change is overfitting. Revert."
+  },
+  "statistical_reporting": {
+    "ci_method": "wilson",
+    "ci_level": 0.95,
+    "minimum_publishable_n": 60,
+    "required_fields": ["point_estimate", "ci_lower", "ci_upper", "n", "split", "languages"]
+  }
+}
