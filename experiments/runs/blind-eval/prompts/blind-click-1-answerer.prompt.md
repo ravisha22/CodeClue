@@ -175,6 +175,10 @@ ClickException (src/click/exceptions.py:26-53)
   attrs: exit_code=1
   imports: gettext, globals, utils, core
 
+ComplexCLI (examples/complex/complex/cli.py:31-45)
+  extends: Group
+  imports: click
+
 FloatRange (src/click/types.py:618-658)
   Restrict a :data:`click.FLOAT` value to a range of accepted
   extends: _NumberRangeBase, FloatParamType
@@ -199,11 +203,11 @@ NoSuchOption (src/click/exceptions.py:208-239)
   extends: UsageError
   imports: gettext, globals, utils, core
 
-cli (examples/termui/termui.py:9-11)
-  This script showcases different terminal UI helpers in Click.
-
 cli (examples/completion/completion.py:8-9)
   calls: group
+
+cli (examples/termui/termui.py:9-11)
+  This script showcases different terminal UI helpers in Click.
 
 command (src/click/decorators.py:168-255)
   Creates a new :class:`Command` and uses the decorated function as
@@ -325,15 +329,9 @@ _normalized_mapping (src/click/types.py:270-286)
   calls: normalize_choice
   called_by: get_invalid_choice_message, Choice
 
-get_help_option (src/click/core.py:1054-1079)
-  Returns the help option object.
-  sig: get_help_option(ctx)
-  calls: get_help_option_names
-  called_by: get_params, Command
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 69 symbols in L3, 17 with behavior annotations
+coverage: 70 symbols in L3, 17 with behavior annotations
 drill: src/click/shell_completion.py (~26 lines, shell_complete)
 drill: src/click/types.py (~40 lines, convert_type)
 drill: src/click/types.py (~45 lines, Tuple)

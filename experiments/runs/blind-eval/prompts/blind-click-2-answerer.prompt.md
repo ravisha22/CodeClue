@@ -212,6 +212,10 @@ NoSuchOption (src/click/exceptions.py:208-239)
   extends: UsageError
   imports: gettext, globals, utils, core
 
+OptionHelpExtra (src/click/types.py:1205-1209)
+  extends: TypedDict
+  imports: enum, stat, gettext, exceptions, utils
+
 _detect_program_name (src/click/utils.py:523-577)
   Determine the command used to run the program, for use in help
   sig: _detect_program_name(path, _main)
@@ -319,7 +323,7 @@ get_short_help_str (src/click/core.py:1097-1118)
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 14 with behavior annotations
+coverage: 80 symbols in L3, 13 with behavior annotations
 drill: src/click/types.py (~45 lines, Tuple)
 drill: src/click/exceptions.py (~61 lines, MissingParameter)
 drill: src/click/core.py (~606 lines, Command)

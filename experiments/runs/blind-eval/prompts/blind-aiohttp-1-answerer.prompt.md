@@ -51,8 +51,8 @@ aiohttp/client_proto.py                         371L  abort, close, closed, conn
 -- SYM
 append                              M aiohttp/multipart.py:948    function append
 append_payload                      M aiohttp/multipart.py:963    Adds a new body part to multipart writer.
-encode                              M aiohttp/helpers.py:178    Encode credentials.
 decode                              M aiohttp/helpers.py:139    Create a BasicAuth object from an Authorization...
+encode                              M aiohttp/helpers.py:178    Encode credentials.
 prepare                             M aiohttp/web_fileresponse.py:243    async_function prepare
 write                               M aiohttp/http_writer.py:167    Writes chunk of data to a stream.
 pre_freeze                          M aiohttp/web_app.py:212    function pre_freeze
@@ -234,6 +234,12 @@ multipart (aiohttp/web_request.py:673-680)
   called_by: post, BaseRequest
   uses: MultipartReader (multipart)
 
+BodyPartReaderPayload (aiohttp/multipart.py:603-636)
+  extends: Payload
+  imports: base64, binascii, uuid, warnings, types
+  calls: decode_iter, read_chunk
+  raises: TypeError
+
 form (aiohttp/multipart.py:475-493)
   Like read(), but assumes that body parts contain form urlencoded data.
   behavior: BRANCH(encoding)
@@ -249,11 +255,19 @@ JsonBytesPayload (aiohttp/payload.py:943-963)
   extends: BytesPayload
   imports: asyncio, enum, io, mimetypes, warnings
 
+JsonPayload (aiohttp/payload.py:924-940)
+  extends: BytesPayload
+  imports: asyncio, enum, io, mimetypes, warnings
+
 LookupError (aiohttp/payload.py:50-51)
   Raised when no payload factory is found for the given data type.
   extends: Exception
   imports: asyncio, enum, io, mimetypes, warnings
   called_by: get, PayloadRegistry
+
+MultipartPayloadWriter (aiohttp/multipart.py:1149-1204)
+  imports: base64, binascii, uuid, warnings, types
+  called_by: MultipartWriter
 
 _load_json_data (aiohttp/cookiejar.py:164-195)
   Load cookies from parsed JSON data.
@@ -262,14 +276,14 @@ _load_json_data (aiohttp/cookiejar.py:164-195)
   called_by: load, CookieJar
   uses: Morsel (http.cookies)
 
-_read (aiohttp/payload.py:779-798)
-  Read a chunk of data from the text file-like object.
-  sig: _read(remaining_content_len)
-
 _read (aiohttp/payload.py:510-526)
   Read a chunk of data from the file-like object.
   sig: _read(remaining_content_len)
   behavior: DELEGATE(read)
+
+_read (aiohttp/payload.py:779-798)
+  Read a chunk of data from the text file-like object.
+  sig: _read(remaining_content_len)
 
 _write_bytes (aiohttp/client_reqrep.py:1332-1405)
   Write the request body to the connection stream.
@@ -305,6 +319,14 @@ handle_json_data (examples/logging_middleware.py:78-84)
 handler (aiohttp/abc.py:55-56)
   Execute matched request handler
 
+json (aiohttp/_websocket/models.py:70-72)
+  Return parsed JSON data.
+  behavior: DELEGATE(loads)
+
+json (aiohttp/_websocket/models.py:55-59)
+  Return parsed JSON data.
+  behavior: DELEGATE(loads)
+
 json (aiohttp/_websocket/models.py:81-85)
   Return parsed JSON data.
   behavior: DELEGATE(loads)
@@ -315,33 +337,9 @@ json (aiohttp/web_request.py:654-671)
   raises: HTTPBadRequest
   uses: HTTPBadRequest (web_exceptions)
 
-json (aiohttp/_websocket/models.py:70-72)
-  Return parsed JSON data.
-  behavior: DELEGATE(loads)
-
-json (aiohttp/_websocket/models.py:55-59)
-  Return parsed JSON data.
-  behavior: DELEGATE(loads)
-
-must_be_empty_body (aiohttp/helpers.py:1105-1111)
-  Check if a request must return an empty body.
-  sig: must_be_empty_body(method, code)
-
-next (aiohttp/multipart.py:240-247)
-  Emits next multipart reader object.
-
-next (aiohttp/multipart.py:705-739)
-  Emits the next multipart body part.
-  behavior: BRANCH(_at_bof_self)
-  raises: RuntimeError
-
-release (aiohttp/multipart.py:741-747)
-  Reads all the body parts to the void till the final boundary.
-  behavior: ACCUMULATE(loop)
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 30 with behavior annotations
+coverage: 80 symbols in L3, 27 with behavior annotations
 drill: aiohttp/client_reqrep.py (~65 lines, update_body)
 drill: aiohttp/multipart.py (~9 lines, json)
 drill: aiohttp/multipart.py (~338 lines, BodyPartReader)

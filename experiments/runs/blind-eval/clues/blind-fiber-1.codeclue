@@ -33,8 +33,8 @@ domainRouter.Add                    M domain.go:530    Add allows you to specify
 App.Add                             M app.go:953    Add allows you to specify multiple HTTP methods...
 Group.Add                           M group.go:167    Add allows you to specify multiple HTTP methods...
 Client.applyDial                    M client/client.go:107    function Client.applyDial
-DefaultReq.getBody                  M req.go:1140   function DefaultReq.getBody
 DefaultReq.Body                     M req.go:149    Body contains the raw body submitted in a POST ...
+DefaultReq.getBody                  M req.go:1140   function DefaultReq.getBody
 Client.SetDial                      M client/client.go:606    SetDial sets the custom dial function for the c...
 Registering.Add                     M register.go:111    Add allows you to specify multiple HTTP methods...
 C                                   M client/client.go:810    C returns the default client.
@@ -97,18 +97,35 @@ decoderBuilder                      M binder/mapping.go:64     function decoderB
 CookieJar.SetByHost                 M client/cookiejar.go:154    SetByHost stores the given cookies for the spec...
 Request.Cookies                     M client/request.go:335    Cookies returns an iterator over all cookies.
 Request.Headers                     M client/request.go:160    Headers returns an iterator over all headers in...
+Response.String                     M client/response.go:109    String returns the response body as a trimmed s...
 standardClientTransport.Do          M client/transport.go:50     function standardClientTransport.Do
 standardClientTransport.DoDeadline  M client/transport.go:58     function standardClientTransport.DoDeadline
 standardClientTransport.DoTimeout   M client/transport.go:54     function standardClientTransport.DoTimeout
 DefaultCtx.GetHeaders               M ctx.go:207    GetHeaders returns the HTTP request headers.
 indexedHeap.removeInternal          M middleware/cache/heap.go:84     function indexedHeap.removeInternal
-cachedHeader.Msgsize                M middleware/cache/manager_msgp.go:170    Msgsize returns an upper bound estimate of the ...
   ...and 1398 more symbols
 
 -- FOCUS
+RoutePatternMatch (path.go:155-155)
+  RoutePatternMatch reports whether path matches the provided Fiber route pattern.
+  sig: RoutePatternMatch(path, pattern string, cfg ...Config)
+  behavior: PRECEDENCE(if_chain); UNWIND(defer)
+
+pathMatch (client/cookiejar.go:307-307)
+  pathMatch determines whether the request path matches the cookie path according to RFC 6265 section 5.1.4.
+  sig: pathMatch(reqPath, cookiePath []byte)
+  behavior: PRECEDENCE(if_chain)
+  called_by: searchCookieByKeyAndPath
+
 Group (group.go:14-15)
   Group represents a collection of routes that share middleware and a common path prefix.
   methods: Add, All, Connect, Delete, Domain, Get
+
+CookieJar.cookiesForRequest (client/cookiejar.go:103-103)
+  cookiesForRequest returns cookies that match the given host, path and security settings.
+  sig: CookieJar.cookiesForRequest(host string, path []byte, secure bool)
+  behavior: ACCUMULATE(loop); UNWIND(defer)
+  calls: domainMatch
 
 IsFromCache (middleware/idempotency/idempotency.go:29-29)
   IsFromCache reports whether the middleware served the response from the cache for the current request.
@@ -121,30 +138,13 @@ Registering.All (register.go:50-50)
 Request.DisablePathNormalizing (client/request.go:614-614)
   DisablePathNormalizing reports whether path normalizing is disabled for the Request.
 
-RoutePatternMatch (path.go:155-155)
-  RoutePatternMatch reports whether path matches the provided Fiber route pattern.
-  sig: RoutePatternMatch(path, pattern string, cfg ...Config)
-  behavior: PRECEDENCE(if_chain); UNWIND(defer)
-
 WasPutToCache (middleware/idempotency/idempotency.go:35-35)
   WasPutToCache reports whether the middleware stored the response produced by the current request in the cache.
   sig: WasPutToCache(c fiber.Ctx)
 
-pathMatch (client/cookiejar.go:307-307)
-  pathMatch determines whether the request path matches the cookie path according to RFC 6265 section 5.1.4.
-  sig: pathMatch(reqPath, cookiePath []byte)
-  behavior: PRECEDENCE(if_chain)
-  called_by: searchCookieByKeyAndPath
-
 core (client/core.go:48-48)
   core stores middleware and plugin definitions and defines the request execution process.
   methods: afterHooks, execFunc, execute, getRetryConfig, preHooks, timeout
-
-CookieJar.cookiesForRequest (client/cookiejar.go:103-103)
-  cookiesForRequest returns cookies that match the given host, path and security settings.
-  sig: CookieJar.cookiesForRequest(host string, path []byte, secure bool)
-  behavior: ACCUMULATE(loop); UNWIND(defer)
-  calls: domainMatch
 
 HTTPHandlerWithContext (middleware/adaptor/adaptor.go:65-65)
   HTTPHandlerWithContext is like HTTPHandler, but additionally stores Fiber’s user context in the request context
@@ -184,6 +184,11 @@ Client.DisablePathNormalizing (client/client.go:437-437)
 ConvertRequest (middleware/adaptor/adaptor.go:89-89)
   ConvertRequest converts a fiber.Ctx to a http.Request.
   sig: ConvertRequest(c fiber.Ctx, forServer bool)
+
+CopyContextToFiberContext (middleware/adaptor/adaptor.go:101-101)
+  CopyContextToFiberContext copies the values of context.Context to a fasthttp.RequestCtx.
+  sig: CopyContextToFiberContext(src any, requestContext *fasthttp.RequestCtx)
+  behavior: PRECEDENCE(if_chain); ACCUMULATE(loop); DISPATCH(switch)
 
 DefaultCtx.HasHeader (req.go:239-239)
   HasHeader reports whether the request includes a header with the given key.
@@ -240,6 +245,11 @@ StoreInContext (helpers.go:83-83)
   StoreInContext stores key/value in both Fiber locals and request context.
   sig: StoreInContext(c Ctx, key, value any)
 
+domainMatch (client/cookiejar.go:327-327)
+  domainMatch reports whether host domain-matches the given cookie domain.
+  sig: domainMatch(host, domain string)
+  called_by: cookiesForRequest
+
 domainRouter.Use (domain.go:350-350)
   Use registers a middleware route that will match requests with the provided prefix (which is optional and defaults to "/
   sig: domainRouter.Use(args ...any)
@@ -256,6 +266,11 @@ isValidRequestID (middleware/requestid/requestid.go:61-61)
   sig: isValidRequestID(rid string)
   behavior: PRECEDENCE(if_chain); ACCUMULATE(loop)
   called_by: sanitizeRequestID
+
+paramsMatch (helpers.go:412-412)
+  paramsMatch returns whether offerParams contains all parameters present in specParams.
+  sig: paramsMatch(specParamStr headerParams, offerParams string)
+  behavior: GUARD(err); PRECEDENCE(if_chain); ACCUMULATE(loop)
 
 Request (client/request.go:46-46)
   Request contains all data related to an HTTP request.
@@ -274,29 +289,9 @@ Request.PathParam (client/request.go:365-365)
   PathParam returns the value of a named path parameter.
   sig: Request.PathParam(key string)
 
-File (client/request.go:932-932)
-  File represents a file to be sent with the request.
-  methods: Reset, SetFieldName, SetName, SetPath, SetReader
-  called_by: AddFile, AddFileWithReader, Reset
-
-State (state.go:21-21)
-  State is a key-value store for Fiber's app in order to be used as a global storage for the app's dependencies.
-  methods: Delete, Get, GetBool, GetComplex128, GetComplex64, GetFloat32
-
-Request.Reset (client/request.go:680-680)
-  Reset clears the Request object, returning it to its default state.
-  behavior: ACCUMULATE(loop)
-  calls: File, ReleaseFile
-  called_by: Reset, ReleaseFile, ReleaseRequest, ResetPathParams
-
-Request.AddFile (client/request.go:571-571)
-  AddFile adds a single file by its path.
-  sig: Request.AddFile(path string)
-  calls: AcquireFile, File, resetBody, SetFilePath
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 19 with behavior annotations
+coverage: 80 symbols in L3, 21 with behavior annotations
 drill: group.go (~1 lines, Group)
 drill: middleware/idempotency/idempotency.go (~1 lines, IsFromCache)
 drill: register.go (~1 lines, Registering.All)

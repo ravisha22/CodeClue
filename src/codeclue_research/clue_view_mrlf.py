@@ -388,11 +388,30 @@ def _is_test_file(file_path: str) -> bool:
     return "/test" in fp or fp.startswith("test") or "_test." in fp or "conftest" in fp
 
 
+def _split_compound_words(text: str) -> set[str]:
+    """Split compound identifiers in text into individual tokens.
+
+    Handles camelCase, PascalCase, snake_case, and concatenated words
+    that commonly appear in docstrings referencing code identifiers.
+    Language-agnostic: these patterns occur in all programming languages.
+    """
+    # First split on non-alpha characters (underscores, spaces, punctuation)
+    parts = re.sub(r"[^a-zA-Z]", " ", text)
+    # Then split camelCase: insert space before uppercase letters
+    parts = re.sub(r"([a-z])([A-Z])", r"\1 \2", parts)
+    return set(re.findall(r"[a-z]{3,}", parts.lower()))
+
+
 def _semantic_overlap(purpose: str, question_keywords: set[str]) -> float:
-    """Score overlap between node documentation and question intent."""
+    """Score overlap between node documentation and question intent.
+
+    Splits compound identifiers in docstrings (e.g., 'ErrorHandler' ->
+    {'error', 'handler'}) so they match individual question keywords.
+    This is general: docstrings in all languages reference code identifiers.
+    """
     if not purpose:
         return 0.0
-    purpose_words = set(re.findall(r"[a-zA-Z]{3,}", purpose.lower()))
+    purpose_words = _split_compound_words(purpose)
     return len(purpose_words & question_keywords) / max(len(question_keywords), 1)
 
 

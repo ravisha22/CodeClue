@@ -36,8 +36,8 @@ aiohttp/client_proto.py                         371L  abort, close, closed, conn
 -- SYM
 append                              M aiohttp/multipart.py:948    function append
 append_payload                      M aiohttp/multipart.py:963    Adds a new body part to multipart writer.
-encode                              M aiohttp/helpers.py:178    Encode credentials.
 decode                              M aiohttp/helpers.py:139    Create a BasicAuth object from an Authorization...
+encode                              M aiohttp/helpers.py:178    Encode credentials.
 prepare                             M aiohttp/web_fileresponse.py:243    async_function prepare
 write                               M aiohttp/http_writer.py:167    Writes chunk of data to a stream.
 pre_freeze                          M aiohttp/web_app.py:212    function pre_freeze
@@ -117,9 +117,9 @@ _write_chunked_payload              M aiohttp/http_writer.py:124    Write a chun
 _cleanup_server (aiohttp/web_runner.py:337-338)
   Run any cleanup steps after the server is shutdown.
 
-_cleanup_server (aiohttp/web_runner.py:452-453)
-
 _cleanup_server (aiohttp/web_runner.py:376-377)
+
+_cleanup_server (aiohttp/web_runner.py:452-453)
 
 shutdown (aiohttp/web_runner.py:302-303)
   Call any shutdown hooks to help server close gracefully.
@@ -150,6 +150,17 @@ run_test_server (examples/token_refresh_middleware.py:246-258)
   calls: TestServer
   called_by: main
 
+CleanupContext (aiohttp/web_app.py:415-441)
+  imports: asyncio, logging, warnings, aiosignal, frozenlist
+  calls: CleanupError
+  called_by: Application
+  raises: CleanupError
+
+ResourcesView (aiohttp/web_urldispatcher.py:934-945)
+  extends: Sized
+  imports: asyncio, base64, hashlib, html, inspect
+  called_by: resources, UrlDispatcher
+
 resources (aiohttp/web_urldispatcher.py:1029-1030)
   behavior: DELEGATE(ResourcesView)
   calls: ResourcesView
@@ -171,6 +182,11 @@ run_test_server (examples/basic_auth_middleware.py:119-131)
   calls: TestServer
   called_by: main
 
+run_test_server (examples/logging_middleware.py:87-102)
+  Run a simple test server.
+  calls: TestServer
+  called_by: main
+
 run_test_server (examples/retry_middleware.py:150-164)
   Run a simple test server.
   calls: TestServer
@@ -181,10 +197,18 @@ run_test_server (examples/combined_middleware.py:238-252)
   calls: TestServer
   called_by: main
 
-run_test_server (examples/logging_middleware.py:87-102)
-  Run a simple test server.
-  calls: TestServer
-  called_by: main
+CleanupError (aiohttp/web_app.py:403-406)
+  extends: RuntimeError
+  imports: asyncio, logging, warnings, aiosignal, frozenlist
+  called_by: _on_cleanup, CleanupContext
+
+AiohttpRawServer (aiohttp/pytest_plugin.py:57-64)
+  extends: Protocol
+  imports: asyncio, inspect, warnings, pytest, test_utils
+
+AiohttpServer (aiohttp/pytest_plugin.py:51-54)
+  extends: Protocol
+  imports: asyncio, inspect, warnings, pytest, test_utils
 
 AppKey (aiohttp/helpers.py:890-891)
   Keys for static typing support in Application.
@@ -195,6 +219,11 @@ AppRunner (aiohttp/web_runner.py:380-453)
   imports: asyncio, signal, socket, yarl, http_parser
   calls: cleanup
   raises: TypeError
+
+HTTPInternalServerError (aiohttp/web_exceptions.py:463-464)
+  extends: HTTPServerError
+  attrs: status_code=500
+  imports: warnings, http, multidict, yarl, helpers
 
 NotAppKeyWarning (aiohttp/web_exceptions.py:75-76)
   Warning when not using AppKey in Application.
@@ -224,24 +253,24 @@ ServerTimeoutError (aiohttp/client_exceptions.py:227-228)
   extends: ServerConnectionError, TimeoutError
   imports: asyncio, multidict, typedefs, ssl, client_reqrep
 
-TestServer (examples/basic_auth_middleware.py:59-116)
-  Test server for basic auth endpoints.
-  imports: asyncio, base64, binascii, logging, aiohttp
-  called_by: run_test_server
-
 TestServer (examples/retry_middleware.py:91-147)
   Test server with stateful endpoints for retry testing.
   imports: asyncio, logging, http, aiohttp
   called_by: run_test_server
 
-TestServer (examples/logging_middleware.py:59-84)
-  Test server for logging middleware demo.
-  imports: asyncio, logging, aiohttp
+TestServer (examples/basic_auth_middleware.py:59-116)
+  Test server for basic auth endpoints.
+  imports: asyncio, base64, binascii, logging, aiohttp
   called_by: run_test_server
 
 TestServer (examples/combined_middleware.py:159-235)
   Test server with stateful endpoints for middleware testing.
   imports: asyncio, base64, binascii, logging, http
+  called_by: run_test_server
+
+TestServer (examples/logging_middleware.py:59-84)
+  Test server for logging middleware demo.
+  imports: asyncio, logging, aiohttp
   called_by: run_test_server
 
 WSServerHandshakeError (aiohttp/client_exceptions.py:106-107)
@@ -261,11 +290,11 @@ _create_ssl_context (aiohttp/worker.py:205-220)
 _make_server (aiohttp/web_runner.py:333-334)
   Return a new server for the runner to serve requests.
 
-_make_server (aiohttp/web_runner.py:373-374)
-
 _make_server (aiohttp/web_runner.py:421-430)
   behavior: DELEGATE(Server)
   uses: Server (web_server)
+
+_make_server (aiohttp/web_runner.py:373-374)
 
 _on_startup (aiohttp/web_app.py:420-428)
   sig: _on_startup(app)
@@ -274,6 +303,16 @@ _on_startup (aiohttp/web_app.py:420-428)
 add_app (aiohttp/abc.py:84-85)
   Add application to the nested apps stack.
   sig: add_app(app)
+
+aiohttp_raw_server (aiohttp/pytest_plugin.py:325-349)
+  Factory to create a RawTestServer instance, given a web handler.
+  sig: aiohttp_raw_server(loop)
+  uses: RawTestServer (test_utils)
+
+aiohttp_server (aiohttp/pytest_plugin.py:296-321)
+  Factory to create a TestServer instance, given an app.
+  sig: aiohttp_server(loop)
+  uses: TestServer (test_utils)
 
 app (aiohttp/web_request.py:862-866)
   Application instance.
@@ -306,51 +345,9 @@ on_shutdown (examples/background_tasks.py:29-31)
   sig: on_shutdown(app)
   behavior: ACCUMULATE(loop)
 
-on_shutdown (examples/web_ws.py:49-51)
-  sig: on_shutdown(app)
-  behavior: ACCUMULATE(loop)
-
-on_shutdown (aiohttp/web_app.py:318-319)
-
-on_startup (aiohttp/web_app.py:314-315)
-
-port (aiohttp/web_runner.py:109-120)
-  The port the server is listening on.
-
-pre_shutdown (aiohttp/web_server.py:107-109)
-  behavior: ACCUMULATE(loop)
-
-preserve_morsel_with_coded_value (aiohttp/_cookie_helpers.py:85-112)
-  Preserve a Morsel's coded_value exactly as received from the server.
-  sig: preserve_morsel_with_coded_value(cookie)
-  uses: Morsel (http.cookies)
-
-server (aiohttp/web_runner.py:269-270)
-
-shutdown (aiohttp/web_app.py:344-349)
-  Causes on_shutdown signal
-
-shutdown (aiohttp/web_server.py:111-114)
-  sig: shutdown(timeout)
-  called_by: Server
-
-shutdown (aiohttp/web_runner.py:418-419)
-
-shutdown (aiohttp/web_runner.py:370-371)
-
-startup (aiohttp/web_app.py:337-342)
-  Causes on_startup signal
-
-ClientResponse (aiohttp/client_reqrep.py:184-683)
-  extends: HeadersMixin
-  imports: asyncio, codecs, io, traceback, warnings
-  calls: _cleanup_writer, _notify_content, _release_connection, _wait_released, close, get_encoding, read, release
-  raises: ClientResponseError, RuntimeError, ClientConnectionError, ContentTypeError
-  uses: ClientConnectionError (client_exceptions)
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 19 with behavior annotations
+coverage: 80 symbols in L3, 14 with behavior annotations
 drill: aiohttp/web_runner.py (~2 lines, _cleanup_server)
 drill: aiohttp/web_runner.py (~1 lines, _cleanup_server)
 drill: aiohttp/web_runner.py (~1 lines, _cleanup_server)

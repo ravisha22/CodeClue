@@ -48,8 +48,8 @@ domainRouter.Add                    M domain.go:530    Add allows you to specify
 App.Add                             M app.go:953    Add allows you to specify multiple HTTP methods...
 Group.Add                           M group.go:167    Add allows you to specify multiple HTTP methods...
 Client.applyDial                    M client/client.go:107    function Client.applyDial
-DefaultReq.getBody                  M req.go:1140   function DefaultReq.getBody
 DefaultReq.Body                     M req.go:149    Body contains the raw body submitted in a POST ...
+DefaultReq.getBody                  M req.go:1140   function DefaultReq.getBody
 Client.SetDial                      M client/client.go:606    SetDial sets the custom dial function for the c...
 Registering.Add                     M register.go:111    Add allows you to specify multiple HTTP methods...
 C                                   M client/client.go:810    C returns the default client.
@@ -112,15 +112,27 @@ decoderBuilder                      M binder/mapping.go:64     function decoderB
 CookieJar.SetByHost                 M client/cookiejar.go:154    SetByHost stores the given cookies for the spec...
 Request.Cookies                     M client/request.go:335    Cookies returns an iterator over all cookies.
 Request.Headers                     M client/request.go:160    Headers returns an iterator over all headers in...
+Response.String                     M client/response.go:109    String returns the response body as a trimmed s...
 standardClientTransport.Do          M client/transport.go:50     function standardClientTransport.Do
 standardClientTransport.DoDeadline  M client/transport.go:58     function standardClientTransport.DoDeadline
 standardClientTransport.DoTimeout   M client/transport.go:54     function standardClientTransport.DoTimeout
 DefaultCtx.GetHeaders               M ctx.go:207    GetHeaders returns the HTTP request headers.
 indexedHeap.removeInternal          M middleware/cache/heap.go:84     function indexedHeap.removeInternal
-cachedHeader.Msgsize                M middleware/cache/manager_msgp.go:170    Msgsize returns an upper bound estimate of the ...
   ...and 1398 more symbols
 
 -- FOCUS
+standardClientTransport (client/transport.go:42-42)
+  standardClientTransport adapts fasthttp.Client to the httpClientTransport interface used by Fiber's client helpers.
+  methods: Client, CloseIdleConnections, Do, DoDeadline, DoRedirects, DoTimeout
+
+hostClientTransport (client/transport.go:96-96)
+  hostClientTransport adapts fasthttp.HostClient to the httpClientTransport interface used by Fiber's client helpers.
+  methods: Client, CloseIdleConnections, Do, DoDeadline, DoRedirects, DoTimeout
+
+lbClientTransport (client/transport.go:150-150)
+  lbClientTransport adapts fasthttp.LBClient to the httpClientTransport interface used by Fiber's client helpers.
+  methods: Client, CloseIdleConnections, Do, DoDeadline, DoRedirects, DoTimeout
+
 App.mountStartupProcess (mount.go:113-114)
   mountStartupProcess Handles the startup process of mounted apps by appending sub-app routes, generating app list keys, a
   calls: appendSubAppLists, generateAppListKeys, hasMountedApps, processSubAppsRoutes
@@ -168,18 +180,6 @@ State (state.go:21-21)
   State is a key-value store for Fiber's app in order to be used as a global storage for the app's dependencies.
   methods: Delete, Get, GetBool, GetComplex128, GetComplex64, GetFloat32
 
-standardClientTransport (client/transport.go:42-42)
-  standardClientTransport adapts fasthttp.Client to the httpClientTransport interface used by Fiber's client helpers.
-  methods: Client, CloseIdleConnections, Do, DoDeadline, DoRedirects, DoTimeout
-
-hostClientTransport (client/transport.go:96-96)
-  hostClientTransport adapts fasthttp.HostClient to the httpClientTransport interface used by Fiber's client helpers.
-  methods: Client, CloseIdleConnections, Do, DoDeadline, DoRedirects, DoTimeout
-
-lbClientTransport (client/transport.go:150-150)
-  lbClientTransport adapts fasthttp.LBClient to the httpClientTransport interface used by Fiber's client helpers.
-  methods: Client, CloseIdleConnections, Do, DoDeadline, DoRedirects, DoTimeout
-
 App.serverErrorHandler (app.go:1411-1411)
   serverErrorHandler is a wrapper around the application's error handler method user for the fasthttp server configuration
   sig: App.serverErrorHandler(fctx *fasthttp.RequestCtx, err error)
@@ -218,6 +218,9 @@ Ctx (ctx_interface_gen.go:18-18)
 ResFmt (res.go:121-121)
   ResFmt associates a Content Type to a fiber.Handler for c.Format
 
+httpClientTransport (client/transport.go:26-26)
+  httpClientTransport unifies the operations exposed by the Fiber client across the fasthttp.Client, fasthttp.HostClient, 
+
 sendFileStore (res.go:66-66)
   sendFileStore is used to keep the SendFile configuration and the handler.
   methods: configEqual
@@ -226,6 +229,11 @@ App.All (app.go:961-961)
   All will register the handler on all HTTP methods
   sig: App.All(path string, handler any, handlers ...any)
   calls: Add
+
+App.ErrorHandler (app.go:1376-1376)
+  ErrorHandler is the application's method in charge of finding the appropriate handler for the given request.
+  sig: App.ErrorHandler(ctx Ctx, err error)
+  behavior: PRECEDENCE(if_chain); ACCUMULATE(loop)
 
 App.Group (app.go:969-969)
   Group is used for Routes with common prefix to define a new sub-router with optional middleware.
@@ -266,6 +274,18 @@ DefaultCtx.Status (ctx.go:563-563)
   Status sets the HTTP status for the response.
   sig: DefaultCtx.Status(status int)
 
+DefaultErrorHandler (middleware/session/config.go:109-109)
+  DefaultErrorHandler logs the error and sends a 500 status code.
+  sig: DefaultErrorHandler(c fiber.Ctx, err error)
+
+DefaultErrorHandler (app.go:524-524)
+  DefaultErrorHandler that process return errors from handlers
+  sig: DefaultErrorHandler(c Ctx, err error)
+
+DefaultPanicHandler (middleware/recover/recover.go:16-16)
+  DefaultPanicHandler returns r directly if it's an error, and creates a new one with the %v verb otherwise.
+  sig: DefaultPanicHandler(_ fiber.Ctx, r any)
+
 DefaultRes.Append (res.go:140-140)
   Append the specified value to the HTTP response header field.
   sig: DefaultRes.Append(field string, values ...string)
@@ -294,35 +314,12 @@ DefaultRes.SendString (res.go:997-997)
   SendString sets the HTTP response body for string types.
   sig: DefaultRes.SendString(body string)
 
-DefaultRes.Set (res.go:1022-1022)
-  Set sets the response's HTTP header field to the specified key, value.
-  sig: DefaultRes.Set(key, val string)
-
-DefaultRes.Status (res.go:1032-1032)
-  Status sets the HTTP status for the response.
-  sig: DefaultRes.Status(status int)
-  called_by: SendStatus
-
-DoRedirects (middleware/proxy/proxy.go:155-155)
-  DoRedirects performs the given http request and fills the given http response, following up to maxRedirectsCount redirec
-  sig: DoRedirects(c fiber.Ctx, addr string, maxRedirectsCount int, clients...)
-
-DomainForward (middleware/proxy/proxy.go:239-239)
-  DomainForward performs an http request based on the given domain and populates the given http response.
-  sig: DomainForward(hostname, addr string, clients ...*fasthttp.Client)
-  calls: Do
-
-Forward (middleware/proxy/proxy.go:138-138)
-  Forward performs the given http request and fills the given http response.
-  sig: Forward(addr string, clients ...*fasthttp.Client)
-  calls: Do
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
 coverage: 80 symbols in L3, 20 with behavior annotations
-drill: mount.go (~1 lines, App.mountStartupProcess)
-drill: middleware/adaptor/adaptor.go (~1 lines, FiberHandlerFunc)
-drill: middleware/adaptor/adaptor.go (~1 lines, HTTPHandler)
+drill: client/transport.go (~1 lines, standardClientTransport)
+drill: client/transport.go (~1 lines, hostClientTransport)
+drill: client/transport.go (~1 lines, lbClientTransport)
 
 --- CLUE FILE END ---
 
