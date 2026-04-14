@@ -8,6 +8,10 @@ For each blind-eval task:
 
 Budget: max 2000 tokens of drill-down content (keeps total under ~6K).
 Prioritisation: FOCUS symbols lacking behavioral annotations (highest info gap).
+
+Usage:
+  python regen_clues_with_drilldown.py              # full pipeline (extract + render + drilldown)
+  python regen_clues_with_drilldown.py --reuse       # reuse existing clue/detail files (fast)
 """
 
 import json
@@ -18,9 +22,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "src"))
 
 import tiktoken
-
-from codeclue_research.extractor import extract_graph
-from codeclue_research.clue_view_mrlf import render_mrlf, generate_detail_store
 
 _ENC = tiktoken.get_encoding("cl100k_base")
 
@@ -302,10 +303,13 @@ def _truncate_to_budget(snippet: str, budget_tokens: int) -> str | None:
 
 
 def main():
+    reuse = "--reuse" in sys.argv
+
     with open(GOLD_TASKS) as f:
         tasks = json.load(f)
 
     PROMPT_DIR.mkdir(parents=True, exist_ok=True)
+    CLUE_DIR.mkdir(parents=True, exist_ok=True)
 
     # Group tasks by repo
     repos: dict[str, dict] = {}
@@ -321,28 +325,39 @@ def main():
         print(f"\n--- Processing {repo} ---")
         repo_path = REPO_ROOT / info["path"]
         lang = LANG_MAP.get(repo, "python")
-
-        # Extract graph (needed for clue + detail generation)
-        graph = extract_graph(repo_path, language=lang)
-        print(f"  {len(graph.nodes)} nodes, {len(graph.edges)} edges")
-
-        # Generate detail store
-        detail_records = generate_detail_store(graph, repo_root=repo_path)
         detail_path = CLUE_DIR / f"{repo}.codeclue-detail"
-        with open(detail_path, "w", encoding="utf-8") as f:
-            for rec in detail_records:
-                f.write(json.dumps(rec) + "\n")
-        print(f"  Detail store: {len(detail_records)} records")
+
+        if reuse:
+            # Fast path: load existing artifacts
+            detail_records = _load_detail_store(detail_path)
+            print(f"  Reusing detail store: {len(detail_records)} records")
+        else:
+            # Full pipeline: extract graph, generate clue + detail store
+            from codeclue_research.extractor import extract_graph
+            from codeclue_research.clue_view_mrlf import generate_detail_store
+
+            graph = extract_graph(repo_path, language=lang)
+            print(f"  {len(graph.nodes)} nodes, {len(graph.edges)} edges")
+
+            detail_records = generate_detail_store(graph, repo_root=repo_path)
+            with open(detail_path, "w", encoding="utf-8") as f:
+                for rec in detail_records:
+                    f.write(json.dumps(rec) + "\n")
+            print(f"  Detail store: {len(detail_records)} records")
 
         for t in info["tasks"]:
             task_id = t["task_id"]
             question = t["question"]
             stats["total"] += 1
 
-            # Generate File 1 clue
-            clue = render_mrlf(graph, question, repo_root=repo_path)
+            # Load or generate File 1 clue
             clue_path = CLUE_DIR / f"{task_id}.codeclue"
-            clue_path.write_text(clue, encoding="utf-8")
+            if reuse and clue_path.is_file():
+                clue = clue_path.read_text(encoding="utf-8")
+            else:
+                from codeclue_research.clue_view_mrlf import render_mrlf
+                clue = render_mrlf(graph, question, repo_root=repo_path)
+                clue_path.write_text(clue, encoding="utf-8")
 
             # Parse GAPS to decide protocol
             gaps_info = _parse_gaps(clue)
@@ -369,11 +384,10 @@ def main():
                 print(f"  {task_id}: MECHANISTIC — drilldown prompt")
                 print(f"    clue: {clue_tokens} tok, snippets: {snippet_tokens} tok, "
                       f"total: {_token_count(prompt)} tok")
-                print(f"    drill targets: {[t['symbol'] for t in drill_targets]}")
+                print(f"    drill targets: {[dt['symbol'] for dt in drill_targets]}")
             else:
                 key = q_type.lower()
                 if key == "mechanistic":
-                    # MECHANISTIC but no drill targets — still count as mechanistic
                     stats["mechanistic"] += 1
                 else:
                     stats[key] += 1

@@ -1,15 +1,14 @@
-# Blind Evaluation Prompt - MRLF v2.1
+# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
 # Task: blind-click-1
 
-You are a senior software engineer. You have been given a codebase
-comprehension artifact (a "clue file") that summarises a repository's
-structure, symbols, and behavior. This is NOT the full source code - it is
-a compressed representation.
+You are a senior software engineer. You have been given:
+1. A codebase comprehension artifact (clue file) - a compressed representation
+2. Source code snippets for key functions identified as needing deeper analysis
 
-Answer the question below using ONLY the information in the clue file.
+Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
 
---- CLUE FILE START ---
+--- CLUE FILE (File 1) ---
 =CC v2.1 click@HEAD 63mod 1620sym
 ? How does Click turn decorated Python functions into a nested CLI and then dispatch the right subcommand at runtime?
 
@@ -333,9 +332,288 @@ drill: src/click/shell_completion.py (~26 lines, shell_complete)
 drill: src/click/types.py (~40 lines, convert_type)
 drill: src/click/types.py (~45 lines, Tuple)
 
---- CLUE FILE END ---
+--- END CLUE FILE ---
+
+--- SOURCE SNIPPETS (File 2 Drill-Down) ---
+## shell_complete  (src/click/types.py L1041-1057)
+```
+    def shell_complete(
+        self, ctx: Context, param: Parameter, incomplete: str
+    ) -> list[CompletionItem]:
+        """Return a special completion marker that tells the completion
+        system to use the shell to provide path completions for only
+        directories or any paths.
+
+        :param ctx: Invocation context for this command.
+        :param param: The parameter that is requesting completion.
+        :param incomplete: Value being completed. May be empty.
+
+        .. versionadded:: 8.0
+        """
+        from click.shell_completion import CompletionItem
+
+        type = "dir" if self.dir_okay and not self.file_okay else "file"
+        return [CompletionItem(incomplete, type=type)]
+```
+
+## convert_type  (src/click/types.py L1112-1169)
+```
+def convert_type(ty: t.Any | None, default: t.Any | None = None) -> ParamType:
+    """Find the most appropriate :class:`ParamType` for the given Python
+    type. If the type isn't provided, it can be inferred from a default
+    value.
+    """
+    guessed_type = False
+
+    if ty is None and default is not None:
+        if isinstance(default, (tuple, list)):
+            # If the default is empty, ty will remain None and will
+            # return STRING.
+            if default:
+                item = default[0]
+
+                # A tuple of tuples needs to detect the inner types.
+                # Can't call convert recursively because that would
+                # incorrectly unwind the tuple to a single type.
+                if isinstance(item, (tuple, list)):
+                    ty = tuple(map(type, item))
+                else:
+                    ty = type(item)
+        else:
+            ty = type(default)
+
+        guessed_type = True
+
+    if isinstance(ty, tuple):
+        return Tuple(ty)
+
+    if isinstance(ty, ParamType):
+        return ty
+
+    if ty is str or ty is None:
+        return STRING
+
+    if ty is int:
+        return INT
+
+    if ty is float:
+        return FLOAT
+
+    if ty is bool:
+        return BOOL
+
+    if guessed_type:
+        return STRING
+
+    if __debug__:
+        try:
+            if issubclass(ty, ParamType):
+                raise AssertionError(
+                    f"Attempted to use an uninstantiated parameter type ({ty})."
+                )
+        except TypeError:
+            # ty is an instance (correct), so issubclass fails.
+            pass
+
+    return FuncParamType(ty)
+```
+
+## Tuple  (src/click/types.py L1060-1109)
+```
+class Tuple(CompositeParamType):
+    """The default behavior of Click is to apply a type on a value directly.
+    This works well in most cases, except for when `nargs` is set to a fixed
+    count and different types should be used for different items.  In this
+    case the :class:`Tuple` type can be used.  This type can only be used
+    if `nargs` is set to a fixed number.
+
+    For more information see :ref:`tuple-type`.
+
+    This can be selected by using a Python tuple literal as a type.
+
+    :param types: a list of types that should be used for the tuple items.
+    """
+
+    def __init__(self, types: cabc.Sequence[type[t.Any] | ParamType]) -> None:
+        self.types: cabc.Sequence[ParamType] = [convert_type(ty) for ty in types]
+
+    def to_info_dict(self) -> dict[str, t.Any]:
+        info_dict = super().to_info_dict()
+        info_dict["types"] = [t.to_info_dict() for t in self.types]
+        return info_dict
+
+    @property
+    def name(self) -> str:  # type: ignore
+        return f"<{' '.join(ty.name for ty in self.types)}>"
+
+    @property
+    def arity(self) -> int:  # type: ignore
+        return len(self.types)
+
+    def convert(
+        self, value: t.Any, param: Parameter | None, ctx: Context | None
+    ) -> t.Any:
+        len_type = len(self.types)
+        len_value = len(value)
+
+        if len_value != len_type:
+            self.fail(
+                ngettext(
+                    "{len_type} values are required, but {len_value} was given.",
+                    "{len_type} values are required, but {len_value} were given.",
+                    len_value,
+                ).format(len_type=len_type, len_value=len_value),
+                param=param,
+                ctx=ctx,
+            )
+
+        return tuple(
+            ty(x, param, ctx) for ty, x in zip(self.types, value, strict=False)
+        )
+```
+
+## __repr__  (src/click/types.py L726-727)
+```
+    def __repr__(self) -> str:
+        return "BOOL"
+```
+
+## convert  (src/click/types.py L712-724)
+```
+    def convert(
+        self, value: t.Any, param: Parameter | None, ctx: Context | None
+    ) -> bool:
+        normalized = self.str_to_bool(value)
+        if normalized is None:
+            self.fail(
+                _(
+                    "{value!r} is not a valid boolean. Recognized values: {states}"
+                ).format(value=value, states=", ".join(sorted(self.bool_states))),
+                param,
+                ctx,
+            )
+        return normalized
+```
+
+## str_to_bool  (src/click/types.py L698-710)
+```
+    def str_to_bool(value: str | bool) -> bool | None:
+        """Convert a string to a boolean value.
+
+        If the value is already a boolean, it is returned as-is. If the value is a
+        string, it is stripped of whitespaces and lower-cased, then checked against
+        the known boolean states pre-defined in the `BoolParamType.bool_states` mapping
+        above.
+
+        Returns `None` if the value does not match any known boolean state.
+        """
+        if isinstance(value, bool):
+            return value
+        return BoolParamType.bool_states.get(value.strip().lower())
+```
+
+## BoolParamType  (src/click/types.py L661-727)
+```
+class BoolParamType(ParamType):
+    name = "boolean"
+
+    bool_states: dict[str, bool] = {
+        "1": True,
+        "0": False,
+        "yes": True,
+        "no": False,
+        "true": True,
+        "false": False,
+        "on": True,
+        "off": False,
+        "t": True,
+        "f": False,
+        "y": True,
+        "n": False,
+        # Absence of value is considered False.
+        "": False,
+    }
+    """A mapping of string values to boolean states.
+
+    Mapping is inspired by :py:attr:`configparser.ConfigParser.BOOLEAN_STATES`
+    and extends it.
+
+    .. caution::
+        String values are lower-cased, as the ``str_to_bool`` comparison function
+        below is case-insensitive.
+
+    .. warning::
+        The mapping is not exhaustive, and does not cover all possible boolean strings
+        representations. It will remains as it is to avoid endless bikeshedding.
+
+        Future work my be considered to make this mapping user-configurable from public
+        API.
+    """
+
+    @staticmethod
+    def str_to_bool(value: str | bool) -> bool | None:
+        """Convert a string to a boolean value.
+
+        If the value is already a boolean, it is returned as-is. If the value is a
+        string, it is stripped of whitespaces and lower-cased, then checked against
+        the known boolean states pre-defined in the `BoolParamType.bool_states` mapping
+        above.
+
+        Returns `None` if the value does not match any known boolean state.
+        """
+        if isinstance(value, bool):
+            return value
+        return BoolParamType.bool_states.get(value.strip().lower())
+
+    def convert(
+        self, value: t.Any, param: Parameter | None, ctx: Context | None
+    ) -> bool:
+        normalized = self.str_to_bool(value)
+        if normalized is None:
+            self.fail(
+                _(
+                    "{value!r} is not a valid boolean. Recognized values: {states}"
+                ).format(value=value, states=", ".join(sorted(self.bool_states))),
+                param,
+                ctx,
+            )
+        return normalized
+
+    def __repr__(self) -> str:
+        return "BOOL"
+```
+
+## __init__  (src/click/types.py L258-262)
+```
+    def __init__(
+        self, choices: cabc.Iterable[ParamTypeValue], case_sensitive: bool = True
+    ) -> None:
+        self.choices: cabc.Sequence[ParamTypeValue] = tuple(choices)
+        self.case_sensitive = case_sensitive
+```
+
+## _normalized_mapping  (src/click/types.py L270-286)
+```
+    def _normalized_mapping(
+        self, ctx: Context | None = None
+    ) -> cabc.Mapping[ParamTypeValue, str]:
+        """
+        Returns mapping where keys are the original choices and the values are
+        the normalized values that are accepted via the command line.
+
+        This is a simple wrapper around :meth:`normalize_choice`, use that
+        instead which is supported.
+        """
+        return {
+            choice: self.normalize_choice(
+                choice=choice,
+                ctx=ctx,
+            )
+... (truncated)
+```
+--- END SOURCE SNIPPETS ---
 
 QUESTION: How does Click turn decorated Python functions into a nested CLI and then dispatch the right subcommand at runtime?
 
-Provide a detailed answer based solely on the clue file above.
-For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.
+Provide a detailed answer based on the clue file and source snippets above.
+For each claim you make, cite the specific clue entry or source snippet that supports it.

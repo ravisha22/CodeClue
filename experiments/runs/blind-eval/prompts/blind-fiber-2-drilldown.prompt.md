@@ -1,15 +1,14 @@
-# Blind Evaluation Prompt - MRLF v2.1
+# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
 # Task: blind-fiber-2
 
-You are a senior software engineer. You have been given a codebase
-comprehension artifact (a "clue file") that summarises a repository's
-structure, symbols, and behavior. This is NOT the full source code - it is
-a compressed representation.
+You are a senior software engineer. You have been given:
+1. A codebase comprehension artifact (clue file) - a compressed representation
+2. Source code snippets for key functions identified as needing deeper analysis
 
-Answer the question below using ONLY the information in the clue file.
+Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
 
---- CLUE FILE START ---
+--- CLUE FILE (File 1) ---
 =CC v2.1 fiber@HEAD 243mod 3893sym
 ? When a handler panics in Fiber, how is that turned into an HTTP response, and how can mounted sub-apps change which error formatter gets used?
 
@@ -318,9 +317,246 @@ drill: client/transport.go (~1 lines, standardClientTransport)
 drill: client/transport.go (~1 lines, hostClientTransport)
 drill: client/transport.go (~1 lines, lbClientTransport)
 
---- CLUE FILE END ---
+--- END CLUE FILE ---
+
+--- SOURCE SNIPPETS (File 2 Drill-Down) ---
+## standardClientTransport  (client/transport.go L42-42)
+```
+type standardClientTransport struct {
+```
+
+## hostClientTransport  (client/transport.go L96-96)
+```
+type hostClientTransport struct {
+```
+
+## lbClientTransport  (client/transport.go L150-150)
+```
+type lbClientTransport struct {
+```
+
+## composeRedirectURL  (client/transport.go L354-354)
+```
+func composeRedirectURL(base string, location []byte, disablePathNormalizing bool) (string, error) {
+```
+
+## doRedirectsWithClient  (client/transport.go L299-299)
+```
+func doRedirectsWithClient(req *fasthttp.Request, resp *fasthttp.Response, maxRedirects int, client redirectClient) error {
+```
+
+## extractTLSConfig  (client/transport.go L249-249)
+```
+func extractTLSConfig(clients []fasthttp.BalancingClient) *tls.Config {
+```
+
+## forEachHostClient  (client/transport.go L231-231)
+```
+func forEachHostClient(lb *fasthttp.LBClient, fn func(*fasthttp.HostClient)) {
+```
+
+## hostClientTransport.Client  (client/transport.go L136-136)
+```
+func (h *hostClientTransport) Client() any {
+```
+
+## hostClientTransport.CloseIdleConnections  (client/transport.go L120-120)
+```
+func (h *hostClientTransport) CloseIdleConnections() {
+```
+
+## hostClientTransport.Do  (client/transport.go L104-104)
+```
+func (h *hostClientTransport) Do(req *fasthttp.Request, resp *fasthttp.Response) error {
+```
+
+## hostClientTransport.DoDeadline  (client/transport.go L112-112)
+```
+func (h *hostClientTransport) DoDeadline(req *fasthttp.Request, resp *fasthttp.Response, deadline time.Time) error {
+```
+
+## hostClientTransport.DoRedirects  (client/transport.go L116-116)
+```
+func (h *hostClientTransport) DoRedirects(req *fasthttp.Request, resp *fasthttp.Response, maxRedirects int) error {
+```
+
+## hostClientTransport.DoTimeout  (client/transport.go L108-108)
+```
+func (h *hostClientTransport) DoTimeout(req *fasthttp.Request, resp *fasthttp.Response, timeout time.Duration) error {
+```
+
+## hostClientTransport.SetDial  (client/transport.go L132-132)
+```
+func (h *hostClientTransport) SetDial(dial fasthttp.DialFunc) {
+```
+
+## hostClientTransport.SetStreamResponseBody  (client/transport.go L144-144)
+```
+func (h *hostClientTransport) SetStreamResponseBody(enable bool) {
+```
+
+## hostClientTransport.SetTLSConfig  (client/transport.go L128-128)
+```
+func (h *hostClientTransport) SetTLSConfig(config *tls.Config) {
+```
+
+## hostClientTransport.StreamResponseBody  (client/transport.go L140-140)
+```
+func (h *hostClientTransport) StreamResponseBody() bool {
+```
+
+## hostClientTransport.TLSConfig  (client/transport.go L124-124)
+```
+func (h *hostClientTransport) TLSConfig() *tls.Config {
+```
+
+## httpClientTransport  (client/transport.go L26-26)
+```
+type httpClientTransport interface {
+```
+
+## lbClientTransport.Client  (client/transport.go L202-202)
+```
+func (l *lbClientTransport) Client() any {
+```
+
+## lbClientTransport.CloseIdleConnections  (client/transport.go L177-177)
+```
+func (l *lbClientTransport) CloseIdleConnections() {
+```
+
+## lbClientTransport.Do  (client/transport.go L158-158)
+```
+func (l *lbClientTransport) Do(req *fasthttp.Request, resp *fasthttp.Response) error {
+```
+
+## lbClientTransport.DoDeadline  (client/transport.go L166-166)
+```
+func (l *lbClientTransport) DoDeadline(req *fasthttp.Request, resp *fasthttp.Response, deadline time.Time) error {
+```
+
+## lbClientTransport.DoRedirects  (client/transport.go L173-173)
+```
+func (l *lbClientTransport) DoRedirects(req *fasthttp.Request, resp *fasthttp.Response, maxRedirects int) error {
+```
+
+## lbClientTransport.DoTimeout  (client/transport.go L162-162)
+```
+func (l *lbClientTransport) DoTimeout(req *fasthttp.Request, resp *fasthttp.Response, timeout time.Duration) error {
+```
+
+## lbClientTransport.SetDial  (client/transport.go L196-196)
+```
+func (l *lbClientTransport) SetDial(dial fasthttp.DialFunc) {
+```
+
+## lbClientTransport.SetStreamResponseBody  (client/transport.go L223-223)
+```
+func (l *lbClientTransport) SetStreamResponseBody(enable bool) {
+```
+
+## lbClientTransport.SetTLSConfig  (client/transport.go L190-190)
+```
+func (l *lbClientTransport) SetTLSConfig(config *tls.Config) {
+```
+
+## lbClientTransport.StreamResponseBody  (client/transport.go L206-206)
+```
+func (l *lbClientTransport) StreamResponseBody() bool {
+```
+
+## lbClientTransport.TLSConfig  (client/transport.go L183-183)
+```
+func (l *lbClientTransport) TLSConfig() *tls.Config {
+```
+
+## newHostClientTransport  (client/transport.go L100-100)
+```
+func newHostClientTransport(client *fasthttp.HostClient) *hostClientTransport {
+```
+
+## newLBClientTransport  (client/transport.go L154-154)
+```
+func newLBClientTransport(client *fasthttp.LBClient) *lbClientTransport {
+```
+
+## newStandardClientTransport  (client/transport.go L46-46)
+```
+func newStandardClientTransport(client *fasthttp.Client) *standardClientTransport {
+```
+
+## redirectClient  (client/transport.go L291-291)
+```
+type redirectClient interface {
+```
+
+## standardClientTransport.Client  (client/transport.go L82-82)
+```
+func (s *standardClientTransport) Client() any {
+```
+
+## standardClientTransport.CloseIdleConnections  (client/transport.go L66-66)
+```
+func (s *standardClientTransport) CloseIdleConnections() {
+```
+
+## standardClientTransport.Do  (client/transport.go L50-50)
+```
+func (s *standardClientTransport) Do(req *fasthttp.Request, resp *fasthttp.Response) error {
+```
+
+## standardClientTransport.DoDeadline  (client/transport.go L58-58)
+```
+func (s *standardClientTransport) DoDeadline(req *fasthttp.Request, resp *fasthttp.Response, deadline time.Time) error {
+```
+
+## standardClientTransport.DoRedirects  (client/transport.go L62-62)
+```
+func (s *standardClientTransport) DoRedirects(req *fasthttp.Request, resp *fasthttp.Response, maxRedirects int) error {
+```
+
+## standardClientTransport.DoTimeout  (client/transport.go L54-54)
+```
+func (s *standardClientTransport) DoTimeout(req *fasthttp.Request, resp *fasthttp.Response, timeout time.Duration) error {
+```
+
+## standardClientTransport.SetDial  (client/transport.go L78-78)
+```
+func (s *standardClientTransport) SetDial(dial fasthttp.DialFunc) {
+```
+
+## standardClientTransport.SetStreamResponseBody  (client/transport.go L90-90)
+```
+func (s *standardClientTransport) SetStreamResponseBody(enable bool) {
+```
+
+## standardClientTransport.SetTLSConfig  (client/transport.go L74-74)
+```
+func (s *standardClientTransport) SetTLSConfig(config *tls.Config) {
+```
+
+## standardClientTransport.StreamResponseBody  (client/transport.go L86-86)
+```
+func (s *standardClientTransport) StreamResponseBody() bool {
+```
+
+## standardClientTransport.TLSConfig  (client/transport.go L70-70)
+```
+func (s *standardClientTransport) TLSConfig() *tls.Config {
+```
+
+## walkBalancingClient  (client/transport.go L239-239)
+```
+func walkBalancingClient(client any, fn func(*fasthttp.HostClient)) {
+```
+
+## walkBalancingClientWithBreak  (client/transport.go L268-268)
+```
+func walkBalancingClientWithBreak(client any, fn func(*fasthttp.HostClient) bool) bool {
+```
+--- END SOURCE SNIPPETS ---
 
 QUESTION: When a handler panics in Fiber, how is that turned into an HTTP response, and how can mounted sub-apps change which error formatter gets used?
 
-Provide a detailed answer based solely on the clue file above.
-For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.
+Provide a detailed answer based on the clue file and source snippets above.
+For each claim you make, cite the specific clue entry or source snippet that supports it.

@@ -1,15 +1,14 @@
-# Blind Evaluation Prompt - MRLF v2.1
+# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
 # Task: blind-fiber-1
 
-You are a senior software engineer. You have been given a codebase
-comprehension artifact (a "clue file") that summarises a repository's
-structure, symbols, and behavior. This is NOT the full source code - it is
-a compressed representation.
+You are a senior software engineer. You have been given:
+1. A codebase comprehension artifact (clue file) - a compressed representation
+2. Source code snippets for key functions identified as needing deeper analysis
 
-Answer the question below using ONLY the information in the clue file.
+Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
 
---- CLUE FILE START ---
+--- CLUE FILE (File 1) ---
 =CC v2.1 fiber@HEAD 243mod 3893sym
 ? If middleware rewrites the request path and wants Fiber to match routes again, how does the framework restart dispatch and decide whether the request becomes a normal match, a 404, or a 405?
 
@@ -308,9 +307,189 @@ drill: group.go (~1 lines, Group)
 drill: middleware/idempotency/idempotency.go (~1 lines, IsFromCache)
 drill: register.go (~1 lines, Registering.All)
 
---- CLUE FILE END ---
+--- END CLUE FILE ---
+
+--- SOURCE SNIPPETS (File 2 Drill-Down) ---
+## Group  (group.go L14-15)
+```
+type Group struct {
+	app         *App
+```
+
+## IsFromCache  (middleware/idempotency/idempotency.go L29-29)
+```
+func IsFromCache(c fiber.Ctx) bool {
+```
+
+## Registering.All  (register.go L50-50)
+```
+func (r *Registering) All(handler any, handlers ...any) Register {
+```
+
+## Group.Add  (group.go L167-167)
+```
+func (grp *Group) Add(methods []string, path string, handler any, handlers ...any) Router {
+```
+
+## Group.All  (group.go L178-178)
+```
+func (grp *Group) All(path string, handler any, handlers ...any) Router {
+```
+
+## Group.Connect  (group.go L143-143)
+```
+func (grp *Group) Connect(path string, handler any, handlers ...any) Router {
+```
+
+## Group.Delete  (group.go L137-137)
+```
+func (grp *Group) Delete(path string, handler any, handlers ...any) Router {
+```
+
+## Group.Domain  (group.go L215-215)
+```
+func (grp *Group) Domain(host string) Router {
+```
+
+## Group.Get  (group.go L114-114)
+```
+func (grp *Group) Get(path string, handler any, handlers ...any) Router {
+```
+
+## Group.Group  (group.go L187-187)
+```
+func (grp *Group) Group(prefix string, handlers ...any) Router {
+```
+
+## Group.Head  (group.go L120-120)
+```
+func (grp *Group) Head(path string, handler any, handlers ...any) Router {
+```
+
+## Group.Name  (group.go L27-27)
+```
+func (grp *Group) Name(name string) Router {
+```
+
+## Group.Options  (group.go L149-149)
+```
+func (grp *Group) Options(path string, handler any, handlers ...any) Router {
+```
+
+## Group.Patch  (group.go L161-161)
+```
+func (grp *Group) Patch(path string, handler any, handlers ...any) Router {
+```
+
+## Group.Post  (group.go L126-126)
+```
+func (grp *Group) Post(path string, handler any, handlers ...any) Router {
+```
+
+## Group.Put  (group.go L132-132)
+```
+func (grp *Group) Put(path string, handler any, handlers ...any) Router {
+```
+
+## Group.Route  (group.go L235-235)
+```
+func (grp *Group) Route(prefix string, fn func(router Router), name ...string) Router {
+```
+
+## Group.RouteChain  (group.go L225-225)
+```
+func (grp *Group) RouteChain(path string) Register {
+```
+
+## Group.Trace  (group.go L155-155)
+```
+func (grp *Group) Trace(path string, handler any, handlers ...any) Router {
+```
+
+## Group.Use  (group.go L70-70)
+```
+func (grp *Group) Use(args ...any) Router {
+```
+
+## Register  (register.go L8-9)
+```
+type Register interface {
+	All(handler any, handlers ...any) Register
+```
+
+## Registering.Add  (register.go L111-111)
+```
+func (r *Registering) Add(methods []string, handler any, handlers ...any) Register {
+```
+
+## Registering.Connect  (register.go L87-87)
+```
+func (r *Registering) Connect(handler any, handlers ...any) Register {
+```
+
+## Registering.Delete  (register.go L81-81)
+```
+func (r *Registering) Delete(handler any, handlers ...any) Register {
+```
+
+## Registering.Get  (register.go L58-58)
+```
+func (r *Registering) Get(handler any, handlers ...any) Register {
+```
+
+## Registering.Head  (register.go L64-64)
+```
+func (r *Registering) Head(handler any, handlers ...any) Register {
+```
+
+## Registering.Options  (register.go L93-93)
+```
+func (r *Registering) Options(handler any, handlers ...any) Register {
+```
+
+## Registering.Patch  (register.go L105-105)
+```
+func (r *Registering) Patch(handler any, handlers ...any) Register {
+```
+
+## Registering.Post  (register.go L70-70)
+```
+func (r *Registering) Post(handler any, handlers ...any) Register {
+```
+
+## Registering.Put  (register.go L76-76)
+```
+func (r *Registering) Put(handler any, handlers ...any) Register {
+```
+
+## Registering.RouteChain  (register.go L119-119)
+```
+func (r *Registering) RouteChain(path string) Register {
+```
+
+## Registering.Trace  (register.go L99-99)
+```
+func (r *Registering) Trace(handler any, handlers ...any) Register {
+```
+
+## Registering  (register.go L29-30)
+```
+type Registering struct {
+	app   *App
+```
+
+## New  (middleware/idempotency/idempotency.go L45-45)
+```
+func New(config ...Config) fiber.Handler {
+```
+
+## WasPutToCache  (middleware/idempotency/idempotency.go L35-35)
+```
+func WasPutToCache(c fiber.Ctx) bool {
+```
+--- END SOURCE SNIPPETS ---
 
 QUESTION: If middleware rewrites the request path and wants Fiber to match routes again, how does the framework restart dispatch and decide whether the request becomes a normal match, a 404, or a 405?
 
-Provide a detailed answer based solely on the clue file above.
-For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.
+Provide a detailed answer based on the clue file and source snippets above.
+For each claim you make, cite the specific clue entry or source snippet that supports it.

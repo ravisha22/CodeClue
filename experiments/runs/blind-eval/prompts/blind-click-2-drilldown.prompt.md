@@ -1,15 +1,14 @@
-# Blind Evaluation Prompt - MRLF v2.1
+# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
 # Task: blind-click-2
 
-You are a senior software engineer. You have been given a codebase
-comprehension artifact (a "clue file") that summarises a repository's
-structure, symbols, and behavior. This is NOT the full source code - it is
-a compressed representation.
+You are a senior software engineer. You have been given:
+1. A codebase comprehension artifact (clue file) - a compressed representation
+2. Source code snippets for key functions identified as needing deeper analysis
 
-Answer the question below using ONLY the information in the clue file.
+Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
 
---- CLUE FILE START ---
+--- CLUE FILE (File 1) ---
 =CC v2.1 click@HEAD 63mod 1620sym
 ? When an option or argument value is not provided directly on the command line, how does Click decide what value to use, and what extra work do file and path types perform during conversion?
 
@@ -325,9 +324,240 @@ drill: src/click/types.py (~45 lines, Tuple)
 drill: src/click/exceptions.py (~61 lines, MissingParameter)
 drill: src/click/core.py (~606 lines, Command)
 
---- CLUE FILE END ---
+--- END CLUE FILE ---
+
+--- SOURCE SNIPPETS (File 2 Drill-Down) ---
+## Tuple  (src/click/types.py L1060-1109)
+```
+class Tuple(CompositeParamType):
+    """The default behavior of Click is to apply a type on a value directly.
+    This works well in most cases, except for when `nargs` is set to a fixed
+    count and different types should be used for different items.  In this
+    case the :class:`Tuple` type can be used.  This type can only be used
+    if `nargs` is set to a fixed number.
+
+    For more information see :ref:`tuple-type`.
+
+    This can be selected by using a Python tuple literal as a type.
+
+    :param types: a list of types that should be used for the tuple items.
+    """
+
+    def __init__(self, types: cabc.Sequence[type[t.Any] | ParamType]) -> None:
+        self.types: cabc.Sequence[ParamType] = [convert_type(ty) for ty in types]
+
+    def to_info_dict(self) -> dict[str, t.Any]:
+        info_dict = super().to_info_dict()
+        info_dict["types"] = [t.to_info_dict() for t in self.types]
+        return info_dict
+
+    @property
+    def name(self) -> str:  # type: ignore
+        return f"<{' '.join(ty.name for ty in self.types)}>"
+
+    @property
+    def arity(self) -> int:  # type: ignore
+        return len(self.types)
+
+    def convert(
+        self, value: t.Any, param: Parameter | None, ctx: Context | None
+    ) -> t.Any:
+        len_type = len(self.types)
+        len_value = len(value)
+
+        if len_value != len_type:
+            self.fail(
+                ngettext(
+                    "{len_type} values are required, but {len_value} was given.",
+                    "{len_type} values are required, but {len_value} were given.",
+                    len_value,
+                ).format(len_type=len_type, len_value=len_value),
+                param=param,
+                ctx=ctx,
+            )
+
+        return tuple(
+            ty(x, param, ctx) for ty, x in zip(self.types, value, strict=False)
+        )
+```
+
+## MissingParameter  (src/click/exceptions.py L137-205)
+```
+class MissingParameter(BadParameter):
+    """Raised if click required an option or argument but it was not
+    provided when invoking the script.
+
+    .. versionadded:: 4.0
+
+    :param param_type: a string that indicates the type of the parameter.
+                       The default is to inherit the parameter type from
+                       the given `param`.  Valid values are ``'parameter'``,
+                       ``'option'`` or ``'argument'``.
+    """
+
+    def __init__(
+        self,
+        message: str | None = None,
+        ctx: Context | None = None,
+        param: Parameter | None = None,
+        param_hint: cabc.Sequence[str] | str | None = None,
+        param_type: str | None = None,
+    ) -> None:
+        super().__init__(message or "", ctx, param, param_hint)
+        self.param_type = param_type
+
+    def format_message(self) -> str:
+        if self.param_hint is not None:
+            param_hint: cabc.Sequence[str] | str | None = self.param_hint
+        elif self.param is not None:
+            param_hint = self.param.get_error_hint(self.ctx)  # type: ignore
+        else:
+            param_hint = None
+
+        param_hint = _join_param_hints(param_hint)
+        param_hint = f" {param_hint}" if param_hint else ""
+
+        param_type = self.param_type
+        if param_type is None and self.param is not None:
+            param_type = self.param.param_type_name
+
+        msg = self.message
+        if self.param is not None:
+            msg_extra = self.param.type.get_missing_message(
+                param=self.param, ctx=self.ctx
+            )
+            if msg_extra:
+                if msg:
+                    msg += f". {msg_extra}"
+                else:
+                    msg = msg_extra
+
+        msg = f" {msg}" if msg else ""
+
+        # Translate param_type for known types.
+        if param_type == "argument":
+            missing = _("Missing argument")
+        elif param_type == "option":
+            missing = _("Missing option")
+        elif param_type == "parameter":
+            missing = _("Missing parameter")
+        else:
+            missing = _("Missing {param_type}").format(param_type=param_type)
+
+        return f"{missing}{param_hint}.{msg}"
+
+    def __str__(self) -> str:
+        if not self.message:
+            param_name = self.param.name if self.param else None
+            return _("Missing parameter: {param_name}").format(param_name=param_name)
+        else:
+            return self.message
+```
+
+## Command  (src/click/core.py L873-1485)
+```
+class Command:
+    """Commands are the basic building block of command line interfaces in
+    Click.  A basic command handles command line parsing and might dispatch
+    more parsing to commands nested below it.
+
+    :param name: the name of the command to use unless a group overrides it.
+    :param context_settings: an optional dictionary with defaults that are
+                             passed to the context object.
+    :param callback: the callback to invoke.  This is optional.
+    :param params: the parameters to register with this command.  This can
+                   be either :class:`Option` or :class:`Argument` objects.
+    :param help: the help string to use for this command.
+    :param epilog: like the help string but it's printed at the end of the
+                   help page after everything else.
+    :param short_help: the short help to use for this command.  This is
+                       shown on the command listing of the parent command.
+    :param add_help_option: by default each command registers a ``--help``
+                            option.  This can be disabled by this parameter.
+    :param no_args_is_help: this controls what happens if no arguments are
+                            provided.  This option is disabled by default.
+                            If enabled this will add ``--help`` as argument
+                            if no arguments are passed
+    :param hidden: hide this command from help outputs.
+    :param deprecated: If ``True`` or non-empty string, issues a message
+                        indicating that the command is deprecated and highlights
+                        its deprecation in --help. The message can be customized
+                        by using a string as the value.
+
+    .. versionchanged:: 8.2
+        This is the base class for all commands, not ``BaseCommand``.
+        ``deprecated`` can be set to a string as well to customize the
+        deprecation message.
+
+    .. versionchanged:: 8.1
+        ``help``, ``epilog``, and ``short_help`` are stored unprocessed,
+        all formatting is done when outputting help text, not at init,
+        and is done even if not using the ``@command`` decorator.
+
+    .. versionchanged:: 8.0
+        Added a ``repr`` showing the command name.
+
+    .. versionchanged:: 7.1
+        Added the ``no_args_is_help`` parameter.
+
+    .. versionchanged:: 2.0
+        Added the ``context_settings`` parameter.
+    """
+
+    #: The context class to create with :meth:`make_context`.
+    #:
+    #: .. versionadded:: 8.0
+    context_class: type[Context] = Context
+
+    #: the default for the :attr:`Context.allow_extra_args` flag.
+    allow_extra_args = False
+
+    #: the default for the :attr:`Context.allow_interspersed_args` flag.
+    allow_interspersed_args = True
+
+    #: the default for the :attr:`Context.ignore_unknown_options` flag.
+    ignore_unknown_options = False
+
+    def __init__(
+        self,
+        name: str | None,
+        context_settings: cabc.MutableMapping[str, t.Any] | None = None,
+        callback: t.Callable[..., t.Any] | None = None,
+        params: list[Parameter] | None = None,
+        help: str | None = None,
+        epilog: str | None = None,
+        short_help: str | None = None,
+        options_metavar: str | None = "[OPTIONS]",
+        add_help_option: bool = True,
+        no_args_is_help: bool = False,
+        hidden: bool = False,
+        deprecated: bool | str = False,
+    ) -> None:
+        #: the name the command thinks it has.  Upon registering a command
+        #: on a :class:`Group` the group will default the command name
+        #: with this information.  You should instead use the
+        #: :class:`Context`\'s :attr:`~Context.info_name` attribute.
+        self.name = name
+
+        if context_settings is None:
+            context_settings = {}
+
+        #: an optional dictionary with defaults passed to the context.
+        self.context_settings: cabc.MutableMapping[str, t.Any] = context_settings
+
+        #: the callback to execute when the command fires.  This might be
+        #: `None` in which case nothing happens.
+        self.callback = callback
+        #: the list of parameters for this command in the order they
+        #: should show up in the help page and execute.  Eager parameters
+        #: will automatically be handled before non eager ones.
+        self.params: list[Parameter] = params or []
+        self.help = help
+... (truncated)
+```
+--- END SOURCE SNIPPETS ---
 
 QUESTION: When an option or argument value is not provided directly on the command line, how does Click decide what value to use, and what extra work do file and path types perform during conversion?
 
-Provide a detailed answer based solely on the clue file above.
-For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.
+Provide a detailed answer based on the clue file and source snippets above.
+For each claim you make, cite the specific clue entry or source snippet that supports it.
