@@ -375,198 +375,181 @@ def _extract_question_keywords(question: str) -> set[str]:
     return words - stop_words
 
 
-def _tokenize_symbol(name: str) -> set[str]:
-    """Split a symbol name into keyword-matchable tokens.
-
-    Splits on underscores and camelCase boundaries, lowercases, keeps tokens >= 3 chars.
-    'type_cast_value' -> {'type', 'cast', 'value'}
-    'LazyFile' -> {'lazy', 'file'}
-    'normalize_choice' -> {'normalize', 'choice'}
-    """
-    # Split on underscores first
-    parts = name.replace("_", " ").replace(".", " ")
-    # Split camelCase: insert space before uppercase letters
-    parts = re.sub(r"([a-z])([A-Z])", r"\1 \2", parts)
-    tokens = set(re.findall(r"[a-z]{3,}", parts.lower()))
-    return tokens
-
-
 def _is_test_file(file_path: str) -> bool:
     """Check if a file path belongs to a test directory."""
     fp = file_path.lower().replace("\\", "/")
     return "/test" in fp or fp.startswith("test") or "_test." in fp or "conftest" in fp
 
 
-def _is_src_file(file_path: str) -> bool:
-    """Check if a file path belongs to src/ (not examples/, docs/, etc.)."""
-    fp = file_path.lower().replace("\\", "/")
-    return fp.startswith("src/") or (
-        not fp.startswith("examples/")
-        and not fp.startswith("docs/")
-        and not fp.startswith("test")
-    )
+def _semantic_overlap(purpose: str, question_keywords: set[str]) -> float:
+    """Score overlap between node documentation and question intent."""
+    if not purpose:
+        return 0.0
+    purpose_words = set(re.findall(r"[a-zA-Z]{3,}", purpose.lower()))
+    return len(purpose_words & question_keywords) / max(len(question_keywords), 1)
+
+
+def _betweenness_centrality(
+    node_ids: list[str],
+    edges: list[tuple[str, str]],
+) -> dict[str, float]:
+    """Compute betweenness centrality on a small subgraph."""
+    node_set = set(node_ids)
+    adj: dict[str, set[str]] = defaultdict(set)
+    for u, v in edges:
+        if u in node_set and v in node_set:
+            adj[u].add(v)
+            adj[v].add(u)
+
+    bc: dict[str, float] = {n: 0.0 for n in node_ids}
+    for source in node_ids:
+        stack: list[str] = []
+        pred: dict[str, list[str]] = {n: [] for n in node_ids}
+        sigma: dict[str, int] = {n: 0 for n in node_ids}
+        sigma[source] = 1
+        dist: dict[str, int] = {n: -1 for n in node_ids}
+        dist[source] = 0
+        queue = [source]
+        qi = 0
+        while qi < len(queue):
+            v = queue[qi]
+            qi += 1
+            stack.append(v)
+            for w in adj.get(v, set()):
+                if dist[w] < 0:
+                    dist[w] = dist[v] + 1
+                    queue.append(w)
+                if dist[w] == dist[v] + 1:
+                    sigma[w] += sigma[v]
+                    pred[w].append(v)
+
+        delta = {n: 0.0 for n in node_ids}
+        while stack:
+            w = stack.pop()
+            if sigma[w] == 0:
+                continue
+            for v in pred[w]:
+                delta[v] += (sigma[v] / sigma[w]) * (1 + delta[w])
+            if w != source:
+                bc[w] += delta[w]
+
+    n = len(node_ids)
+    if n > 2:
+        norm = 1.0 / ((n - 1) * (n - 2))
+        bc = {k: v * norm for k, v in bc.items()}
+    return bc
 
 
 def _select_focus_nodes(
     graph: CanonicalClueGraph,
     question: str,
-    max_nodes: int = 80,
+    budget: int = BUDGET_L3,
 ) -> list[Node]:
-    """Two-stage focus selection: keyword anchoring + graph walk.
-
-    Fixes applied (Step 3, Apr 14):
-    - Tokenize symbol names on _ and camelCase for keyword matching
-    - Seeds always keep dist=0 (never overwritten by graph walk)
-    - Prioritize src/ over examples/ in cap sorting
-    """
+    """Select task-relevant nodes via semantic anchoring and structure."""
     keywords = _extract_question_keywords(question)
-    if not keywords:
-        # Fallback: return top PageRank nodes
-        symbol_nodes = [n for n in graph.nodes if n.node_type != "module"]
-        call_edges = [(e.from_node, e.to_node) for e in graph.edges if e.edge_type == "calls"]
-        ranks = _pagerank([n.node_id for n in symbol_nodes], call_edges)
-        symbol_nodes.sort(key=lambda n: ranks.get(n.node_id, 0), reverse=True)
-        return symbol_nodes[:max_nodes]
-
     node_by_id = {n.node_id: n for n in graph.nodes}
+    symbol_nodes = [
+        node for node in graph.nodes
+        if node.node_type != "module" and not _is_test_file(node.source_anchor.file_path)
+    ]
+    soft_cap = max(20, min(80, budget // 25 if budget > 0 else 80))
 
-    # Stem keywords for fuzzy matching
-    stemmed_kw = set()
-    for kw in keywords:
-        stemmed_kw.add(kw)
-        if kw.endswith("s") and len(kw) > 4:
-            stemmed_kw.add(kw[:-1])
-        if kw.endswith("ing") and len(kw) > 5:
-            stemmed_kw.add(kw[:-3])
-        if kw.endswith("ed") and len(kw) > 4:
-            stemmed_kw.add(kw[:-2])
-
-    # Stage 1: keyword anchoring — find seed nodes
-    # Use _tokenize_symbol to split on _ and camelCase for matching
-    class_seeds: list[str] = []
-    func_seeds: list[str] = []
-    for node in graph.nodes:
-        if node.node_type == "module":
-            continue
-        if _is_test_file(node.source_anchor.file_path):
-            continue
-        sc = node.semantic_contract or {}
-        sym_name = sc.get("symbol_name", node.node_id)
-        file_path = node.source_anchor.file_path.lower()
-        # Tokenize symbol name on _ and camelCase boundaries
-        name_tokens = _tokenize_symbol(sym_name)
-        path_tokens = _tokenize_symbol(file_path)
-        overlap = stemmed_kw & (name_tokens | path_tokens)
-        if overlap:
-            if node.node_type == "class":
-                class_seeds.append(node.node_id)
-            else:
-                func_seeds.append(node.node_id)
-
-    # Prioritise: class seeds first (architectural), then function seeds
-    seeds = class_seeds + func_seeds
-    seed_set = set(seeds)
-
-    if not seeds:
-        # No keyword matches — fall back to top PageRank
-        symbol_nodes = [n for n in graph.nodes if n.node_type != "module"]
+    def _fallback_nodes() -> list[Node]:
         call_edges = [(e.from_node, e.to_node) for e in graph.edges if e.edge_type == "calls"]
         ranks = _pagerank([n.node_id for n in symbol_nodes], call_edges)
-        symbol_nodes.sort(key=lambda n: ranks.get(n.node_id, 0), reverse=True)
-        return symbol_nodes[:max_nodes]
+        ordered = sorted(
+            symbol_nodes,
+            key=lambda node: (
+                -ranks.get(node.node_id, 0.0),
+                0 if node.node_type == "class" else 1,
+                node.semantic_contract.get("symbol_name", node.node_id),
+            ),
+        )
+        return ordered[:soft_cap]
 
-    # Stage 2: graph walk — expand 1-2 hops from seeds
-    # Build adjacency (both directions for calls edges)
-    neighbors: dict[str, set[str]] = defaultdict(set)
+    if not keywords:
+        return _fallback_nodes()
+
+    contains_children: dict[str, set[str]] = defaultdict(set)
+    contains_parents: dict[str, set[str]] = defaultdict(set)
+    call_neighbors: dict[str, set[str]] = defaultdict(set)
+    structural_edges: list[tuple[str, str]] = []
     for edge in graph.edges:
-        if edge.edge_type == "calls":
-            neighbors[edge.from_node].add(edge.to_node)
-            neighbors[edge.to_node].add(edge.from_node)
+        if edge.edge_type == "contains":
+            contains_children[edge.from_node].add(edge.to_node)
+            contains_parents[edge.to_node].add(edge.from_node)
+            structural_edges.append((edge.from_node, edge.to_node))
+        elif edge.edge_type == "calls":
+            call_neighbors[edge.from_node].add(edge.to_node)
+            call_neighbors[edge.to_node].add(edge.from_node)
+            structural_edges.append((edge.from_node, edge.to_node))
 
-    collected: dict[str, int] = {}  # node_id -> distance from seed
-    # Pre-register ALL seeds as dist=0 so graph walk can't overwrite them
-    for seed in seeds:
-        collected[seed] = 0
-    # Now do the walk — only assign dist to NON-seed nodes
-    for seed in seeds:
-        # Hop 1
-        for neighbor in neighbors.get(seed, set()):
-            if neighbor in seed_set:
-                continue  # never overwrite a seed
-            if neighbor not in collected or collected[neighbor] > 1:
-                collected[neighbor] = 1
-            # Hop 2
-            for n2 in neighbors.get(neighbor, set()):
-                if n2 in seed_set:
-                    continue  # never overwrite a seed
-                if n2 not in collected or collected[n2] > 2:
-                    collected[n2] = 2
+    semantic_scores: dict[str, float] = {}
+    class_anchors: list[str] = []
+    function_anchors: list[str] = []
+    for node in symbol_nodes:
+        sc = node.semantic_contract or {}
+        overlap = _semantic_overlap(sc.get("purpose", ""), keywords)
+        semantic_scores[node.node_id] = overlap
+        if overlap > 0:
+            if node.node_type == "class":
+                class_anchors.append(node.node_id)
+            else:
+                function_anchors.append(node.node_id)
 
-    # Sort by distance (closer to seed = higher priority), filter modules
-    # Within same distance: (1) more keyword matches first, (2) classes before functions
+    anchors = class_anchors + function_anchors
+    if not anchors:
+        return _fallback_nodes()
+
+    candidates: set[str] = set(anchors)
+    for anchor in list(anchors):
+        anchor_node = node_by_id.get(anchor)
+        if not anchor_node:
+            continue
+        if anchor_node.node_type == "class":
+            for child_id in contains_children.get(anchor, set()):
+                child = node_by_id.get(child_id)
+                if child and child.node_type in ("function", "async_function"):
+                    candidates.add(child_id)
+        elif anchor_node.node_type in ("function", "async_function"):
+            for parent_id in contains_parents.get(anchor, set()):
+                parent = node_by_id.get(parent_id)
+                if parent and parent.node_type == "class":
+                    candidates.add(parent_id)
+
+    frontier = set(anchors)
+    visited = set(anchors)
+    for _ in range(2):
+        next_frontier: set[str] = set()
+        for current in frontier:
+            for neighbor in call_neighbors.get(current, set()):
+                if neighbor in visited:
+                    continue
+                neighbor_node = node_by_id.get(neighbor)
+                if not neighbor_node or neighbor_node.node_type == "module":
+                    continue
+                if _is_test_file(neighbor_node.source_anchor.file_path):
+                    continue
+                candidates.add(neighbor)
+                next_frontier.add(neighbor)
+                visited.add(neighbor)
+        frontier = next_frontier
+        if not frontier:
+            break
+
+    candidate_ids = [nid for nid in candidates if nid in node_by_id]
+    centrality = _betweenness_centrality(candidate_ids, structural_edges)
     type_priority = {"class": 0, "function": 1, "async_function": 1, "method": 1}
-
-    def _kw_overlap(nid: str) -> int:
-        """Count stemmed keywords matching this symbol's tokenized name."""
-        nd = node_by_id.get(nid)
-        if not nd:
-            return 0
-        sc = nd.semantic_contract or {}
-        sym_name = sc.get("symbol_name", "")
-        tokens = _tokenize_symbol(sym_name)
-        return len(stemmed_kw & tokens)
-
-    def _src_priority(nid: str) -> int:
-        """0 for src/ files, 1 for others (lower = better)."""
-        nd = node_by_id.get(nid)
-        if not nd:
-            return 1
-        return 0 if _is_src_file(nd.source_anchor.file_path) else 1
-
-    focus_ids = sorted(
-        (nid for nid in collected if nid in node_by_id and node_by_id[nid].node_type != "module"),
+    ranked_ids = sorted(
+        candidate_ids,
         key=lambda nid: (
-            collected[nid],                                          # dist: 0 first
-            -_kw_overlap(nid),                                       # more kw matches first
-            _src_priority(nid),                                      # src/ before examples/
-            type_priority.get(node_by_id[nid].node_type, 2),         # classes before functions
+            -semantic_scores.get(nid, 0.0),
+            -centrality.get(nid, 0.0),
+            type_priority.get(node_by_id[nid].node_type, 2),
+            node_by_id[nid].semantic_contract.get("symbol_name", node_by_id[nid].node_id),
         ),
     )
-
-    # Stage 3: Direct name-match inclusion
-    # If a keyword matches part of a symbol's tokenized name, include it
-    # even if graph walk didn't reach it (handles disconnected classes)
-    direct_matches: list[str] = []
-    for node in graph.nodes:
-        if node.node_type == "module":
-            continue
-        if node.node_id in collected:
-            continue  # already included via graph walk
-        if _is_test_file(node.source_anchor.file_path):
-            continue
-        sc = node.semantic_contract or {}
-        sym_name = sc.get("symbol_name", "")
-        tokens = _tokenize_symbol(sym_name)
-        # Match if any stemmed keyword (>=4 chars) matches a token
-        if any(kw in tokens for kw in stemmed_kw if len(kw) >= 4):
-            direct_matches.append(node.node_id)
-
-    # Merge: direct matches FIRST (they're the most relevant — user asked about
-    # these exact concepts), then graph-walk results by distance
-    all_focus_ids: list[str] = []
-    seen: set[str] = set()
-    # Direct matches first
-    for nid in direct_matches:
-        if nid not in seen:
-            all_focus_ids.append(nid)
-            seen.add(nid)
-    # Then graph-walk results
-    for nid in focus_ids:
-        if nid not in seen:
-            all_focus_ids.append(nid)
-            seen.add(nid)
-
-    return [node_by_id[nid] for nid in all_focus_ids[:max_nodes]]
+    return [node_by_id[nid] for nid in ranked_ids[:soft_cap]]
 
 
 def _render_l3(
@@ -576,7 +559,7 @@ def _render_l3(
     budget: int = BUDGET_L3,
 ) -> str:
     """Render L3 FOCUS: task-conditioned behavioural detail."""
-    focus_nodes = _select_focus_nodes(graph, question)
+    focus_nodes = _select_focus_nodes(graph, question, budget=budget)
     if not focus_nodes:
         return "-- FOCUS\n(no focus nodes selected)\n"
 
@@ -629,6 +612,10 @@ def _render_l3(
         sig = sc.get("signature", "")
         if sig and sig != "()" and node.node_type != "class":
             entry_lines.append(f"  sig: {sym_name}{sig}")
+
+        behavior = sc.get("behavior_patterns", [])
+        if behavior:
+            entry_lines.append(f"  behavior: {'; '.join(behavior)}")
 
         # For classes: show parent classes, key attrs, and methods
         if node.node_type == "class":
@@ -822,7 +809,7 @@ def render_mrlf(
     l3 = _render_l3(graph, question, repo_root)
 
     # For GAPS, we need focus and l2 node lists
-    focus_nodes = _select_focus_nodes(graph, question)
+    focus_nodes = _select_focus_nodes(graph, question, budget=BUDGET_L3)
     l2_symbols = [n for n in graph.nodes if n.node_type != "module"]
 
     gaps = _render_gaps(graph, question, focus_nodes, l2_symbols)

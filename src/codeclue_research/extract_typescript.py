@@ -39,6 +39,47 @@ def _iter_ts_files(repo_root: Path) -> list[Path]:
     return sorted(set(files))
 
 
+def _extract_ts_block(lines: list[str], start_idx: int) -> str:
+    body_lines: list[str] = []
+    brace_depth = 0
+    started = False
+    for idx in range(start_idx, len(lines)):
+        line = lines[idx]
+        open_count = line.count("{")
+        close_count = line.count("}")
+        if open_count:
+            started = True
+        if started:
+            body_lines.append(line)
+        brace_depth += open_count - close_count
+        if started and brace_depth <= 0:
+            break
+    return "\n".join(body_lines)
+
+
+def _extract_ts_behavior_patterns(body: str) -> list[str]:
+    patterns: list[str] = []
+    if not body:
+        return patterns
+
+    if re.search(r"if\s*\([^)]*\)\s*\{[^{}]*return\b", body, re.DOTALL):
+        patterns.append("GUARD(condition)")
+
+    if re.search(r"\bswitch\s*\(", body):
+        patterns.append("DISPATCH(switch)")
+
+    if re.search(r"\bfor\s*\(", body) or ".forEach(" in body:
+        patterns.append("ACCUMULATE(loop)")
+
+    if ".map(" in body:
+        patterns.append("TRANSFORM(map)")
+
+    if len(re.findall(r"if\s*\(", body)) >= 2 and len(re.findall(r"\breturn\b", body)) >= 2:
+        patterns.append("PRECEDENCE(if_chain)")
+
+    return list(dict.fromkeys(patterns))[:3]
+
+
 def extract_typescript_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
     nodes: list[Node] = []
     edges: list[Edge] = []
@@ -56,6 +97,7 @@ def extract_typescript_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Ed
         text = file_path.read_text(encoding="utf-8")
         rel_path = file_path.relative_to(repo_root).as_posix()
         module_id = f"module:{rel_path}"
+        lines = text.splitlines()
         nodes.append(
             Node(
                 node_id=module_id,
@@ -85,7 +127,7 @@ def extract_typescript_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Ed
         )
 
         symbols: dict[str, str] = {}
-        for line_no, line in enumerate(text.splitlines(), start=1):
+        for line_no, line in enumerate(lines, start=1):
             for matcher, symbol_type in (
                 (class_re, "class"),
                 (func_re, "function"),
@@ -100,6 +142,9 @@ def extract_typescript_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Ed
                 start, end = _byte_span(text, line_no, col_start, col_end)
                 node_id = f"symbol:{rel_path}:{name}:{line_no}"
                 symbols[name] = node_id
+                behavior_patterns: list[str] = []
+                if symbol_type == "function":
+                    behavior_patterns = _extract_ts_behavior_patterns(_extract_ts_block(lines, line_no - 1))
                 nodes.append(
                     Node(
                         node_id=node_id,
@@ -116,6 +161,7 @@ def extract_typescript_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Ed
                             "language": "typescript",
                             "symbol_name": name,
                             "symbol_type": symbol_type,
+                            "behavior_patterns": behavior_patterns,
                             "tier": 1,
                             "calls": [],
                             "called_by": [],
@@ -137,7 +183,7 @@ def extract_typescript_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Ed
                     )
                 )
 
-        for line_no, line in enumerate(text.splitlines(), start=1):
+        for line_no, line in enumerate(lines, start=1):
             calls = [m.group(1) for m in call_re.finditer(line)]
             if not calls:
                 continue

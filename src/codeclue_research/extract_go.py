@@ -37,6 +37,47 @@ def _iter_go_files(repo_root: Path) -> list[Path]:
     return sorted(files)
 
 
+def _extract_go_function_body(lines: list[str], start_idx: int) -> str:
+    body_lines: list[str] = []
+    brace_depth = 0
+    started = False
+    for idx in range(start_idx, len(lines)):
+        line = lines[idx]
+        open_count = line.count("{")
+        close_count = line.count("}")
+        if open_count:
+            started = True
+        if started:
+            body_lines.append(line)
+        brace_depth += open_count - close_count
+        if started and brace_depth <= 0:
+            break
+    return "\n".join(body_lines)
+
+
+def _extract_go_behavior_patterns(body: str) -> list[str]:
+    patterns: list[str] = []
+    if not body:
+        return patterns
+
+    if re.search(r"(?m)^\s*if\s+err\s*!=\s*nil\s*\{[^{}]*(?:return|panic)", body):
+        patterns.append("GUARD(err)")
+
+    if body.count("if ") >= 2 and len(re.findall(r"(?m)^\s*if\b", body)) >= 2 and len(re.findall(r"(?m)^\s*return\b", body)) >= 2:
+        patterns.append("PRECEDENCE(if_chain)")
+
+    if re.search(r"(?m)^\s*for\b", body):
+        patterns.append("ACCUMULATE(loop)")
+
+    if re.search(r"(?m)^\s*defer\b", body):
+        patterns.append("UNWIND(defer)")
+
+    if re.search(r"(?m)^\s*switch\b", body):
+        patterns.append("DISPATCH(switch)")
+
+    return list(dict.fromkeys(patterns))[:3]
+
+
 def extract_go_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
     nodes: list[Node] = []
     edges: list[Edge] = []
@@ -157,6 +198,8 @@ def extract_go_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
                 sig = f"({params})" if params else "()"
                 if len(sig) > 60:
                     sig = sig[:57] + "...)"
+                body_text = _extract_go_function_body(lines_list, line_no_0)
+                behavior_patterns = _extract_go_behavior_patterns(body_text)
                 col_start = m.start(3)
                 col_end = m.end(3)
                 start, end = _byte_span(text, line_no, col_start, col_end)
@@ -177,6 +220,7 @@ def extract_go_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
                             "symbol_name": name,
                             "symbol_type": "function",
                             "signature": sig,
+                            "behavior_patterns": behavior_patterns,
                             "tier": 1,
                             "calls": [],
                             "called_by": [],

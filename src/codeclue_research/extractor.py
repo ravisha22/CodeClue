@@ -28,6 +28,7 @@ class SymbolRecord:
     class_attrs: dict[str, str] = None  # class-level attribute name -> literal value
     raises: list[str] = None  # exception class names raised
     uses: list[str] = None  # external classes/functions instantiated ("Name (module)")
+    behavior_patterns: list[str] = None  # universal control flow patterns
 
     def __post_init__(self):
         if self.bases is None:
@@ -38,6 +39,8 @@ class SymbolRecord:
             self.raises = []
         if self.uses is None:
             self.uses = []
+        if self.behavior_patterns is None:
+            self.behavior_patterns = []
 
 
 def _hash_text(text: str) -> str:
@@ -60,6 +63,93 @@ def _iter_python_files(repo_root: Path) -> Iterable[Path]:
         if any(part.startswith(".") for part in path.parts):
             continue
         yield path
+
+
+def _get_call_name(node: ast.AST | None) -> str:
+    if node is None:
+        return ""
+    target = node.func if isinstance(node, ast.Call) else node
+    if isinstance(target, ast.Name):
+        return target.id
+    if isinstance(target, ast.Attribute):
+        return target.attr
+    return ""
+
+
+def _has_return(node: ast.AST) -> bool:
+    return any(isinstance(child, ast.Return) for child in ast.walk(node))
+
+
+def _is_early_exit(node: ast.If) -> bool:
+    return any(isinstance(stmt, (ast.Return, ast.Raise)) for stmt in node.body)
+
+
+def _summarize_condition(node: ast.AST | None) -> str:
+    if node is None:
+        return "condition"
+    names: list[str] = []
+    for child in ast.walk(node):
+        if isinstance(child, ast.Name):
+            names.append(child.id)
+        elif isinstance(child, ast.Attribute):
+            names.append(child.attr)
+    if names:
+        return "_".join(list(dict.fromkeys(names))[:3])
+    if isinstance(node, ast.Constant):
+        return repr(node.value)
+    return type(node).__name__.lower()
+
+
+def _extract_behavior_patterns(node: ast.FunctionDef | ast.AsyncFunctionDef) -> list[str]:
+    """Extract universal control flow patterns from a function body."""
+    patterns: list[str] = []
+    body = node.body
+    if not body:
+        return patterns
+
+    first_stmt = body[0]
+    if isinstance(first_stmt, ast.If) and _is_early_exit(first_stmt):
+        patterns.append(f"GUARD({_summarize_condition(first_stmt.test)})")
+
+    if_chain: list[ast.If] = []
+    cursor = body[0] if isinstance(body[0], ast.If) else None
+    while isinstance(cursor, ast.If):
+        if_chain.append(cursor)
+        cursor = cursor.orelse[0] if len(cursor.orelse) == 1 and isinstance(cursor.orelse[0], ast.If) else None
+    if len(if_chain) >= 2:
+        branches_with_return = sum(1 for stmt in if_chain if _has_return(stmt))
+        if branches_with_return >= 2:
+            sources = [_summarize_condition(stmt.test) for stmt in if_chain[:4]]
+            patterns.append(f"PRECEDENCE({', '.join(sources)})")
+
+    for stmt in body:
+        if isinstance(stmt, (ast.For, ast.AsyncFor, ast.While)):
+            patterns.append("ACCUMULATE(loop)")
+            break
+
+    simple_body = [stmt for stmt in body if not isinstance(stmt, ast.Expr)]
+    if len(simple_body) <= 1:
+        for stmt in body:
+            if isinstance(stmt, ast.Return) and isinstance(stmt.value, ast.Call):
+                callee = _get_call_name(stmt.value)
+                if callee:
+                    patterns.append(f"DELEGATE({callee})")
+                    break
+
+    for stmt in body:
+        if isinstance(stmt, ast.If) and stmt.orelse:
+            patterns.append(f"BRANCH({_summarize_condition(stmt.test)})")
+            break
+
+    for stmt in ast.walk(node):
+        if isinstance(stmt, ast.Call):
+            callee = _get_call_name(stmt)
+            if callee == "reversed":
+                patterns.append("UNWIND(reversed)")
+                break
+
+    deduped = list(dict.fromkeys(patterns))
+    return deduped[:3]
 
 
 class SymbolCollector(ast.NodeVisitor):
@@ -85,6 +175,7 @@ class SymbolCollector(ast.NodeVisitor):
         # Extract signature for functions
         signature = ""
         raises: list[str] = []
+        behavior_patterns: list[str] = []
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             args = []
             for arg in node.args.args:
@@ -92,6 +183,7 @@ class SymbolCollector(ast.NodeVisitor):
             if args and args[0] == "self":
                 args = args[1:]
             signature = f"({', '.join(args[:5])}{'...' if len(args) > 5 else ''})" if args else "()"
+            behavior_patterns = _extract_behavior_patterns(node)
             # Extract raised exceptions
             for child in ast.walk(node):
                 if isinstance(child, ast.Raise) and child.exc:
@@ -130,6 +222,7 @@ class SymbolCollector(ast.NodeVisitor):
                 docstring=docstring,
                 signature=signature,
                 raises=raises,
+                behavior_patterns=behavior_patterns,
             )
         )
 
@@ -308,6 +401,7 @@ def extract_python_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]
                         "class_attrs": symbol.class_attrs,
                         "raises": symbol.raises,
                         "uses": symbol.uses,
+                        "behavior_patterns": symbol.behavior_patterns,
                         "tier": 1,
                         "calls": [],
                         "called_by": [],

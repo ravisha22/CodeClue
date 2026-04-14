@@ -60,6 +60,12 @@ def _normalize_semantic_contract(node: "Node") -> None:
     called_by = contract.get("called_by")
     contract["calls"] = list(calls) if isinstance(calls, list) else []
     contract["called_by"] = list(called_by) if isinstance(called_by, list) else []
+    behavior_patterns = contract.get("behavior_patterns")
+    contract["behavior_patterns"] = (
+        [str(pattern) for pattern in behavior_patterns]
+        if isinstance(behavior_patterns, list)
+        else []
+    )
     node.semantic_contract = contract
 
 
