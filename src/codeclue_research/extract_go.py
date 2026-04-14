@@ -55,25 +55,120 @@ def _extract_go_function_body(lines: list[str], start_idx: int) -> str:
     return "\n".join(body_lines)
 
 
+def _clean_go_expr(expr: str) -> str:
+    expr = re.sub(r"//.*", "", expr).strip()
+    expr = expr.removeprefix("return").removeprefix("panic")
+    expr = expr.strip(" {}();")
+    return expr
+
+
+def _go_ref_summary(expr: str, *, source: bool = False) -> str:
+    cleaned = _clean_go_expr(expr)
+    tokens = re.findall(r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*", cleaned)
+    tokens = [token for token in tokens if token not in {"if", "return", "else", "nil", "true", "false"}]
+    if not tokens:
+        if "{}" in expr or "nil" in expr:
+            return "empty" if "{}" in expr else "none"
+        return "value"
+    token = tokens[0]
+    if source:
+        if "." in token:
+            token = token.split(".", 1)[0]
+        return token.replace(".", "_")[:24]
+    return token.replace(".", ".")[:28]
+
+
+def _summarize_go_condition(expr: str) -> str:
+    cleaned = _clean_go_expr(expr)
+    if cleaned.startswith("!"):
+        return f"not_{_go_ref_summary(cleaned[1:])}"
+    if "!=" in cleaned and "nil" in cleaned:
+        return _go_ref_summary(cleaned.split("!=", 1)[0], source=True)
+    if "==" in cleaned and "nil" in cleaned:
+        return _go_ref_summary(cleaned.split("==", 1)[0], source=True)
+    if any(op in cleaned for op in ("<", ">", "==", "!=", "<=", ">=")):
+        left = re.split(r"<=|>=|==|!=|<|>", cleaned, maxsplit=1)[0]
+        return _go_ref_summary(left, source=True)
+    return _go_ref_summary(cleaned, source=True)
+
+
+def _summarize_go_action(expr: str, condition: str = "") -> str:
+    raw = expr.strip()
+    if not raw:
+        return "result"
+    if raw.startswith("return"):
+        value = _clean_go_expr(raw)
+        if value in {"", "nil"}:
+            return "none"
+        if value in {"{}", "[]"}:
+            return "empty"
+        condition_hints = set(re.findall(r"[A-Za-z_][A-Za-z0-9_]*", condition))
+        value_hints = set(re.findall(r"[A-Za-z_][A-Za-z0-9_]*", value))
+        if condition_hints and condition_hints.intersection(value_hints) and "(" not in value:
+            return "pass_through"
+        call_match = re.match(r"([A-Za-z_][A-Za-z0-9_\.]*)\s*\(", value)
+        if call_match:
+            callee = call_match.group(1).split(".")[-1]
+            if condition_hints and condition_hints.intersection(value_hints):
+                return f"wrap_{callee}"[:24]
+            return callee[:24]
+        return _go_ref_summary(value)
+    if raw.startswith("panic"):
+        return "raise_panic"
+    return "result"
+
+
+def _extract_go_return_expr(block: str) -> str:
+    match = re.search(r"(?m)^\s*(return\b.*|panic\b.*)$", block)
+    return match.group(1).strip() if match else ""
+
+
 def _extract_go_behavior_patterns(body: str) -> list[str]:
     patterns: list[str] = []
     if not body:
         return patterns
 
-    if re.search(r"(?m)^\s*if\s+err\s*!=\s*nil\s*\{[^{}]*(?:return|panic)", body):
-        patterns.append("GUARD(err)")
+    guard_match = re.search(r"(?ms)^\s*.*?\{\s*if\s+(.+?)\s*\{\s*([^{}]*(?:return\b.*|panic\b.*))\s*\}(?!\s*else\b)", body)
+    if guard_match:
+        guard_condition = _summarize_go_condition(guard_match.group(1))
+        guard_action = _summarize_go_action(guard_match.group(2), guard_match.group(1))
+        patterns.append(f"GUARD({guard_condition} -> {guard_action})")
 
-    if body.count("if ") >= 2 and len(re.findall(r"(?m)^\s*if\b", body)) >= 2 and len(re.findall(r"(?m)^\s*return\b", body)) >= 2:
-        patterns.append("PRECEDENCE(if_chain)")
+    chain_matches = re.findall(r"(?m)^\s*(?:if|else\s+if)\s+(.+?)\s*\{", body)
+    if len(chain_matches) >= 2 and len(re.findall(r"(?m)^\s*return\b", body)) >= 2:
+        sources = [_summarize_go_condition(cond) for cond in chain_matches[:3]]
+        if re.search(r"(?m)^\s*else\s*\{", body):
+            sources.append("default")
+        patterns.append(f"PRECEDENCE({' -> '.join(dict.fromkeys(sources))})")
+
+    branch_match = re.search(
+        r"(?ms)^\s*.*?\{\s*if\s+(.+?)\s*\{\s*([^{}]*(?:return\b.*|panic\b.*))\s*\}\s*else\s*\{\s*([^{}]*(?:return\b.*|panic\b.*))\s*\}",
+        body,
+    )
+    if branch_match:
+        cond = _summarize_go_condition(branch_match.group(1))
+        true_action = _summarize_go_action(branch_match.group(2), branch_match.group(1))
+        false_action = _summarize_go_action(branch_match.group(3), branch_match.group(1))
+        patterns.append(f"BRANCH({cond} -> {true_action}, else -> {false_action})")
+
+    delegate_match = re.search(r"(?m)^\s*return\s+([A-Za-z_][A-Za-z0-9_\.]*)\s*\(", body)
+    if delegate_match and len(re.findall(r"(?m)^\s*return\b", body)) == 1:
+        patterns.append(f"DELEGATE({delegate_match.group(1)} -> result)")
 
     if re.search(r"(?m)^\s*for\b", body):
-        patterns.append("ACCUMULATE(loop)")
+        acc_match = re.search(
+            r"(?ms)^\s*for\b.*?\{\s*(?:([A-Za-z_][A-Za-z0-9_\.]*)\s*\+=|([A-Za-z_][A-Za-z0-9_\.]*)\s*=\s*append\(|([A-Za-z_][A-Za-z0-9_\.]*)\.(?:append|write|add|store)\()",
+            body,
+        )
+        target = next((group for group in acc_match.groups() if group), "result") if acc_match else "result"
+        patterns.append(f"ACCUMULATE(loop -> {target.replace('.', '_')[:24]})")
 
     if re.search(r"(?m)^\s*defer\b", body):
         patterns.append("UNWIND(defer)")
 
-    if re.search(r"(?m)^\s*switch\b", body):
-        patterns.append("DISPATCH(switch)")
+    switch_match = re.search(r"(?m)^\s*switch\s+(.+?)\s*\{", body)
+    if switch_match:
+        patterns.append(f"DISPATCH({_go_ref_summary(switch_match.group(1), source=True)})")
 
     return list(dict.fromkeys(patterns))[:3]
 

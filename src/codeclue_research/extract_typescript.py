@@ -57,25 +57,113 @@ def _extract_ts_block(lines: list[str], start_idx: int) -> str:
     return "\n".join(body_lines)
 
 
+def _clean_ts_expr(expr: str) -> str:
+    expr = re.sub(r"//.*", "", expr).strip()
+    expr = expr.removeprefix("return").strip()
+    return expr.strip(" {}();")
+
+
+def _ts_ref_summary(expr: str, *, source: bool = False) -> str:
+    cleaned = _clean_ts_expr(expr)
+    tokens = re.findall(r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*", cleaned)
+    tokens = [token for token in tokens if token not in {"if", "return", "else", "true", "false", "null", "undefined", "new", "await"}]
+    if not tokens:
+        if "{}" in expr or "[]" in expr:
+            return "empty"
+        return "value"
+    token = tokens[0]
+    if source:
+        if token.startswith("this."):
+            token = token.split(".", 1)[1]
+        elif "." in token:
+            token = token.split(".", 1)[0]
+        return token.replace(".", "_")[:24]
+    return token[:28]
+
+
+def _summarize_ts_condition(expr: str) -> str:
+    cleaned = _clean_ts_expr(expr)
+    if cleaned.startswith("!"):
+        return f"not_{_ts_ref_summary(cleaned[1:], source=True)}"
+    if re.search(r"===?\s*(null|undefined|false)\b", cleaned):
+        return _ts_ref_summary(re.split(r"===?|!==?", cleaned, maxsplit=1)[0], source=True)
+    if re.search(r"!==?\s*(null|undefined)\b", cleaned):
+        return _ts_ref_summary(re.split(r"===?|!==?", cleaned, maxsplit=1)[0], source=True)
+    if cleaned.startswith("instanceof "):
+        return _ts_ref_summary(cleaned.removeprefix("instanceof "), source=True)
+    if "instanceof" in cleaned:
+        left, right = cleaned.split("instanceof", 1)
+        return f"isinstance_{_ts_ref_summary(right, source=True)}"[:28]
+    return _ts_ref_summary(cleaned, source=True)
+
+
+def _summarize_ts_action(expr: str, condition: str = "") -> str:
+    value = _clean_ts_expr(expr)
+    if not value:
+        return "result"
+    if value in {"null", "undefined"}:
+        return "none"
+    if value in {"{}", "[]"}:
+        return "empty"
+    condition_hints = set(re.findall(r"[A-Za-z_][A-Za-z0-9_]*", condition))
+    value_hints = set(re.findall(r"[A-Za-z_][A-Za-z0-9_]*", value))
+    if condition_hints and condition_hints.intersection(value_hints) and "(" not in value:
+        return "pass_through"
+    call_match = re.match(r"(?:await\s+)?(?:new\s+)?([A-Za-z_][A-Za-z0-9_\.]*)\s*\(", value)
+    if call_match:
+        callee = call_match.group(1).split(".")[-1]
+        if condition_hints and condition_hints.intersection(value_hints):
+            return f"wrap_{callee}"[:24]
+        return callee[:24]
+    return _ts_ref_summary(value)
+
+
 def _extract_ts_behavior_patterns(body: str) -> list[str]:
     patterns: list[str] = []
     if not body:
         return patterns
 
-    if re.search(r"if\s*\([^)]*\)\s*\{[^{}]*return\b", body, re.DOTALL):
-        patterns.append("GUARD(condition)")
+    guard_match = re.search(r"(?s)if\s*\(([^)]*)\)\s*\{\s*([^{}]*return\b[^{};]*;?)\s*\}(?!\s*else\b)", body)
+    if guard_match:
+        guard_condition = _summarize_ts_condition(guard_match.group(1))
+        guard_action = _summarize_ts_action(guard_match.group(2), guard_match.group(1))
+        patterns.append(f"GUARD({guard_condition} -> {guard_action})")
 
-    if re.search(r"\bswitch\s*\(", body):
-        patterns.append("DISPATCH(switch)")
+    switch_match = re.search(r"\bswitch\s*\(([^)]*)\)", body)
+    if switch_match:
+        patterns.append(f"DISPATCH({_ts_ref_summary(switch_match.group(1), source=True)})")
+
+    chain_matches = re.findall(r"(?:if|else\s+if)\s*\(([^)]*)\)\s*\{", body)
+    if len(chain_matches) >= 2 and len(re.findall(r"\breturn\b", body)) >= 2:
+        sources = [_summarize_ts_condition(cond) for cond in chain_matches[:3]]
+        if re.search(r"\belse\s*\{", body):
+            sources.append("default")
+        patterns.append(f"PRECEDENCE({' -> '.join(dict.fromkeys(sources))})")
+
+    branch_match = re.search(
+        r"(?s)if\s*\(([^)]*)\)\s*\{\s*([^{}]*return\b[^{};]*;?)\s*\}\s*else\s*\{\s*([^{}]*return\b[^{};]*;?)\s*\}",
+        body,
+    )
+    if branch_match:
+        cond = _summarize_ts_condition(branch_match.group(1))
+        true_action = _summarize_ts_action(branch_match.group(2), branch_match.group(1))
+        false_action = _summarize_ts_action(branch_match.group(3), branch_match.group(1))
+        patterns.append(f"BRANCH({cond} -> {true_action}, else -> {false_action})")
+
+    delegate_match = re.search(r"(?m)^\s*return\s+(?:await\s+)?([A-Za-z_][A-Za-z0-9_\.]*)\s*\(", body)
+    if delegate_match and len(re.findall(r"\breturn\b", body)) == 1:
+        patterns.append(f"DELEGATE({delegate_match.group(1)} -> result)")
 
     if re.search(r"\bfor\s*\(", body) or ".forEach(" in body:
-        patterns.append("ACCUMULATE(loop)")
+        acc_match = re.search(
+            r"(?s)(?:for\s*\([^)]*\)|\.forEach\s*\([^)]*\))\s*\{\s*(?:([A-Za-z_][A-Za-z0-9_\.]*)\s*\+=|([A-Za-z_][A-Za-z0-9_\.]*)\.(?:push|set|add|write)\()",
+            body,
+        )
+        target = next((group for group in acc_match.groups() if group), "result") if acc_match else "result"
+        patterns.append(f"ACCUMULATE(loop -> {target.replace('.', '_')[:24]})")
 
     if ".map(" in body:
         patterns.append("TRANSFORM(map)")
-
-    if len(re.findall(r"if\s*\(", body)) >= 2 and len(re.findall(r"\breturn\b", body)) >= 2:
-        patterns.append("PRECEDENCE(if_chain)")
 
     return list(dict.fromkeys(patterns))[:3]
 

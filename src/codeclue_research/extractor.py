@@ -84,20 +84,292 @@ def _is_early_exit(node: ast.If) -> bool:
     return any(isinstance(stmt, (ast.Return, ast.Raise)) for stmt in node.body)
 
 
+def _clip_summary(text: str, *, max_parts: int = 4, max_len: int = 32) -> str:
+    normalized = text.replace(" ", "_")
+    parts = [part for part in normalized.split("_") if part]
+    if parts:
+        normalized = "_".join(parts[:max_parts])
+    if len(normalized) > max_len:
+        normalized = normalized[:max_len].rstrip("_")
+    return normalized or "value"
+
+
+def _literal_summary(node: ast.AST | None) -> str:
+    if isinstance(node, ast.Constant):
+        if node.value is None:
+            return "none"
+        if isinstance(node.value, bool):
+            return str(node.value).lower()
+        return _clip_summary(str(node.value), max_parts=3, max_len=20)
+    if isinstance(node, ast.Dict) and not node.keys:
+        return "empty"
+    if isinstance(node, (ast.List, ast.Set, ast.Tuple)) and not node.elts:
+        return "empty"
+    return "value"
+
+
+def _reference_summary(node: ast.AST | None) -> str:
+    if node is None:
+        return "value"
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        parent = _reference_summary(node.value)
+        if parent in {"self", "cls", "value"}:
+            return node.attr
+        return f"{parent}.{node.attr}"
+    if isinstance(node, ast.Subscript):
+        return _reference_summary(node.value)
+    if isinstance(node, ast.Call):
+        return _reference_summary(node.func)
+    if isinstance(node, ast.Constant):
+        return _literal_summary(node)
+    if isinstance(node, (ast.Dict, ast.List, ast.Set, ast.Tuple)):
+        return _literal_summary(node)
+    return type(node).__name__.lower()
+
+
+def _identifier_hints(node: ast.AST | None) -> list[str]:
+    if node is None:
+        return []
+
+    hints: list[str] = []
+
+    def visit(expr: ast.AST | None) -> None:
+        if expr is None:
+            return
+        if isinstance(expr, ast.Name):
+            if expr.id not in {"self", "cls"}:
+                hints.append(expr.id)
+            return
+        if isinstance(expr, ast.Attribute):
+            name = _reference_summary(expr).replace(".", "_")
+            if name not in {"self", "cls"}:
+                hints.append(name)
+            visit(expr.value)
+            return
+        if isinstance(expr, ast.Call):
+            visit(expr.func)
+            for arg in expr.args[:3]:
+                visit(arg)
+            return
+        if isinstance(expr, ast.Subscript):
+            visit(expr.value)
+            visit(expr.slice)
+            return
+        if isinstance(expr, ast.Compare):
+            visit(expr.left)
+            for item in expr.comparators[:2]:
+                visit(item)
+            return
+        if isinstance(expr, ast.BoolOp):
+            for item in expr.values[:2]:
+                visit(item)
+            return
+        if isinstance(expr, ast.UnaryOp):
+            visit(expr.operand)
+            return
+        if isinstance(expr, (ast.Tuple, ast.List, ast.Set)):
+            for item in expr.elts[:2]:
+                visit(item)
+            return
+
+    visit(node)
+    return list(dict.fromkeys(hints))
+
+
+def _compare_word(op: ast.AST) -> str:
+    mapping = {
+        ast.Eq: "eq",
+        ast.NotEq: "not",
+        ast.Is: "is",
+        ast.IsNot: "not",
+        ast.In: "in",
+        ast.NotIn: "notin",
+        ast.Lt: "lt",
+        ast.LtE: "lte",
+        ast.Gt: "gt",
+        ast.GtE: "gte",
+    }
+    return mapping.get(type(op), "cmp")
+
+
 def _summarize_condition(node: ast.AST | None) -> str:
     if node is None:
         return "condition"
-    names: list[str] = []
-    for child in ast.walk(node):
-        if isinstance(child, ast.Name):
-            names.append(child.id)
-        elif isinstance(child, ast.Attribute):
-            names.append(child.attr)
-    if names:
-        return "_".join(list(dict.fromkeys(names))[:3])
+    if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
+        return _clip_summary(f"not {_summarize_condition(node.operand)}", max_parts=5, max_len=28)
+    if isinstance(node, ast.BoolOp):
+        joiner = " and " if isinstance(node.op, ast.And) else " or "
+        parts = [_summarize_condition(part) for part in node.values[:2]]
+        return _clip_summary(joiner.join(parts), max_parts=6, max_len=32)
+    if isinstance(node, ast.Call):
+        callee = _reference_summary(node.func)
+        if callee == "isinstance" and len(node.args) >= 2:
+            return _clip_summary(f"isinstance {_reference_summary(node.args[1])}", max_parts=4, max_len=28)
+        if callee == "hasattr" and len(node.args) >= 2:
+            return _clip_summary(f"hasattr {_reference_summary(node.args[1])}", max_parts=4, max_len=28)
+        return _clip_summary(callee, max_parts=4, max_len=28)
+    if isinstance(node, ast.Compare):
+        left = _reference_summary(node.left)
+        right = _reference_summary(node.comparators[0]) if node.comparators else "value"
+        op = node.ops[0] if node.ops else None
+        if right in {"none", "empty"} and op and isinstance(op, (ast.Is, ast.IsNot, ast.Eq, ast.NotEq)):
+            return _clip_summary(left, max_parts=4, max_len=28)
+        if right in {"true", "false"} and op and isinstance(op, (ast.Is, ast.IsNot, ast.Eq, ast.NotEq)):
+            return _clip_summary(f"{left}_{right}", max_parts=4, max_len=28)
+        return _clip_summary(f"{left} {_compare_word(op) if op else 'cmp'} {right}", max_parts=5, max_len=28)
+    if isinstance(node, (ast.Attribute, ast.Name, ast.Subscript)):
+        return _clip_summary(_reference_summary(node), max_parts=4, max_len=28)
     if isinstance(node, ast.Constant):
-        return repr(node.value)
+        return _literal_summary(node)
     return type(node).__name__.lower()
+
+
+def _find_terminal_action(stmts: list[ast.stmt]) -> ast.stmt | None:
+    for stmt in stmts:
+        if isinstance(stmt, (ast.Return, ast.Raise)):
+            return stmt
+        if isinstance(stmt, ast.If):
+            nested = _find_terminal_action(stmt.body)
+            if nested:
+                return nested
+            nested = _find_terminal_action(stmt.orelse)
+            if nested:
+                return nested
+    return None
+
+
+def _summarize_action(stmts: list[ast.stmt], context: ast.AST | None = None) -> str:
+    action = _find_terminal_action(stmts)
+    context_hints = set(_identifier_hints(context))
+    if isinstance(action, ast.Return):
+        value = action.value
+        if value is None:
+            return "none"
+        if isinstance(value, ast.Await):
+            value = value.value
+        if isinstance(value, (ast.Dict, ast.List, ast.Set, ast.Tuple)):
+            return _literal_summary(value)
+        if isinstance(value, ast.Constant):
+            return _literal_summary(value)
+        if isinstance(value, (ast.Name, ast.Attribute, ast.Subscript)):
+            ref = _reference_summary(value).replace(".", "_")
+            if context_hints and any(hint in ref for hint in context_hints):
+                return "pass_through"
+            return _clip_summary(ref, max_parts=4, max_len=24)
+        if isinstance(value, ast.Call):
+            callee = _reference_summary(value.func).replace(".", "_")
+            arg_hints = set()
+            for arg in value.args[:3]:
+                arg_hints.update(_identifier_hints(arg))
+            if context_hints and context_hints.intersection(arg_hints):
+                return _clip_summary(f"wrap {callee}", max_parts=4, max_len=24)
+            return _clip_summary(callee, max_parts=4, max_len=24)
+    if isinstance(action, ast.Raise):
+        exc = action.exc
+        if isinstance(exc, ast.Call):
+            return _clip_summary(f"raise {_reference_summary(exc.func)}", max_parts=4, max_len=24)
+        return _clip_summary(f"raise {_reference_summary(exc)}", max_parts=4, max_len=24)
+    return "result"
+
+
+def _summarize_source(node: ast.AST | None) -> str:
+    if node is None:
+        return "default"
+    if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
+        return _summarize_source(node.operand)
+    if isinstance(node, ast.BoolOp) and node.values:
+        return _summarize_source(node.values[0])
+    if isinstance(node, ast.Compare):
+        return _clip_summary(_reference_summary(node.left).replace(".", "_"), max_parts=4, max_len=20)
+    if isinstance(node, ast.Call):
+        callee = _reference_summary(node.func)
+        if "." in callee:
+            return _clip_summary(callee.rsplit(".", 1)[0].replace(".", "_"), max_parts=4, max_len=20)
+        if node.args:
+            first = _summarize_source(node.args[0])
+            if first != "default":
+                return first
+        return _clip_summary(callee.replace(".", "_"), max_parts=4, max_len=20)
+    if isinstance(node, (ast.Attribute, ast.Name, ast.Subscript)):
+        return _clip_summary(_reference_summary(node).replace(".", "_"), max_parts=4, max_len=20)
+    if isinstance(node, ast.Constant):
+        return _literal_summary(node)
+    return "default"
+
+
+def _extract_accumulator_target(loop: ast.stmt) -> str:
+    for child in ast.walk(loop):
+        if isinstance(child, ast.AugAssign):
+            return _clip_summary(_reference_summary(child.target).replace(".", "_"), max_parts=4, max_len=24)
+        if isinstance(child, ast.Assign) and isinstance(child.value, ast.BinOp) and isinstance(child.value.op, ast.Add):
+            return _clip_summary(_reference_summary(child.targets[0]).replace(".", "_"), max_parts=4, max_len=24)
+        if isinstance(child, ast.Call) and isinstance(child.func, ast.Attribute) and child.func.attr in {"append", "extend", "update", "add", "write"}:
+            return _clip_summary(_reference_summary(child.func.value).replace(".", "_"), max_parts=4, max_len=24)
+    return "result"
+
+
+def _guarded_name(test: ast.AST | None) -> str:
+    if isinstance(test, ast.Compare):
+        return _reference_summary(test.left).replace(".", "_")
+    return ""
+
+
+def _summarize_precedence_step(stmt: ast.If, guarded_name: str) -> str:
+    for child in stmt.body:
+        if isinstance(child, ast.Assign):
+            for target in child.targets:
+                target_name = _reference_summary(target).replace(".", "_")
+                if target_name and target_name != guarded_name:
+                    return _clip_summary(target_name.removesuffix("_value"), max_parts=4, max_len=20)
+            return _summarize_source(child.value)
+        if isinstance(child, ast.AnnAssign):
+            target_name = _reference_summary(child.target).replace(".", "_")
+            if target_name and target_name != guarded_name:
+                return _clip_summary(target_name.removesuffix("_value"), max_parts=4, max_len=20)
+            return _summarize_source(child.value)
+        if isinstance(child, ast.If):
+            nested = _summarize_precedence_step(child, guarded_name)
+            if nested != "default":
+                return nested
+    return "default"
+
+
+def _extract_repeated_if_precedence(body: list[ast.stmt]) -> list[str]:
+    best_sources: list[str] = []
+    for idx, stmt in enumerate(body):
+        if not isinstance(stmt, ast.If):
+            continue
+        guarded = _guarded_name(stmt.test)
+        if not guarded:
+            continue
+        chain: list[ast.If] = [stmt]
+        cursor = idx + 1
+        while cursor < len(body) and isinstance(body[cursor], ast.If) and _guarded_name(body[cursor].test) == guarded:
+            chain.append(body[cursor])
+            cursor += 1
+        if len(chain) < 2:
+            continue
+
+        sources: list[str] = []
+        for prev in reversed(body[:idx]):
+            if isinstance(prev, ast.Assign):
+                if any(_reference_summary(target).replace(".", "_") == guarded for target in prev.targets):
+                    sources.append(_summarize_source(prev.value))
+                    break
+            if isinstance(prev, ast.AnnAssign) and _reference_summary(prev.target).replace(".", "_") == guarded:
+                sources.append(_summarize_source(prev.value))
+                break
+
+        for item in chain:
+            sources.append(_summarize_precedence_step(item, guarded))
+
+        compact = list(dict.fromkeys(source for source in sources if source))
+        if len(compact) > len(best_sources):
+            best_sources = compact[:4]
+
+    return best_sources
 
 
 def _extract_behavior_patterns(node: ast.FunctionDef | ast.AsyncFunctionDef) -> list[str]:
@@ -108,8 +380,10 @@ def _extract_behavior_patterns(node: ast.FunctionDef | ast.AsyncFunctionDef) -> 
         return patterns
 
     first_stmt = body[0]
-    if isinstance(first_stmt, ast.If) and _is_early_exit(first_stmt):
-        patterns.append(f"GUARD({_summarize_condition(first_stmt.test)})")
+    if isinstance(first_stmt, ast.If) and _is_early_exit(first_stmt) and not first_stmt.orelse and len(body) > 1:
+        guard_condition = _summarize_condition(first_stmt.test)
+        guard_action = _summarize_action(first_stmt.body, first_stmt.test)
+        patterns.append(f"GUARD({guard_condition} -> {guard_action})")
 
     if_chain: list[ast.If] = []
     cursor = body[0] if isinstance(body[0], ast.If) else None
@@ -119,26 +393,54 @@ def _extract_behavior_patterns(node: ast.FunctionDef | ast.AsyncFunctionDef) -> 
     if len(if_chain) >= 2:
         branches_with_return = sum(1 for stmt in if_chain if _has_return(stmt))
         if branches_with_return >= 2:
-            sources = [_summarize_condition(stmt.test) for stmt in if_chain[:4]]
-            patterns.append(f"PRECEDENCE({', '.join(sources)})")
+            sources = [_summarize_source(stmt.test) for stmt in if_chain[:4]]
+            tail = if_chain[-1].orelse
+            if tail:
+                tail_action = _find_terminal_action(tail)
+                if isinstance(tail_action, ast.Return):
+                    sources.append(_summarize_source(tail_action.value))
+                elif isinstance(tail_action, ast.Raise):
+                    sources.append("raise")
+                else:
+                    sources.append("default")
+            patterns.append(f"PRECEDENCE({' -> '.join(list(dict.fromkeys(sources))[:4])})")
+
+    repeated_if_sources = _extract_repeated_if_precedence(body)
+    if len(repeated_if_sources) >= 2:
+        repeated_pattern = f"PRECEDENCE({' -> '.join(repeated_if_sources[:4])})"
+        if not any(pattern.startswith("PRECEDENCE(") for pattern in patterns):
+            patterns.append(repeated_pattern)
+        else:
+            existing_idx = next(
+                (index for index, pattern in enumerate(patterns) if pattern.startswith("PRECEDENCE(")),
+                -1,
+            )
+            if existing_idx >= 0 and repeated_pattern.count("->") > patterns[existing_idx].count("->"):
+                patterns[existing_idx] = repeated_pattern
 
     for stmt in body:
-        if isinstance(stmt, (ast.For, ast.AsyncFor, ast.While)):
-            patterns.append("ACCUMULATE(loop)")
+        if isinstance(stmt, ast.If) and stmt.orelse and not (len(stmt.orelse) == 1 and isinstance(stmt.orelse[0], ast.If)):
+            test_summary = _summarize_condition(stmt.test)
+            true_action = _summarize_action(stmt.body, stmt.test)
+            false_action = _summarize_action(stmt.orelse, stmt.test)
+            patterns.append(f"BRANCH({test_summary} -> {true_action}, else -> {false_action})")
             break
 
     simple_body = [stmt for stmt in body if not isinstance(stmt, ast.Expr)]
     if len(simple_body) <= 1:
         for stmt in body:
-            if isinstance(stmt, ast.Return) and isinstance(stmt.value, ast.Call):
-                callee = _get_call_name(stmt.value)
+            return_value = stmt.value if isinstance(stmt, ast.Return) else None
+            if isinstance(return_value, ast.Await):
+                return_value = return_value.value
+            if isinstance(return_value, ast.Call):
+                callee = _reference_summary(return_value.func)
                 if callee:
-                    patterns.append(f"DELEGATE({callee})")
+                    patterns.append(f"DELEGATE({callee} -> result)")
                     break
 
     for stmt in body:
-        if isinstance(stmt, ast.If) and stmt.orelse:
-            patterns.append(f"BRANCH({_summarize_condition(stmt.test)})")
+        if isinstance(stmt, (ast.For, ast.AsyncFor, ast.While)):
+            patterns.append(f"ACCUMULATE(loop -> {_extract_accumulator_target(stmt)})")
             break
 
     for stmt in ast.walk(node):
