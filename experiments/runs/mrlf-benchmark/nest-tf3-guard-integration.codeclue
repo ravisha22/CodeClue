@@ -1,0 +1,282 @@
+=CC v2 nest@HEAD 1667mod 2136sym
+? Where should I add a custom guard and what integration points exist in NestJS?
+
+
+-- TREE
+hooks/  (1 files)
+integration/  (494 files)
+packages/  (820 files)
+  common/  core/  microservices/  platform-express/  platform-fastify/  platform-socket.io/  platform-ws/  testing/  websockets/
+sample/  (336 files)
+  08-webpack/  09-babel-example/  12-graphql-schema-first/  22-graphql-prisma/
+tools/  (15 files)
+  gulp/
+gulpfile.js
+
+-- INDEX
+gulpfile.js                                      16L  
+hooks/mocha-init-hook.ts                          7L  mochaHooks
+integration/auto-mock/src/bar.service.ts         11L  BarService
+integration/auto-mock/src/foo.service.ts          8L  FooService
+integration/auto-mock/test/bar.service.spec.ts    61L  
+integration/cors/e2e/express.spec.ts            177L  
+integration/cors/e2e/fastify.spec.ts            193L  
+integration/cors/src/app.controller.ts            9L  AppController
+integration/cors/src/app.module.ts                7L  AppModule
+integration/discovery/e2e/discover-by-meta.spec.ts    59L  
+integration/discovery/src/app.module.ts          10L  AppModule
+integration/discovery/src/decorators/non-applied.decorator.ts     9L  
+integration/discovery/src/decorators/webhook.decorators.ts     6L  
+integration/discovery/src/my-webhook/cleanup.webhook.ts     9L  CleanupWebhook
+integration/discovery/src/my-webhook/flush.webhook.ts     9L  FlushWebhook
+integration/discovery/src/my-webhook/my-webhook.module.ts     6L  MyWebhookModule
+integration/discovery/src/webhooks.explorer.ts    39L  WebhooksExplorer
+integration/graphql-code-first/e2e/code-first.spec.ts    36L  
+integration/graphql-code-first/e2e/guards-filters.spec.ts    49L  
+integration/graphql-code-first/e2e/pipes.spec.ts    58L  
+integration/graphql-code-first/src/app.module.ts    21L  AppModule
+integration/graphql-code-first/src/common/filters/unauthorized.filter.ts     9L  UnauthorizedFilter
+integration/graphql-code-first/src/common/guards/auth.guard.ts    18L  AuthGuard
+  ...and 1644 more modules
+
+-- SYM
+mochaHooks                          M hooks/mocha-init-hook.ts:1      function mochaHooks
+BarService                          C integration/auto-mock/src/bar.service.ts:5      class BarService
+FooService                          C integration/auto-mock/src/foo.service.ts:4      class FooService
+AppController                       C integration/cors/src/app.controller.ts:4      class AppController
+AppModule                           C integration/cors/src/app.module.ts:7      class AppModule
+AppModule                           C integration/discovery/src/app.module.ts:10     class AppModule
+CleanupWebhook                      C integration/discovery/src/my-webhook/cleanup.webhook.ts:4      class CleanupWebhook
+FlushWebhook                        C integration/discovery/src/my-webhook/flush.webhook.ts:4      class FlushWebhook
+MyWebhookModule                     C integration/discovery/src/my-webhook/my-webhook.module.ts:6      class MyWebhookModule
+WebhooksExplorer                    C integration/discovery/src/webhooks.explorer.ts:6      class WebhooksExplorer
+AppModule                           C integration/graphql-code-first/src/app.module.ts:21     class AppModule
+UnauthorizedFilter                  C integration/graphql-code-first/src/common/filters/unauthorized.filter.ts:5      class UnauthorizedFilter
+AuthGuard                           C integration/graphql-code-first/src/common/guards/auth.guard.ts:10     class AuthGuard
+DataInterceptor                     C integration/graphql-code-first/src/common/interceptors/data.interceptor.ts:11     class DataInterceptor
+DateScalar                          C integration/graphql-code-first/src/common/scalars/date.scalar.ts:5      class DateScalar
+bootstrap                           M integration/graphql-code-first/src/main.ts:5      function bootstrap
+NewRecipeInput                      C integration/graphql-code-first/src/recipes/dto/new-recipe.input.ts:6      class NewRecipeInput
+RecipesArgs                         C integration/graphql-code-first/src/recipes/dto/recipes.args.ts:5      class RecipesArgs
+Recipe                              C integration/graphql-code-first/src/recipes/models/recipe.ts:4      class Recipe
+RecipesModule                       C integration/graphql-code-first/src/recipes/recipes.module.ts:19     class RecipesModule
+RecipesResolver                     C integration/graphql-code-first/src/recipes/recipes.resolver.ts:15     class RecipesResolver
+RecipesService                      C integration/graphql-code-first/src/recipes/recipes.service.ts:7      class RecipesService
+AppModule                           C integration/graphql-schema-first/src/app.module.ts:17     class AppModule
+AsyncClassApplicationModule         C integration/graphql-schema-first/src/async-options-class.module.ts:24     class AsyncClassApplicationModule
+ConfigService                       C integration/graphql-schema-first/src/async-options-class.module.ts:7      class ConfigService
+AsyncExistingApplicationModule      C integration/graphql-schema-first/src/async-options-existing.module.ts:18     class AsyncExistingApplicationModule
+AsyncApplicationModule              C integration/graphql-schema-first/src/async-options.module.ts:18     class AsyncApplicationModule
+CatsRequestScopedService            C integration/graphql-schema-first/src/cats/cats-request-scoped.service.ts:5      class CatsRequestScopedService
+CatsGuard                           C integration/graphql-schema-first/src/cats/cats.guard.ts:5      class CatsGuard
+CatsModule                          C integration/graphql-schema-first/src/cats/cats.module.ts:9      class CatsModule
+CatsResolvers                       C integration/graphql-schema-first/src/cats/cats.resolvers.ts:11     class CatsResolvers
+CatsService                         C integration/graphql-schema-first/src/cats/cats.service.ts:5      class CatsService
+DateScalar                          C integration/graphql-schema-first/src/common/scalars/date.scalar.ts:5      class DateScalar
+ConfigModule                        C integration/graphql-schema-first/src/config.module.ts:8      class ConfigModule
+ConfigService                       C integration/graphql-schema-first/src/config.service.ts:6      class ConfigService
+bootstrap                           M integration/graphql-schema-first/src/main.ts:4      function bootstrap
+TestController                      C integration/hello-world/e2e/exclude-middleware-fastify.spec.ts:22     class TestController
+TestModule                          C integration/hello-world/e2e/exclude-middleware-fastify.spec.ts:73     class TestModule
+TestController                      C integration/hello-world/e2e/exclude-middleware.spec.ts:18     class TestController
+TestModule                          C integration/hello-world/e2e/exclude-middleware.spec.ts:69     class TestModule
+TestController                      C integration/hello-world/e2e/fastify-middleware-before-init.spec.ts:27     class TestController
+TestModule                          C integration/hello-world/e2e/fastify-middleware-before-init.spec.ts:45     class TestModule
+TestService                         C integration/hello-world/e2e/fastify-middleware-before-init.spec.ts:20     class TestService
+AuthGuard                           C integration/hello-world/e2e/guards.spec.ts:12     class AuthGuard
+createTestModule                    M integration/hello-world/e2e/guards.spec.ts:21     function createTestModule
+HeaderInterceptor                   C integration/hello-world/e2e/interceptors.spec.ts:44     class HeaderInterceptor
+OverrideInterceptor                 C integration/hello-world/e2e/interceptors.spec.ts:18     class OverrideInterceptor
+StatusInterceptor                   C integration/hello-world/e2e/interceptors.spec.ts:32     class StatusInterceptor
+TransformInterceptor                C integration/hello-world/e2e/interceptors.spec.ts:25     class TransformInterceptor
+createTestModule                    M integration/hello-world/e2e/interceptors.spec.ts:59     function createTestModule
+Middleware                          C integration/hello-world/e2e/middleware-class.spec.ts:20     class Middleware
+TestController                      C integration/hello-world/e2e/middleware-class.spec.ts:27     class TestController
+TestModule                          C integration/hello-world/e2e/middleware-class.spec.ts:38     class TestModule
+GlobalModule2                       C integration/hello-world/e2e/middleware-execute-order.spec.ts:27     class GlobalModule2
+GlobalModule                        C integration/hello-world/e2e/middleware-execute-order.spec.ts:17     class GlobalModule
+ModuleA                             C integration/hello-world/e2e/middleware-execute-order.spec.ts:47     class ModuleA
+ModuleB                             C integration/hello-world/e2e/middleware-execute-order.spec.ts:60     class ModuleB
+ModuleX                             C integration/hello-world/e2e/middleware-execute-order.spec.ts:36     class ModuleX
+TestModule                          C integration/hello-world/e2e/middleware-execute-order.spec.ts:73     class TestModule
+AbcController                       C integration/hello-world/e2e/middleware-fastify.spec.ts:238    class AbcController
+DataController                      C integration/hello-world/e2e/middleware-fastify.spec.ts:434    class DataController
+DataModule                          C integration/hello-world/e2e/middleware-fastify.spec.ts:462    class DataModule
+Middleware                          C integration/hello-world/e2e/middleware-fastify.spec.ts:226    class Middleware
+TestController                      C integration/hello-world/e2e/middleware-fastify.spec.ts:35     class TestController
+TestController                      C integration/hello-world/e2e/middleware-fastify.spec.ts:620    class TestController
+  ...and 1393 more symbols
+
+-- FOCUS
+UseGuards (packages/common/decorators/core/use-guards.decorator.ts:28-28)
+  called_by: ts
+
+IntegrationModule (packages/common/module-utils/interfaces/configurable-module-host.interface.ts:26-26)
+
+IntegrationModule (packages/common/module-utils/interfaces/configurable-module-host.interface.ts:49-49)
+
+IntegrationModule (packages/common/module-utils/interfaces/configurable-module-host.interface.ts:69-69)
+
+GuardsConsumer (packages/core/guards/guards-consumer.ts:7-7)
+
+GuardsContextCreator (packages/core/guards/guards-context-creator.ts:12-12)
+
+customStatusCode (packages/core/router/router-response-controller.ts:124-124)
+
+BarService (integration/auto-mock/src/bar.service.ts:5-5)
+
+FooService (integration/auto-mock/src/foo.service.ts:4-4)
+
+AppController (integration/cors/src/app.controller.ts:4-4)
+
+AppModule (integration/cors/src/app.module.ts:7-7)
+
+AppModule (integration/discovery/src/app.module.ts:10-10)
+
+CleanupWebhook (integration/discovery/src/my-webhook/cleanup.webhook.ts:4-4)
+
+FlushWebhook (integration/discovery/src/my-webhook/flush.webhook.ts:4-4)
+
+MyWebhookModule (integration/discovery/src/my-webhook/my-webhook.module.ts:6-6)
+
+WebhooksExplorer (integration/discovery/src/webhooks.explorer.ts:6-6)
+
+AppModule (integration/graphql-code-first/src/app.module.ts:21-21)
+
+UnauthorizedFilter (integration/graphql-code-first/src/common/filters/unauthorized.filter.ts:5-5)
+
+AuthGuard (integration/graphql-code-first/src/common/guards/auth.guard.ts:10-10)
+
+DataInterceptor (integration/graphql-code-first/src/common/interceptors/data.interceptor.ts:11-11)
+
+DateScalar (integration/graphql-code-first/src/common/scalars/date.scalar.ts:5-5)
+
+NewRecipeInput (integration/graphql-code-first/src/recipes/dto/new-recipe.input.ts:6-6)
+
+RecipesArgs (integration/graphql-code-first/src/recipes/dto/recipes.args.ts:5-5)
+
+Recipe (integration/graphql-code-first/src/recipes/models/recipe.ts:4-4)
+
+RecipesModule (integration/graphql-code-first/src/recipes/recipes.module.ts:19-19)
+
+RecipesResolver (integration/graphql-code-first/src/recipes/recipes.resolver.ts:15-15)
+
+RecipesService (integration/graphql-code-first/src/recipes/recipes.service.ts:7-7)
+
+AppModule (integration/graphql-schema-first/src/app.module.ts:17-17)
+
+AsyncClassApplicationModule (integration/graphql-schema-first/src/async-options-class.module.ts:24-24)
+
+ConfigService (integration/graphql-schema-first/src/async-options-class.module.ts:7-7)
+
+AsyncExistingApplicationModule (integration/graphql-schema-first/src/async-options-existing.module.ts:18-18)
+
+AsyncApplicationModule (integration/graphql-schema-first/src/async-options.module.ts:18-18)
+
+CatsRequestScopedService (integration/graphql-schema-first/src/cats/cats-request-scoped.service.ts:5-5)
+
+CatsGuard (integration/graphql-schema-first/src/cats/cats.guard.ts:5-5)
+
+CatsModule (integration/graphql-schema-first/src/cats/cats.module.ts:9-9)
+
+CatsResolvers (integration/graphql-schema-first/src/cats/cats.resolvers.ts:11-11)
+
+CatsService (integration/graphql-schema-first/src/cats/cats.service.ts:5-5)
+
+DateScalar (integration/graphql-schema-first/src/common/scalars/date.scalar.ts:5-5)
+
+ConfigModule (integration/graphql-schema-first/src/config.module.ts:8-8)
+
+ConfigService (integration/graphql-schema-first/src/config.service.ts:6-6)
+
+TestController (integration/hello-world/e2e/exclude-middleware-fastify.spec.ts:22-22)
+
+TestModule (integration/hello-world/e2e/exclude-middleware-fastify.spec.ts:73-73)
+
+TestController (integration/hello-world/e2e/exclude-middleware.spec.ts:18-18)
+
+TestModule (integration/hello-world/e2e/exclude-middleware.spec.ts:69-69)
+
+TestController (integration/hello-world/e2e/fastify-middleware-before-init.spec.ts:27-27)
+
+TestModule (integration/hello-world/e2e/fastify-middleware-before-init.spec.ts:45-45)
+
+TestService (integration/hello-world/e2e/fastify-middleware-before-init.spec.ts:20-20)
+
+AuthGuard (integration/hello-world/e2e/guards.spec.ts:12-12)
+  called_by: ts
+
+HeaderInterceptor (integration/hello-world/e2e/interceptors.spec.ts:44-44)
+  called_by: ts
+
+Middleware (integration/hello-world/e2e/middleware-class.spec.ts:20-20)
+  called_by: ts
+
+TestController (integration/hello-world/e2e/middleware-class.spec.ts:27-27)
+
+TestModule (integration/hello-world/e2e/middleware-class.spec.ts:38-38)
+
+GlobalModule2 (integration/hello-world/e2e/middleware-execute-order.spec.ts:27-27)
+
+GlobalModule (integration/hello-world/e2e/middleware-execute-order.spec.ts:17-17)
+
+ModuleA (integration/hello-world/e2e/middleware-execute-order.spec.ts:47-47)
+
+ModuleB (integration/hello-world/e2e/middleware-execute-order.spec.ts:60-60)
+
+ModuleX (integration/hello-world/e2e/middleware-execute-order.spec.ts:36-36)
+
+TestModule (integration/hello-world/e2e/middleware-execute-order.spec.ts:73-73)
+
+AbcController (integration/hello-world/e2e/middleware-fastify.spec.ts:238-238)
+
+DataController (integration/hello-world/e2e/middleware-fastify.spec.ts:434-434)
+
+DataModule (integration/hello-world/e2e/middleware-fastify.spec.ts:462-462)
+
+Middleware (integration/hello-world/e2e/middleware-fastify.spec.ts:226-226)
+  called_by: ts
+
+TestController (integration/hello-world/e2e/middleware-fastify.spec.ts:35-35)
+
+TestController (integration/hello-world/e2e/middleware-fastify.spec.ts:620-620)
+
+TestModule (integration/hello-world/e2e/middleware-fastify.spec.ts:309-309)
+
+TestModule (integration/hello-world/e2e/middleware-fastify.spec.ts:630-630)
+
+TestModule (integration/hello-world/e2e/middleware-fastify.spec.ts:79-79)
+
+TestQueryController (integration/hello-world/e2e/middleware-fastify.spec.ts:68-68)
+
+Middleware (integration/hello-world/e2e/middleware-run-match-route.ts:19-19)
+  called_by: ts
+
+TestController (integration/hello-world/e2e/middleware-run-match-route.ts:27-27)
+
+TestModule (integration/hello-world/e2e/middleware-run-match-route.ts:44-44)
+
+TestController (integration/hello-world/e2e/middleware-with-versioning.spec.ts:22-22)
+
+TestModule (integration/hello-world/e2e/middleware-with-versioning.spec.ts:34-34)
+
+TestController (integration/hello-world/e2e/middleware.spec.ts:18-18)
+
+TestModule (integration/hello-world/e2e/middleware.spec.ts:44-44)
+
+TestController (integration/hello-world/e2e/router-module-middleware.spec.ts:17-17)
+
+TestModule (integration/hello-world/e2e/router-module-middleware.spec.ts:33-33)
+
+AppModule (integration/hello-world/e2e/router-module.spec.ts:67-67)
+
+AuthModule (integration/hello-world/e2e/router-module.spec.ts:31-31)
+
+BaseController (integration/hello-world/e2e/router-module.spec.ts:9-9)
+
+-- GAPS
+- Question mentions [add, exist, nestjs, points] — not found in focus or symbol index
+- Module packages/common/utils/assign-custom-metadata.util.ts matches question but has no focus detail
+  > drill: packages/common/utils/assign-custom-metadata.util.ts
+- Module integration/mongoose/src/async-existing-options.module.ts matches question but has no focus detail
+  > drill: integration/mongoose/src/async-existing-options.module.ts

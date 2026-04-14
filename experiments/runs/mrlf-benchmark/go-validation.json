@@ -1,0 +1,66 @@
+[
+  {
+    "task": "gin-tf1-context-pooling",
+    "repo": "gin",
+    "tokens": 4076,
+    "budget_ok": true,
+    "gold": "2/3",
+    "status": "OK"
+  },
+  {
+    "task": "gin-tf2-routing-tree-impact",
+    "repo": "gin",
+    "tokens": 4056,
+    "budget_ok": true,
+    "gold": "3/4",
+    "status": "OK"
+  },
+  {
+    "task": "gin-tf3-middleware-integration",
+    "repo": "gin",
+    "tokens": 4000,
+    "budget_ok": true,
+    "gold": "2/4",
+    "status": "OK"
+  },
+  {
+    "task": "gin-tf4-basic-auth-flow",
+    "repo": "gin",
+    "tokens": 2371,
+    "budget_ok": true,
+    "gold": "4/4",
+    "status": "OK"
+  },
+  {
+    "task": "gin-tf5-credential-handling",
+    "repo": "gin",
+    "tokens": 3977,
+    "budget_ok": true,
+    "gold": "2/4",
+    "status": "OK"
+  },
+  {
+    "task": "chi-tf1-router-refactor",
+    "repo": "chi",
+    "tokens": 3231,
+    "budget_ok": true,
+    "gold": "2/3",
+    "status": "OK"
+  },
+  {
+    "task": "chi-tf2-middleware-impact",
+    "repo": "chi",
+    "tokens": 4044,
+    "budget_ok": true,
+    "gold": "4/4",
+    "status": "OK"
+  },
+  {
+    "task": "chi-tf3-route-integration",
+    "repo": "chi",
+    "tokens": 3447,
+    "budget_ok": true,
+    "gold": "2/3",
+    "status": "OK"
+  }
+]

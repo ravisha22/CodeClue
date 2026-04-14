@@ -1,0 +1,71 @@
+{
+  "batch_id": "batch-20260405-subagents-final",
+  "consumer_model": "GPT-5.4 Xhigh",
+  "judge_model": "Gemini 3.1 Pro",
+  "judge_mode": "independent-cross-family",
+  "evidence_tier": "cross-model-copilot",
+  "aggregate": {
+    "task_count": 3,
+    "mean_before_fidelity": 0.08333333333333333,
+    "mean_after_fidelity": 0.5,
+    "mean_delta": 0.4166666666666667,
+    "h5_pass_count": 2,
+    "h7_pass_count": 2
+  },
+  "tasks": [
+    {
+      "task_id": "flask-tf2-001",
+      "repo_dir": "flask",
+      "family": "TF2",
+      "operation_family": "OF2",
+      "before_fidelity": 0.0,
+      "after_fidelity": 0.75,
+      "delta": 0.75,
+      "did_drilldown_help": true,
+      "clue_tokens": 32923,
+      "drill_down_tokens": 44139,
+      "total_tokens": 77062,
+      "raw_estimate_tokens": 143132,
+      "etrr": 0.4616,
+      "h5_pass": true,
+      "h7_pass": false,
+      "summary": "Drill-down successfully identified the core request lifecycle methods (wsgi_app, dispatching, before/after request) that would be impacted, missing only the testing client."
+    },
+    {
+      "task_id": "httpx-tf2-001",
+      "repo_dir": "httpx",
+      "family": "TF2",
+      "operation_family": "OF2",
+      "before_fidelity": 0.25,
+      "after_fidelity": 0.25,
+      "delta": 0.0,
+      "did_drilldown_help": false,
+      "clue_tokens": 9834,
+      "drill_down_tokens": 34631,
+      "total_tokens": 44465,
+      "raw_estimate_tokens": 142484,
+      "etrr": 0.6879,
+      "h5_pass": false,
+      "h7_pass": true,
+      "summary": "Drill-down failed to find the actual usage of the Timeout class across the transports and API layers. The answer remained incomplete."
+    },
+    {
+      "task_id": "typeorm-tf2-001",
+      "repo_dir": "typeorm",
+      "family": "TF2",
+      "operation_family": "OF2",
+      "before_fidelity": 0.0,
+      "after_fidelity": 0.5,
+      "delta": 0.5,
+      "did_drilldown_help": true,
+      "clue_tokens": 474,
+      "drill_down_tokens": 2294,
+      "total_tokens": 2768,
+      "raw_estimate_tokens": 2559461,
+      "etrr": 0.9989,
+      "h5_pass": true,
+      "h7_pass": true,
+      "summary": "Drill-down helped identify query builders and listeners as dependent components, but failed to capture major components like Repository and Connection."
+    }
+  ]
+}

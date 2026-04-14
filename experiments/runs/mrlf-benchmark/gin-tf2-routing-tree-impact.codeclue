@@ -1,0 +1,333 @@
+=CC v2 gin@HEAD 99mod 1457sym
+? What is the downstream impact of changing the routing tree structure?
+
+
+-- TREE
+binding/  (30 files)
+codec/  (5 files)
+  json/
+ginS/  (2 files)
+internal/  (4 files)
+  bytesconv/  fs/
+render/  (17 files)
+testdata/  (1 files)
+  protoexample/
+auth.go  auth_test.go  benchmarks_test.go  context.go  context_appengine.go  context_file_test.go  context_test.go  debug.go  debug_test.go  deprecated.go  deprecated_test.go  doc.go  errors.go  errors_test.go  fs.go
+
+-- INDEX
+context.go                                     1489L  Abort, AbortWithError, AbortWithStatus, AbortWithStatusJSON, AbortWithStatusPureJSON
+gin.go                                          832L  Default, Delims, HandleContext, Handler, LoadHTMLFS
+errors.go                                       173L  Error, IsType, JSON, MarshalJSON, SetMeta
+render/json.go                                  194L  Render, WriteContentType, AsciiJSON, Render, WriteContentType
+render/msgpack.go                                43L  Render, WriteContentType, MsgPack, WriteMsgPack
+render/text.go                                   41L  Render, WriteContentType, String, WriteString
+tree.go                                         950L  Param, ByName, Get, countParams, countSections
+auth.go                                         116L  BasicAuth, BasicAuthForProxy, BasicAuthForRealm, authPair, searchCredential
+auth_test.go                                    176L  TestBasicAuth401, TestBasicAuth401WithCustomRealm, TestBasicAuth, TestBasicAuthAuthorizationHeader, TestBasicAuthFails
+benchmarks_test.go                              160L  Benchmark404, Benchmark404Many, Benchmark5Params, BenchmarkLoggerMiddleware, BenchmarkManyHandlers
+binding/binding.go                              127L  Binding, BindingBody, BindingUri, Default, StructValidator
+binding/binding_msgpack_test.go                  59L  TestBindingDefaultMsgPack, TestBindingMsgPack, testMsgPackBodyBinding
+binding/binding_nomsgpack.go                    121L  Binding, BindingBody, BindingUri, Default, StructValidator
+binding/binding_test.go                        1434L  FooBarFileFailStruct, FooBarFileStruct, FooBarStruct, FooBarStructForTimeType, FooDefaultBarStruct
+binding/bson.go                                  30L  Bind, bsonBinding
+binding/default_validator.go                     95L  Error, Engine, ValidateStruct, lazyinit, validateStruct
+  ...and 83 more modules
+
+-- SYM
+Context.Render                      M context.go:1152   Render writes the response headers and calls re...
+Context.Header                      M context.go:1080   Header is an intelligent shortcut for c.Writer....
+Context.Get                         M context.go:288    Get returns the value for the given key, ie: (v...
+Context.Status                      M context.go:1073   Status sets the HTTP response code.
+Context.MustBindWith                M context.go:810    MustBindWith binds the passed struct pointer us...
+Context.Query                       M context.go:525    Query returns the keyed url query value if it e...
+Context.GetQuery                    M context.go:554    GetQuery is like Query(), it returns the keyed ...
+Context.initQueryCache              M context.go:568    function Context.initQueryCache
+Context.GetQueryArray               M context.go:580    GetQueryArray returns a slice of strings for a ...
+Context.ShouldBindWith              M context.go:919    ShouldBindWith binds the passed struct pointer ...
+Context.ContentType                 M context.go:1036   ContentType returns the Content-Type header of ...
+Context.Bind                        M context.go:757    Bind checks the Method and Content-Type to sele...
+RouterGroup.handle                  M routergroup.go:86     function RouterGroup.handle
+Context.requestHeader               M context.go:1050   function Context.requestHeader
+Context.Error                       M context.go:252    Error attaches an error to the current context.
+Engine.isTrustedProxy               M gin.go:469    isTrustedProxy will check whether the IP addres...
+IsDebugging                         M debug.go:22     IsDebugging returns true if the framework is ru...
+Engine.isUnsafeTrustedProxies       M gin.go:457    isUnsafeTrustedProxies checks if Engine.trusted...
+Context.MultipartForm               M context.go:713    MultipartForm is the parsed multipart form, inc...
+Context.ShouldBindBodyWith          M context.go:928    ShouldBindBodyWith is similar with ShouldBindWi...
+JSON.WriteContentType               M render/json.go:62     WriteContentType (JSON) writes JSON ContentType.
+Context.QueryArray                  M context.go:563    QueryArray returns a slice of strings for a giv...
+Context.AbortWithError              M context.go:238    AbortWithError calls `AbortWithStatus()` and `E...
+Context.initFormCache               M context.go:638    function Context.initFormCache
+bodyAllowedForStatus                M context.go:1060   bodyAllowedForStatus is a copy of http.bodyAllo...
+RouterGroup.calculateAbsolutePath   M routergroup.go:250    function RouterGroup.calculateAbsolutePath
+responseWriter.Written              M response_writer.go:106    function responseWriter.Written
+RouterGroup.returnObj               M routergroup.go:254    function RouterGroup.returnObj
+Context                             C context.go:61     Context is the most important part of gin.
+Context.GetPostFormArray            M context.go:653    GetPostFormArray returns a slice of strings for...
+RouterGroup.combineHandlers         M routergroup.go:241    function RouterGroup.combineHandlers
+errorMsgs.String                    M errors.go:161    function errorMsgs.String
+mapFormByTag                        M binding/form_mapping.go:46     function mapFormByTag
+debugPrint                          M debug.go:56     function debugPrint
+LoggerWithConfig                    M logger.go:245    LoggerWithConfig instance a Logger middleware w...
+responseWriter.WriteHeaderNow       M response_writer.go:77     function responseWriter.WriteHeaderNow
+CustomRecoveryWithWriter            M recovery.go:53     CustomRecoveryWithWriter returns a middleware f...
+Error.JSON                          M errors.go:55     JSON creates a properly formatted JSON
+Context.Abort                       M context.go:207    Abort prevents pending handlers from being called.
+defaultValidator.lazyinit           M binding/default_validator.go:90     function defaultValidator.lazyinit
+RecoveryWithWriter                  M recovery.go:45     RecoveryWithWriter returns a middleware for a g...
+RouterGroup.staticFileHandler       M routergroup.go:181    function RouterGroup.staticFileHandler
+Context.GetPostForm                 M context.go:624    GetPostForm is like PostForm(key).
+setWithProperType                   M binding/form_mapping.go:323    function setWithProperType
+Engine.prepareTrustedCIDRs          M gin.go:414    function Engine.prepareTrustedCIDRs
+HandlersChain.Last                  M gin.go:60     Last returns the last handler in the chain.
+findWildcard                        M tree.go:253    Search for a wildcard segment and check the nam...
+responseWriter.WriteHeader          M response_writer.go:67     function responseWriter.WriteHeader
+Context.AbortWithStatus             M context.go:213    AbortWithStatus calls `Abort()` and writes the ...
+Context.Data                        M context.go:1268   Data writes some data into the body stream and ...
+Engine.rebuild404Handlers           M gin.go:356    function Engine.rebuild404Handlers
+Engine.rebuild405Handlers           M gin.go:360    function Engine.rebuild405Handlers
+Context.hasRequestContext           M context.go:1440   hasRequestContext returns whether c.Request has...
+Engine.handleHTTPRequest            M gin.go:690    function Engine.handleHTTPRequest
+updateRouteTree                     M gin.go:504    updateRouteTree do update to the route tree rec...
+Context.PostFormArray               M context.go:633    PostFormArray returns a slice of strings for a ...
+trySetCustom                        M binding/form_mapping.go:191    trySetCustom tries to set a custom type value I...
+trySetUsingParser                   M binding/form_mapping.go:201    trySetUsingParser tries to set a custom type va...
+getMapFromFormData                  M context.go:674    getMapFromFormData return a map which satisfies...
+BasicAuthForRealm                   M auth.go:48     BasicAuthForRealm returns a Basic HTTP Authoriz...
+authorizationHeader                 M auth.go:91     function authorizationHeader
+head                                M binding/form_mapping.go:523    function head
+mapping                             M binding/form_mapping.go:84     function mapping
+setArray                            M binding/form_mapping.go:490    function setArray
+setByForm                           M binding/form_mapping.go:245    function setByForm
+setByMultipartFormFile              M binding/multipart_form_mapping.go:35     function setByMultipartFormFile
+Context.GetPostFormMap              M context.go:667    GetPostFormMap returns a map for a given form k...
+Context.GetQueryMap                 M context.go:594    GetQueryMap returns a map for a given query key...
+Error                               C errors.go:32     Error represents a error's specification.
+Engine.parseTrustedProxies          M gin.go:462    parseTrustedProxies parse Engine.trustedProxies...
+iterate                             M gin.go:397    function iterate
+redirectRequest                     M gin.go:820    function redirectRequest
+sanitizePathChars                   M gin.go:799    sanitizePathChars removes unsafe characters fro...
+ErrorLoggerT                        M logger.go:212    ErrorLoggerT returns a HandlerFunc for a given ...
+BSON.WriteContentType               M render/bson.go:32     WriteContentType (BSONBuf) writes BSONBuf Conte...
+Data.WriteContentType               M render/data.go:29     WriteContentType (Data) writes custom ContentType.
+  ...and 462 more symbols
+
+-- FOCUS
+debugPrintRoute (debug.go:32-32)
+  sig: debugPrintRoute(httpMethod, absolutePath string, handlers HandlersChain)
+  calls: IsDebugging, debugPrint
+
+Engine.NoRoute (gin.go:326-326)
+  NoRoute adds handlers for NoRoute.
+  sig: Engine.NoRoute(handlers ...HandlerFunc)
+  calls: rebuild404Handlers
+
+Engine.Routes (gin.go:390-390)
+  Routes returns a slice of registered routes, including some useful information, such as: the http method, path, and the 
+  calls: iterate
+
+Engine.addRoute (gin.go:364-364)
+  sig: Engine.addRoute(method, path string, handlers HandlersChain)
+
+Engine.updateRouteTrees (gin.go:517-517)
+  updateRouteTrees do update to the route trees
+  calls: updateRouteTree
+  called_by: ServeHTTP
+
+RouteInfo (gin.go:68-68)
+  RouteInfo represents a request route's specification which contains method and path and its handler.
+
+updateRouteTree (gin.go:504-504)
+  updateRouteTree do update to the route tree recursively
+  sig: updateRouteTree(n *node)
+  called_by: updateRouteTrees
+
+NoRoute (ginS/gins.go:40-40)
+  NoRoute adds handlers for NoRoute.
+  sig: NoRoute(handlers ...gin.HandlerFunc)
+
+Routes (ginS/gins.go:129-129)
+  Routes returns a slice of registered routes.
+
+IRouter (routergroup.go:27-27)
+  IRouter defines all router handle interface includes single and group router.
+
+IRoutes (routergroup.go:33-33)
+  IRoutes defines all router handle interface.
+
+RouterGroup.Any (routergroup.go:147-147)
+  Any registers a route that matches all the HTTP methods.
+  sig: RouterGroup.Any(relativePath string, handlers ...HandlerFunc)
+  calls: handle
+
+RouterGroup.BasePath (routergroup.go:82-82)
+  BasePath returns the base path of router group.
+
+RouterGroup.DELETE (routergroup.go:121-121)
+  DELETE is a shortcut for router.Handle("DELETE", path, handlers).
+  sig: RouterGroup.DELETE(relativePath string, handlers ...HandlerFunc)
+  calls: handle
+
+RouterGroup.GET (routergroup.go:116-116)
+  GET is a shortcut for router.Handle("GET", path, handlers).
+  sig: RouterGroup.GET(relativePath string, handlers ...HandlerFunc)
+  calls: handle
+
+RouterGroup.Group (routergroup.go:72-72)
+  Group creates a new router group.
+  sig: RouterGroup.Group(relativePath string, handlers ...HandlerFunc)
+  calls: calculateAbsolutePath, combineHandlers
+
+RouterGroup.HEAD (routergroup.go:141-141)
+  HEAD is a shortcut for router.Handle("HEAD", path, handlers).
+  sig: RouterGroup.HEAD(relativePath string, handlers ...HandlerFunc)
+  calls: handle
+
+RouterGroup.Handle (routergroup.go:103-103)
+  Handle registers a new request handle and middleware with the given path and method.
+  sig: RouterGroup.Handle(httpMethod, relativePath string, handlers ...HandlerFunc)
+  raises: panic
+
+RouterGroup.Match (routergroup.go:156-156)
+  Match registers a route that matches the specified methods that you declared.
+  sig: RouterGroup.Match(methods []string, relativePath string, handlers ...Handl...)
+  calls: handle
+
+RouterGroup.OPTIONS (routergroup.go:136-136)
+  OPTIONS is a shortcut for router.Handle("OPTIONS", path, handlers).
+  sig: RouterGroup.OPTIONS(relativePath string, handlers ...HandlerFunc)
+  calls: handle
+
+RouterGroup.PATCH (routergroup.go:126-126)
+  PATCH is a shortcut for router.Handle("PATCH", path, handlers).
+  sig: RouterGroup.PATCH(relativePath string, handlers ...HandlerFunc)
+  calls: handle
+
+RouterGroup.POST (routergroup.go:111-111)
+  POST is a shortcut for router.Handle("POST", path, handlers).
+  sig: RouterGroup.POST(relativePath string, handlers ...HandlerFunc)
+  calls: handle
+
+RouterGroup.PUT (routergroup.go:131-131)
+  PUT is a shortcut for router.Handle("PUT", path, handlers).
+  sig: RouterGroup.PUT(relativePath string, handlers ...HandlerFunc)
+  calls: handle
+
+RouterGroup.Static (routergroup.go:197-197)
+  Static serves files from the given file system root.
+  sig: RouterGroup.Static(relativePath, root string)
+  calls: StaticFS
+
+RouterGroup.StaticFS (routergroup.go:203-203)
+  StaticFS works just like `Static()` but a custom `http.FileSystem` can be used instead.
+  sig: RouterGroup.StaticFS(relativePath string, fs http.FileSystem)
+  called_by: Static
+  raises: panic
+
+RouterGroup.StaticFile (routergroup.go:166-166)
+  StaticFile registers a single route in order to serve a single file of the local filesystem.
+  sig: RouterGroup.StaticFile(relativePath, filepath string)
+  calls: staticFileHandler
+
+RouterGroup.StaticFileFS (routergroup.go:175-175)
+  StaticFileFS works just like `StaticFile` but a custom `http.FileSystem` can be used instead.
+  sig: RouterGroup.StaticFileFS(relativePath, filepath string, fs http.FileSystem)
+  calls: staticFileHandler
+
+RouterGroup.Use (routergroup.go:65-65)
+  Use adds middleware to the group, see example code in GitHub.
+  sig: RouterGroup.Use(middleware ...HandlerFunc)
+  calls: returnObj
+
+RouterGroup.calculateAbsolutePath (routergroup.go:250-250)
+  sig: RouterGroup.calculateAbsolutePath(relativePath string)
+  called_by: Group, createStaticHandler, handle
+
+RouterGroup.combineHandlers (routergroup.go:241-241)
+  sig: RouterGroup.combineHandlers(handlers HandlersChain)
+  called_by: Group, handle
+
+RouterGroup.createStaticHandler (routergroup.go:216-216)
+  sig: RouterGroup.createStaticHandler(relativePath string, fs http.FileSystem)
+  calls: calculateAbsolutePath
+
+RouterGroup.handle (routergroup.go:86-86)
+  sig: RouterGroup.handle(httpMethod, relativePath string, handlers HandlersChain)
+  calls: calculateAbsolutePath, combineHandlers, returnObj
+  called_by: Any, DELETE, GET, HEAD, Match, OPTIONS, PATCH, POST
+
+RouterGroup.returnObj (routergroup.go:254-254)
+  called_by: Use, handle
+
+RouterGroup.staticFileHandler (routergroup.go:181-181)
+  sig: RouterGroup.staticFileHandler(relativePath string, handler HandlerFunc)
+  called_by: StaticFile, StaticFileFS
+  raises: panic
+
+RouterGroup (routergroup.go:55-55)
+  RouterGroup is used internally to configure router, a RouterGroup is associated with a prefix and an array of handlers (
+  methods: Any, BasePath, DELETE, GET, Group, HEAD
+
+methodTree (tree.go:45-45)
+  type methodTree
+
+methodTrees.get (tree.go:52-52)
+  sig: methodTrees.get(method string)
+
+Param (tree.go:17-17)
+  Param is a single URL parameter, consisting of a key and a value.
+
+node (tree.go:99-99)
+  type node
+  methods: addRoute, findCaseInsensitivePath, findCaseInsensitivePathRec, getValue, incrementChildPrio, insertChild
+
+nodeValue (tree.go:400-400)
+  nodeValue holds return values of (*Node).getValue method
+
+skippedNode (tree.go:407-407)
+  type skippedNode
+
+Params.ByName (tree.go:40-40)
+  ByName returns the value of the first Param which key matches the given name.
+  sig: Params.ByName(name string)
+  calls: Get
+
+countParams (tree.go:80-80)
+  sig: countParams(path string)
+
+countSections (tree.go:86-86)
+  sig: countSections(path string)
+
+findWildcard (tree.go:253-253)
+  Search for a wildcard segment and check the name for invalid characters.
+  sig: findWildcard(path string)
+  called_by: insertChild
+
+longestCommonPrefix (tree.go:61-61)
+  sig: longestCommonPrefix(a, b string)
+
+node.addChild (tree.go:71-71)
+  addChild will add a child node, keeping wildcardChild at the end
+  sig: node.addChild(child *node)
+
+node.findCaseInsensitivePath (tree.go:671-671)
+  Makes a case-insensitive lookup of the given path and tries to find a handler.
+  sig: node.findCaseInsensitivePath(path string, fixTrailingSlash bool)
+  calls: findCaseInsensitivePathRec
+
+node.getValue (tree.go:418-418)
+  Returns the handle registered with the given path (key).
+  sig: node.getValue(path string, params *Params, skippedNodes *[]skippedNode...)
+
+node.incrementChildPrio (tree.go:111-111)
+  Increments priority of the given child and reorders if necessary
+  sig: node.incrementChildPrio(pos int)
+
+shiftNRuneBytes (tree.go:687-687)
+  Shift bytes in array by n bytes left
+  sig: shiftNRuneBytes(rb [4]byte, n int)
+
+-- GAPS
+- Question mentions [changing, downstream, impact, routing, structure] — not found in focus or symbol index
+- Module tree_test.go matches question but has no focus detail
+  > drill: tree_test.go

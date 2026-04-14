@@ -1,0 +1,322 @@
+=CC v2 gin@HEAD 99mod 1457sym
+? How would you refactor context allocation to use object pooling for better performance?
+
+
+-- TREE
+binding/  (30 files)
+codec/  (5 files)
+  json/
+ginS/  (2 files)
+internal/  (4 files)
+  bytesconv/  fs/
+render/  (17 files)
+testdata/  (1 files)
+  protoexample/
+auth.go  auth_test.go  benchmarks_test.go  context.go  context_appengine.go  context_file_test.go  context_test.go  debug.go  debug_test.go  deprecated.go  deprecated_test.go  doc.go  errors.go  errors_test.go  fs.go
+
+-- INDEX
+context.go                                     1489L  Abort, AbortWithError, AbortWithStatus, AbortWithStatusJSON, AbortWithStatusPureJSON
+gin.go                                          832L  Default, Delims, HandleContext, Handler, LoadHTMLFS
+errors.go                                       173L  Error, IsType, JSON, MarshalJSON, SetMeta
+render/json.go                                  194L  Render, WriteContentType, AsciiJSON, Render, WriteContentType
+render/msgpack.go                                43L  Render, WriteContentType, MsgPack, WriteMsgPack
+render/text.go                                   41L  Render, WriteContentType, String, WriteString
+tree.go                                         950L  Param, ByName, Get, countParams, countSections
+auth.go                                         116L  BasicAuth, BasicAuthForProxy, BasicAuthForRealm, authPair, searchCredential
+auth_test.go                                    176L  TestBasicAuth401, TestBasicAuth401WithCustomRealm, TestBasicAuth, TestBasicAuthAuthorizationHeader, TestBasicAuthFails
+benchmarks_test.go                              160L  Benchmark404, Benchmark404Many, Benchmark5Params, BenchmarkLoggerMiddleware, BenchmarkManyHandlers
+binding/binding.go                              127L  Binding, BindingBody, BindingUri, Default, StructValidator
+binding/binding_msgpack_test.go                  59L  TestBindingDefaultMsgPack, TestBindingMsgPack, testMsgPackBodyBinding
+binding/binding_nomsgpack.go                    121L  Binding, BindingBody, BindingUri, Default, StructValidator
+binding/binding_test.go                        1434L  FooBarFileFailStruct, FooBarFileStruct, FooBarStruct, FooBarStructForTimeType, FooDefaultBarStruct
+binding/bson.go                                  30L  Bind, bsonBinding
+binding/default_validator.go                     95L  Error, Engine, ValidateStruct, lazyinit, validateStruct
+  ...and 83 more modules
+
+-- SYM
+Context.Render                      M context.go:1152   Render writes the response headers and calls re...
+Context.Header                      M context.go:1080   Header is an intelligent shortcut for c.Writer....
+Context.Get                         M context.go:288    Get returns the value for the given key, ie: (v...
+Context.Status                      M context.go:1073   Status sets the HTTP response code.
+Context.MustBindWith                M context.go:810    MustBindWith binds the passed struct pointer us...
+Context.Query                       M context.go:525    Query returns the keyed url query value if it e...
+Context.GetQuery                    M context.go:554    GetQuery is like Query(), it returns the keyed ...
+Context.initQueryCache              M context.go:568    function Context.initQueryCache
+Context.GetQueryArray               M context.go:580    GetQueryArray returns a slice of strings for a ...
+Context.ShouldBindWith              M context.go:919    ShouldBindWith binds the passed struct pointer ...
+Context.ContentType                 M context.go:1036   ContentType returns the Content-Type header of ...
+Context.Bind                        M context.go:757    Bind checks the Method and Content-Type to sele...
+RouterGroup.handle                  M routergroup.go:86     function RouterGroup.handle
+Context.requestHeader               M context.go:1050   function Context.requestHeader
+Context.Error                       M context.go:252    Error attaches an error to the current context.
+Engine.isTrustedProxy               M gin.go:469    isTrustedProxy will check whether the IP addres...
+IsDebugging                         M debug.go:22     IsDebugging returns true if the framework is ru...
+Engine.isUnsafeTrustedProxies       M gin.go:457    isUnsafeTrustedProxies checks if Engine.trusted...
+Context.MultipartForm               M context.go:713    MultipartForm is the parsed multipart form, inc...
+Context.ShouldBindBodyWith          M context.go:928    ShouldBindBodyWith is similar with ShouldBindWi...
+JSON.WriteContentType               M render/json.go:62     WriteContentType (JSON) writes JSON ContentType.
+Context.QueryArray                  M context.go:563    QueryArray returns a slice of strings for a giv...
+Context.AbortWithError              M context.go:238    AbortWithError calls `AbortWithStatus()` and `E...
+Context.initFormCache               M context.go:638    function Context.initFormCache
+bodyAllowedForStatus                M context.go:1060   bodyAllowedForStatus is a copy of http.bodyAllo...
+RouterGroup.calculateAbsolutePath   M routergroup.go:250    function RouterGroup.calculateAbsolutePath
+responseWriter.Written              M response_writer.go:106    function responseWriter.Written
+RouterGroup.returnObj               M routergroup.go:254    function RouterGroup.returnObj
+Context                             C context.go:61     Context is the most important part of gin.
+Context.GetPostFormArray            M context.go:653    GetPostFormArray returns a slice of strings for...
+RouterGroup.combineHandlers         M routergroup.go:241    function RouterGroup.combineHandlers
+errorMsgs.String                    M errors.go:161    function errorMsgs.String
+mapFormByTag                        M binding/form_mapping.go:46     function mapFormByTag
+debugPrint                          M debug.go:56     function debugPrint
+LoggerWithConfig                    M logger.go:245    LoggerWithConfig instance a Logger middleware w...
+responseWriter.WriteHeaderNow       M response_writer.go:77     function responseWriter.WriteHeaderNow
+CustomRecoveryWithWriter            M recovery.go:53     CustomRecoveryWithWriter returns a middleware f...
+Error.JSON                          M errors.go:55     JSON creates a properly formatted JSON
+Context.Abort                       M context.go:207    Abort prevents pending handlers from being called.
+defaultValidator.lazyinit           M binding/default_validator.go:90     function defaultValidator.lazyinit
+RecoveryWithWriter                  M recovery.go:45     RecoveryWithWriter returns a middleware for a g...
+RouterGroup.staticFileHandler       M routergroup.go:181    function RouterGroup.staticFileHandler
+Context.GetPostForm                 M context.go:624    GetPostForm is like PostForm(key).
+setWithProperType                   M binding/form_mapping.go:323    function setWithProperType
+Engine.prepareTrustedCIDRs          M gin.go:414    function Engine.prepareTrustedCIDRs
+HandlersChain.Last                  M gin.go:60     Last returns the last handler in the chain.
+findWildcard                        M tree.go:253    Search for a wildcard segment and check the nam...
+responseWriter.WriteHeader          M response_writer.go:67     function responseWriter.WriteHeader
+Context.AbortWithStatus             M context.go:213    AbortWithStatus calls `Abort()` and writes the ...
+Context.Data                        M context.go:1268   Data writes some data into the body stream and ...
+Engine.rebuild404Handlers           M gin.go:356    function Engine.rebuild404Handlers
+Engine.rebuild405Handlers           M gin.go:360    function Engine.rebuild405Handlers
+Context.hasRequestContext           M context.go:1440   hasRequestContext returns whether c.Request has...
+Engine.handleHTTPRequest            M gin.go:690    function Engine.handleHTTPRequest
+updateRouteTree                     M gin.go:504    updateRouteTree do update to the route tree rec...
+Context.PostFormArray               M context.go:633    PostFormArray returns a slice of strings for a ...
+trySetCustom                        M binding/form_mapping.go:191    trySetCustom tries to set a custom type value I...
+trySetUsingParser                   M binding/form_mapping.go:201    trySetUsingParser tries to set a custom type va...
+getMapFromFormData                  M context.go:674    getMapFromFormData return a map which satisfies...
+BasicAuthForRealm                   M auth.go:48     BasicAuthForRealm returns a Basic HTTP Authoriz...
+authorizationHeader                 M auth.go:91     function authorizationHeader
+head                                M binding/form_mapping.go:523    function head
+mapping                             M binding/form_mapping.go:84     function mapping
+setArray                            M binding/form_mapping.go:490    function setArray
+setByForm                           M binding/form_mapping.go:245    function setByForm
+setByMultipartFormFile              M binding/multipart_form_mapping.go:35     function setByMultipartFormFile
+Context.GetPostFormMap              M context.go:667    GetPostFormMap returns a map for a given form k...
+Context.GetQueryMap                 M context.go:594    GetQueryMap returns a map for a given query key...
+Error                               C errors.go:32     Error represents a error's specification.
+Engine.parseTrustedProxies          M gin.go:462    parseTrustedProxies parse Engine.trustedProxies...
+iterate                             M gin.go:397    function iterate
+redirectRequest                     M gin.go:820    function redirectRequest
+sanitizePathChars                   M gin.go:799    sanitizePathChars removes unsafe characters fro...
+ErrorLoggerT                        M logger.go:212    ErrorLoggerT returns a HandlerFunc for a given ...
+BSON.WriteContentType               M render/bson.go:32     WriteContentType (BSONBuf) writes BSONBuf Conte...
+Data.WriteContentType               M render/data.go:29     WriteContentType (Data) writes custom ContentType.
+  ...and 462 more symbols
+
+-- FOCUS
+Engine.HandleContext (gin.go:680-680)
+  HandleContext re-enters a context that has been rewritten.
+  sig: Engine.HandleContext(c *Context)
+  calls: handleHTTPRequest
+
+Engine.allocateContext (gin.go:252-252)
+  sig: Engine.allocateContext(maxParams uint16)
+
+Context (context.go:61-61)
+  Context is the most important part of gin.
+  methods: Abort, AbortWithError, AbortWithStatus, AbortWithStatusJSON, AbortWithStatusPureJSON, AddParam
+  called_by: Deadline, Done, Err, hasRequestContext
+
+Context.Abort (context.go:207-207)
+  Abort prevents pending handlers from being called.
+  called_by: AbortWithStatus, AbortWithStatusJSON, AbortWithStatusPureJSON
+
+Context.AddParam (context.go:512-512)
+  AddParam adds param to context and replaces path param key with given value for e2e testing purposes Example Route: "/us
+  sig: Context.AddParam(key, value string)
+
+Context.AsciiJSON (context.go:1211-1211)
+  AsciiJSON serializes the given struct as JSON into the response body with unicode to ASCII string.
+  sig: Context.AsciiJSON(code int, obj any)
+  calls: Render
+
+Context.ClientIP (context.go:975-975)
+  ClientIP implements one best effort algorithm to return the real client IP.
+  calls: Header, requestHeader
+
+Context.Cookie (context.go:1142-1142)
+  Cookie returns the named cookie provided in the request or ErrNoCookie if not found.
+  sig: Context.Cookie(name string)
+
+Context.Copy (context.go:122-122)
+  Copy returns a copy of the current context that can be safely used outside the request's scope.
+
+Context.DefaultPostForm (context.go:609-609)
+  DefaultPostForm returns the specified key from a POST urlencoded form or multipart form when it exists, otherwise it ret
+  sig: Context.DefaultPostForm(key, defaultValue string)
+  calls: GetPostForm, PostForm
+
+Context.DefaultQuery (context.go:538-538)
+  DefaultQuery returns the keyed url query value if it exists, otherwise it returns the specified defaultValue string.
+  sig: Context.DefaultQuery(key, defaultValue string)
+  calls: GetQuery, Query
+  called_by: JSONP
+
+Context.Delete (context.go:482-482)
+  Delete deletes the key from the Context's Key map, if it exists.
+  sig: Context.Delete(key any)
+
+Context.File (context.go:1286-1286)
+  File writes the specified file into the body stream in an efficient way.
+  sig: Context.File(filepath string)
+
+Context.FileFromFS (context.go:1291-1291)
+  FileFromFS writes the specified file from http.FileSystem into the body stream in an efficient way.
+  sig: Context.FileFromFS(filepath string, fs http.FileSystem)
+
+Context.FormFile (context.go:698-698)
+  FormFile returns the first file for the provided form key.
+  sig: Context.FormFile(name string)
+  calls: MultipartForm
+
+Context.FullPath (context.go:177-177)
+  FullPath returns a matched route full path.
+
+Context.GetBool (context.go:316-316)
+  GetBool returns the value associated with the key as a boolean.
+  sig: Context.GetBool(key any)
+
+Context.GetDuration (context.go:386-386)
+  GetDuration returns the value associated with the key as a duration.
+  sig: Context.GetDuration(key any)
+
+Context.GetError (context.go:391-391)
+  GetError returns the value associated with the key as an error.
+  sig: Context.GetError(key any)
+
+Context.GetErrorSlice (context.go:461-461)
+  GetErrorSlice returns the value associated with the key as a slice of errors.
+  sig: Context.GetErrorSlice(key any)
+
+Context.GetFloat32 (context.go:371-371)
+  GetFloat32 returns the value associated with the key as a float32.
+  sig: Context.GetFloat32(key any)
+
+Context.GetFloat32Slice (context.go:446-446)
+  GetFloat32Slice returns the value associated with the key as a slice of float32 numbers.
+  sig: Context.GetFloat32Slice(key any)
+
+Context.GetFloat64 (context.go:376-376)
+  GetFloat64 returns the value associated with the key as a float64.
+  sig: Context.GetFloat64(key any)
+
+Context.GetFloat64Slice (context.go:451-451)
+  GetFloat64Slice returns the value associated with the key as a slice of float64 numbers.
+  sig: Context.GetFloat64Slice(key any)
+
+Context.GetInt16 (context.go:331-331)
+  GetInt16 returns the value associated with the key as an integer 16.
+  sig: Context.GetInt16(key any)
+
+Context.GetInt16Slice (context.go:406-406)
+  GetInt16Slice returns the value associated with the key as a slice of int16 integers.
+  sig: Context.GetInt16Slice(key any)
+
+Context.GetInt32 (context.go:336-336)
+  GetInt32 returns the value associated with the key as an integer 32.
+  sig: Context.GetInt32(key any)
+
+Context.GetInt32Slice (context.go:411-411)
+  GetInt32Slice returns the value associated with the key as a slice of int32 integers.
+  sig: Context.GetInt32Slice(key any)
+
+Context.GetInt64 (context.go:341-341)
+  GetInt64 returns the value associated with the key as an integer 64.
+  sig: Context.GetInt64(key any)
+
+Context.GetInt64Slice (context.go:416-416)
+  GetInt64Slice returns the value associated with the key as a slice of int64 integers.
+  sig: Context.GetInt64Slice(key any)
+
+Context.GetInt8 (context.go:326-326)
+  GetInt8 returns the value associated with the key as an integer 8.
+  sig: Context.GetInt8(key any)
+
+Context.GetInt8Slice (context.go:401-401)
+  GetInt8Slice returns the value associated with the key as a slice of int8 integers.
+  sig: Context.GetInt8Slice(key any)
+
+Context.GetInt (context.go:321-321)
+  GetInt returns the value associated with the key as an integer.
+  sig: Context.GetInt(key any)
+
+Context.GetIntSlice (context.go:396-396)
+  GetIntSlice returns the value associated with the key as a slice of integers.
+  sig: Context.GetIntSlice(key any)
+
+Context.GetRawData (context.go:1094-1094)
+  GetRawData returns stream data.
+
+Context.GetString (context.go:311-311)
+  GetString returns the value associated with the key as a string.
+  sig: Context.GetString(key any)
+
+Context.GetStringMap (context.go:466-466)
+  GetStringMap returns the value associated with the key as a map of interfaces.
+  sig: Context.GetStringMap(key any)
+
+Context.GetStringMapString (context.go:471-471)
+  GetStringMapString returns the value associated with the key as a map of strings.
+  sig: Context.GetStringMapString(key any)
+
+Context.GetStringMapStringSlice (context.go:476-476)
+  GetStringMapStringSlice returns the value associated with the key as a map to a slice of strings.
+  sig: Context.GetStringMapStringSlice(key any)
+
+Context.GetStringSlice (context.go:456-456)
+  GetStringSlice returns the value associated with the key as a slice of strings.
+  sig: Context.GetStringSlice(key any)
+
+Context.GetTime (context.go:381-381)
+  GetTime returns the value associated with the key as time.
+  sig: Context.GetTime(key any)
+
+Context.GetUint16 (context.go:356-356)
+  GetUint16 returns the value associated with the key as an unsigned integer 16.
+  sig: Context.GetUint16(key any)
+
+Context.GetUint16Slice (context.go:431-431)
+  GetUint16Slice returns the value associated with the key as a slice of uint16 integers.
+  sig: Context.GetUint16Slice(key any)
+
+Context.GetUint32 (context.go:361-361)
+  GetUint32 returns the value associated with the key as an unsigned integer 32.
+  sig: Context.GetUint32(key any)
+
+Context.GetUint32Slice (context.go:436-436)
+  GetUint32Slice returns the value associated with the key as a slice of uint32 integers.
+  sig: Context.GetUint32Slice(key any)
+
+Context.GetUint64 (context.go:366-366)
+  GetUint64 returns the value associated with the key as an unsigned integer 64.
+  sig: Context.GetUint64(key any)
+
+Context.GetUint64Slice (context.go:441-441)
+  GetUint64Slice returns the value associated with the key as a slice of uint64 integers.
+  sig: Context.GetUint64Slice(key any)
+
+Context.GetUint8 (context.go:351-351)
+  GetUint8 returns the value associated with the key as an unsigned integer 8.
+  sig: Context.GetUint8(key any)
+
+Context.GetUint8Slice (context.go:426-426)
+  GetUint8Slice returns the value associated with the key as a slice of uint8 integers.
+  sig: Context.GetUint8Slice(key any)
+
+Context.GetUint (context.go:346-346)
+  GetUint returns the value associated with the key as an unsigned integer.
+  sig: Context.GetUint(key any)
+
+-- GAPS
+- Question mentions [allocation, better, object, performance, pooling] — not found in focus or symbol index
+- Module context_test.go matches question but has no focus detail
+  > drill: context_test.go

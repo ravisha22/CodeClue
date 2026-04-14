@@ -1,0 +1,302 @@
+[
+  {
+    "task_id": "flask-tf1-refactor-sessions",
+    "repo": "flask",
+    "repo_path": "experiments/external-repos/flask",
+    "family": "TF1",
+    "question": "How would you refactor Flask to move all session-related code to a new dedicated module while maintaining backwards compatibility?",
+    "gold_files": ["src/flask/sessions.py", "src/flask/app.py", "src/flask/wrappers.py"],
+    "gold_symbols": ["SessionInterface", "SecureCookieSessionInterface", "SecureCookieSession", "Flask.session_interface"],
+    "gold_facts": [
+      "SessionInterface.open_session and save_session are the core abstract methods",
+      "SecureCookieSessionInterface uses URLSafeTimedSerializer with SECRET_KEY for signing",
+      "Flask app stores session_interface property which can be replaced",
+      "Session persistence is handled via response hooks in request teardown"
+    ]
+  },
+  {
+    "task_id": "flask-tf2-request-context-impact",
+    "repo": "flask",
+    "repo_path": "experiments/external-repos/flask",
+    "family": "TF2",
+    "question": "What is the downstream impact of modifying the RequestContext initialization signature in ctx.py?",
+    "gold_files": ["src/flask/ctx.py", "src/flask/app.py", "src/flask/wrappers.py", "src/flask/testing.py"],
+    "gold_symbols": ["RequestContext", "AppContext", "_AppCtxGlobals", "Request"],
+    "gold_facts": [
+      "RequestContext is created for each request and manages g, request, and session proxies",
+      "AppContext holds app-level globals and is created via app.app_context()",
+      "RequestContext depends on AppContext being active in the context stack",
+      "Lifecycle phases trigger signals: appcontext_pushed, request_started, request_finished, appcontext_popped"
+    ]
+  },
+  {
+    "task_id": "flask-tf3-blueprint-error-handlers",
+    "repo": "flask",
+    "repo_path": "experiments/external-repos/flask",
+    "family": "TF3",
+    "question": "Where should I add custom error handling for blueprint routes, and what integration points exist?",
+    "gold_files": ["src/flask/blueprints.py", "src/flask/app.py", "src/flask/sansio/blueprints.py"],
+    "gold_symbols": ["Blueprint", "BlueprintSetupState", "Blueprint.errorhandler", "Flask.register_blueprint"],
+    "gold_facts": [
+      "Blueprint.errorhandler decorator registers error handlers specific to the blueprint",
+      "BlueprintSetupState.add_url_rule integrates routes into the app URL map",
+      "Blueprint defers error handler registration until register_blueprint is called",
+      "Error handlers can be registered per blueprint or globally on Flask app"
+    ]
+  },
+  {
+    "task_id": "flask-tf4-post-request-lifecycle",
+    "repo": "flask",
+    "repo_path": "experiments/external-repos/flask",
+    "family": "TF4",
+    "question": "Trace the execution path for a POST request to a Flask blueprint route. What could go wrong?",
+    "gold_files": ["src/flask/app.py", "src/flask/ctx.py", "src/flask/wrappers.py", "src/flask/signals.py"],
+    "gold_symbols": ["Flask.wsgi_app", "Flask.dispatch_request", "RequestContext", "request_started"],
+    "gold_facts": [
+      "Flask.wsgi_app is the WSGI entry point that creates RequestContext for each request",
+      "Before dispatch, request_started signal is sent",
+      "View function is called via Flask.dispatch_request which looks up endpoint and calls view_func",
+      "After response, request_tearing_down signal fires and session/cookies are finalized"
+    ]
+  },
+  {
+    "task_id": "flask-tf5-session-security",
+    "repo": "flask",
+    "repo_path": "experiments/external-repos/flask",
+    "family": "TF5",
+    "question": "What security measures protect Flask session data, and what are the attack vectors?",
+    "gold_files": ["src/flask/sessions.py", "src/flask/config.py"],
+    "gold_symbols": ["SecureCookieSessionInterface", "SecureCookieSession", "NullSession"],
+    "gold_facts": [
+      "Session data is cryptographically signed with SECRET_KEY to detect tampering",
+      "itsdangerous URLSafeTimedSerializer includes timestamp to prevent replay attacks",
+      "Session is stored as cookie value with optional secure, httponly, and samesite flags",
+      "NullSession raises RuntimeError if SECRET_KEY is not set, preventing unencrypted sessions"
+    ]
+  },
+  {
+    "task_id": "httpx-tf1-auth-extraction",
+    "repo": "httpx",
+    "repo_path": "experiments/external-repos/httpx",
+    "family": "TF1",
+    "question": "How would you extract the authentication flow logic into a reusable component library?",
+    "gold_files": ["httpx/_auth.py", "httpx/_client.py"],
+    "gold_symbols": ["Auth", "BasicAuth", "DigestAuth", "FunctionAuth"],
+    "gold_facts": [
+      "Auth.auth_flow uses generator pattern with yield to dispatch requests and receive responses",
+      "sync_auth_flow and async_auth_flow override the base flow for blocking/async operations",
+      "BasicAuth encodes credentials with base64 into Authorization header",
+      "DigestAuth implements RFC 2617 challenge-response with nonce and opaque values"
+    ]
+  },
+  {
+    "task_id": "httpx-tf2-transport-impact",
+    "repo": "httpx",
+    "repo_path": "experiments/external-repos/httpx",
+    "family": "TF2",
+    "question": "What is the downstream impact of replacing the default HTTPTransport with a custom transport implementation?",
+    "gold_files": ["httpx/_client.py", "httpx/_transports/base.py"],
+    "gold_symbols": ["BaseTransport", "HTTPTransport", "AsyncHTTPTransport", "Client._transport"],
+    "gold_facts": [
+      "BaseTransport.handle_request accepts Request and returns Response",
+      "Client stores _transport and raises RuntimeError if modified after request operations",
+      "Transport is passed on Client instantiation; None creates default HTTPTransport",
+      "AsyncHTTPTransport.handle_async_request must be implemented for async clients"
+    ]
+  },
+  {
+    "task_id": "httpx-tf3-decoder-integration",
+    "repo": "httpx",
+    "repo_path": "experiments/external-repos/httpx",
+    "family": "TF3",
+    "question": "Where should I add a new content-encoding decoder, and how does it integrate?",
+    "gold_files": ["httpx/_decoders.py", "httpx/_client.py"],
+    "gold_symbols": ["ContentDecoder", "GZipDecoder", "DeflateDecoder", "IdentityDecoder"],
+    "gold_facts": [
+      "ContentDecoder base class defines decode(bytes) and flush() interface",
+      "Brotli and Zstandard are optional imports with graceful fallback",
+      "Response body is automatically decoded based on Content-Encoding header",
+      "DeflateDecoder implements fallback for raw vs zlib format detection"
+    ]
+  },
+  {
+    "task_id": "httpx-tf4-multipart-upload",
+    "repo": "httpx",
+    "repo_path": "experiments/external-repos/httpx",
+    "family": "TF4",
+    "question": "Trace the execution of a multipart form upload. What errors could occur?",
+    "gold_files": ["httpx/_multipart.py", "httpx/_content.py", "httpx/_client.py"],
+    "gold_symbols": ["MultipartEncoder", "encode_request", "ByteStream"],
+    "gold_facts": [
+      "MultipartEncoder generates boundary string and encodes fields with CRLF delimiters",
+      "Content can be bytes, str, file-like with read method, or async generator",
+      "Streaming requests bypass body buffering for memory efficiency",
+      "Content-Length header is set for multipart uploads to enable progress tracking"
+    ]
+  },
+  {
+    "task_id": "httpx-tf5-redirect-security",
+    "repo": "httpx",
+    "repo_path": "experiments/external-repos/httpx",
+    "family": "TF5",
+    "question": "What security mechanisms prevent URL-based attacks like open redirects?",
+    "gold_files": ["httpx/_urls.py", "httpx/_client.py", "httpx/_exceptions.py"],
+    "gold_symbols": ["URL", "TooManyRedirects", "Client"],
+    "gold_facts": [
+      "URLs are validated and normalized on instantiation to prevent injection",
+      "Client enforces DEFAULT_MAX_REDIRECTS limit to prevent redirect loops",
+      "HTTPS-to-HTTP downgrades are detected during redirect following",
+      "TooManyRedirects exception raised when redirect count exceeds limit"
+    ]
+  },
+  {
+    "task_id": "gin-tf1-context-pooling",
+    "repo": "gin",
+    "repo_path": "experiments/external-repos/gin",
+    "family": "TF1",
+    "question": "How would you refactor context allocation to use object pooling for better performance?",
+    "gold_files": ["gin.go", "context.go"],
+    "gold_symbols": ["Context", "Engine", "Engine.pool"],
+    "gold_facts": [
+      "Context struct holds writermem, Request, Params, handlers chain, and Keys map",
+      "Engine already uses sync.Pool for Context reuse via engine.pool",
+      "Context has sync.RWMutex protecting Keys map for thread-safe concurrent access",
+      "Handler chain is accumulated from RouterGroup.Handlers via combineHandlers method"
+    ]
+  },
+  {
+    "task_id": "gin-tf2-routing-tree-impact",
+    "repo": "gin",
+    "repo_path": "experiments/external-repos/gin",
+    "family": "TF2",
+    "question": "What is the downstream impact of changing the routing tree structure?",
+    "gold_files": ["gin.go", "tree.go", "routergroup.go"],
+    "gold_symbols": ["methodTree", "node", "Engine.trees", "addRoute"],
+    "gold_facts": [
+      "methodTrees maintains separate trie for each HTTP method (GET, POST, etc)",
+      "node struct uses path prefix, children slice, and wildcard indicators for efficient matching",
+      "addRoute inserts into the radix tree and validates for conflicting wildcards",
+      "Engine.trees is a slice of methodTree; routes are frozen after first request in release mode"
+    ]
+  },
+  {
+    "task_id": "gin-tf3-middleware-integration",
+    "repo": "gin",
+    "repo_path": "experiments/external-repos/gin",
+    "family": "TF3",
+    "question": "Where should I add custom middleware, and what are the integration points?",
+    "gold_files": ["gin.go", "context.go", "routergroup.go"],
+    "gold_symbols": ["HandlerFunc", "RouterGroup.Use", "HandlersChain", "Context.Next"],
+    "gold_facts": [
+      "HandlerFunc signature is func(*Context) receiving context for all middleware operations",
+      "RouterGroup.Use appends middleware to Handlers slice; applies to all routes in group",
+      "Context.handlers holds accumulated chain and Context.index tracks execution position",
+      "Context.Next calls the next handler in chain; Context.Abort stops the chain"
+    ]
+  },
+  {
+    "task_id": "gin-tf4-basic-auth-flow",
+    "repo": "gin",
+    "repo_path": "experiments/external-repos/gin",
+    "family": "TF4",
+    "question": "Trace how BasicAuth validates credentials. What could fail?",
+    "gold_files": ["gin.go", "context.go", "auth.go"],
+    "gold_symbols": ["BasicAuth", "BasicAuthForRealm", "authPairs", "searchCredential"],
+    "gold_facts": [
+      "BasicAuthForRealm returns HandlerFunc that extracts Authorization header",
+      "searchCredential uses subtle.ConstantTimeCompare to prevent timing attacks",
+      "Failed auth returns 401 with WWW-Authenticate header and calls Context.AbortWithStatus",
+      "Successful auth stores username in Context via c.Set(AuthUserKey, user)"
+    ]
+  },
+  {
+    "task_id": "gin-tf5-credential-handling",
+    "repo": "gin",
+    "repo_path": "experiments/external-repos/gin",
+    "family": "TF5",
+    "question": "What security controls exist for handling credentials and preventing timing attacks?",
+    "gold_files": ["context.go", "auth.go"],
+    "gold_symbols": ["Context.Set", "Context.Get", "AuthUserKey", "searchCredential"],
+    "gold_facts": [
+      "AuthUserKey is a constant string key for storing authenticated user identity",
+      "Context.Keys map is protected by sync.RWMutex for concurrent request safety",
+      "searchCredential uses subtle.ConstantTimeCompare to prevent timing-based credential leaks",
+      "Context provides Set/Get interface for storing request-scoped sensitive data"
+    ]
+  },
+  {
+    "task_id": "fastapi-tf1-dependency-injection",
+    "repo": "fastapi",
+    "repo_path": "experiments/external-repos/fastapi",
+    "family": "TF1",
+    "question": "How would you refactor the dependency injection system to support new resolver strategies?",
+    "gold_files": ["fastapi/dependencies/utils.py", "fastapi/routing.py", "fastapi/dependencies/models.py"],
+    "gold_symbols": ["get_dependant", "solve_dependencies", "Dependant"],
+    "gold_facts": [
+      "get_dependant analyzes function signatures and annotations to extract dependency metadata",
+      "Dependant stores dependency chain including path params, query params, body, and sub-dependents",
+      "Dependencies can be sync callable, async callable, or context manager",
+      "Cache keys are generated per unique dependency signature for memoization"
+    ]
+  },
+  {
+    "task_id": "fastapi-tf2-openapi-routing",
+    "repo": "fastapi",
+    "repo_path": "experiments/external-repos/fastapi",
+    "family": "TF2",
+    "question": "What is the downstream impact of changing the OpenAPI operation ID generation?",
+    "gold_files": ["fastapi/routing.py", "fastapi/applications.py", "fastapi/utils.py"],
+    "gold_symbols": ["APIRoute", "FastAPI.openapi", "generate_unique_id"],
+    "gold_facts": [
+      "APIRoute stores operation_id and generates OpenAPI spec via schema generation",
+      "generate_unique_id creates operationId from route name and path for uniqueness",
+      "FastAPI.openapi method generates full OpenAPI 3.0 schema with all route metadata",
+      "Operation IDs are used by client generators and must be unique across all paths"
+    ]
+  },
+  {
+    "task_id": "fastapi-tf3-security-scheme",
+    "repo": "fastapi",
+    "repo_path": "experiments/external-repos/fastapi",
+    "family": "TF3",
+    "question": "Where should I add a custom security scheme, and what integration points exist?",
+    "gold_files": ["fastapi/security/open_id_connect_url.py", "fastapi/security/oauth2.py", "fastapi/routing.py"],
+    "gold_symbols": ["SecurityBase", "OAuth2PasswordRequestForm", "OAuth2"],
+    "gold_facts": [
+      "SecurityBase is the parent class for all security schemes with model attribute",
+      "OAuth2PasswordRequestForm collects username/password as form data per OAuth2 spec",
+      "Security is integrated via Depends() annotation on path operation function parameters",
+      "Security schemes appear in OpenAPI spec securitySchemes section automatically"
+    ]
+  },
+  {
+    "task_id": "fastapi-tf4-form-parsing",
+    "repo": "fastapi",
+    "repo_path": "experiments/external-repos/fastapi",
+    "family": "TF4",
+    "question": "Trace the execution of form data parsing in a POST request. What errors could occur?",
+    "gold_files": ["fastapi/routing.py", "fastapi/dependencies/utils.py", "fastapi/params.py"],
+    "gold_symbols": ["APIRoute", "Form", "solve_dependencies"],
+    "gold_facts": [
+      "Form() parameter triggers multipart or urlencoded parsing based on Content-Type",
+      "solve_dependencies resolves all parameters and returns dict of resolved values",
+      "RequestValidationError raised if form data fails Pydantic model validation",
+      "File uploads use UploadFile wrapper with async read/write interface"
+    ]
+  },
+  {
+    "task_id": "fastapi-tf5-input-validation",
+    "repo": "fastapi",
+    "repo_path": "experiments/external-repos/fastapi",
+    "family": "TF5",
+    "question": "What validation mechanisms prevent injection attacks in FastAPI?",
+    "gold_files": ["fastapi/routing.py", "fastapi/params.py", "fastapi/dependencies/utils.py"],
+    "gold_symbols": ["APIRoute", "Query", "Path", "Body"],
+    "gold_facts": [
+      "All inputs are validated against Pydantic models with type checking and coercion",
+      "Path parameters are automatically validated by type hints",
+      "Query parameters support constraints like min_length, max_length, regex",
+      "RequestValidationError raised with detailed field-level error information on validation failure"
+    ]
+  }
+]

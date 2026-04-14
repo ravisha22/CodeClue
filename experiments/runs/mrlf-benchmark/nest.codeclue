@@ -1,0 +1,353 @@
+=CC v2 nest@HEAD 1667mod 2136sym
+? What is the downstream impact of modifying the configuration loading?
+
+
+-- TREE
+hooks/  (1 files)
+integration/  (494 files)
+packages/  (820 files)
+  common/  core/  microservices/  platform-express/  platform-fastify/  platform-socket.io/  platform-ws/  testing/  websockets/
+sample/  (336 files)
+  08-webpack/  09-babel-example/  12-graphql-schema-first/  22-graphql-prisma/
+tools/  (15 files)
+  gulp/
+gulpfile.js
+
+-- INDEX
+gulpfile.js                                      16L  
+hooks/mocha-init-hook.ts                          7L  mochaHooks
+integration/auto-mock/src/bar.service.ts         11L  BarService
+integration/auto-mock/src/foo.service.ts          8L  FooService
+integration/auto-mock/test/bar.service.spec.ts    61L  
+integration/cors/e2e/express.spec.ts            177L  
+integration/cors/e2e/fastify.spec.ts            193L  
+integration/cors/src/app.controller.ts            9L  AppController
+integration/cors/src/app.module.ts                7L  AppModule
+integration/discovery/e2e/discover-by-meta.spec.ts    59L  
+integration/discovery/src/app.module.ts          10L  AppModule
+integration/discovery/src/decorators/non-applied.decorator.ts     9L  
+integration/discovery/src/decorators/webhook.decorators.ts     6L  
+integration/discovery/src/my-webhook/cleanup.webhook.ts     9L  CleanupWebhook
+integration/discovery/src/my-webhook/flush.webhook.ts     9L  FlushWebhook
+integration/discovery/src/my-webhook/my-webhook.module.ts     6L  MyWebhookModule
+integration/discovery/src/webhooks.explorer.ts    39L  WebhooksExplorer
+integration/graphql-code-first/e2e/code-first.spec.ts    36L  
+integration/graphql-code-first/e2e/guards-filters.spec.ts    49L  
+integration/graphql-code-first/e2e/pipes.spec.ts    58L  
+integration/graphql-code-first/src/app.module.ts    21L  AppModule
+integration/graphql-code-first/src/common/filters/unauthorized.filter.ts     9L  UnauthorizedFilter
+integration/graphql-code-first/src/common/guards/auth.guard.ts    18L  AuthGuard
+integration/graphql-code-first/src/common/interceptors/data.interceptor.ts    15L  DataInterceptor
+integration/graphql-code-first/src/common/scalars/date.scalar.ts    22L  DateScalar
+integration/graphql-code-first/src/main.ts       10L  bootstrap
+integration/graphql-code-first/src/recipes/dto/new-recipe.input.ts    18L  NewRecipeInput
+integration/graphql-code-first/src/recipes/dto/recipes.args.ts    14L  RecipesArgs
+integration/graphql-code-first/src/recipes/models/recipe.ts    19L  Recipe
+integration/graphql-code-first/src/recipes/recipes.module.ts    19L  RecipesModule
+integration/graphql-code-first/src/recipes/recipes.resolver.ts    51L  RecipesResolver
+integration/graphql-code-first/src/recipes/recipes.service.ts    31L  RecipesService
+integration/graphql-schema-first/e2e/graphql-async-class.spec.ts    38L  
+integration/graphql-schema-first/e2e/graphql-async-existing.spec.ts    38L  
+integration/graphql-schema-first/e2e/graphql-async.spec.ts    36L  
+integration/graphql-schema-first/e2e/graphql-request-scoped.spec.ts    62L  
+integration/graphql-schema-first/e2e/graphql.spec.ts    40L  
+integration/graphql-schema-first/src/app.module.ts    17L  AppModule
+integration/graphql-schema-first/src/async-options-class.module.ts    24L  AsyncClassApplicationModule, ConfigService
+integration/graphql-schema-first/src/async-options-existing.module.ts    18L  AsyncExistingApplicationModule
+integration/graphql-schema-first/src/async-options.module.ts    18L  AsyncApplicationModule
+integration/graphql-schema-first/src/cats/cats-request-scoped.service.ts    25L  CatsRequestScopedService
+integration/graphql-schema-first/src/cats/cats.guard.ts    10L  CatsGuard
+integration/graphql-schema-first/src/cats/cats.module.ts    22L  CatsModule
+integration/graphql-schema-first/src/cats/cats.resolvers.ts    39L  CatsResolvers
+integration/graphql-schema-first/src/cats/cats.service.ts    25L  CatsService
+integration/graphql-schema-first/src/cats/interfaces/cat.interface.ts     5L  
+integration/graphql-schema-first/src/common/scalars/date.scalar.ts    22L  DateScalar
+integration/graphql-schema-first/src/config.module.ts     8L  ConfigModule
+integration/graphql-schema-first/src/config.service.ts    12L  ConfigService
+integration/graphql-schema-first/src/main.ts      8L  bootstrap
+integration/hello-world/e2e/exceptions.spec.ts   135L  
+integration/hello-world/e2e/exclude-middleware-fastify.spec.ts   161L  TestController, TestModule
+integration/hello-world/e2e/exclude-middleware.spec.ts   157L  TestController, TestModule
+integration/hello-world/e2e/express-instance.spec.ts    56L  
+integration/hello-world/e2e/express-multiple.spec.ts    73L  
+integration/hello-world/e2e/fastify-adapter.spec.ts   102L  
+integration/hello-world/e2e/fastify-middleware-before-init.spec.ts   135L  TestController, TestModule, TestService
+integration/hello-world/e2e/fastify-multiple.spec.ts    91L  
+integration/hello-world/e2e/force-console.spec.ts   163L  
+integration/hello-world/e2e/guards.spec.ts       42L  AuthGuard, createTestModule
+integration/hello-world/e2e/hello-world.spec.ts    82L  
+integration/hello-world/e2e/interceptors.spec.ts   146L  HeaderInterceptor, OverrideInterceptor, StatusInterceptor, TransformInterceptor, createTestModule
+integration/hello-world/e2e/local-pipes.spec.ts    49L  
+integration/hello-world/e2e/middleware-class.spec.ts    88L  Middleware, TestController, TestModule
+integration/hello-world/e2e/middleware-execute-order.spec.ts   103L  GlobalModule2, GlobalModule, ModuleA, ModuleB, ModuleX
+integration/hello-world/e2e/middleware-fastify.spec.ts   769L  AbcController, DataController, DataModule, Middleware, TestController
+integration/hello-world/e2e/middleware-run-match-route.ts   103L  Middleware, TestController, TestModule
+integration/hello-world/e2e/middleware-with-versioning.spec.ts   171L  TestController, TestModule, app, createAppWithVersioning
+integration/hello-world/e2e/middleware.spec.ts   121L  TestController, TestModule, app, createApp
+integration/hello-world/e2e/router-module-middleware.spec.ts    77L  TestController, TestModule
+integration/hello-world/e2e/router-module.spec.ts    99L  AppModule, AuthModule, BaseController, ChildController, ChildModule
+integration/hello-world/src/app.module.ts         9L  AppModule
+integration/hello-world/src/errors/errors.controller.ts    28L  ErrorsController
+integration/hello-world/src/hello/dto/test.dto.ts    10L  TestDto
+integration/hello-world/src/hello/hello.controller.ts    33L  HelloController
+integration/hello-world/src/hello/hello.module.ts    10L  HelloModule
+integration/hello-world/src/hello/hello.service.ts     8L  HelloService
+integration/hello-world/src/hello/users/user-by-id.pipe.ts    11L  UserByIdPipe
+integration/hello-world/src/hello/users/users.service.ts     8L  UsersService
+integration/hello-world/src/host-array/dto/test.dto.ts    10L  TestDto
+integration/hello-world/src/host-array/host-array.controller.ts    37L  HostArrayController
+integration/hello-world/src/host-array/host-array.module.ts    10L  HostArrayModule
+integration/hello-world/src/host-array/host-array.service.ts     8L  HostArrayService
+integration/hello-world/src/host-array/users/user-by-id.pipe.ts    11L  UserByIdPipe
+integration/hello-world/src/host-array/users/users.service.ts     8L  UsersService
+integration/hello-world/src/host/dto/test.dto.ts    10L  TestDto
+integration/hello-world/src/host/host.controller.ts    37L  HostController
+integration/hello-world/src/host/host.module.ts    10L  HostModule
+integration/hello-world/src/host/host.service.ts     8L  HostService
+integration/hello-world/src/host/users/user-by-id.pipe.ts    11L  UserByIdPipe
+integration/hello-world/src/host/users/users.service.ts     8L  UsersService
+integration/hooks/e2e/before-app-shutdown.spec.ts    61L  A, AA, B, BB, TestInjectable
+integration/hooks/e2e/enable-shutdown-hook.spec.ts    71L  
+integration/hooks/e2e/lifecycle-hook-order.spec.ts    47L  TestInjectable
+integration/hooks/e2e/on-app-boostrap.spec.ts    85L  A, AA, B, BB, TestInjectable
+  ...and 1571 more modules
+
+-- SYM
+mochaHooks                          M hooks/mocha-init-hook.ts:1      function mochaHooks
+BarService                          C integration/auto-mock/src/bar.service.ts:5      class BarService
+FooService                          C integration/auto-mock/src/foo.service.ts:4      class FooService
+AppController                       C integration/cors/src/app.controller.ts:4      class AppController
+AppModule                           C integration/cors/src/app.module.ts:7      class AppModule
+AppModule                           C integration/discovery/src/app.module.ts:10     class AppModule
+CleanupWebhook                      C integration/discovery/src/my-webhook/cleanup.webhook.ts:4      class CleanupWebhook
+FlushWebhook                        C integration/discovery/src/my-webhook/flush.webhook.ts:4      class FlushWebhook
+MyWebhookModule                     C integration/discovery/src/my-webhook/my-webhook.module.ts:6      class MyWebhookModule
+WebhooksExplorer                    C integration/discovery/src/webhooks.explorer.ts:6      class WebhooksExplorer
+AppModule                           C integration/graphql-code-first/src/app.module.ts:21     class AppModule
+UnauthorizedFilter                  C integration/graphql-code-first/src/common/filters/unauthorized.filter.ts:5      class UnauthorizedFilter
+AuthGuard                           C integration/graphql-code-first/src/common/guards/auth.guard.ts:10     class AuthGuard
+DataInterceptor                     C integration/graphql-code-first/src/common/interceptors/data.interceptor.ts:11     class DataInterceptor
+DateScalar                          C integration/graphql-code-first/src/common/scalars/date.scalar.ts:5      class DateScalar
+bootstrap                           M integration/graphql-code-first/src/main.ts:5      function bootstrap
+NewRecipeInput                      C integration/graphql-code-first/src/recipes/dto/new-recipe.input.ts:6      class NewRecipeInput
+RecipesArgs                         C integration/graphql-code-first/src/recipes/dto/recipes.args.ts:5      class RecipesArgs
+Recipe                              C integration/graphql-code-first/src/recipes/models/recipe.ts:4      class Recipe
+RecipesModule                       C integration/graphql-code-first/src/recipes/recipes.module.ts:19     class RecipesModule
+RecipesResolver                     C integration/graphql-code-first/src/recipes/recipes.resolver.ts:15     class RecipesResolver
+RecipesService                      C integration/graphql-code-first/src/recipes/recipes.service.ts:7      class RecipesService
+AppModule                           C integration/graphql-schema-first/src/app.module.ts:17     class AppModule
+AsyncClassApplicationModule         C integration/graphql-schema-first/src/async-options-class.module.ts:24     class AsyncClassApplicationModule
+ConfigService                       C integration/graphql-schema-first/src/async-options-class.module.ts:7      class ConfigService
+AsyncExistingApplicationModule      C integration/graphql-schema-first/src/async-options-existing.module.ts:18     class AsyncExistingApplicationModule
+AsyncApplicationModule              C integration/graphql-schema-first/src/async-options.module.ts:18     class AsyncApplicationModule
+CatsRequestScopedService            C integration/graphql-schema-first/src/cats/cats-request-scoped.service.ts:5      class CatsRequestScopedService
+CatsGuard                           C integration/graphql-schema-first/src/cats/cats.guard.ts:5      class CatsGuard
+CatsModule                          C integration/graphql-schema-first/src/cats/cats.module.ts:9      class CatsModule
+CatsResolvers                       C integration/graphql-schema-first/src/cats/cats.resolvers.ts:11     class CatsResolvers
+CatsService                         C integration/graphql-schema-first/src/cats/cats.service.ts:5      class CatsService
+DateScalar                          C integration/graphql-schema-first/src/common/scalars/date.scalar.ts:5      class DateScalar
+ConfigModule                        C integration/graphql-schema-first/src/config.module.ts:8      class ConfigModule
+ConfigService                       C integration/graphql-schema-first/src/config.service.ts:6      class ConfigService
+bootstrap                           M integration/graphql-schema-first/src/main.ts:4      function bootstrap
+TestController                      C integration/hello-world/e2e/exclude-middleware-fastify.spec.ts:22     class TestController
+TestModule                          C integration/hello-world/e2e/exclude-middleware-fastify.spec.ts:73     class TestModule
+TestController                      C integration/hello-world/e2e/exclude-middleware.spec.ts:18     class TestController
+TestModule                          C integration/hello-world/e2e/exclude-middleware.spec.ts:69     class TestModule
+TestController                      C integration/hello-world/e2e/fastify-middleware-before-init.spec.ts:27     class TestController
+TestModule                          C integration/hello-world/e2e/fastify-middleware-before-init.spec.ts:45     class TestModule
+TestService                         C integration/hello-world/e2e/fastify-middleware-before-init.spec.ts:20     class TestService
+AuthGuard                           C integration/hello-world/e2e/guards.spec.ts:12     class AuthGuard
+createTestModule                    M integration/hello-world/e2e/guards.spec.ts:21     function createTestModule
+HeaderInterceptor                   C integration/hello-world/e2e/interceptors.spec.ts:44     class HeaderInterceptor
+OverrideInterceptor                 C integration/hello-world/e2e/interceptors.spec.ts:18     class OverrideInterceptor
+StatusInterceptor                   C integration/hello-world/e2e/interceptors.spec.ts:32     class StatusInterceptor
+TransformInterceptor                C integration/hello-world/e2e/interceptors.spec.ts:25     class TransformInterceptor
+createTestModule                    M integration/hello-world/e2e/interceptors.spec.ts:59     function createTestModule
+Middleware                          C integration/hello-world/e2e/middleware-class.spec.ts:20     class Middleware
+TestController                      C integration/hello-world/e2e/middleware-class.spec.ts:27     class TestController
+TestModule                          C integration/hello-world/e2e/middleware-class.spec.ts:38     class TestModule
+GlobalModule2                       C integration/hello-world/e2e/middleware-execute-order.spec.ts:27     class GlobalModule2
+GlobalModule                        C integration/hello-world/e2e/middleware-execute-order.spec.ts:17     class GlobalModule
+ModuleA                             C integration/hello-world/e2e/middleware-execute-order.spec.ts:47     class ModuleA
+ModuleB                             C integration/hello-world/e2e/middleware-execute-order.spec.ts:60     class ModuleB
+ModuleX                             C integration/hello-world/e2e/middleware-execute-order.spec.ts:36     class ModuleX
+TestModule                          C integration/hello-world/e2e/middleware-execute-order.spec.ts:73     class TestModule
+AbcController                       C integration/hello-world/e2e/middleware-fastify.spec.ts:238    class AbcController
+DataController                      C integration/hello-world/e2e/middleware-fastify.spec.ts:434    class DataController
+DataModule                          C integration/hello-world/e2e/middleware-fastify.spec.ts:462    class DataModule
+Middleware                          C integration/hello-world/e2e/middleware-fastify.spec.ts:226    class Middleware
+TestController                      C integration/hello-world/e2e/middleware-fastify.spec.ts:35     class TestController
+TestController                      C integration/hello-world/e2e/middleware-fastify.spec.ts:620    class TestController
+TestModule                          C integration/hello-world/e2e/middleware-fastify.spec.ts:309    class TestModule
+TestModule                          C integration/hello-world/e2e/middleware-fastify.spec.ts:630    class TestModule
+TestModule                          C integration/hello-world/e2e/middleware-fastify.spec.ts:79     class TestModule
+TestQueryController                 C integration/hello-world/e2e/middleware-fastify.spec.ts:68     class TestQueryController
+Middleware                          C integration/hello-world/e2e/middleware-run-match-route.ts:19     class Middleware
+TestController                      C integration/hello-world/e2e/middleware-run-match-route.ts:27     class TestController
+TestModule                          C integration/hello-world/e2e/middleware-run-match-route.ts:44     class TestModule
+TestController                      C integration/hello-world/e2e/middleware-with-versioning.spec.ts:22     class TestController
+TestModule                          C integration/hello-world/e2e/middleware-with-versioning.spec.ts:34     class TestModule
+app                                 M integration/hello-world/e2e/middleware-with-versioning.spec.ts:158    function app
+createAppWithVersioning             M integration/hello-world/e2e/middleware-with-versioning.spec.ts:154    function createAppWithVersioning
+TestController                      C integration/hello-world/e2e/middleware.spec.ts:18     class TestController
+TestModule                          C integration/hello-world/e2e/middleware.spec.ts:44     class TestModule
+app                                 M integration/hello-world/e2e/middleware.spec.ts:109    function app
+createApp                           M integration/hello-world/e2e/middleware.spec.ts:106    function createApp
+TestController                      C integration/hello-world/e2e/router-module-middleware.spec.ts:17     class TestController
+TestModule                          C integration/hello-world/e2e/router-module-middleware.spec.ts:33     class TestModule
+AppModule                           C integration/hello-world/e2e/router-module.spec.ts:67     class AppModule
+AuthModule                          C integration/hello-world/e2e/router-module.spec.ts:31     class AuthModule
+BaseController                      C integration/hello-world/e2e/router-module.spec.ts:9      class BaseController
+ChildController                     C integration/hello-world/e2e/router-module.spec.ts:19     class ChildController
+ChildModule                         C integration/hello-world/e2e/router-module.spec.ts:28     class ChildModule
+MainModule                          C integration/hello-world/e2e/router-module.spec.ts:57     class MainModule
+NoSlashController                   C integration/hello-world/e2e/router-module.spec.ts:21     class NoSlashController
+NoSlashModule                       C integration/hello-world/e2e/router-module.spec.ts:36     class NoSlashModule
+ParentController                    C integration/hello-world/e2e/router-module.spec.ts:17     class ParentController
+ParentModule                        C integration/hello-world/e2e/router-module.spec.ts:25     class ParentModule
+PaymentsModule                      C integration/hello-world/e2e/router-module.spec.ts:33     class PaymentsModule
+UnknownController                   C integration/hello-world/e2e/router-module.spec.ts:23     class UnknownController
+AppModule                           C integration/hello-world/src/app.module.ts:9      class AppModule
+ErrorsController                    C integration/hello-world/src/errors/errors.controller.ts:4      class ErrorsController
+TestDto                             C integration/hello-world/src/hello/dto/test.dto.ts:3      class TestDto
+HelloController                     C integration/hello-world/src/hello/hello.controller.ts:7      class HelloController
+HelloModule                         C integration/hello-world/src/hello/hello.module.ts:10     class HelloModule
+HelloService                        C integration/hello-world/src/hello/hello.service.ts:4      class HelloService
+UserByIdPipe                        C integration/hello-world/src/hello/users/user-by-id.pipe.ts:5      class UserByIdPipe
+UsersService                        C integration/hello-world/src/hello/users/users.service.ts:4      class UsersService
+TestDto                             C integration/hello-world/src/host-array/dto/test.dto.ts:3      class TestDto
+HostArrayController                 C integration/hello-world/src/host-array/host-array.controller.ts:10     class HostArrayController
+HostArrayModule                     C integration/hello-world/src/host-array/host-array.module.ts:10     class HostArrayModule
+HostArrayService                    C integration/hello-world/src/host-array/host-array.service.ts:4      class HostArrayService
+UserByIdPipe                        C integration/hello-world/src/host-array/users/user-by-id.pipe.ts:5      class UserByIdPipe
+UsersService                        C integration/hello-world/src/host-array/users/users.service.ts:4      class UsersService
+TestDto                             C integration/hello-world/src/host/dto/test.dto.ts:3      class TestDto
+HostController                      C integration/hello-world/src/host/host.controller.ts:10     class HostController
+HostModule                          C integration/hello-world/src/host/host.module.ts:10     class HostModule
+HostService                         C integration/hello-world/src/host/host.service.ts:4      class HostService
+UserByIdPipe                        C integration/hello-world/src/host/users/user-by-id.pipe.ts:5      class UserByIdPipe
+UsersService                        C integration/hello-world/src/host/users/users.service.ts:4      class UsersService
+A                                   C integration/hooks/e2e/before-app-shutdown.spec.ts:44     class A
+AA                                  C integration/hooks/e2e/before-app-shutdown.spec.ts:36     class AA
+B                                   C integration/hooks/e2e/before-app-shutdown.spec.ts:33     class B
+BB                                  C integration/hooks/e2e/before-app-shutdown.spec.ts:25     class BB
+TestInjectable                      C integration/hooks/e2e/before-app-shutdown.spec.ts:7      class TestInjectable
+TestInjectable                      C integration/hooks/e2e/lifecycle-hook-order.spec.ts:13     class TestInjectable
+A                                   C integration/hooks/e2e/on-app-boostrap.spec.ts:73     class A
+AA                                  C integration/hooks/e2e/on-app-boostrap.spec.ts:61     class AA
+B                                   C integration/hooks/e2e/on-app-boostrap.spec.ts:58     class B
+BB                                  C integration/hooks/e2e/on-app-boostrap.spec.ts:47     class BB
+TestInjectable                      C integration/hooks/e2e/on-app-boostrap.spec.ts:7      class TestInjectable
+A                                   C integration/hooks/e2e/on-app-shutdown.spec.ts:44     class A
+AA                                  C integration/hooks/e2e/on-app-shutdown.spec.ts:36     class AA
+B                                   C integration/hooks/e2e/on-app-shutdown.spec.ts:33     class B
+BB                                  C integration/hooks/e2e/on-app-shutdown.spec.ts:25     class BB
+TestInjectable                      C integration/hooks/e2e/on-app-shutdown.spec.ts:7      class TestInjectable
+A                                   C integration/hooks/e2e/on-module-destroy.spec.ts:65     class A
+AA                                  C integration/hooks/e2e/on-module-destroy.spec.ts:56     class AA
+B                                   C integration/hooks/e2e/on-module-destroy.spec.ts:53     class B
+BB                                  C integration/hooks/e2e/on-module-destroy.spec.ts:45     class BB
+TestInjectable                      C integration/hooks/e2e/on-module-destroy.spec.ts:7      class TestInjectable
+A                                   C integration/hooks/e2e/on-module-init.spec.ts:97     class A
+AA                                  C integration/hooks/e2e/on-module-init.spec.ts:85     class AA
+AppModule                           C integration/hooks/e2e/on-module-init.spec.ts:102    class AppModule
+B                                   C integration/hooks/e2e/on-module-init.spec.ts:82     class B
+BB                                  C integration/hooks/e2e/on-module-init.spec.ts:69     class BB
+C                                   C integration/hooks/e2e/on-module-init.spec.ts:52     class C
+CC                                  C integration/hooks/e2e/on-module-init.spec.ts:43     class CC
+TestInjectable                      C integration/hooks/e2e/on-module-init.spec.ts:7      class TestInjectable
+AppModule                           C integration/hooks/src/enable-shutdown-hooks-main.ts:28     class AppModule
+TestInjectable                      C integration/hooks/src/enable-shutdown-hooks-main.ts:13     class TestInjectable
+bootstrap                           M integration/hooks/src/enable-shutdown-hooks-main.ts:30     function bootstrap
+A                                   C integration/injector/e2e/circular-custom-providers.spec.ts:9      class A
+AppController                       C integration/injector/e2e/circular-custom-providers.spec.ts:19     class AppController
+AppModule                           C integration/injector/e2e/circular-custom-providers.spec.ts:28     class AppModule
+B                                   C integration/injector/e2e/circular-custom-providers.spec.ts:6      class B
+BImpl                               C integration/injector/e2e/circular-custom-providers.spec.ts:14     class BImpl
+injects                             C integration/injector/e2e/injector.spec.ts:37     class injects
+reference                           C integration/injector/e2e/injector.spec.ts:60     class reference
+reference                           C integration/injector/e2e/injector.spec.ts:71     class reference
+AppModule                           C integration/injector/e2e/many-global-modules.spec.ts:142    class AppModule
+Dependant                           C integration/injector/e2e/many-global-modules.spec.ts:56     class Dependant
+ForeignTransientProvider            C integration/injector/e2e/many-global-modules.spec.ts:53     class ForeignTransientProvider
+GlobalModule10                      C integration/injector/e2e/many-global-modules.spec.ts:44     class GlobalModule10
+GlobalModule1                       C integration/injector/e2e/many-global-modules.spec.ts:8      class GlobalModule1
+GlobalModule2                       C integration/injector/e2e/many-global-modules.spec.ts:12     class GlobalModule2
+GlobalModule3                       C integration/injector/e2e/many-global-modules.spec.ts:16     class GlobalModule3
+GlobalModule4                       C integration/injector/e2e/many-global-modules.spec.ts:20     class GlobalModule4
+GlobalModule5                       C integration/injector/e2e/many-global-modules.spec.ts:24     class GlobalModule5
+GlobalModule6                       C integration/injector/e2e/many-global-modules.spec.ts:28     class GlobalModule6
+GlobalModule7                       C integration/injector/e2e/many-global-modules.spec.ts:32     class GlobalModule7
+GlobalModule8                       C integration/injector/e2e/many-global-modules.spec.ts:36     class GlobalModule8
+GlobalModule9                       C integration/injector/e2e/many-global-modules.spec.ts:40     class GlobalModule9
+GlobalModuleWithRequestProvider     C integration/injector/e2e/many-global-modules.spec.ts:118    class GlobalModuleWithRequestProvider
+GlobalModuleWithTransientProviderAndDependant C integration/injector/e2e/many-global-modules.spec.ts:103    class GlobalModuleWithTransientProviderAndDepen...
+ModuleWithForeignTransientProvider  C integration/injector/e2e/many-global-modules.spec.ts:86     class ModuleWithForeignTransientProvider
+RequestProvider                     C integration/injector/e2e/many-global-modules.spec.ts:50     class RequestProvider
+TransientProvider                   C integration/injector/e2e/many-global-modules.spec.ts:47     class TransientProvider
+ChildService                        C integration/injector/e2e/request-scope-bubbling.spec.ts:9      class ChildService
+ParentService                       C integration/injector/e2e/request-scope-bubbling.spec.ts:16     class ParentService
+TestModule                          C integration/injector/e2e/request-scope-bubbling.spec.ts:23     class TestModule
+ApplicationModule                   C integration/injector/src/app.module.ts:7      class ApplicationModule
+CircularModule                      C integration/injector/src/circular-modules/circular.module.ts:10     class CircularModule
+CircularService                     C integration/injector/src/circular-modules/circular.service.ts:5      class CircularService
+InputModule                         C integration/injector/src/circular-modules/input.module.ts:10     class InputModule
+InputService                        C integration/injector/src/circular-modules/input.service.ts:5      class InputService
+CircularPropertiesModule            C integration/injector/src/circular-properties/circular-properties.module.ts:10     class CircularPropertiesModule
+CircularService                     C integration/injector/src/circular-properties/circular.service.ts:5      class CircularService
+InputPropertiesModule               C integration/injector/src/circular-properties/input-properties.module.ts:10     class InputPropertiesModule
+InputService                        C integration/injector/src/circular-properties/input.service.ts:5      class InputService
+CircularModule                      C integration/injector/src/circular-structure-dynamic-module/circular.module.ts:4      class CircularModule
+InputService                        C integration/injector/src/circular-structure-dynamic-module/input.service.ts:4      class InputService
+CircularModule                      C integration/injector/src/circular/circular.module.ts:8      class CircularModule
+CircularService                     C integration/injector/src/circular/circular.service.ts:5      class CircularService
+InputService                        C integration/injector/src/circular/input.service.ts:5      class InputService
+CoreInjectablesModule               C integration/injector/src/core-injectables/core-injectables.module.ts:4      class CoreInjectablesModule
+CoreService                         C integration/injector/src/defaults/core.service.ts:4      class CoreService
+DefaultsModule                      C integration/injector/src/defaults/defaults.module.ts:7      class DefaultsModule
+DefaultsService                     C integration/injector/src/defaults/defaults.service.ts:5      class DefaultsService
+NestDynamicModule                   C integration/injector/src/dynamic/dynamic.module.ts:12     class NestDynamicModule
+ExportsModule                       C integration/injector/src/exports/exports.module.ts:7      class ExportsModule
+ExportsService                      C integration/injector/src/exports/exports.service.ts:4      class ExportsService
+CoreService                         C integration/injector/src/inject/core.service.ts:4      class CoreService
+CoreService                         C integration/injector/src/inject/inject-same-name.module.ts:4      class CoreService
+InjectSameNameModule                C integration/injector/src/inject/inject-same-name.module.ts:16     class InjectSameNameModule
+InjectModule                        C integration/injector/src/inject/inject.module.ts:7      class InjectModule
+InjectService                       C integration/injector/src/inject/inject.service.ts:5      class InjectService
+AModule                             C integration/injector/src/multiple-providers/a.module.ts:16     class AModule
+BModule                             C integration/injector/src/multiple-providers/b.module.ts:16     class BModule
+CModule                             C integration/injector/src/multiple-providers/c.module.ts:16     class CModule
+MultipleProvidersModule             C integration/injector/src/multiple-providers/multiple-providers.module.ts:9      class MultipleProvidersModule
+DependencyService                   C integration/injector/src/properties/dependency.service.ts:4      class DependencyService
+PropertiesModule                    C integration/injector/src/properties/properties.module.ts:19     class PropertiesModule
+PropertiesService                   C integration/injector/src/properties/properties.service.ts:7      class PropertiesService
+ScopedController                    C integration/injector/src/scoped/scoped.controller.ts:7      class ScopedController
+ScopedModule                        C integration/injector/src/scoped/scoped.module.ts:35     class ScopedModule
+ScopedService                       C integration/injector/src/scoped/scoped.service.ts:5      class ScopedService
+TransientService                    C integration/injector/src/scoped/transient.service.ts:5      class TransientService
+Transient2Service                   C integration/injector/src/scoped/transient2.service.ts:4      class Transient2Service
+Transient3Service                   C integration/injector/src/scoped/transient3.service.ts:5      class Transient3Service
+SelfInjectionForwardProviderModule  C integration/injector/src/self-injection/self-injection-provider.module.ts:29     class SelfInjectionForwardProviderModule
+SelfInjectionProviderCustomTokenModule C integration/injector/src/self-injection/self-injection-provider.module.ts:40     class SelfInjectionProviderCustomTokenModule
+SelfInjectionProviderModule         C integration/injector/src/self-injection/self-injection-provider.module.ts:24     class SelfInjectionProviderModule
+ServiceInjectingItself              C integration/injector/src/self-injection/self-injection-provider.module.ts:4      class ServiceInjectingItself
+ServiceInjectingItselfForward       C integration/injector/src/self-injection/self-injection-provider.module.ts:9      class ServiceInjectingItselfForward
+ServiceInjectingItselfViaCustomToken C integration/injector/src/self-injection/self-injection-provider.module.ts:17     class ServiceInjectingItselfViaCustomToken
+AppV1Controller                     C integration/inspector/src/app-v1.controller.ts:6      class AppV1Controller
+AppV2Controller                     C integration/inspector/src/app-v2.controller.ts:6      class AppV2Controller
+AppModule                           C integration/inspector/src/app.module.ts:46     class AppModule
+Meta                                C integration/inspector/src/app.module.ts:18     class Meta
+CatsController                      C integration/inspector/src/cats/cats.controller.ts:10     class CatsController
+CatsModule                          C integration/inspector/src/cats/cats.module.ts:9      class CatsModule
+CatsService                         C integration/inspector/src/cats/cats.service.ts:5      class CatsService
+CreateCatDto                        C integration/inspector/src/cats/dto/create-cat.dto.ts:3      class CreateCatDto
+ChatGateway                         C integration/inspector/src/chat/chat.gateway.ts:11     class ChatGateway
+  ...and 1907 more symbols
+
+-- FOCUS
+InvalidMiddlewareConfigurationException (packages/core/errors/exceptions/invalid-middleware-configuration.exception.ts:4-4)
+
+-- GAPS
+- Question mentions [downstream, impact, loading, modifying] — not found in focus or symbol index
+- Module packages/microservices/interfaces/microservice-configuration.interface.ts matches question but has no focus detail
+  > drill: packages/microservices/interfaces/microservice-configuration.interface.ts

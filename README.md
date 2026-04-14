@@ -101,6 +101,20 @@ codeclue run-pilot --repo-root . --run-dir experiments/runs/my-run --commit-id H
 
 CodeClue provides a Model Context Protocol (MCP) server that exposes 5 drill-down tools to any MCP-compatible AI agent.
 
+### Running the Real MCP Server
+
+Run the transport-backed stdio server directly:
+
+```bash
+codeclue-mcp --graph-path .codeclue/graph.json --repo-root /path/to/your/repo
+```
+
+Or invoke the module entrypoint explicitly:
+
+```bash
+python -m codeclue_mcp --graph-path .codeclue/graph.json --repo-root /path/to/your/repo
+```
+
 ### Tools Available
 
 | Tool | What It Does | When To Use |
@@ -253,7 +267,7 @@ src/
     tracer.py            # Invocation trace logging
     budget.py            # Per-session budget enforcement
 tests/
-  mcp/                   # 93 tests for MCP server
+  mcp/                   # MCP server tests
   fixtures/              # Gold paths, probes, task definitions
 source/
   CodeClue-PRD-v0.3.0-mvp-FINAL.md  # Full research specification (v0.6.0)
@@ -271,7 +285,7 @@ docs/
 ## Testing
 
 ```bash
-# Run MCP server tests (93 tests across 7 repos)
+# Run MCP server tests across 7 repos
 python -m pytest tests/mcp/ -v
 
 # Run fidelity regression checks
@@ -288,7 +302,7 @@ codeclue fidelity-eval --projection-file experiments/runs/sprint6-test/blue-chec
 
 | Epic | Status | What |
 |---|---|---|
-| MCP Server | ✅ Complete | 5 tools, 93 tests, cross-repo validated |
+| MCP Server | ✅ Complete | 5 tools, protocol + cross-repo validated |
 | Delta Drift Testing | Planned | H3/H4: 50-commit drift protocol |
 | Scale Testing | Planned | 500K+ token repos (django, TypeScript compiler) |
 | Per-Model Calibration | Planned | Calibration profiles for Claude/GPT/Gemini |

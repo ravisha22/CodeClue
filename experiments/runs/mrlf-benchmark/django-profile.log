@@ -1,0 +1,23 @@
+=== Django Render Profiling ===
+Date: 2026-04-08 22:26:15
+
+--- EXTRACTION ---
+Extraction: 333.4s (3005 mod, 42888 sym, 69361 edges)
+
+--- RENDER STAGE PROFILING ---
+L0 TREE:        0.12s     40 tokens
+L1 INDEX:   32705.56s    396 tokens
+L2 SYM:         0.59s   1506 tokens
+L3 FOCUS:       0.64s   1759 tokens
+GAPS:           0.41s     95 tokens
+
+TOTAL:      32707.33s
+
+--- TIME BREAKDOWN ---
+  L0 TREE          0.12s (  0.0%) 
+  L1 INDEX     32705.56s (100.0%) #################################################
+  L2 SYM           0.59s (  0.0%) 
+  L3 FOCUS         0.64s (  0.0%) 
+  GAPS             0.41s (  0.0%) 
+
+=== Profile complete ===

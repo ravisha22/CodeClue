@@ -1,0 +1,630 @@
+{
+  "drill_tasks": 9,
+  "pass_tasks": 18,
+  "mean_uplift": 0.222,
+  "flipped": 7,
+  "gate_d7_pass": true,
+  "per_task": [
+    {
+      "task_id": "flask-tf1-refactor-sessions",
+      "repo": "flask",
+      "fid_clue": 0.875,
+      "fid_drill": 0.875,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    },
+    {
+      "task_id": "flask-tf2-request-context-impact",
+      "repo": "flask",
+      "fid_clue": 0.75,
+      "fid_drill": 0.75,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    },
+    {
+      "task_id": "flask-tf3-blueprint-error-handlers",
+      "repo": "flask",
+      "fid_clue": 1.0,
+      "fid_drill": 1.0,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    },
+    {
+      "task_id": "flask-tf4-post-request-lifecycle",
+      "repo": "flask",
+      "fid_clue": 0.875,
+      "fid_drill": 0.875,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    },
+    {
+      "task_id": "flask-tf5-session-security",
+      "repo": "flask",
+      "fid_clue": 0.625,
+      "fid_drill": 0.625,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    },
+    {
+      "task_id": "httpx-tf1-auth-extraction",
+      "repo": "httpx",
+      "fid_clue": 0.875,
+      "fid_drill": 0.875,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    },
+    {
+      "task_id": "httpx-tf2-transport-impact",
+      "repo": "httpx",
+      "fid_clue": 0.75,
+      "fid_drill": 0.75,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    },
+    {
+      "task_id": "httpx-tf3-decoder-integration",
+      "repo": "httpx",
+      "fid_clue": 1.0,
+      "fid_drill": 1.0,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    },
+    {
+      "task_id": "httpx-tf4-multipart-upload",
+      "repo": "httpx",
+      "fid_clue": 0.625,
+      "fid_drill": 0.625,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    },
+    {
+      "task_id": "httpx-tf5-redirect-security",
+      "repo": "httpx",
+      "fid_clue": 0.5,
+      "fid_drill": 0.5,
+      "uplift": 0.0,
+      "clue_sufficient": false,
+      "drill_sufficient": false,
+      "skipped": false,
+      "drill_records": 5,
+      "fact_scores_clue": [
+        {
+          "fact": "URLs are validated and normalized on instantiation to prevent injection",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Client enforces DEFAULT_MAX_REDIRECTS limit to prevent redirect loops",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "HTTPS-to-HTTP downgrades are detected during redirect following",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "TooManyRedirects exception raised when redirect count exceeds limit",
+          "score": "PARTIAL"
+        }
+      ],
+      "fact_scores_drill": [
+        {
+          "fact": "URLs are validated and normalized on instantiation to prevent injection",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Client enforces DEFAULT_MAX_REDIRECTS limit to prevent redirect loops",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "HTTPS-to-HTTP downgrades are detected during redirect following",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "TooManyRedirects exception raised when redirect count exceeds limit",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "gin-tf1-context-pooling",
+      "repo": "gin",
+      "fid_clue": 0.625,
+      "fid_drill": 0.625,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    },
+    {
+      "task_id": "gin-tf2-routing-tree-impact",
+      "repo": "gin",
+      "fid_clue": 0.875,
+      "fid_drill": 0.875,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    },
+    {
+      "task_id": "gin-tf3-middleware-integration",
+      "repo": "gin",
+      "fid_clue": 0.75,
+      "fid_drill": 0.75,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    },
+    {
+      "task_id": "gin-tf4-basic-auth-flow",
+      "repo": "gin",
+      "fid_clue": 0.625,
+      "fid_drill": 0.625,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    },
+    {
+      "task_id": "gin-tf5-credential-handling",
+      "repo": "gin",
+      "fid_clue": 0.25,
+      "fid_drill": 0.25,
+      "uplift": 0.0,
+      "clue_sufficient": false,
+      "drill_sufficient": false,
+      "skipped": false,
+      "drill_records": 5,
+      "fact_scores_clue": [
+        {
+          "fact": "AuthUserKey is a constant string key for storing authenticated user identity",
+          "score": "MISSING"
+        },
+        {
+          "fact": "Context.Keys map is protected by sync.RWMutex for concurrent request safety",
+          "score": "MISSING"
+        },
+        {
+          "fact": "searchCredential uses subtle.ConstantTimeCompare to prevent timing-based credential leaks",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Context provides Set/Get interface for storing request-scoped sensitive data",
+          "score": "PARTIAL"
+        }
+      ],
+      "fact_scores_drill": [
+        {
+          "fact": "AuthUserKey is a constant string key for storing authenticated user identity",
+          "score": "MISSING"
+        },
+        {
+          "fact": "Context.Keys map is protected by sync.RWMutex for concurrent request safety",
+          "score": "MISSING"
+        },
+        {
+          "fact": "searchCredential uses subtle.ConstantTimeCompare to prevent timing-based credential leaks",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Context provides Set/Get interface for storing request-scoped sensitive data",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "fastapi-tf1-dependency-injection",
+      "repo": "fastapi",
+      "fid_clue": 0.5,
+      "fid_drill": 0.75,
+      "uplift": 0.25,
+      "clue_sufficient": false,
+      "drill_sufficient": true,
+      "skipped": false,
+      "drill_records": 5,
+      "fact_scores_clue": [
+        {
+          "fact": "get_dependant analyzes function signatures and annotations to extract dependency metadata",
+          "score": "MISSING"
+        },
+        {
+          "fact": "Dependant stores dependency chain including path params, query params, body, and sub-dependents",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Dependencies can be sync callable, async callable, or context manager",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Cache keys are generated per unique dependency signature for memoization",
+          "score": "MISSING"
+        }
+      ],
+      "fact_scores_drill": [
+        {
+          "fact": "get_dependant analyzes function signatures and annotations to extract dependency metadata",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Dependant stores dependency chain including path params, query params, body, and sub-dependents",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Dependencies can be sync callable, async callable, or context manager",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Cache keys are generated per unique dependency signature for memoization",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "fastapi-tf2-openapi-routing",
+      "repo": "fastapi",
+      "fid_clue": 0.75,
+      "fid_drill": 0.75,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    },
+    {
+      "task_id": "fastapi-tf3-security-scheme",
+      "repo": "fastapi",
+      "fid_clue": 0.875,
+      "fid_drill": 0.875,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    },
+    {
+      "task_id": "fastapi-tf4-form-parsing",
+      "repo": "fastapi",
+      "fid_clue": 0.5,
+      "fid_drill": 0.75,
+      "uplift": 0.25,
+      "clue_sufficient": false,
+      "drill_sufficient": true,
+      "skipped": false,
+      "drill_records": 5,
+      "fact_scores_clue": [
+        {
+          "fact": "Form() parameter triggers multipart or urlencoded parsing based on Content-Type",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "solve_dependencies resolves all parameters and returns dict of resolved values",
+          "score": "MISSING"
+        },
+        {
+          "fact": "RequestValidationError raised if form data fails Pydantic model validation",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "File uploads use UploadFile wrapper with async read/write interface",
+          "score": "PARTIAL"
+        }
+      ],
+      "fact_scores_drill": [
+        {
+          "fact": "Form() parameter triggers multipart or urlencoded parsing based on Content-Type",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "solve_dependencies resolves all parameters and returns dict of resolved values",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "RequestValidationError raised if form data fails Pydantic model validation",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "File uploads use UploadFile wrapper with async read/write interface",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "fastapi-tf5-input-validation",
+      "repo": "fastapi",
+      "fid_clue": 0.375,
+      "fid_drill": 0.625,
+      "uplift": 0.25,
+      "clue_sufficient": false,
+      "drill_sufficient": true,
+      "skipped": false,
+      "drill_records": 5,
+      "fact_scores_clue": [
+        {
+          "fact": "All inputs are validated against Pydantic models with type checking and coercion",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Path parameters are automatically validated by type hints",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Query parameters support constraints like min_length, max_length, regex",
+          "score": "MISSING"
+        },
+        {
+          "fact": "RequestValidationError raised with detailed field-level error information on validation failure",
+          "score": "PARTIAL"
+        }
+      ],
+      "fact_scores_drill": [
+        {
+          "fact": "All inputs are validated against Pydantic models with type checking and coercion",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Path parameters are automatically validated by type hints",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Query parameters support constraints like min_length, max_length, regex",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "RequestValidationError raised with detailed field-level error information on validation failure",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "heldout-django-tf2-middleware-chain",
+      "repo": "django",
+      "fid_clue": 0.5,
+      "fid_drill": 0.75,
+      "uplift": 0.25,
+      "clue_sufficient": false,
+      "drill_sufficient": true,
+      "skipped": false,
+      "drill_records": 5,
+      "fact_scores_clue": [
+        {
+          "fact": "BaseHandler._get_response processes middleware chain in order via adapt_method_mode",
+          "score": "MISSING"
+        },
+        {
+          "fact": "CSRF middleware validates tokens on POST requests and rejects without valid token",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "SecurityMiddleware handles HTTPS redirect and HSTS headers",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Removing middleware silently disables its protection with no runtime error",
+          "score": "PARTIAL"
+        }
+      ],
+      "fact_scores_drill": [
+        {
+          "fact": "BaseHandler._get_response processes middleware chain in order via adapt_method_mode",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "CSRF middleware validates tokens on POST requests and rejects without valid token",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "SecurityMiddleware handles HTTPS redirect and HSTS headers",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Removing middleware silently disables its protection with no runtime error",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "heldout-django-tf4-password-hashing",
+      "repo": "django",
+      "fid_clue": 0.5,
+      "fid_drill": 0.75,
+      "uplift": 0.25,
+      "clue_sufficient": false,
+      "drill_sufficient": true,
+      "skipped": false,
+      "drill_records": 5,
+      "fact_scores_clue": [
+        {
+          "fact": "check_password calls identify_hasher to determine which algorithm was used",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "verify_password uses constant_time_compare to prevent timing attacks",
+          "score": "MISSING"
+        },
+        {
+          "fact": "make_password generates a salt and delegates to the configured hasher",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "ImproperlyConfigured raised if PASSWORD_HASHERS setting is empty or invalid",
+          "score": "PARTIAL"
+        }
+      ],
+      "fact_scores_drill": [
+        {
+          "fact": "check_password calls identify_hasher to determine which algorithm was used",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "verify_password uses constant_time_compare to prevent timing attacks",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "make_password generates a salt and delegates to the configured hasher",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "ImproperlyConfigured raised if PASSWORD_HASHERS setting is empty or invalid",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "heldout-django-tf5-csrf-protection",
+      "repo": "django",
+      "fid_clue": 0.25,
+      "fid_drill": 0.625,
+      "uplift": 0.375,
+      "clue_sufficient": false,
+      "drill_sufficient": true,
+      "skipped": false,
+      "drill_records": 5,
+      "fact_scores_clue": [
+        {
+          "fact": "CSRF tokens are masked using XOR cipher over CSRF_ALLOWED_CHARS alphabet",
+          "score": "MISSING"
+        },
+        {
+          "fact": "CsrfViewMiddleware checks Referer header for HTTPS requests",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Token comparison uses constant_time_compare to prevent timing side-channels",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "csrf_exempt decorator can bypass protection on specific views",
+          "score": "MISSING"
+        }
+      ],
+      "fact_scores_drill": [
+        {
+          "fact": "CSRF tokens are masked using XOR cipher over CSRF_ALLOWED_CHARS alphabet",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "CsrfViewMiddleware checks Referer header for HTTPS requests",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Token comparison uses constant_time_compare to prevent timing side-channels",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "csrf_exempt decorator can bypass protection on specific views",
+          "score": "MISSING"
+        }
+      ]
+    },
+    {
+      "task_id": "heldout-chi-tf4-panic-recovery",
+      "repo": "chi",
+      "fid_clue": 0.75,
+      "fid_drill": 0.75,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    },
+    {
+      "task_id": "heldout-chi-tf5-rate-limiting",
+      "repo": "chi",
+      "fid_clue": 0.625,
+      "fid_drill": 0.625,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    },
+    {
+      "task_id": "heldout-flask-tf5-adversarial",
+      "repo": "flask",
+      "fid_clue": 0.5,
+      "fid_drill": 0.875,
+      "uplift": 0.375,
+      "clue_sufficient": false,
+      "drill_sufficient": true,
+      "skipped": false,
+      "drill_records": 5,
+      "fact_scores_clue": [
+        {
+          "fact": "Session data is cryptographically signed with SECRET_KEY to detect tampering",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "itsdangerous URLSafeTimedSerializer includes timestamp to prevent replay attacks",
+          "score": "MISSING"
+        },
+        {
+          "fact": "Session is stored as cookie value with optional secure, httponly, and samesite flags",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "NullSession raises RuntimeError if SECRET_KEY is not set, preventing unencrypted sessions",
+          "score": "PARTIAL"
+        }
+      ],
+      "fact_scores_drill": [
+        {
+          "fact": "Session data is cryptographically signed with SECRET_KEY to detect tampering",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "itsdangerous URLSafeTimedSerializer includes timestamp to prevent replay attacks",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Session is stored as cookie value with optional secure, httponly, and samesite flags",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "NullSession raises RuntimeError if SECRET_KEY is not set, preventing unencrypted sessions",
+          "score": "ANSWERABLE"
+        }
+      ]
+    },
+    {
+      "task_id": "heldout-httpx-tf4-connection-pooling",
+      "repo": "httpx",
+      "fid_clue": 0.625,
+      "fid_drill": 0.625,
+      "uplift": 0.0,
+      "clue_sufficient": true,
+      "drill_sufficient": true,
+      "skipped": true,
+      "drill_records": 0
+    }
+  ]
+}

@@ -1,0 +1,335 @@
+=CC v2 chi@HEAD 74mod 410sym
+? What is the downstream impact of modifying middleware handling in chi?
+
+
+-- TREE
+_examples/  (19 files)
+  custom-handler/  custom-method/  fileserver/  graceful/  hello-world/  limits/  logging/  pathvalue/  rest/  router-walk/  ...+2
+middleware/  (45 files)
+chain.go  chi.go  context.go  context_test.go  mux.go  mux_test.go  path_value_test.go  pattern_test.go  tree.go  tree_test.go
+
+-- INDEX
+tree.go                                         877L  RegisterMethod, Route, Walk, endpoint, Value
+middleware/compress.go                          392L  Compress, Handler, SetEncoder, selectEncoder, Compressor
+_examples/custom-handler/main.go                 35L  ServeHTTP, customHandler, main
+_examples/custom-method/main.go                  33L  init, main
+_examples/fileserver/main.go                     65L  FileServer, main
+_examples/graceful/main.go                       69L  main, service
+_examples/hello-world/main.go                    21L  main
+_examples/limits/main.go                         92L  main
+_examples/logging/main.go                         9L  main
+_examples/pathvalue/main.go                      25L  main, pathValueHandler
+_examples/rest/main.go                          520L  AdminOnly, Article, ArticleCtx, ArticlePayload, Bind
+_examples/router-walk/main.go                    42L  Ping, main
+_examples/todos-resource/main.go                 30L  main
+_examples/todos-resource/todos.go                53L  Create, Delete, Get, List, Routes
+_examples/todos-resource/users.go                48L  Create, Delete, Get, List, Routes
+_examples/versions/data/article.go                9L  Article
+_examples/versions/data/errors.go                28L  PresentError
+_examples/versions/main.go                      154L  apiVersionCtx, articleRouter, getArticle, listArticles, main
+_examples/versions/presenter/v1/article.go       22L  Render, Article, NewArticleResponse
+_examples/versions/presenter/v2/article.go       30L  Render, Article, NewArticleResponse
+_examples/versions/presenter/v3/article.go       39L  Render, Article, NewArticleResponse
+chain.go                                         49L  Chain, ServeHTTP, ChainHandler, Handler, HandlerFunc
+  ...and 52 more modules
+
+-- SYM
+Mux.handle                          M mux.go:416    handle registers a http.Handler in the routing ...
+compressResponseWriter.writer       M middleware/compress.go:326    function compressResponseWriter.writer
+flushWriter.Flush                   M middleware/wrap_writer.go:147    function flushWriter.Flush
+Mux.Method                          M mux.go:127    Method adds the route `pattern` that matches `m...
+chain                               M chain.go:36     chain builds a http.Handler composed of an inli...
+ThrottleWithOpts                    M middleware/throttle.go:44     ThrottleWithOpts is a middleware that limits nu...
+hijackWriter.Hijack                 M middleware/wrap_writer.go:160    function hijackWriter.Hijack
+patNextSegment                      M tree.go:687    patNextSegment returns the next segment details...
+walk                                M tree.go:838    function walk
+basicWriter.WriteHeader             M middleware/wrap_writer.go:82     function basicWriter.WriteHeader
+UserPayload.Render                  M _examples/rest/main.go:305    function UserPayload.Render
+matchAcceptEncoding                 M middleware/compress.go:240    function matchAcceptEncoding
+NewArticleListResponse              M _examples/rest/main.go:378    function NewArticleListResponse
+Context                             C context.go:45     Context is the default routing context set on t...
+RouteContext                        M context.go:27     RouteContext returns chi's routing Context obje...
+ArticleResponse                     C _examples/rest/main.go:350    ArticleResponse is the response payload for the...
+NewArticleResponse                  M _examples/rest/main.go:360    function NewArticleResponse
+FileServer                          M _examples/fileserver/main.go:48     FileServer conveniently sets up a http.FileServ...
+service                             M _examples/graceful/main.go:45     function service
+adminRouter                         M _examples/rest/main.go:219    A completely separate router for administrator ...
+basicAuthFailed                     M middleware/basic_auth.go:30     function basicAuthFailed
+Compressor.selectEncoder            M middleware/compress.go:211    selectEncoder returns the encoder, the name of ...
+compressResponseWriter.WriteHeader  M middleware/compress.go:290    function compressResponseWriter.WriteHeader
+split                               M middleware/content_charset.go:37     Split a string in two parts, cleaning any white...
+Profiler                            M middleware/profiler.go:23     Profiler is a convenient subrouter used for mou...
+realIP                              M middleware/realip.go:42     function realIP
+prettyStack.decorateSourceLine      M middleware/recoverer.go:166    function prettyStack.decorateSourceLine
+prettyStack.parse                   M middleware/recoverer.go:69     function prettyStack.parse
+Pattern.Match                       M middleware/route_headers.go:141    function Pattern.Match
+Mux.Find                            M mux.go:368    Find searches the routing tree for the pattern ...
+Mux.Handle                          M mux.go:109    Handle adds the route `pattern` that matches an...
+Mux.NotFoundHandler                 M mux.go:398    NotFoundHandler returns the default Mux 404 res...
+Mux.With                            M mux.go:236    With adds inline middlewares for an endpoint ha...
+node.setEndpoint                    M tree.go:344    function node.setEndpoint
+nodes.Swap                          M tree.go:788    function nodes.Swap
+Mux.updateRouteHandler              M mux.go:511    updateRouteHandler builds the single mux handle...
+ErrInvalidRequest                   M _examples/rest/main.go:415    function ErrInvalidRequest
+todosResource.Get                   M _examples/todos-resource/todos.go:39     function todosResource.Get
+NewUserPayloadResponse              M _examples/rest/main.go:295    function NewUserPayloadResponse
+User                                C _examples/rest/main.go:440    User data model
+dbGetUser                           M _examples/rest/main.go:513    function dbGetUser
+UserPayload.Bind                    M _examples/rest/main.go:301    Bind on UserPayload will run after the unmarsha...
+usersResource.Get                   M _examples/todos-resource/users.go:38     function usersResource.Get
+ErrRender                           M _examples/rest/main.go:424    function ErrRender
+apiVersionCtx                       M _examples/versions/main.go:51     function apiVersionCtx
+articleRouter                       M _examples/versions/main.go:60     function articleRouter
+NewRouter                           M chi.go:60     NewRouter returns a new Mux object that impleme...
+Router                              C chi.go:66     Router consisting of the core routing methods u...
+Compressor                          C middleware/compress.go:46     Compressor represents a set of encoding configu...
+NewCompressor                       M middleware/compress.go:63     NewCompressor creates a new Compressor that wil...
+basicWriter.maybeWriteHeader        M middleware/wrap_writer.go:116    function basicWriter.maybeWriteHeader
+Route                               C tree.go:824    Route describes the details of a routing handler.
+node.findRoute                      M tree.go:401    Recursive edge traversal by checking all nodeTy...
+Article                             C _examples/rest/main.go:447    Article data model.
+LogEntry                            C middleware/logger.go:69     LogEntry records the final log when a request c...
+usersResource.Delete                M _examples/todos-resource/users.go:46     function usersResource.Delete
+Context.RoutePattern                M context.go:123    RoutePattern builds the routing pattern string ...
+URLParam                            M context.go:10     URLParam returns the url parameter from a http....
+dbRemoveArticle                     M _examples/rest/main.go:503    function dbRemoveArticle
+todosResource.Delete                M _examples/todos-resource/todos.go:47     function todosResource.Delete
+GetArticle                          M _examples/rest/main.go:173    GetArticle returns the specific Article.
+dbGetArticle                        M _examples/rest/main.go:475    function dbGetArticle
+dbGetArticleBySlug                  M _examples/rest/main.go:484    function dbGetArticleBySlug
+DefaultLogFormatter.NewLogEntry     M middleware/logger.go:98     NewLogEntry creates a new LogEntry for the requ...
+WithLogEntry                        M middleware/logger.go:81     WithLogEntry sets the in-context LogEntry for a...
+defaultLogEntry.Write               M middleware/logger.go:134    function defaultLogEntry.Write
+Handler.ServeHTTP                   M _examples/custom-handler/main.go:12     function Handler.ServeHTTP
+customHandler                       M _examples/custom-handler/main.go:26     function customHandler
+main                                M _examples/custom-handler/main.go:20     function main
+init                                M _examples/custom-method/main.go:10     function init
+main                                M _examples/custom-method/main.go:16     function main
+main                                M _examples/fileserver/main.go:28     function main
+main                                M _examples/graceful/main.go:17     function main
+main                                M _examples/hello-world/main.go:10     function main
+main                                M _examples/limits/main.go:21     function main
+main                                M _examples/logging/main.go:7      function main
+main                                M _examples/pathvalue/main.go:10     function main
+pathValueHandler                    M _examples/pathvalue/main.go:20     pathValueHandler retrieves a URL parameter usin...
+  ...and 215 more symbols
+
+-- FOCUS
+Handler.ServeHTTP (_examples/custom-handler/main.go:12-12)
+  sig: Handler.ServeHTTP(w http.ResponseWriter, r *http.Request)
+
+customHandler (_examples/custom-handler/main.go:26-26)
+  sig: customHandler(w http.ResponseWriter, r *http.Request)
+
+pathValueHandler (_examples/pathvalue/main.go:20-20)
+  pathValueHandler retrieves a URL parameter using PathValue and writes it to the response.
+  sig: pathValueHandler(w http.ResponseWriter, r *http.Request)
+
+randomErrorMiddleware (_examples/versions/main.go:142-142)
+  sig: randomErrorMiddleware(next http.Handler)
+
+ChainHandler.ServeHTTP (chain.go:30-30)
+  sig: ChainHandler.ServeHTTP(w http.ResponseWriter, r *http.Request)
+
+ChainHandler (chain.go:24-24)
+  ChainHandler is a http.Handler with support for handler composition and execution.
+  methods: ServeHTTP
+
+Middlewares.Handler (chain.go:12-12)
+  Handler builds and returns a http.Handler from the chain of middlewares, with `h http.Handler` as the final handler.
+  sig: Middlewares.Handler(h http.Handler)
+  calls: chain
+
+Middlewares.HandlerFunc (chain.go:18-18)
+  HandlerFunc builds and returns a http.Handler from the chain of middlewares, with `h http.Handler` as the final handler.
+  sig: Middlewares.HandlerFunc(h http.HandlerFunc)
+  calls: chain
+
+Mux.Handle (mux.go:109-109)
+  Handle adds the route `pattern` that matches any http method to execute the `handler` http.Handler.
+  sig: Mux.Handle(pattern string, handler http.Handler)
+  calls: Method
+  called_by: HandleFunc
+
+Mux.HandleFunc (mux.go:121-121)
+  HandleFunc adds the route `pattern` that matches any http method to execute the `handlerFn` http.HandlerFunc.
+  sig: Mux.HandleFunc(pattern string, handlerFn http.HandlerFunc)
+  calls: Handle
+
+Mux.MethodNotAllowedHandler (mux.go:407-407)
+  MethodNotAllowedHandler returns the default Mux 405 responder whenever a method cannot be resolved for a route.
+  sig: Mux.MethodNotAllowedHandler(methodsAllowed ...methodTyp)
+
+Mux.Middlewares (mux.go:349-349)
+  Middlewares returns a slice of middleware handler functions.
+
+Mux.NotFoundHandler (mux.go:398-398)
+  NotFoundHandler returns the default Mux 404 responder whenever a route cannot be found.
+  called_by: ServeHTTP
+
+Mux.handle (mux.go:416-416)
+  handle registers a http.Handler in the routing tree for a particular http method and routing pattern.
+  sig: Mux.handle(method methodTyp, pattern string, handler http.Handler)
+  called_by: Connect, Delete, Get, Head, Options
+
+Mux.updateRouteHandler (mux.go:511-511)
+  updateRouteHandler builds the single mux handler that is a chain of the middleware stack, as defined by calls to Use(), 
+  called_by: With
+
+methodNotAllowedHandler (mux.go:518-518)
+  methodNotAllowedHandler is a helper function to respond with a 405, method not allowed.
+  sig: methodNotAllowedHandler(methodsAllowed ...methodTyp)
+
+Router (chi.go:66-66)
+  Router consisting of the core routing methods used by chi's Mux, using only the standard net/http.
+  called_by: main
+
+Routes (chi.go:118-118)
+  Routes interface adds two methods for router traversal, which is also used by the `docgen` subpackage to generation docu
+
+Compressor (middleware/compress.go:46-46)
+  Compressor represents a set of encoding configurations.
+  methods: Handler, SetEncoder, selectEncoder
+  called_by: Compress
+
+compressFlusher (middleware/compress.go:333-333)
+  type compressFlusher
+
+compressResponseWriter (middleware/compress.go:261-261)
+  type compressResponseWriter
+  methods: Close, Flush, Hijack, Push, Unwrap, Write
+
+ioResetterWriter (middleware/compress.go:256-256)
+  Interface for types that allow resetting io.Writers.
+
+DefaultLogFormatter (middleware/logger.go:92-92)
+  DefaultLogFormatter is a simple logger that implements a LogFormatter.
+  methods: NewLogEntry
+
+LogEntry (middleware/logger.go:69-69)
+  LogEntry records the final log when a request completes.
+  called_by: RequestLogger, RequestLogger
+
+LogFormatter (middleware/logger.go:63-63)
+  LogFormatter initiates the beginning of a new LogEntry per request.
+
+LoggerInterface (middleware/logger.go:87-87)
+  LoggerInterface accepts printing to stdlib logger or compatible logger.
+
+defaultLogEntry (middleware/logger.go:127-127)
+  type defaultLogEntry
+  methods: Panic, Write
+
+contextKey (middleware/middleware.go:17-17)
+  contextKey is a value for use with context.WithValue.
+  methods: String
+
+prettyStack (middleware/recoverer.go:66-66)
+  type prettyStack
+  methods: decorateFuncCallLine, decorateLine, decorateSourceLine, parse
+
+HeaderRoute (middleware/route_headers.go:110-110)
+  type HeaderRoute
+  methods: IsMatch
+
+Pattern (middleware/route_headers.go:129-129)
+  type Pattern
+  methods: Match
+
+ThrottleOpts (middleware/throttle.go:20-20)
+  ThrottleOpts represents a set of throttling options.
+
+throttler (middleware/throttle.go:137-137)
+  throttler limits number of currently processed requests at a time.
+  methods: setRetryAfterHeaderIfNeeded
+
+token (middleware/throttle.go:134-134)
+  token represents a request that is being processed.
+
+WrapResponseWriter (middleware/wrap_writer.go:48-48)
+  WrapResponseWriter is a proxy around an http.ResponseWriter that allows you to hook into various parts of the response p
+
+basicWriter (middleware/wrap_writer.go:73-73)
+  basicWriter wraps a http.ResponseWriter that implements the minimal http.ResponseWriter interface.
+  methods: BytesWritten, Discard, Status, Tee, Unwrap, Write
+
+flushHijackWriter (middleware/wrap_writer.go:168-168)
+  flushHijackWriter ...
+  methods: Flush, Hijack
+
+flushWriter (middleware/wrap_writer.go:143-143)
+  flushWriter ...
+  methods: Flush
+
+hijackWriter (middleware/wrap_writer.go:156-156)
+  hijackWriter ...
+  methods: Hijack
+
+http2FancyWriter (middleware/wrap_writer.go:231-231)
+  http2FancyWriter is a HTTP2 writer that additionally satisfies http.Flusher, and io.ReaderFrom.
+  methods: Flush
+
+httpFancyWriter (middleware/wrap_writer.go:190-190)
+  httpFancyWriter is a HTTP writer that additionally satisfies http.Flusher, http.Hijacker, and io.ReaderFrom.
+  methods: Flush, Hijack, ReadFrom
+
+BasicAuth (middleware/basic_auth.go:10-10)
+  BasicAuth implements a simple middleware handler for adding basic http auth to a route.
+  sig: BasicAuth(realm string, creds map[string]string)
+  calls: basicAuthFailed
+
+CleanPath (middleware/clean_path.go:12-12)
+  CleanPath middleware will clean out double slash mistakes from a user's request path.
+  sig: CleanPath(next http.Handler)
+
+Compressor.Handler (middleware/compress.go:187-187)
+  Handler returns a new middleware that will compress the response based on the current Compressor.
+  sig: Compressor.Handler(next http.Handler)
+  calls: selectEncoder
+
+Compressor.SetEncoder (middleware/compress.go:147-147)
+  SetEncoder can be used to set the implementation of a compression algorithm.
+  sig: Compressor.SetEncoder(encoding string, fn EncoderFunc)
+
+compressResponseWriter.Close (middleware/compress.go:367-367)
+  calls: writer
+
+compressResponseWriter.Unwrap (middleware/compress.go:374-374)
+
+compressResponseWriter.Write (middleware/compress.go:318-318)
+  sig: compressResponseWriter.Write(p []byte)
+  calls: WriteHeader
+
+compressResponseWriter.isCompressible (middleware/compress.go:274-274)
+
+encoderDeflate (middleware/compress.go:386-386)
+  sig: encoderDeflate(w io.Writer, level int)
+
+encoderGzip (middleware/compress.go:378-378)
+  sig: encoderGzip(w io.Writer, level int)
+
+ContentCharset (middleware/content_charset.go:11-11)
+  ContentCharset generates a handler that writes a 415 Unsupported Media Type response if none of the charsets match.
+  sig: ContentCharset(charsets ...string)
+
+contentEncoding (middleware/content_charset.go:29-29)
+  Check the content encoding against a list of acceptable values.
+  sig: contentEncoding(ce string, charsets ...string)
+  calls: split, split, split
+
+AllowContentEncoding (middleware/content_encoding.go:10-10)
+  AllowContentEncoding enforces a whitelist of request Content-Encoding otherwise responds with a 415 Unsupported Media Ty
+  sig: AllowContentEncoding(contentEncoding ...string)
+
+AllowContentType (middleware/content_type.go:20-20)
+  AllowContentType enforces a whitelist of request Content-Types otherwise responds with a 415 Unsupported Media Type stat
+  sig: AllowContentType(contentTypes ...string)
+
+SetHeader (middleware/content_type.go:9-9)
+  SetHeader is a convenience handler to set a response header key/value
+  sig: SetHeader(key, value string)
+
+-- GAPS
+- Question mentions [downstream, handling, impact, modifying] — not found in focus or symbol index
+- Module middleware/supress_notfound.go matches question but has no focus detail
+  > drill: middleware/supress_notfound.go

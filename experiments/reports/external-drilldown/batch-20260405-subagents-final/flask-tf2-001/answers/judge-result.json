@@ -1,0 +1,29 @@
+{
+  "task_id": "flask-tf2-001",
+  "before": {
+    "fidelity_score": 0.0,
+    "key_points_hit": [],
+    "key_points_missed": [
+      "Flask.wsgi_app()",
+      "Flask.full_dispatch_request()",
+      "before_request/after_request handlers",
+      "testing client"
+    ],
+    "hallucinations": []
+  },
+  "after": {
+    "fidelity_score": 0.75,
+    "key_points_hit": [
+      "Flask.wsgi_app()",
+      "Flask.full_dispatch_request() (via dispatch_request)",
+      "before_request/after_request handlers (preprocess_request, process_response)"
+    ],
+    "key_points_missed": [
+      "testing client"
+    ],
+    "hallucinations": []
+  },
+  "delta": 0.75,
+  "did_drilldown_help": true,
+  "summary": "Drill-down successfully identified the core request lifecycle methods (wsgi_app, dispatching, before/after request) that would be impacted, missing only the testing client."
+}

@@ -1,0 +1,303 @@
+You have TWO tasks to complete. Read carefully.
+
+=== TASK 1: ANSWER THE QUESTION ===
+
+You are a senior software engineer reading a codebase comprehension artifact (a "clue file") that summarises a repository's structure and behavior. Answer the question below using ONLY the information in the clue file. Do not use any external knowledge about the framework or library.
+
+--- CLUE FILE START ---
+=CC v2 gin@HEAD 99mod 1457sym
+? What security controls exist for handling credentials and preventing timing attacks?
+
+
+-- TREE
+binding/  (30 files)
+codec/  (5 files)
+  json/
+ginS/  (2 files)
+internal/  (4 files)
+  bytesconv/  fs/
+render/  (17 files)
+testdata/  (1 files)
+  protoexample/
+auth.go  auth_test.go  benchmarks_test.go  context.go  context_appengine.go  context_file_test.go  context_test.go  debug.go  debug_test.go  deprecated.go  deprecated_test.go  doc.go  errors.go  errors_test.go  fs.go
+
+-- INDEX
+context.go                                     1489L  Abort, AbortWithError, AbortWithStatus, AbortWithStatusJSON, AbortWithStatusPureJSON
+gin.go                                          832L  Default, Delims, HandleContext, Handler, LoadHTMLFS
+errors.go                                       173L  Error, IsType, JSON, MarshalJSON, SetMeta
+render/json.go                                  194L  Render, WriteContentType, AsciiJSON, Render, WriteContentType
+render/msgpack.go                                43L  Render, WriteContentType, MsgPack, WriteMsgPack
+render/text.go                                   41L  Render, WriteContentType, String, WriteString
+tree.go                                         950L  Param, ByName, Get, countParams, countSections
+auth.go                                         116L  BasicAuth, BasicAuthForProxy, BasicAuthForRealm, authPair, searchCredential
+auth_test.go                                    176L  TestBasicAuth401, TestBasicAuth401WithCustomRealm, TestBasicAuth, TestBasicAuthAuthorizationHeader, TestBasicAuthFails
+benchmarks_test.go                              160L  Benchmark404, Benchmark404Many, Benchmark5Params, BenchmarkLoggerMiddleware, BenchmarkManyHandlers
+binding/binding.go                              127L  Binding, BindingBody, BindingUri, Default, StructValidator
+binding/binding_msgpack_test.go                  59L  TestBindingDefaultMsgPack, TestBindingMsgPack, testMsgPackBodyBinding
+binding/binding_nomsgpack.go                    121L  Binding, BindingBody, BindingUri, Default, StructValidator
+binding/binding_test.go                        1434L  FooBarFileFailStruct, FooBarFileStruct, FooBarStruct, FooBarStructForTimeType, FooDefaultBarStruct
+binding/bson.go                                  30L  Bind, bsonBinding
+binding/default_validator.go                     95L  Error, Engine, ValidateStruct, lazyinit, validateStruct
+  ...and 83 more modules
+
+-- SYM
+Context.Render                      M context.go:1152   Render writes the response headers and calls re...
+Context.Header                      M context.go:1080   Header is an intelligent shortcut for c.Writer....
+Context.Get                         M context.go:288    Get returns the value for the given key, ie: (v...
+Context.Status                      M context.go:1073   Status sets the HTTP response code.
+Context.MustBindWith                M context.go:810    MustBindWith binds the passed struct pointer us...
+Context.Query                       M context.go:525    Query returns the keyed url query value if it e...
+Context.GetQuery                    M context.go:554    GetQuery is like Query(), it returns the keyed ...
+Context.initQueryCache              M context.go:568    function Context.initQueryCache
+Context.GetQueryArray               M context.go:580    GetQueryArray returns a slice of strings for a ...
+Context.ShouldBindWith              M context.go:919    ShouldBindWith binds the passed struct pointer ...
+Context.ContentType                 M context.go:1036   ContentType returns the Content-Type header of ...
+Context.Bind                        M context.go:757    Bind checks the Method and Content-Type to sele...
+RouterGroup.handle                  M routergroup.go:86     function RouterGroup.handle
+Context.requestHeader               M context.go:1050   function Context.requestHeader
+Context.Error                       M context.go:252    Error attaches an error to the current context.
+Engine.isTrustedProxy               M gin.go:469    isTrustedProxy will check whether the IP addres...
+IsDebugging                         M debug.go:22     IsDebugging returns true if the framework is ru...
+Engine.isUnsafeTrustedProxies       M gin.go:457    isUnsafeTrustedProxies checks if Engine.trusted...
+Context.MultipartForm               M context.go:713    MultipartForm is the parsed multipart form, inc...
+Context.ShouldBindBodyWith          M context.go:928    ShouldBindBodyWith is similar with ShouldBindWi...
+JSON.WriteContentType               M render/json.go:62     WriteContentType (JSON) writes JSON ContentType.
+Context.QueryArray                  M context.go:563    QueryArray returns a slice of strings for a giv...
+Context.AbortWithError              M context.go:238    AbortWithError calls `AbortWithStatus()` and `E...
+Context.initFormCache               M context.go:638    function Context.initFormCache
+bodyAllowedForStatus                M context.go:1060   bodyAllowedForStatus is a copy of http.bodyAllo...
+RouterGroup.calculateAbsolutePath   M routergroup.go:250    function RouterGroup.calculateAbsolutePath
+responseWriter.Written              M response_writer.go:106    function responseWriter.Written
+RouterGroup.returnObj               M routergroup.go:254    function RouterGroup.returnObj
+Context                             C context.go:61     Context is the most important part of gin.
+Context.GetPostFormArray            M context.go:653    GetPostFormArray returns a slice of strings for...
+RouterGroup.combineHandlers         M routergroup.go:241    function RouterGroup.combineHandlers
+errorMsgs.String                    M errors.go:161    function errorMsgs.String
+mapFormByTag                        M binding/form_mapping.go:46     function mapFormByTag
+debugPrint                          M debug.go:56     function debugPrint
+LoggerWithConfig                    M logger.go:245    LoggerWithConfig instance a Logger middleware w...
+responseWriter.WriteHeaderNow       M response_writer.go:77     function responseWriter.WriteHeaderNow
+CustomRecoveryWithWriter            M recovery.go:53     CustomRecoveryWithWriter returns a middleware f...
+Error.JSON                          M errors.go:55     JSON creates a properly formatted JSON
+Context.Abort                       M context.go:207    Abort prevents pending handlers from being called.
+defaultValidator.lazyinit           M binding/default_validator.go:90     function defaultValidator.lazyinit
+RecoveryWithWriter                  M recovery.go:45     RecoveryWithWriter returns a middleware for a g...
+RouterGroup.staticFileHandler       M routergroup.go:181    function RouterGroup.staticFileHandler
+Context.GetPostForm                 M context.go:624    GetPostForm is like PostForm(key).
+setWithProperType                   M binding/form_mapping.go:323    function setWithProperType
+Engine.prepareTrustedCIDRs          M gin.go:414    function Engine.prepareTrustedCIDRs
+HandlersChain.Last                  M gin.go:60     Last returns the last handler in the chain.
+findWildcard                        M tree.go:253    Search for a wildcard segment and check the nam...
+responseWriter.WriteHeader          M response_writer.go:67     function responseWriter.WriteHeader
+Context.AbortWithStatus             M context.go:213    AbortWithStatus calls `Abort()` and writes the ...
+Context.Data                        M context.go:1268   Data writes some data into the body stream and ...
+Engine.rebuild404Handlers           M gin.go:356    function Engine.rebuild404Handlers
+Engine.rebuild405Handlers           M gin.go:360    function Engine.rebuild405Handlers
+Context.hasRequestContext           M context.go:1440   hasRequestContext returns whether c.Request has...
+Engine.handleHTTPRequest            M gin.go:690    function Engine.handleHTTPRequest
+updateRouteTree                     M gin.go:504    updateRouteTree do update to the route tree rec...
+Context.PostFormArray               M context.go:633    PostFormArray returns a slice of strings for a ...
+trySetCustom                        M binding/form_mapping.go:191    trySetCustom tries to set a custom type value I...
+trySetUsingParser                   M binding/form_mapping.go:201    trySetUsingParser tries to set a custom type va...
+getMapFromFormData                  M context.go:674    getMapFromFormData return a map which satisfies...
+BasicAuthForRealm                   M auth.go:48     BasicAuthForRealm returns a Basic HTTP Authoriz...
+authorizationHeader                 M auth.go:91     function authorizationHeader
+head                                M binding/form_mapping.go:523    function head
+mapping                             M binding/form_mapping.go:84     function mapping
+setArray                            M binding/form_mapping.go:490    function setArray
+setByForm                           M binding/form_mapping.go:245    function setByForm
+setByMultipartFormFile              M binding/multipart_form_mapping.go:35     function setByMultipartFormFile
+Context.GetPostFormMap              M context.go:667    GetPostFormMap returns a map for a given form k...
+Context.GetQueryMap                 M context.go:594    GetQueryMap returns a map for a given query key...
+Error                               C errors.go:32     Error represents a error's specification.
+Engine.parseTrustedProxies          M gin.go:462    parseTrustedProxies parse Engine.trustedProxies...
+iterate                             M gin.go:397    function iterate
+redirectRequest                     M gin.go:820    function redirectRequest
+sanitizePathChars                   M gin.go:799    sanitizePathChars removes unsafe characters fro...
+ErrorLoggerT                        M logger.go:212    ErrorLoggerT returns a HandlerFunc for a given ...
+BSON.WriteContentType               M render/bson.go:32     WriteContentType (BSONBuf) writes BSONBuf Conte...
+Data.WriteContentType               M render/data.go:29     WriteContentType (Data) writes custom ContentType.
+  ...and 462 more symbols
+
+-- FOCUS
+requestWithBody (binding/binding_test.go:1431-1431)
+  sig: requestWithBody(method, path, body string)
+  called_by: TestBindingFormStringSliceMap, TestBindingQueryStringMap, TestPlainBinding, TestValidationDisabled, TestValidationFails, testBodyBinding, testBodyBindingDisallowUnknownFields, testBodyBindingFail
+
+PerformRequest (routes_test.go:25-25)
+  PerformRequest for testing gin router.
+  sig: PerformRequest(r http.Handler, method, path string, headers ...header)
+  called_by: TestEngineHandleMethodNotAllowedCornerCase, TestMiddlewareCalledOnceByRouterStaticFSNotFound, TestRouteNotAllowedDisabled, TestRouteNotAllowedEnabled2, TestRouteNotAllowedEnabled3, TestRouteNotAllowedEnabled, TestRouteParamsByName, TestRouteParamsByNameWithExtraSlash
+
+Context.Render (context.go:1152-1152)
+  Render writes the response headers and calls render.Render to render data.
+  sig: Context.Render(code int, r render.Render)
+  calls: ContentType, Status, bodyAllowedForStatus
+  called_by: AsciiJSON, BSON, Data, DataFromReader, HTML, IndentedJSON, JSON, JSONP
+
+Context.Header (context.go:1080-1080)
+  Header is an intelligent shortcut for c.Writer.Header().Set(key, value).
+  sig: Context.Header(key, value string)
+  called_by: ClientIP, ContentType, FileAttachment, GetHeader, IsWebsocket, NegotiateFormat, Status
+
+setupHTMLFiles (gin_test.go:32-32)
+  sig: setupHTMLFiles(t *testing.T, mode string, tls bool, loadMethod func(*En...)
+  called_by: TestLoadHTMLFSDebugMode, TestLoadHTMLFSFuncMap, TestLoadHTMLFSReleaseMode, TestLoadHTMLFSTestMode, TestLoadHTMLFSUsingTLS, TestLoadHTMLFilesDebugMode, TestLoadHTMLFilesFuncMap, TestLoadHTMLFilesReleaseMode
+
+Context.Get (context.go:288-288)
+  Get returns the value for the given key, ie: (value, true).
+  sig: Context.Get(key any)
+  called_by: MustGet, ShouldBindBodyWith, requestHeader
+
+runRequest (benchmarks_test.go:148-148)
+  sig: runRequest(B *testing.B, r *Engine, method, path string)
+  called_by: Benchmark404, Benchmark404Many, Benchmark5Params, BenchmarkLoggerMiddleware, BenchmarkManyHandlers, BenchmarkManyRoutesFirst, BenchmarkManyRoutesLast, BenchmarkOneRoute
+  raises: panic
+
+Context.Status (context.go:1073-1073)
+  Status sets the HTTP response code.
+  sig: Context.Status(code int)
+  calls: Header
+  called_by: AbortWithError, AbortWithStatus, Render
+
+Context.MustBindWith (context.go:810-810)
+  MustBindWith binds the passed struct pointer using the specified binding engine.
+  sig: Context.MustBindWith(obj any, b binding.Binding)
+  calls: AbortWithError, Error, ShouldBindWith
+  called_by: Bind, BindHeader, BindJSON, BindPlain, BindQuery, BindTOML, BindXML, BindYAML
+
+New (context_test.go:1509-1509)
+  sig: New(opts ...OptionFunc)
+  called_by: TestContextAbortWithError, TestContextCopyShouldNotCancel, TestContextError, TestContextGetError, TestContextGetErrorSlice, TestContextNegotiationWithHTML, TestContextRenderHTML2, TestContextRenderHTML
+
+Context.Query (context.go:525-525)
+  Query returns the keyed url query value if it exists, otherwise it returns an empty string `("")`.
+  sig: Context.Query(key string)
+  calls: GetQuery
+  called_by: DefaultQuery, JSONP, initQueryCache
+
+Context.GetQuery (context.go:554-554)
+  GetQuery is like Query(), it returns the keyed url query value if it exists `(value, true)` (even when the value is an e
+  sig: Context.GetQuery(key string)
+  calls: GetQueryArray, QueryArray
+  called_by: DefaultQuery, Query
+
+Context.initQueryCache (context.go:568-568)
+  calls: Query
+  called_by: GetQueryArray, GetQueryMap
+
+Context.GetQueryArray (context.go:580-580)
+  GetQueryArray returns a slice of strings for a given query key, plus a boolean value whether at least one value exists f
+  sig: Context.GetQueryArray(key string)
+  calls: initQueryCache
+  called_by: GetQuery, QueryArray
+
+Context.ShouldBindWith (context.go:919-919)
+  ShouldBindWith binds the passed struct pointer using the specified binding engine.
+  sig: Context.ShouldBindWith(obj any, b binding.Binding)
+  calls: Bind
+  called_by: MustBindWith, ShouldBind, ShouldBindHeader, ShouldBindJSON, ShouldBindPlain, ShouldBindQuery, ShouldBindTOML, ShouldBindXML
+
+Context.ContentType (context.go:1036-1036)
+  ContentType returns the Content-Type header of the request.
+  calls: Header, requestHeader
+  called_by: Bind, Render, ShouldBind
+
+failRead.Close (binding/binding_test.go:1372-1372)
+  called_by: TestBindingFormFilesMultipart, createFormFilesMultipartRequest, createFormFilesMultipartRequestFail, createFormMultipartRequest, createFormMultipartRequestForMap, createFormMultipartRequestForMapFail
+
+Context.Bind (context.go:757-757)
+  Bind checks the Method and Content-Type to select a binding engine automatically, Depending on the "Content-Type" header
+  sig: Context.Bind(obj any)
+  calls: ContentType, MustBindWith
+  called_by: ShouldBindWith
+
+errorWriter.Header (render/render_test.go:148-148)
+  called_by: TestRenderData, TestRenderHTMLTemplate, TestRenderHTMLTemplateEmptyName, TestRenderPDF, TestRenderReader, TestRenderReaderNoContentLength, TestRenderString, TestRenderStringLenZero
+
+RouterGroup.handle (routergroup.go:86-86)
+  sig: RouterGroup.handle(httpMethod, relativePath string, handlers HandlersChain)
+  calls: calculateAbsolutePath, combineHandlers, returnObj
+  called_by: Any, DELETE, GET, HEAD, Match, OPTIONS, PATCH, POST
+
+captureOutput (debug_test.go:136-136)
+  sig: captureOutput(t *testing.T, f func()
+  called_by: TestDebugPrint, TestDebugPrintError, TestDebugPrintLoadTemplate, TestDebugPrintRoutes, TestDebugPrintWARNINGDefault, TestDebugPrintWARNINGDefaultWithUnsupportedVersion, TestDebugPrintWARNINGNew, TestDebugPrintWARNINGSetHTMLTemplate
+  raises: panic
+
+Context.File (context_test.go:44-44)
+  Unit tests TODO
+  sig: Context.File(filepath string)
+  called_by: TestContextFile, TestContextFormFile, TestContextFormFileFailed, TestContextMultipartForm, TestContextRenderFile, TestSaveUploadedCreateFailed, TestSaveUploadedFileWithPermission, TestSaveUploadedFileWithPermissionFailed
+
+testRequest (gin_integration_test.go:31-31)
+  params[0]=url example:http://127.0.0.1:8080/index (cannot be empty) params[1]=response status (custom compare status) de
+  sig: testRequest(t *testing.T, params ...string)
+  called_by: TestRunEmpty, TestRunEmptyWithEnv, TestRunQUIC, TestRunTLS, TestRunWithPort, TestTreeRunDynamicRouting, TestWithHttptestWithAutoSelectedPort, TestWithHttptestWithSpecifiedPort
+
+Context.requestHeader (context.go:1050-1050)
+  sig: Context.requestHeader(key string)
+  calls: Get
+  called_by: ClientIP, ContentType, GetHeader, IsWebsocket, NegotiateFormat
+
+Context.Negotiate (context_test.go:45-45)
+  Unit tests TODO func (c *Context) File(filepath string) {
+  sig: Context.Negotiate(code int, config Negotiate)
+  called_by: TestContextNegotiationNotSupport, TestContextNegotiationWithBSON, TestContextNegotiationWithHTML, TestContextNegotiationWithJSON, TestContextNegotiationWithTOML, TestContextNegotiationWithXML, TestContextNegotiationWithYAML
+
+Context.Error (context.go:252-252)
+  Error attaches an error to the current context.
+  sig: Context.Error(err error)
+  called_by: AbortWithError, BindUri, MustBindWith, Negotiate
+  raises: panic
+
+Engine.isTrustedProxy (gin.go:469-469)
+  isTrustedProxy will check whether the IP address is included in the trusted list according to Engine.trustedCIDRs
+  sig: Engine.isTrustedProxy(ip net.IP)
+  called_by: isUnsafeTrustedProxies
+
+IsDebugging (debug.go:22-22)
+  IsDebugging returns true if the framework is running in debug mode.
+  called_by: debugPrint, debugPrintError, debugPrintLoadTemplate, debugPrintRoute
+
+Engine.isUnsafeTrustedProxies (gin.go:457-457)
+  isUnsafeTrustedProxies checks if Engine.trustedCIDRs contains all IPs, it's not safe if it has (returns true)
+  calls: isTrustedProxy
+  called_by: Run, RunFd, RunListener, RunQUIC, RunTLS, RunUnix
+
+-- GAPS
+- Question mentions [attacks, controls, credentials, exist, handling] — not found in focus or symbol index
+
+--- CLUE FILE END ---
+
+QUESTION: What security controls exist for handling credentials and preventing timing attacks?
+
+Provide a detailed answer covering:
+1. Which specific files and symbols are involved
+2. How the mechanism works (based on what the clue tells you)
+3. Any security properties, error handling, or invariants mentioned in the clue
+4. What risks or gaps you can identify from the clue
+
+=== TASK 2: SELF-SCORE YOUR ANSWER ===
+
+After writing your answer above, score it against these gold facts.
+For EACH fact below, state whether your answer COVERS it (the information is present or can be inferred from your answer) or MISSES it (the information is not in your answer).
+
+FACT 1: AuthUserKey is a constant string key for storing authenticated user identity
+FACT 2: Context.Keys map is protected by sync.RWMutex for concurrent request safety
+FACT 3: searchCredential uses subtle.ConstantTimeCompare to prevent timing-based credential leaks
+FACT 4: Context provides Set/Get interface for storing request-scoped sensitive data
+
+Output your scoring in this EXACT format at the end of your response:
+
+```
+=== SCORING ===
+Task: gin-tf5-credential-handling
+Model: [state which model you are, e.g. Claude Opus 4.6, GPT-5.4, Gemini 3.4]
+FACT 1: [COVERS or MISSES] - [brief justification]
+FACT 2: [COVERS or MISSES] - [brief justification]
+FACT 3: [COVERS or MISSES] - [brief justification]
+FACT 4: [COVERS or MISSES] - [brief justification]
+Score: [count of COVERS]/[total facts]
+Sufficient: [YES if score >= 60%, NO otherwise]
+```

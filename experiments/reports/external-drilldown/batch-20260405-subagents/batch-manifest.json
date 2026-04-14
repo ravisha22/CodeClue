@@ -1,0 +1,87 @@
+{
+  "batch_id": "batch-20260405-subagents",
+  "generated_at": "2026-04-05T13:42:41.004645+00:00",
+  "tasks": [
+    {
+      "task_id": "flask-tf2-001",
+      "packet_dir": "experiments\\reports\\external-drilldown\\batch-20260405-subagents\\flask-tf2-001",
+      "graph_path": "experiments\\runs\\v2-lane-a-flask\\graph.json",
+      "repo_root": "experiments\\external-repos\\flask",
+      "projection_path": "experiments/runs/v2-lane-a-flask/v2-proj-flask-tf2-001.json",
+      "status": {
+        "packet_prepared": true,
+        "tool_results_generated": true,
+        "pre_answer": false,
+        "post_answer": false,
+        "judged": false
+      },
+      "metrics": {
+        "confidence_overall": 0.487395,
+        "actions_executed": 15,
+        "clue_tokens": 32923,
+        "drill_down_tokens": 44112,
+        "total_tokens": 77035,
+        "raw_estimate_tokens": 146664,
+        "etrr": 0.4748,
+        "h7_pass": false
+      },
+      "family": "TF2",
+      "operation_family": "OF2",
+      "repo_dir": "flask"
+    },
+    {
+      "task_id": "fastapi-tf4-001",
+      "packet_dir": "experiments\\reports\\external-drilldown\\batch-20260405-subagents\\fastapi-tf4-001",
+      "graph_path": "experiments\\runs\\v2-lane-a-fastapi\\graph.json",
+      "repo_root": "experiments\\external-repos\\fastapi",
+      "projection_path": "experiments/runs/v2-lane-a-fastapi/v2-proj-fastapi-tf4-001.json",
+      "status": {
+        "packet_prepared": true,
+        "tool_results_generated": true,
+        "pre_answer": false,
+        "post_answer": false,
+        "judged": false
+      },
+      "metrics": {
+        "confidence_overall": 0.851351,
+        "actions_executed": 20,
+        "clue_tokens": 38010,
+        "drill_down_tokens": 7547,
+        "total_tokens": 45557,
+        "raw_estimate_tokens": 944223,
+        "etrr": 0.9518,
+        "h7_pass": true
+      },
+      "family": "TF4",
+      "operation_family": "OF4",
+      "repo_dir": "fastapi"
+    },
+    {
+      "task_id": "nest-tf2-001",
+      "packet_dir": "experiments\\reports\\external-drilldown\\batch-20260405-subagents\\nest-tf2-001",
+      "graph_path": "experiments\\runs\\v2-lane-a-nest\\graph.json",
+      "repo_root": "experiments\\external-repos\\nest",
+      "projection_path": "experiments/runs/v2-lane-a-nest/v2-proj-nest-tf2-001.json",
+      "status": {
+        "packet_prepared": true,
+        "tool_results_generated": true,
+        "pre_answer": false,
+        "post_answer": false,
+        "judged": false
+      },
+      "metrics": {
+        "confidence_overall": 0.0,
+        "actions_executed": 2,
+        "clue_tokens": 488,
+        "drill_down_tokens": 1246,
+        "total_tokens": 1734,
+        "raw_estimate_tokens": 798746,
+        "etrr": 0.9978,
+        "h7_pass": true
+      },
+      "family": "TF2",
+      "operation_family": "OF2",
+      "repo_dir": "nest"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "task_id": "gin-tf5-001",
+  "family": "TF5",
+  "operation_family": "OF5",
+  "repo": "gin-gonic/gin",
+  "repo_dir": "gin",
+  "language": "go",
+  "question": "How does Gin handle authentication middleware? What is the BasicAuth implementation and are there security concerns?",
+  "ground_truth_summary": "Gin provides BasicAuth() middleware in auth.go that checks HTTP Basic Auth against a map of username:password pairs (Accounts type). It uses subtle.ConstantTimeCompare for timing-safe comparison. Credentials are stored as sha256 hashes of user:password pairs. Security concerns: passwords in Accounts map are plaintext in code (hashed at runtime only), no rate limiting on auth failures, no session/token support built-in, basic auth transmits credentials base64-encoded (need HTTPS).",
+  "relevant_files": [
+    "auth.go",
+    "context.go"
+  ],
+  "prompt_profile": {
+    "profile_id": "gin-security-auth-v1",
+    "intent": "security-compliance",
+    "constraints": {
+      "max_context": "balanced"
+    },
+    "focus_files": [
+      "auth.go"
+    ],
+    "focus_keywords": [
+      "auth",
+      "basic",
+      "password",
+      "credential",
+      "security",
+      "token"
+    ],
+    "focus_symbols": [
+      "BasicAuth",
+      "Accounts"
+    ]
+  },
+  "task_file": "tests\\fixtures\\lane_a_newrepo_tasks.yaml"
+}

@@ -1,0 +1,315 @@
+=CC v2 flask@HEAD 83mod 1629sym
+? Where should I add custom error handling for blueprint routes, and what integration points exist?
+
+
+-- TREE
+docs/  (1 files)
+examples/  (17 files)
+  celery/
+src/  (24 files)
+  flask/
+tests/  (41 files)
+  type_check/
+
+-- INDEX
+docs/conf.py                                    101L  github_link, setup
+examples/celery/make_celery.py                    4L  
+examples/celery/src/task_app/__init__.py         39L  FlaskTask, celery_init_app, index, create_app
+examples/celery/src/task_app/tasks.py            23L  add, block, process
+examples/celery/src/task_app/views.py            38L  add, block, process, result
+examples/javascript/js_example/__init__.py        5L  
+examples/javascript/js_example/views.py          18L  add, index
+examples/javascript/tests/conftest.py            15L  client, fixture_app
+examples/javascript/tests/test_js_example.py     27L  test_add, check, test_index
+examples/tutorial/flaskr/__init__.py             48L  hello, create_app
+examples/tutorial/flaskr/auth.py                116L  load_logged_in_user, login, wrapped_view, login_required, logout
+examples/tutorial/flaskr/blog.py                125L  create, delete, get_post, index, update
+examples/tutorial/flaskr/db.py                   56L  close_db, get_db, init_app, init_db, init_db_command
+examples/tutorial/tests/conftest.py              62L  login, logout, AuthActions, app, auth
+examples/tutorial/tests/test_auth.py             69L  test_login, test_login_validate_input, test_logout, test_register, test_register_validate_input
+examples/tutorial/tests/test_blog.py             83L  test_author_required, test_create, test_create_update_validate, test_delete, test_exists_required
+examples/tutorial/tests/test_db.py               29L  test_get_close_db, Recorder, fake_init_db, test_init_db_command
+examples/tutorial/tests/test_factory.py          12L  test_config, test_hello
+  ...and 65 more modules
+
+-- SYM
+record_once                         M src/flask/sansio/blueprints.py:233    Works like :meth:`record` but wraps the functio...
+record                              M src/flask/sansio/blueprints.py:224    Registers a function that is called when the bl...
+ensure_sync                         M src/flask/app.py:1065   Ensure that the function is synchronous for WSG...
+async_to_sync                       M src/flask/app.py:1079   Return a sync function that will run the corout...
+add_url_rule                        M src/flask/sansio/scaffold.py:368    Register a rule for routing incoming requests a...
+route                               M src/flask/sansio/scaffold.py:336    Decorate a view function to register it with th...
+_method_route                       M src/flask/sansio/scaffold.py:284    function _method_route
+load_app                            M src/flask/cli.py:333    Loads the Flask app (if not yet loaded) and ret...
+prepare_import                      M src/flask/cli.py:200    Given a filename this will try to calculate the...
+get                                 M src/flask/ctx.py:68     Get an attribute by name, or a default value.
+NoAppException                      C src/flask/cli.py:37     Raised if an application cannot be found or loa...
+with_appcontext                     M src/flask/cli.py:380    Wraps a callback so that it's guaranteed to be ...
+DebugFilesKeyError                  C src/flask/debughelpers.py:23     Raised from request.files during debugging.
+_iter_loaders                       M src/flask/templating.py:98     function _iter_loaders
+get_source                          M src/flask/templating.py:57     function get_source
+generate                            M src/flask/templating.py:172    function generate
+command                             M src/flask/cli.py:413    This works exactly like the method of the same ...
+untag                               M src/flask/json/tag.py:297    Convert a tagged representation back to the ori...
+_get_session                        M src/flask/ctx.py:381    Open the session if it is not already open for ...
+from_object                         M src/flask/config.py:218    Updates the values from the given object.
+_get_exc_class_and_code             M src/flask/sansio/scaffold.py:657    Get the exception class being handled.
+get_post                            M examples/tutorial/flaskr/blog.py:28     Get a post and its author by id.
+_prepare_send_file_kwargs           M src/flask/helpers.py:390    function _prepare_send_file_kwargs
+_prepare_response_obj               M src/flask/json/provider.py:75     function _prepare_response_obj
+_check_setup_finished               M src/flask/sansio/scaffold.py:220    function _check_setup_finished
+_render                             M src/flask/templating.py:123    function _render
+_stream                             M src/flask/templating.py:163    function _stream
+get_send_file_max_age               M src/flask/app.py:365    Used by :func:`send_file` to determine the ``ma...
+get_db                              M examples/tutorial/flaskr/db.py:9      Connect to the application's configured database.
+_get_source_explained               M src/flask/templating.py:64     function _get_source_explained
+_get_source_fast                    M src/flask/templating.py:88     function _get_source_fast
+extend                              M src/flask/sansio/blueprints.py:380    function extend
+request_context                     M src/flask/app.py:1501   Create an :class:`.AppContext` with request inf...
+_untag_scan                         M src/flask/json/tag.py:309    function _untag_scan
+BlueprintSetupState                 C src/flask/sansio/blueprints.py:34     Temporary holder object for registering a bluep...
+get_send_file_max_age               M src/flask/blueprints.py:55     Used by :func:`send_file` to determine the ``ma...
+_load_plugin_commands               M src/flask/cli.py:600    function _load_plugin_commands
+from_mapping                        M src/flask/config.py:304    Updates the config like :meth:`update` ignoring...
+from_pyfile                         M src/flask/config.py:187    Updates the values in the config from a Python ...
+match_request                       M src/flask/ctx.py:405    Apply routing to the current request, storing e...
+push                                M src/flask/ctx.py:416    Push this context so that it is the active cont...
+ScriptInfo                          C src/flask/cli.py:293    Helper object to deal with Flask applications.
+register_error_handler              M src/flask/sansio/scaffold.py:642    Alternative error attach function to the :meth:...
+create_jinja_environment            M src/flask/sansio/app.py:476    function create_jinja_environment
+send_static_file                    M src/flask/app.py:392    The view function used to serve files from
+create_url_adapter                  M src/flask/app.py:509    Creates a URL adapter for the given request.
+wsgi_app                            M src/flask/app.py:1566   The actual WSGI application.
+celery_init_app                     M examples/celery/src/task_app/__init__.py:29     function celery_init_app
+init_db                             M examples/tutorial/flaskr/db.py:33     Clear existing data and create new tables.
+load_dotenv                         M src/flask/cli.py:698    Load "dotenv" files to set environment variables.
+_dump_loader_info                   M src/flask/debughelpers.py:107    function _dump_loader_info
+__getitem__                         M src/flask/debughelpers.py:91     function __getitem__
+has_level_handler                   M src/flask/logging.py:31     Check if there is a handler in the logging chai...
+_find_package_path                  M src/flask/sansio/scaffold.py:709    Find the path that contains the package or module.
+__init__                            M src/flask/sessions.py:73     function __init__
+__init_subclass__                   M src/flask/views.py:165    function __init_subclass__
+finalize_request                    M src/flask/app.py:1021   Given the return value from a view function thi...
+make_response                       M src/flask/app.py:1224   Convert the return value from a view function t...
+process_response                    M src/flask/app.py:1394   Can be overridden in order to modify the respon...
+handle_http_exception               M src/flask/app.py:830    Handles an HTTP exception.
+full_dispatch_request               M src/flask/app.py:992    Dispatches the request and on top of that perfo...
+handle_exception                    M src/flask/app.py:897    Handle an exception that did not have an error ...
+log_exception                       M src/flask/app.py:950    Logs an exception.
+_merge_blueprint_funcs              M src/flask/sansio/blueprints.py:379    function _merge_blueprint_funcs
+make_setup_state                    M src/flask/sansio/blueprints.py:246    Creates an instance of :meth:`~flask.blueprints...
+add_ctx                             M src/flask/app.py:97     function add_ctx
+  ...and 394 more symbols
+
+-- FOCUS
+handle_exception (src/flask/app.py:897-948)
+  Handle an exception that did not have an error handler
+  sig: handle_exception(ctx, e)
+  calls: ensure_sync, finalize_request, log_exception
+  called_by: wsgi_app, Flask
+  raises: e
+  uses: InternalServerError (werkzeug.exceptions)
+
+handle_http_exception (src/flask/app.py:830-863)
+  Handles an HTTP exception.
+  sig: handle_http_exception(ctx, e)
+  calls: ensure_sync
+  called_by: handle_user_exception, Flask
+
+handle_user_exception (src/flask/app.py:865-895)
+  This method is called whenever an exception occurs that
+  sig: handle_user_exception(ctx, e)
+  calls: ensure_sync, handle_http_exception
+  called_by: full_dispatch_request, Flask
+
+routes_command (src/flask/cli.py:1061-1107)
+  Show all registered routes with endpoints and methods.
+  sig: routes_command(sort, all_methods)
+  calls: command
+
+DebugFilesKeyError (src/flask/debughelpers.py:23-47)
+  Raised from request.files during debugging.
+  extends: KeyError, AssertionError
+  imports: jinja2.loaders, werkzeug.routing, blueprints, globals, sansio.app
+  called_by: __getitem__, newcls, attach_enctype_error_multidict
+
+UnexpectedUnicodeError (src/flask/debughelpers.py:17-20)
+  Raised in places where we want some better error reporting for
+  extends: AssertionError, UnicodeError
+  imports: jinja2.loaders, werkzeug.routing, blueprints, globals, sansio.app
+
+attach_enctype_error_multidict (src/flask/debughelpers.py:81-104)
+  Patch ``request.files.__getitem__`` to raise a descriptive error
+  sig: attach_enctype_error_multidict(request)
+  calls: DebugFilesKeyError, __getitem__
+  raises: with_traceback
+
+_CollectErrors (src/flask/helpers.py:642-670)
+  A context manager that records and silences an error raised within it.
+  imports: importlib.util, types, werkzeug.utils, werkzeug.exceptions, werkzeug.wrappers
+  raises: BaseExceptionGroup
+
+_split_blueprint_path (src/flask/helpers.py:633-639)
+  sig: _split_blueprint_path(name)
+
+has_level_handler (src/flask/logging.py:31-47)
+  Check if there is a handler in the logging chain that will handle the
+  sig: has_level_handler(logger)
+  called_by: create_logger
+
+wsgi_errors_stream (src/flask/logging.py:16-28)
+  Find the most appropriate error stream for the application.
+
+_find_error_handler (src/flask/sansio/app.py:865-888)
+  Return a registered error handler for an exception in this order:
+  sig: _find_error_handler(e, blueprints)
+
+handle_url_build_error (src/flask/sansio/app.py:978-1010)
+  Called by :meth:`.url_for` if a
+  sig: handle_url_build_error(error, endpoint, values)
+  raises: error
+
+iter_blueprints (src/flask/sansio/app.py:594-599)
+  Iterates over all blueprints by the order they were registered.
+
+register_blueprint (src/flask/sansio/app.py:567-592)
+  Register a :class:`~flask.Blueprint` on the application.
+  sig: register_blueprint(blueprint)
+
+from_blueprint (src/flask/sansio/blueprints.py:664-665)
+  sig: from_blueprint(state)
+
+register_blueprint (src/flask/sansio/blueprints.py:256-271)
+  Register a :class:`~flask.Blueprint` on this blueprint.
+  sig: register_blueprint(blueprint)
+  raises: ValueError
+
+endpoint (src/flask/sansio/scaffold.py:436-457)
+  Decorate a view function to register it for the given
+  sig: endpoint(endpoint)
+
+errorhandler (src/flask/sansio/scaffold.py:598-639)
+  Register a function to handle errors by code or exception class.
+  sig: errorhandler(code_or_exception)
+  calls: register_error_handler
+
+_endpoint_from_view_func (src/flask/sansio/scaffold.py:701-706)
+  Internal helper that returns the default endpoint for a given
+  sig: _endpoint_from_view_func(view_func)
+
+blueprints (src/flask/wrappers.py:181-195)
+  The registered names of the current blueprint upwards through
+
+endpoint (src/flask/wrappers.py:147-159)
+  The endpoint that matched the request URL.
+
+Blueprint (src/flask/blueprints.py:18-128)
+  extends: SansioBlueprint
+  imports: cli, globals, helpers, sansio.blueprints, sansio.scaffold
+  calls: __init__, get_send_file_max_age
+  raises: RuntimeError, ValueError
+  uses: AppGroup (cli)
+
+Blueprint (src/flask/sansio/blueprints.py:119-692)
+  Represents a blueprint, a collection of routes and other
+  extends: Scaffold
+  imports: scaffold, app
+  calls: extend, _merge_blueprint_funcs, add_app_template_filter, add_app_template_global, add_app_template_test, make_setup_state, record, record_once
+  raises: ValueError, AssertionError
+
+route (src/flask/sansio/scaffold.py:336-365)
+  Decorate a view function to register it with the given URL
+  sig: route(rule)
+  calls: add_url_rule
+  called_by: _method_route, Scaffold
+
+blueprint (src/flask/wrappers.py:162-178)
+  The registered name of the current blueprint.
+
+add (examples/celery/src/task_app/tasks.py:8-9)
+  sig: add(a, b)
+
+add (examples/celery/src/task_app/views.py:22-26)
+
+add (examples/javascript/js_example/views.py:15-18)
+
+BlueprintSetupState (src/flask/sansio/blueprints.py:34-116)
+  Temporary holder object for registering a blueprint with the
+  imports: scaffold, app
+  called_by: make_setup_state, Blueprint
+
+_merge_blueprint_funcs (src/flask/sansio/blueprints.py:379-410)
+  sig: _merge_blueprint_funcs(app, name)
+  calls: extend
+  called_by: register, Blueprint
+
+_method_route (src/flask/sansio/scaffold.py:284-293)
+  sig: _method_route(method, rule, options)
+  calls: route
+  called_by: delete, get, patch, post, put, Scaffold
+  raises: TypeError
+
+Scaffold (src/flask/sansio/scaffold.py:52-698)
+  Common behavior shared between :class:`~flask.Flask` and
+  imports: importlib.util, jinja2, werkzeug.exceptions, werkzeug.utils, helpers
+  calls: _get_exc_class_and_code, _method_route, add_url_rule, register_error_handler, route
+  raises: NotImplementedError, TypeError, ValueError
+
+__init__ (src/flask/blueprints.py:19-53)
+  sig: __init__(name, import_name, static_folder, static_url_path, template_folder...)
+  called_by: Blueprint
+  uses: AppGroup (cli)
+
+get_send_file_max_age (src/flask/blueprints.py:55-80)
+  Used by :func:`send_file` to determine the ``max_age`` cache
+  sig: get_send_file_max_age(filename)
+  called_by: send_static_file, Blueprint
+
+add_app_template_filter (src/flask/sansio/blueprints.py:476-495)
+  Register a function to use as a custom Jinja filter.
+  sig: add_app_template_filter(f, name)
+  calls: record_once
+  called_by: Blueprint
+
+record_once (src/flask/sansio/blueprints.py:233-244)
+  Works like :meth:`record` but wraps the function in another
+  sig: record_once(func)
+  calls: record
+  called_by: add_app_template_filter, add_app_template_global, add_app_template_test, after_app_request, app_context_processor, app_errorhandler, app_url_defaults, app_url_value_preprocessor
+
+add_app_template_global (src/flask/sansio/blueprints.py:590-611)
+  Register a function to use as a custom Jinja global.
+  sig: add_app_template_global(f, name)
+  calls: record_once
+  called_by: Blueprint
+
+add_app_template_test (src/flask/sansio/blueprints.py:532-553)
+  Register a function to use as a custom Jinja test.
+  sig: add_app_template_test(f, name)
+  calls: record_once
+  called_by: Blueprint
+
+make_setup_state (src/flask/sansio/blueprints.py:246-253)
+  Creates an instance of :meth:`~flask.blueprints.BlueprintSetupState`
+  sig: make_setup_state(app, options, first_registration)
+  calls: BlueprintSetupState
+  called_by: register, Blueprint
+
+record (src/flask/sansio/blueprints.py:224-230)
+  Registers a function that is called when the blueprint is
+  sig: record(func)
+  called_by: record_once, Blueprint
+
+register (src/flask/sansio/blueprints.py:273-377)
+  Called by :meth:`Flask.register_blueprint` to register all
+  sig: register(app, options)
+  calls: _merge_blueprint_funcs, make_setup_state
+  called_by: Blueprint
+  raises: ValueError
+
+-- GAPS
+- Question mentions [exist, handling, integration, points, routes] — not found in focus or symbol index
+- Module tests/type_check/typing_error_handler.py matches question but has no focus detail
+  > drill: tests/type_check/typing_error_handler.py
+- Module tests/test_blueprints.py matches question but has no focus detail
+  > drill: tests/test_blueprints.py

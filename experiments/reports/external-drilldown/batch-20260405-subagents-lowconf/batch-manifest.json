@@ -1,0 +1,114 @@
+{
+  "batch_id": "batch-20260405-subagents-lowconf",
+  "generated_at": "2026-04-05T13:45:15.845501+00:00",
+  "tasks": [
+    {
+      "task_id": "flask-tf2-001",
+      "packet_dir": "experiments\\reports\\external-drilldown\\batch-20260405-subagents-lowconf\\flask-tf2-001",
+      "graph_path": "experiments\\runs\\v2-lane-a-flask\\graph.json",
+      "repo_root": "experiments\\external-repos\\flask",
+      "projection_path": "experiments/runs/v2-lane-a-flask/v2-proj-flask-tf2-001.json",
+      "status": {
+        "packet_prepared": true,
+        "tool_results_generated": true,
+        "pre_answer": false,
+        "post_answer": false,
+        "judged": false
+      },
+      "metrics": {
+        "confidence_overall": 0.487395,
+        "actions_executed": 15,
+        "clue_tokens": 32923,
+        "drill_down_tokens": 44112,
+        "total_tokens": 77035,
+        "raw_estimate_tokens": 146665,
+        "etrr": 0.4748,
+        "h7_pass": false
+      },
+      "family": "TF2",
+      "operation_family": "OF2",
+      "repo_dir": "flask"
+    },
+    {
+      "task_id": "httpx-tf2-001",
+      "packet_dir": "experiments\\reports\\external-drilldown\\batch-20260405-subagents-lowconf\\httpx-tf2-001",
+      "graph_path": "experiments\\runs\\v2-lane-a-httpx\\graph.json",
+      "repo_root": "experiments\\external-repos\\httpx",
+      "projection_path": "experiments/runs/v2-lane-a-httpx/v2-proj-httpx-tf2-001.json",
+      "status": {
+        "packet_prepared": true,
+        "tool_results_generated": true,
+        "pre_answer": false,
+        "post_answer": false,
+        "judged": false
+      },
+      "metrics": {
+        "confidence_overall": 0.081301,
+        "actions_executed": 15,
+        "clue_tokens": 9834,
+        "drill_down_tokens": 34631,
+        "total_tokens": 44465,
+        "raw_estimate_tokens": 142484,
+        "etrr": 0.6879,
+        "h7_pass": true
+      },
+      "family": "TF2",
+      "operation_family": "OF2",
+      "repo_dir": "httpx"
+    },
+    {
+      "task_id": "typeorm-tf2-001",
+      "packet_dir": "experiments\\reports\\external-drilldown\\batch-20260405-subagents-lowconf\\typeorm-tf2-001",
+      "graph_path": "experiments\\runs\\v2-lane-a-typeorm\\graph.json",
+      "repo_root": "experiments\\external-repos\\typeorm",
+      "projection_path": "experiments/runs/v2-lane-a-typeorm/v2-proj-typeorm-tf2-001.json",
+      "status": {
+        "packet_prepared": true,
+        "tool_results_generated": true,
+        "pre_answer": false,
+        "post_answer": false,
+        "judged": false
+      },
+      "metrics": {
+        "confidence_overall": 0.0,
+        "actions_executed": 2,
+        "clue_tokens": 474,
+        "drill_down_tokens": 2294,
+        "total_tokens": 2768,
+        "raw_estimate_tokens": 2559461,
+        "etrr": 0.9989,
+        "h7_pass": true
+      },
+      "family": "TF2",
+      "operation_family": "OF2",
+      "repo_dir": "typeorm"
+    },
+    {
+      "task_id": "gin-tf5-001",
+      "packet_dir": "experiments\\reports\\external-drilldown\\batch-20260405-subagents-lowconf\\gin-tf5-001",
+      "graph_path": "experiments\\runs\\v2-lane-a-gin\\graph.json",
+      "repo_root": "experiments\\external-repos\\gin",
+      "projection_path": "experiments/runs/v2-lane-a-gin/v2-proj-gin-tf5-001.json",
+      "status": {
+        "packet_prepared": true,
+        "tool_results_generated": true,
+        "pre_answer": false,
+        "post_answer": false,
+        "judged": false
+      },
+      "metrics": {
+        "confidence_overall": 0.644294,
+        "actions_executed": 30,
+        "clue_tokens": 120781,
+        "drill_down_tokens": 99551,
+        "total_tokens": 220332,
+        "raw_estimate_tokens": 170116,
+        "etrr": -0.2952,
+        "h7_pass": false
+      },
+      "family": "TF5",
+      "operation_family": "OF5",
+      "repo_dir": "gin"
+    }
+  ]
+}

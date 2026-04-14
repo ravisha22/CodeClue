@@ -1,0 +1,65 @@
+
+================================================================================
+  flask: 1712 nodes, 2309 edges
+================================================================================
+  flask-tf1-refactor-sessions              SessionInterface               HIT
+  flask-tf1-refactor-sessions              SecureCookieSessionInterface   HIT
+  flask-tf1-refactor-sessions              SecureCookieSession            HIT
+  flask-tf1-refactor-sessions              Flask.session_interface        MISS
+                                           Focus sym recall: 3/4 = 0.75
+
+  flask-tf2-request-context-impact         RequestContext                 MISS
+  flask-tf2-request-context-impact         AppContext                     HIT
+  flask-tf2-request-context-impact         _AppCtxGlobals                 HIT
+  flask-tf2-request-context-impact         Request                        MISS
+                                           Focus sym recall: 2/4 = 0.50
+
+  flask-tf3-blueprint-error-handlers       Blueprint                      HIT
+  flask-tf3-blueprint-error-handlers       BlueprintSetupState            HIT
+  flask-tf3-blueprint-error-handlers       Blueprint.errorhandler         HIT
+  flask-tf3-blueprint-error-handlers       Flask.register_blueprint       HIT
+                                           Focus sym recall: 4/4 = 1.00
+
+  flask-tf4-post-request-lifecycle         Flask.wsgi_app                 MISS
+  flask-tf4-post-request-lifecycle         Flask.dispatch_request         MISS
+  flask-tf4-post-request-lifecycle         RequestContext                 MISS
+  flask-tf4-post-request-lifecycle         request_started                MISS
+                                           Focus sym recall: 0/4 = 0.00
+
+  flask-tf5-session-security               SecureCookieSessionInterface   HIT
+  flask-tf5-session-security               SecureCookieSession            HIT
+  flask-tf5-session-security               NullSession                    HIT
+                                           Focus sym recall: 3/3 = 1.00
+
+
+================================================================================
+  httpx: 1301 nodes, 1697 edges
+================================================================================
+  httpx-tf1-auth-extraction                Auth                           MISS
+  httpx-tf1-auth-extraction                BasicAuth                      MISS
+  httpx-tf1-auth-extraction                DigestAuth                     MISS
+  httpx-tf1-auth-extraction                FunctionAuth                   MISS
+                                           Focus sym recall: 0/4 = 0.00
+
+  httpx-tf2-transport-impact               BaseTransport                  HIT
+  httpx-tf2-transport-impact               HTTPTransport                  HIT
+  httpx-tf2-transport-impact               AsyncHTTPTransport             HIT
+  httpx-tf2-transport-impact               Client._transport              MISS
+                                           Focus sym recall: 3/4 = 0.75
+
+  httpx-tf3-decoder-integration            ContentDecoder                 HIT
+  httpx-tf3-decoder-integration            GZipDecoder                    HIT
+  httpx-tf3-decoder-integration            DeflateDecoder                 HIT
+  httpx-tf3-decoder-integration            IdentityDecoder                HIT
+                                           Focus sym recall: 4/4 = 1.00
+
+  httpx-tf4-multipart-upload               MultipartEncoder               MISS
+  httpx-tf4-multipart-upload               encode_request                 MISS
+  httpx-tf4-multipart-upload               ByteStream                     MISS
+                                           Focus sym recall: 0/3 = 0.00
+
+  httpx-tf5-redirect-security              URL                            HIT
+  httpx-tf5-redirect-security              TooManyRedirects               HIT
+  httpx-tf5-redirect-security              Client                         MISS
+                                           Focus sym recall: 2/3 = 0.67
+

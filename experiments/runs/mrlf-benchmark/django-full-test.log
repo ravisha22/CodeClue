@@ -1,0 +1,12 @@
+=== Django Full 5-Task Test ===
+Date: 2026-04-09 20:06:51
+
+Extracting graph...
+FATAL: TypeError: cannot unpack non-iterable NoneType object
+Traceback (most recent call last):
+  File "C:\Users\ranandag\Documents\VSCodeProjects\CodeClue-Research-Scaffold\experiments\runs\_django_full_test.py", line 44, in <module>
+    graph = extract_graph(REPO)
+  File "C:\Users\ranandag\Documents\VSCodeProjects\CodeClue-Research-Scaffold\src\codeclue_research\extractor.py", line 415, in extract_graph
+    go_nodes, go_edges = extract_go_nodes_edges(repo_root)
+    ^^^^^^^^^^^^^^^^^^
+TypeError: cannot unpack non-iterable NoneType object

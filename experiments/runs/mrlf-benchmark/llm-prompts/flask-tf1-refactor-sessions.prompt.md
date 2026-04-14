@@ -1,0 +1,343 @@
+You have TWO tasks to complete. Read carefully.
+
+=== TASK 1: ANSWER THE QUESTION ===
+
+You are a senior software engineer reading a codebase comprehension artifact (a "clue file") that summarises a repository's structure and behavior. Answer the question below using ONLY the information in the clue file. Do not use any external knowledge about the framework or library.
+
+--- CLUE FILE START ---
+=CC v2 flask@HEAD 83mod 1629sym
+? How would you refactor Flask to move all session-related code to a new dedicated module while maintaining backwards compatibility?
+
+
+-- TREE
+docs/  (1 files)
+examples/  (17 files)
+  celery/
+src/  (24 files)
+  flask/
+tests/  (41 files)
+  type_check/
+
+-- INDEX
+docs/conf.py                                    101L  github_link, setup
+examples/celery/make_celery.py                    4L  
+examples/celery/src/task_app/__init__.py         39L  FlaskTask, celery_init_app, index, create_app
+examples/celery/src/task_app/tasks.py            23L  add, block, process
+examples/celery/src/task_app/views.py            38L  add, block, process, result
+examples/javascript/js_example/__init__.py        5L  
+examples/javascript/js_example/views.py          18L  add, index
+examples/javascript/tests/conftest.py            15L  client, fixture_app
+examples/javascript/tests/test_js_example.py     27L  test_add, check, test_index
+examples/tutorial/flaskr/__init__.py             48L  hello, create_app
+examples/tutorial/flaskr/auth.py                116L  load_logged_in_user, login, wrapped_view, login_required, logout
+examples/tutorial/flaskr/blog.py                125L  create, delete, get_post, index, update
+examples/tutorial/flaskr/db.py                   56L  close_db, get_db, init_app, init_db, init_db_command
+examples/tutorial/tests/conftest.py              62L  login, logout, AuthActions, app, auth
+examples/tutorial/tests/test_auth.py             69L  test_login, test_login_validate_input, test_logout, test_register, test_register_validate_input
+examples/tutorial/tests/test_blog.py             83L  test_author_required, test_create, test_create_update_validate, test_delete, test_exists_required
+examples/tutorial/tests/test_db.py               29L  test_get_close_db, Recorder, fake_init_db, test_init_db_command
+examples/tutorial/tests/test_factory.py          12L  test_config, test_hello
+  ...and 65 more modules
+
+-- SYM
+record_once                         M src/flask/sansio/blueprints.py:233    Works like :meth:`record` but wraps the functio...
+record                              M src/flask/sansio/blueprints.py:224    Registers a function that is called when the bl...
+ensure_sync                         M src/flask/app.py:1065   Ensure that the function is synchronous for WSG...
+async_to_sync                       M src/flask/app.py:1079   Return a sync function that will run the corout...
+add_url_rule                        M src/flask/sansio/scaffold.py:368    Register a rule for routing incoming requests a...
+route                               M src/flask/sansio/scaffold.py:336    Decorate a view function to register it with th...
+_method_route                       M src/flask/sansio/scaffold.py:284    function _method_route
+load_app                            M src/flask/cli.py:333    Loads the Flask app (if not yet loaded) and ret...
+prepare_import                      M src/flask/cli.py:200    Given a filename this will try to calculate the...
+get                                 M src/flask/ctx.py:68     Get an attribute by name, or a default value.
+NoAppException                      C src/flask/cli.py:37     Raised if an application cannot be found or loa...
+with_appcontext                     M src/flask/cli.py:380    Wraps a callback so that it's guaranteed to be ...
+DebugFilesKeyError                  C src/flask/debughelpers.py:23     Raised from request.files during debugging.
+_iter_loaders                       M src/flask/templating.py:98     function _iter_loaders
+get_source                          M src/flask/templating.py:57     function get_source
+generate                            M src/flask/templating.py:172    function generate
+command                             M src/flask/cli.py:413    This works exactly like the method of the same ...
+untag                               M src/flask/json/tag.py:297    Convert a tagged representation back to the ori...
+_get_session                        M src/flask/ctx.py:381    Open the session if it is not already open for ...
+from_object                         M src/flask/config.py:218    Updates the values from the given object.
+_get_exc_class_and_code             M src/flask/sansio/scaffold.py:657    Get the exception class being handled.
+get_post                            M examples/tutorial/flaskr/blog.py:28     Get a post and its author by id.
+_prepare_send_file_kwargs           M src/flask/helpers.py:390    function _prepare_send_file_kwargs
+_prepare_response_obj               M src/flask/json/provider.py:75     function _prepare_response_obj
+_check_setup_finished               M src/flask/sansio/scaffold.py:220    function _check_setup_finished
+_render                             M src/flask/templating.py:123    function _render
+_stream                             M src/flask/templating.py:163    function _stream
+get_send_file_max_age               M src/flask/app.py:365    Used by :func:`send_file` to determine the ``ma...
+get_db                              M examples/tutorial/flaskr/db.py:9      Connect to the application's configured database.
+_get_source_explained               M src/flask/templating.py:64     function _get_source_explained
+_get_source_fast                    M src/flask/templating.py:88     function _get_source_fast
+extend                              M src/flask/sansio/blueprints.py:380    function extend
+request_context                     M src/flask/app.py:1501   Create an :class:`.AppContext` with request inf...
+_untag_scan                         M src/flask/json/tag.py:309    function _untag_scan
+BlueprintSetupState                 C src/flask/sansio/blueprints.py:34     Temporary holder object for registering a bluep...
+get_send_file_max_age               M src/flask/blueprints.py:55     Used by :func:`send_file` to determine the ``ma...
+_load_plugin_commands               M src/flask/cli.py:600    function _load_plugin_commands
+from_mapping                        M src/flask/config.py:304    Updates the config like :meth:`update` ignoring...
+from_pyfile                         M src/flask/config.py:187    Updates the values in the config from a Python ...
+match_request                       M src/flask/ctx.py:405    Apply routing to the current request, storing e...
+push                                M src/flask/ctx.py:416    Push this context so that it is the active cont...
+ScriptInfo                          C src/flask/cli.py:293    Helper object to deal with Flask applications.
+register_error_handler              M src/flask/sansio/scaffold.py:642    Alternative error attach function to the :meth:...
+create_jinja_environment            M src/flask/sansio/app.py:476    function create_jinja_environment
+send_static_file                    M src/flask/app.py:392    The view function used to serve files from
+create_url_adapter                  M src/flask/app.py:509    Creates a URL adapter for the given request.
+wsgi_app                            M src/flask/app.py:1566   The actual WSGI application.
+celery_init_app                     M examples/celery/src/task_app/__init__.py:29     function celery_init_app
+init_db                             M examples/tutorial/flaskr/db.py:33     Clear existing data and create new tables.
+load_dotenv                         M src/flask/cli.py:698    Load "dotenv" files to set environment variables.
+_dump_loader_info                   M src/flask/debughelpers.py:107    function _dump_loader_info
+__getitem__                         M src/flask/debughelpers.py:91     function __getitem__
+has_level_handler                   M src/flask/logging.py:31     Check if there is a handler in the logging chai...
+_find_package_path                  M src/flask/sansio/scaffold.py:709    Find the path that contains the package or module.
+__init__                            M src/flask/sessions.py:73     function __init__
+__init_subclass__                   M src/flask/views.py:165    function __init_subclass__
+finalize_request                    M src/flask/app.py:1021   Given the return value from a view function thi...
+make_response                       M src/flask/app.py:1224   Convert the return value from a view function t...
+process_response                    M src/flask/app.py:1394   Can be overridden in order to modify the respon...
+handle_http_exception               M src/flask/app.py:830    Handles an HTTP exception.
+full_dispatch_request               M src/flask/app.py:992    Dispatches the request and on top of that perfo...
+handle_exception                    M src/flask/app.py:897    Handle an exception that did not have an error ...
+log_exception                       M src/flask/app.py:950    Logs an exception.
+_merge_blueprint_funcs              M src/flask/sansio/blueprints.py:379    function _merge_blueprint_funcs
+make_setup_state                    M src/flask/sansio/blueprints.py:246    Creates an instance of :meth:`~flask.blueprints...
+add_ctx                             M src/flask/app.py:97     function add_ctx
+  ...and 394 more symbols
+
+-- FOCUS
+FlaskTask (examples/celery/src/task_app/__init__.py:30-33)
+  extends: Task
+  imports: celery, flask
+
+Flask (src/flask/app.py:109-1625)
+  The flask object implements a WSGI application and acts as the central
+  extends: App
+  imports: inspect, weakref, itertools, types, urllib.parse
+  calls: __init__, async_to_sync, create_url_adapter, dispatch_request, ensure_sync, finalize_request, full_dispatch_request, get_send_file_max_age
+  raises: FormDataRoutingRedirect, RuntimeError, ValueError, e
+  uses: InternalServerError (werkzeug.exceptions), FormDataRoutingRedirect (debughelpers)
+
+FlaskGroup (src/flask/cli.py:531-688)
+  Special subclass of the :class:`AppGroup` group that supports
+  extends: AppGroup
+  imports: ast, importlib.metadata, inspect, platform, traceback
+  calls: _load_plugin_commands, get_command, list_commands, make_context, parse_args, load_app, ScriptInfo
+
+UnexpectedUnicodeError (src/flask/debughelpers.py:17-20)
+  Raised in places where we want some better error reporting for
+  extends: AssertionError, UnicodeError
+  imports: jinja2.loaders, werkzeug.routing, blueprints, globals, sansio.app
+
+FlaskProxy (src/flask/globals.py:22-22)
+  extends: Flask
+  imports: contextvars, werkzeug.local, app, ctx, sessions
+
+SessionMixinProxy (src/flask/globals.py:30-30)
+  extends: SessionMixin
+  imports: contextvars, werkzeug.local, app, ctx, sessions
+
+NullSession (src/flask/sessions.py:83-97)
+  Class used to generate nicer error messages if sessions are not
+  extends: SecureCookieSession
+  imports: hashlib, itsdangerous, werkzeug.datastructures, typing_extensions, app
+  raises: RuntimeError
+
+SecureCookieSession (src/flask/sessions.py:57-80)
+  Base class for sessions based on signed cookies.
+  extends: SessionMixin
+  attrs: modified=False
+  imports: hashlib, itsdangerous, werkzeug.datastructures, typing_extensions, app
+  calls: __init__
+
+SecureCookieSessionInterface (src/flask/sessions.py:284-385)
+  The default session interface that stores sessions in signed cookies
+  extends: SessionInterface
+  attrs: salt='cookie-session', key_derivation='hmac'
+  imports: hashlib, itsdangerous, werkzeug.datastructures, typing_extensions, app
+  calls: get_signing_serializer, get_cookie_domain, get_cookie_httponly, get_cookie_name, get_cookie_partitioned, get_cookie_path, get_cookie_samesite, get_cookie_secure
+  uses: URLSafeTimedSerializer (itsdangerous)
+
+SessionInterface (src/flask/sessions.py:100-270)
+  The basic interface you have to implement in order to replace the
+  attrs: pickle_based=False
+  imports: hashlib, itsdangerous, werkzeug.datastructures, typing_extensions, app
+  raises: NotImplementedError
+
+SessionMixin (src/flask/sessions.py:24-54)
+  Expands a basic dictionary with session attributes.
+  attrs: new=False, modified=True, accessed=False
+  imports: hashlib, itsdangerous, werkzeug.datastructures, typing_extensions, app
+
+open_session (src/flask/sessions.py:323-335)
+  sig: open_session(app, request)
+
+save_session (src/flask/sessions.py:337-385)
+  sig: save_session(app, session, response)
+
+is_null_session (src/flask/sessions.py:162-169)
+  Checks if a given object is a null session.
+  sig: is_null_session(obj)
+
+make_null_session (src/flask/sessions.py:150-160)
+  Creates a null session which acts as a replacement object if the
+  sig: make_null_session(app)
+
+open_session (src/flask/sessions.py:249-261)
+  This is called at the beginning of each request, after
+  sig: open_session(app, request)
+  raises: NotImplementedError
+
+save_session (src/flask/sessions.py:263-270)
+  This is called at the end of each request, after generating
+  sig: save_session(app, session, response)
+  raises: NotImplementedError
+
+Blueprint (src/flask/blueprints.py:18-128)
+  extends: SansioBlueprint
+  imports: cli, globals, helpers, sansio.blueprints, sansio.scaffold
+  calls: __init__, get_send_file_max_age
+  raises: RuntimeError, ValueError
+  uses: AppGroup (cli)
+
+AppGroup (src/flask/cli.py:405-437)
+  This works similar to a regular click :class:`~click.Group` but it
+  extends: Group
+  imports: ast, importlib.metadata, inspect, platform, traceback
+  calls: command, group, with_appcontext
+
+CertParamType (src/flask/cli.py:780-825)
+  Click option type for the ``--cert`` option.
+  extends: ParamType
+  attrs: name='path'
+  imports: ast, importlib.metadata, inspect, platform, traceback
+  called_by: run_command
+  raises: BadParameter
+
+Config (src/flask/config.py:50-367)
+  Works exactly like a dict but provides ways to fill it from files
+  extends: dict
+  imports: errno, types, werkzeug.utils, typing_extensions, sansio.app
+  calls: __repr__, from_mapping, from_object, from_pyfile
+  raises: RuntimeError
+
+ConfigAttribute (src/flask/config.py:20-47)
+  Makes an attribute forward to the config
+  imports: errno, types, werkzeug.utils, typing_extensions, sansio.app
+
+AppContext (src/flask/ctx.py:260-525)
+  An app context contains information about an app, and about the request
+  imports: contextvars, types, werkzeug.exceptions, werkzeug.routing, globals
+  calls: _get_session, match_request, push, get
+  raises: RuntimeError
+
+DebugFilesKeyError (src/flask/debughelpers.py:23-47)
+  Raised from request.files during debugging.
+  extends: KeyError, AssertionError
+  imports: jinja2.loaders, werkzeug.routing, blueprints, globals, sansio.app
+  called_by: __getitem__, newcls, attach_enctype_error_multidict
+
+FormDataRoutingRedirect (src/flask/debughelpers.py:50-78)
+  This exception is raised in debug mode if a routing redirect
+  extends: AssertionError
+  imports: jinja2.loaders, werkzeug.routing, blueprints, globals, sansio.app
+
+AppContextProxy (src/flask/globals.py:24-24)
+  extends: AppContext
+  imports: contextvars, werkzeug.local, app, ctx, sessions
+
+ProxyMixin (src/flask/globals.py:17-18)
+  imports: contextvars, werkzeug.local, app, ctx, sessions
+
+RequestProxy (src/flask/globals.py:28-28)
+  extends: Request
+  imports: contextvars, werkzeug.local, app, ctx, sessions
+
+_AppCtxGlobalsProxy (src/flask/globals.py:26-26)
+  extends: _AppCtxGlobals
+  imports: contextvars, werkzeug.local, app, ctx, sessions
+
+_CollectErrors (src/flask/helpers.py:642-670)
+  A context manager that records and silences an error raised within it.
+  imports: importlib.util, types, werkzeug.utils, werkzeug.exceptions, werkzeug.wrappers
+  raises: BaseExceptionGroup
+
+DefaultJSONProvider (src/flask/json/provider.py:124-215)
+  Provide JSON operations using Python's built-in :mod:`json`
+  extends: JSONProvider
+  attrs: ensure_ascii=True, sort_keys=True, mimetype='application/json'
+  imports: decimal, uuid, weakref, werkzeug.http, werkzeug.sansio.response
+  calls: _prepare_response_obj
+
+JSONTag (src/flask/json/tag.py:60-90)
+  Base class for defining type tags for :class:`TaggedJSONSerializer`.
+  imports: base64, uuid, markupsafe, werkzeug.http
+  raises: NotImplementedError
+
+PassDict (src/flask/json/tag.py:119-130)
+  extends: JSONTag
+  imports: base64, uuid, markupsafe, werkzeug.http
+
+PassList (src/flask/json/tag.py:147-156)
+  extends: JSONTag
+  imports: base64, uuid, markupsafe, werkzeug.http
+
+TagBytes (src/flask/json/tag.py:159-170)
+  extends: JSONTag
+  attrs: key=' b'
+  imports: base64, uuid, markupsafe, werkzeug.http
+
+TagDateTime (src/flask/json/tag.py:205-216)
+  extends: JSONTag
+  attrs: key=' d'
+  imports: base64, uuid, markupsafe, werkzeug.http
+
+TagDict (src/flask/json/tag.py:93-116)
+  Tag for 1-item dicts whose only key matches a registered tag.
+  extends: JSONTag
+  attrs: key=' di'
+  imports: base64, uuid, markupsafe, werkzeug.http
+
+-- GAPS
+- Question mentions [backwards, code, compatibility, dedicated, maintaining] — not found in focus or symbol index
+- Module tests/test_session_interface.py matches question but has no focus detail
+  > drill: tests/test_session_interface.py
+- Module examples/tutorial/flaskr/db.py matches question but has no focus detail
+  > drill: examples/tutorial/flaskr/db.py
+
+--- CLUE FILE END ---
+
+QUESTION: How would you refactor Flask to move all session-related code to a new dedicated module while maintaining backwards compatibility?
+
+Provide a detailed answer covering:
+1. Which specific files and symbols are involved
+2. How the mechanism works (based on what the clue tells you)
+3. Any security properties, error handling, or invariants mentioned in the clue
+4. What risks or gaps you can identify from the clue
+
+=== TASK 2: SELF-SCORE YOUR ANSWER ===
+
+After writing your answer above, score it against these gold facts.
+For EACH fact below, state whether your answer COVERS it (the information is present or can be inferred from your answer) or MISSES it (the information is not in your answer).
+
+FACT 1: SessionInterface.open_session and save_session are the core abstract methods
+FACT 2: SecureCookieSessionInterface uses URLSafeTimedSerializer with SECRET_KEY for signing
+FACT 3: Flask app stores session_interface property which can be replaced
+FACT 4: Session persistence is handled via response hooks in request teardown
+
+Output your scoring in this EXACT format at the end of your response:
+
+```
+=== SCORING ===
+Task: flask-tf1-refactor-sessions
+Model: [state which model you are, e.g. Claude Opus 4.6, GPT-5.4, Gemini 3.4]
+FACT 1: [COVERS or MISSES] - [brief justification]
+FACT 2: [COVERS or MISSES] - [brief justification]
+FACT 3: [COVERS or MISSES] - [brief justification]
+FACT 4: [COVERS or MISSES] - [brief justification]
+Score: [count of COVERS]/[total facts]
+Sufficient: [YES if score >= 60%, NO otherwise]
+```

@@ -1,0 +1,344 @@
+=CC v2 flask@HEAD 83mod 1629sym
+? What is the downstream impact of modifying the configuration loading?
+
+
+-- TREE
+docs/  (1 files)
+examples/  (17 files)
+  celery/
+src/  (24 files)
+  flask/
+tests/  (41 files)
+  type_check/
+
+-- INDEX
+docs/conf.py                                    101L  github_link, setup
+examples/celery/make_celery.py                    4L  
+examples/celery/src/task_app/__init__.py         39L  FlaskTask, celery_init_app, index, create_app
+examples/celery/src/task_app/tasks.py            23L  add, block, process
+examples/celery/src/task_app/views.py            38L  add, block, process, result
+examples/javascript/js_example/__init__.py        5L  
+examples/javascript/js_example/views.py          18L  add, index
+examples/javascript/tests/conftest.py            15L  client, fixture_app
+examples/javascript/tests/test_js_example.py     27L  test_add, check, test_index
+examples/tutorial/flaskr/__init__.py             48L  hello, create_app
+examples/tutorial/flaskr/auth.py                116L  load_logged_in_user, login, wrapped_view, login_required, logout
+examples/tutorial/flaskr/blog.py                125L  create, delete, get_post, index, update
+examples/tutorial/flaskr/db.py                   56L  close_db, get_db, init_app, init_db, init_db_command
+examples/tutorial/tests/conftest.py              62L  login, logout, AuthActions, app, auth
+examples/tutorial/tests/test_auth.py             69L  test_login, test_login_validate_input, test_logout, test_register, test_register_validate_input
+examples/tutorial/tests/test_blog.py             83L  test_author_required, test_create, test_create_update_validate, test_delete, test_exists_required
+examples/tutorial/tests/test_db.py               29L  test_get_close_db, Recorder, fake_init_db, test_init_db_command
+examples/tutorial/tests/test_factory.py          12L  test_config, test_hello
+  ...and 65 more modules
+
+-- SYM
+get                                 M tests/test_basic.py:546    function get
+get                                 M tests/test_reqctx.py:251    function get
+loads                               M tests/test_json.py:241    function loads
+get                                 M src/flask/ctx.py:68     function get
+generate                            M src/flask/templating.py:172    function generate
+invoke                              M tests/test_cli.py:459    function invoke
+extend                              M src/flask/sansio/blueprints.py:380    function extend
+setdefault                          M tests/test_basic.py:554    function setdefault
+Flask                               C tests/test_config.py:202    class Flask
+record_once                         M src/flask/sansio/blueprints.py:233    function record_once
+record                              M src/flask/sansio/blueprints.py:224    function record
+ensure_sync                         M src/flask/app.py:1065   function ensure_sync
+async_to_sync                       M src/flask/app.py:1079   function async_to_sync
+default                             M tests/test_json.py:228    function default
+get_cookie_name                     M tests/test_reqctx.py:233    function get_cookie_name
+__init__                            M src/flask/blueprints.py:19     function __init__
+group                               M src/flask/cli.py:429    function group
+parse_args                          M src/flask/cli.py:678    function parse_args
+main                                M src/flask/cli.py:1122   function main
+__repr__                            M src/flask/config.py:366    function __repr__
+setdefault                          M src/flask/ctx.py:93     function setdefault
+_split_blueprint_path               M src/flask/helpers.py:633    function _split_blueprint_path
+make_response                       M src/flask/helpers.py:139    function make_response
+redirect                            M src/flask/helpers.py:242    function redirect
+url_for                             M src/flask/helpers.py:188    function url_for
+dumps                               M src/flask/json/tag.py:321    function dumps
+__init__                            M src/flask/sessions.py:73     function __init__
+invoke                              M src/flask/testing.py:275    function invoke
+__init_subclass__                   M src/flask/views.py:165    function __init_subclass__
+_load_form_data                     M src/flask/wrappers.py:197    function _load_form_data
+on_json_loading_failed              M src/flask/wrappers.py:212    function on_json_loading_failed
+dump                                M src/flask/json/__init__.py:47     function dump
+dumps                               M src/flask/json/__init__.py:13     function dumps
+load                                M src/flask/json/__init__.py:108    function load
+loads                               M src/flask/json/__init__.py:77     function loads
+list_templates                      M src/flask/templating.py:108    function list_templates
+add_url_rule                        M src/flask/sansio/scaffold.py:368    function add_url_rule
+route                               M src/flask/sansio/scaffold.py:336    function route
+_method_route                       M src/flask/sansio/scaffold.py:284    function _method_route
+command                             M src/flask/cli.py:413    function command
+get                                 M tests/test_helpers.py:139    function get
+load_app                            M src/flask/cli.py:333    function load_app
+common_test                         M tests/test_views.py:8      function common_test
+common_object_test                  M tests/test_config.py:13     function common_object_test
+_untag_scan                         M src/flask/json/tag.py:309    function _untag_scan
+options                             M tests/test_basic.py:166    function options
+NoAppException                      C src/flask/cli.py:37     class NoAppException
+prepare_import                      M src/flask/cli.py:200    function prepare_import
+template_string                     M tests/test_blueprints.py:676    function template_string
+report_error                        M tests/test_user_error_handler.py:244    function report_error
+get                                 M tests/test_async.py:31     async_function get
+with_appcontext                     M src/flask/cli.py:380    function with_appcontext
+_iter_loaders                       M src/flask/templating.py:98     function _iter_loaders
+get_source                          M src/flask/templating.py:57     function get_source
+get_post                            M examples/tutorial/flaskr/blog.py:28     function get_post
+_check_setup_finished               M src/flask/sansio/scaffold.py:220    function _check_setup_finished
+_render                             M src/flask/templating.py:123    function _render
+_stream                             M src/flask/templating.py:163    function _stream
+redirect                            M tests/test_helpers.py:171    function redirect
+Foo                                 C tests/test_json_tag.py:44     class Foo
+Foo                                 C tests/test_regression.py:5      class Foo
+echo                                M tests/test_testing.py:253    function echo
+Custom                              C tests/test_user_error_handler.py:220    class Custom
+CustomException                     C tests/test_user_error_handler.py:11     class CustomException
+head                                M tests/test_views.py:172    function head
+_get_session                        M src/flask/ctx.py:381    function _get_session
+get_db                              M examples/tutorial/flaskr/db.py:9      function get_db
+from_object                         M src/flask/config.py:218    function from_object
+_get_exc_class_and_code             M src/flask/sansio/scaffold.py:657    function _get_exc_class_and_code
+DebugFilesKeyError                  C src/flask/debughelpers.py:23     class DebugFilesKeyError
+__getitem__                         M src/flask/debughelpers.py:91     function __getitem__
+get_send_file_max_age               M src/flask/app.py:365    function get_send_file_max_age
+_prepare_send_file_kwargs           M src/flask/helpers.py:390    function _prepare_send_file_kwargs
+request_context                     M src/flask/app.py:1501   function request_context
+AppError                            C tests/test_async.py:14     class AppError
+BlueprintError                      C tests/test_async.py:18     class BlueprintError
+MyDecoratorException                C tests/test_blueprints.py:47     class MyDecoratorException
+MyFunctionException                 C tests/test_blueprints.py:50     class MyFunctionException
+_get_source_explained               M src/flask/templating.py:64     function _get_source_explained
+_get_source_fast                    M src/flask/templating.py:88     function _get_source_fast
+BlueprintSetupState                 C src/flask/sansio/blueprints.py:34     class BlueprintSetupState
+untag                               M src/flask/json/tag.py:297    function untag
+SessionError                        C tests/test_reqctx.py:206    class SessionError
+ParentException                     C tests/test_user_error_handler.py:62     class ParentException
+_copy_environ                       M src/flask/testing.py:185    function _copy_environ
+X                                   C tests/test_json.py:224    class X
+ForbiddenSubclass                   C tests/test_basic.py:987    class ForbiddenSubclass
+  ...and 1542 more symbols
+
+-- FOCUS
+get (tests/test_basic.py:546-547)
+  calls: get
+  called_by: test_after_request_processing, test_baseexception_error_handling, test_before_after_request_order, test_before_request_and_routing_errors, test_endpoint_decorator
+
+get (tests/test_reqctx.py:251-253)
+  calls: get
+  called_by: test_greenlet_context_copying, test_greenlet_context_copying, test_greenlet_context_copying_api, test_greenlet_context_copying_api, test_normal_environ_completes
+
+loads (tests/test_json.py:241-243)
+  calls: loads
+  called_by: loads, test_json_customization, test_jsonify_arrays, test_jsonify_basic_types, test_jsonify_dicts
+
+get (src/flask/ctx.py:68-77)
+  calls: get
+  called_by: get, after_this_request, copy_current_request_context, has_app_context, has_request_context
+
+generate (src/flask/templating.py:172-176)
+  calls: generate
+  called_by: generate, _stream, _stream
+
+invoke (tests/test_cli.py:459-462)
+  called_by: test_all_methods, test_all_methods, test_host, test_no_routes, test_simple
+
+extend (src/flask/sansio/blueprints.py:380-386)
+  calls: extend
+  called_by: extend, _merge_blueprint_funcs, _merge_blueprint_funcs, _merge_blueprint_funcs, _merge_blueprint_funcs
+
+setdefault (tests/test_basic.py:554-555)
+  calls: setdefault
+  called_by: setdefault, test_session_vary_cookie, add_language_code, test_url_processors
+
+Flask (tests/test_config.py:202-203)
+  called_by: test_config_from_class, test_config_from_envvar, test_config_from_envvar_missing, test_config_from_file_json, test_config_from_file_toml
+
+record_once (src/flask/sansio/blueprints.py:233-244)
+  calls: record
+  called_by: add_app_template_filter, add_app_template_global, add_app_template_test, after_app_request, app_context_processor
+
+record (src/flask/sansio/blueprints.py:224-230)
+  called_by: record_once
+
+ensure_sync (src/flask/app.py:1065-1077)
+  calls: async_to_sync
+  called_by: dispatch_request, do_teardown_appcontext, do_teardown_request, handle_exception, handle_http_exception
+
+async_to_sync (src/flask/app.py:1079-1100)
+  called_by: ensure_sync
+
+default (tests/test_json.py:228-232)
+  calls: default
+  called_by: default, test_json_customization
+
+get_cookie_name (tests/test_reqctx.py:233-237)
+  calls: get_cookie_name
+  called_by: get_cookie_name, test_session_dynamic_cookie_name
+
+__init__ (src/flask/blueprints.py:19-53)
+  calls: __init__
+  called_by: __init__
+
+group (src/flask/cli.py:429-437)
+  calls: group
+  called_by: group
+
+parse_args (src/flask/cli.py:678-688)
+  calls: parse_args
+  called_by: parse_args
+
+main (src/flask/cli.py:1122-1123)
+  calls: main
+  called_by: main
+
+__repr__ (src/flask/config.py:366-367)
+  calls: __repr__
+  called_by: __repr__
+
+setdefault (src/flask/ctx.py:93-103)
+  calls: setdefault
+  called_by: setdefault
+
+_split_blueprint_path (src/flask/helpers.py:633-639)
+  calls: _split_blueprint_path
+  called_by: _split_blueprint_path
+
+make_response (src/flask/helpers.py:139-185)
+  calls: make_response
+  called_by: make_response
+
+redirect (src/flask/helpers.py:242-266)
+  calls: redirect
+  called_by: redirect
+
+url_for (src/flask/helpers.py:188-239)
+  calls: url_for
+  called_by: url_for
+
+dumps (src/flask/json/tag.py:321-323)
+  calls: dumps
+  called_by: dumps
+
+__init__ (src/flask/sessions.py:73-80)
+  calls: __init__
+  called_by: __init__
+
+invoke (src/flask/testing.py:275-298)
+  calls: invoke
+  called_by: invoke
+
+__init_subclass__ (src/flask/views.py:165-180)
+  calls: __init_subclass__
+  called_by: __init_subclass__
+
+_load_form_data (src/flask/wrappers.py:197-210)
+  calls: _load_form_data
+  called_by: _load_form_data
+
+on_json_loading_failed (src/flask/wrappers.py:212-219)
+  calls: on_json_loading_failed
+  called_by: on_json_loading_failed
+
+dump (src/flask/json/__init__.py:47-74)
+  calls: dump, dump
+  called_by: dump, dump
+
+dumps (src/flask/json/__init__.py:13-44)
+  calls: dumps, dumps
+  called_by: dumps, dumps
+
+load (src/flask/json/__init__.py:108-135)
+  calls: load, load
+  called_by: load, load
+
+loads (src/flask/json/__init__.py:77-105)
+  calls: loads, loads
+  called_by: loads, loads
+
+list_templates (src/flask/templating.py:108-120)
+  calls: list_templates, list_templates
+  called_by: list_templates, list_templates
+
+add_url_rule (src/flask/sansio/scaffold.py:368-433)
+  called_by: route
+
+route (src/flask/sansio/scaffold.py:336-365)
+  calls: add_url_rule
+  called_by: _method_route
+
+_method_route (src/flask/sansio/scaffold.py:284-293)
+  calls: route
+  called_by: delete, get, patch, post, put
+
+command (src/flask/cli.py:413-427)
+  calls: command, with_appcontext
+  called_by: command, routes_command, run_command, shell_command
+
+get (tests/test_helpers.py:139-142)
+  called_by: test_async_view, test_async_view, test_async_view, test_async_view, test_stream_keeps_session
+
+load_app (src/flask/cli.py:333-372)
+  calls: NoAppException, prepare_import, prepare_import
+  called_by: get_command, list_commands, run_command, with_appcontext
+
+common_test (tests/test_views.py:8-15)
+  called_by: test_basic_view, test_endpoint_override, test_method_based_view, test_view_patching
+
+common_object_test (tests/test_config.py:13-16)
+  called_by: test_config_from_class, test_config_from_envvar, test_config_from_file_json, test_config_from_file_toml, test_config_from_mapping
+
+_untag_scan (src/flask/json/tag.py:309-319)
+  calls: _untag_scan, _untag_scan, untag
+  called_by: _untag_scan, _untag_scan, loads
+
+options (tests/test_basic.py:166-167)
+  called_by: test_provide_automatic_options_arg_disable, test_provide_automatic_options_attr_disable, test_provide_automatic_options_attr_enable, test_provide_automatic_options_method_disable
+
+NoAppException (src/flask/cli.py:37-38)
+  called_by: load_app, find_app_by_string, find_app_by_string, find_app_by_string, find_app_by_string
+
+prepare_import (src/flask/cli.py:200-226)
+  called_by: load_app, load_app
+
+template_string (tests/test_blueprints.py:676-680)
+  called_by: app_page, bp_page, test_context_processing, test_context_processing
+
+report_error (tests/test_user_error_handler.py:244-250)
+  called_by: test_handle_class_or_code, handle_exception, test_handle_generic
+
+get (tests/test_async.py:31-33)
+  called_by: test_async_before_after_request, test_async_before_after_request, test_async_error_handler, test_async_route
+
+with_appcontext (src/flask/cli.py:380-402)
+  calls: load_app
+  called_by: command
+
+_iter_loaders (src/flask/templating.py:98-106)
+  called_by: _get_source_explained, _get_source_fast
+
+get_source (src/flask/templating.py:57-62)
+  calls: _get_source_explained, _get_source_fast
+  called_by: _get_source_explained, _get_source_fast
+
+get_post (examples/tutorial/flaskr/blog.py:28-57)
+  called_by: delete, update
+
+_check_setup_finished (src/flask/sansio/scaffold.py:220-221)
+  called_by: wrapper_func, setupmethod
+
+_render (src/flask/templating.py:123-133)
+  called_by: render_template, render_template_string
+
+_stream (src/flask/templating.py:163-178)
+  calls: generate, generate
+  called_by: stream_template, stream_template_string
+
+redirect (tests/test_helpers.py:171-172)
+  called_by: test_redirect_no_app, test_redirect_with_app
+
+-- GAPS
+- Question mentions [configuration, downstream, impact, loading, modifying] — not found in focus or symbol index

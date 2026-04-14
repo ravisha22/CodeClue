@@ -1,0 +1,125 @@
+=== FULL VALIDATION RUN ===
+Date: 2026-04-09 20:05:05
+
+--- PHASE 3: Localization (4 repos × 5 TFs = 20 tasks) ---
+Phase 3: Localization Scoring
+==========================================================================================
+
+  fastapi: extracting + rendering... Traceback (most recent call last):
+  File "C:\Users\ranandag\Documents\VSCodeProjects\CodeClue-Research-Scaffold\experiments\runs\run_phase3_localization.py", line 272, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\ranandag\Documents\VSCodeProjects\CodeClue-Research-Scaffold\experiments\runs\run_phase3_localization.py", line 195, in main
+    graph = extract_graph(repo_path)
+  File "C:\Users\ranandag\Documents\VSCodeProjects\CodeClue-Research-Scaffold\src\codeclue_research\extractor.py", line 415, in extract_graph
+    go_nodes, go_edges = extract_go_nodes_edges(repo_root)
+    ^^^^^^^^^^^^^^^^^^
+TypeError: cannot unpack non-iterable NoneType object
+
+--- PHASE 4: Consumption (20 tasks) ---
+Phase 4: LLM Consumption Test
+================================================================================
+  flask-tf1-refactor-sessions              fid=0.500 A=0 P=4 M=0 FAIL
+  flask-tf2-request-context-impact         fid=0.750 A=3 P=0 M=1 PASS
+  flask-tf3-blueprint-error-handlers       fid=1.000 A=4 P=0 M=0 PASS
+  flask-tf4-post-request-lifecycle         fid=0.750 A=2 P=2 M=0 PASS
+  flask-tf5-session-security               fid=0.375 A=1 P=1 M=2 FAIL
+  httpx-tf1-auth-extraction                fid=0.625 A=1 P=3 M=0 PASS
+  httpx-tf2-transport-impact               fid=0.750 A=2 P=2 M=0 PASS
+  httpx-tf3-decoder-integration            fid=1.000 A=4 P=0 M=0 PASS
+  httpx-tf4-multipart-upload               fid=0.625 A=2 P=1 M=1 PASS
+  httpx-tf5-redirect-security              fid=0.500 A=0 P=4 M=0 FAIL
+  gin-tf1-context-pooling                  fid=0.625 A=2 P=1 M=1 PASS
+  gin-tf2-routing-tree-impact              fid=0.875 A=3 P=1 M=0 PASS
+  gin-tf3-middleware-integration           fid=0.750 A=2 P=2 M=0 PASS
+  gin-tf4-basic-auth-flow                  fid=0.625 A=2 P=1 M=1 PASS
+  gin-tf5-credential-handling              fid=0.250 A=0 P=2 M=2 FAIL
+  fastapi-tf1-dependency-injection         fid=0.375 A=1 P=1 M=2 FAIL
+  fastapi-tf2-openapi-routing              fid=0.750 A=2 P=2 M=0 PASS
+  fastapi-tf3-security-scheme              fid=0.875 A=3 P=1 M=0 PASS
+  fastapi-tf4-form-parsing                 fid=0.375 A=1 P=1 M=2 FAIL
+  fastapi-tf5-input-validation             fid=0.375 A=0 P=3 M=1 FAIL
+
+================================================================================
+SUMMARY
+================================================================================
+
+Repo         | Mean Fid | Sufficient
+----------------------------------------
+fastapi      |    0.550 |     2/5
+flask        |    0.675 |     3/5
+gin          |    0.625 |     4/5
+httpx        |    0.700 |     4/5
+
+Family   | Mean Fid | Sufficient
+-----------------------------------
+TF1      |    0.531 |     2/4
+TF2      |    0.781 |     4/4
+TF3      |    0.906 |     4/4
+TF4      |    0.594 |     3/4
+TF5      |    0.375 |     0/4
+
+Overall: mean_fidelity=0.637, DFCR=0.650 (13/20), DDR=0.350
+Traceback (most recent call last):
+  File "C:\Users\ranandag\Documents\VSCodeProjects\CodeClue-Research-Scaffold\experiments\runs\run_phase4_consumption.py", line 188, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\ranandag\Documents\VSCodeProjects\CodeClue-Research-Scaffold\experiments\runs\run_phase4_consumption.py", line 171, in main
+    print(f"\nGate: DFCR \u2265 0.60: {dfcr:.3f} \u2192 {'PASS' if dfcr >= 0.60 else 'FAIL'}")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2265' in position 13: character maps to <undefined>
+
+--- DJANGO (5 tasks) ---
+=== Django Full 5-Task Test ===
+Date: 2026-04-09 20:06:51
+
+Extracting graph...
+FATAL: TypeError: cannot unpack non-iterable NoneType object
+Traceback (most recent call last):
+  File "C:\Users\ranandag\Documents\VSCodeProjects\CodeClue-Research-Scaffold\experiments\runs\_django_full_test.py", line 44, in <module>
+    graph = extract_graph(REPO)
+  File "C:\Users\ranandag\Documents\VSCodeProjects\CodeClue-Research-Scaffold\src\codeclue_research\extractor.py", line 415, in extract_graph
+    go_nodes, go_edges = extract_go_nodes_edges(repo_root)
+    ^^^^^^^^^^^^^^^^^^
+TypeError: cannot unpack non-iterable NoneType object
+
+
+--- NEST (5 tasks) ---
+=== Nest TypeScript Validation Test ===
+Date: 2026-04-09 20:17:15
+Repo: experiments\external-repos\nest (1659 .ts files)
+
+Counting raw source tokens...
+Raw source: 471,104 tokens across 1430 files
+
+Extracting graph...
+FATAL: TypeError: cannot unpack non-iterable NoneType object
+Traceback (most recent call last):
+  File "C:\Users\ranandag\Documents\VSCodeProjects\CodeClue-Research-Scaffold\experiments\runs\_nest_validation_test.py", line 122, in <module>
+    graph = extract_graph(REPO)
+  File "C:\Users\ranandag\Documents\VSCodeProjects\CodeClue-Research-Scaffold\src\codeclue_research\extractor.py", line 415, in extract_graph
+    go_nodes, go_edges = extract_go_nodes_edges(repo_root)
+    ^^^^^^^^^^^^^^^^^^
+TypeError: cannot unpack non-iterable NoneType object
+
+
+--- GO: Gin + Chi (8 tasks) ---
+=== Go Validation: Gin + Chi (n=2) ===
+Date: 2026-04-09 20:23:03
+
+============================================================
+gin: Extracting...
+FATAL: cannot unpack non-iterable NoneType object
+Traceback (most recent call last):
+  File "C:\Users\ranandag\Documents\VSCodeProjects\CodeClue-Research-Scaffold\experiments\runs\_go_validation.py", line 69, in <module>
+    graph = extract_graph(repo_path)
+  File "C:\Users\ranandag\Documents\VSCodeProjects\CodeClue-Research-Scaffold\src\codeclue_research\extractor.py", line 415, in extract_graph
+    go_nodes, go_edges = extract_go_nodes_edges(repo_root)
+    ^^^^^^^^^^^^^^^^^^
+TypeError: cannot unpack non-iterable NoneType object
+
+
+=== FULL VALIDATION COMPLETE ===

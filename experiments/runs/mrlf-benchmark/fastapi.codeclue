@@ -1,0 +1,363 @@
+=CC v2 fastapi@HEAD 1122mod 5252sym
+? What is the downstream impact of modifying the configuration loading?
+
+
+-- TREE
+docs/  (3 files)
+docs_src/  (455 files)
+  additional_responses/  additional_status_codes/  advanced_middleware/  app_testing/  async_tests/  authentication_error_status_code/  background_tasks/  behind_a_proxy/  bigger_applications/  body/  ...+66
+fastapi/  (48 files)
+  _compat/  dependencies/  middleware/  openapi/  security/
+scripts/  (35 files)
+tests/  (581 files)
+  benchmarks/  test_modules_same_name_body/  test_request_params/  test_tutorial/  test_validate_response_recursive/
+
+-- INDEX
+docs/en/docs/js/custom.js                       184L  announceRandom, createTermynals, handleSponsorImages, loadVisibleTermynals, main
+docs/en/docs/js/init_kapa_widget.js              29L  
+docs/en/docs/js/termynal.js                     264L  Termynal
+docs_src/additional_responses/__init__.py         0L  
+docs_src/additional_responses/tutorial001_py310.py    22L  Item, Message, read_item
+docs_src/additional_responses/tutorial002_py310.py    28L  Item, read_item
+docs_src/additional_responses/tutorial003_py310.py    37L  Item, Message, read_item
+docs_src/additional_responses/tutorial004_py310.py    30L  Item, read_item
+docs_src/additional_status_codes/__init__.py      0L  
+docs_src/additional_status_codes/tutorial001_an_py310.py    25L  upsert_item
+docs_src/additional_status_codes/tutorial001_py310.py    23L  upsert_item
+docs_src/advanced_middleware/__init__.py          0L  
+docs_src/advanced_middleware/tutorial001_py310.py    11L  main
+docs_src/advanced_middleware/tutorial002_py310.py    13L  main
+docs_src/advanced_middleware/tutorial003_py310.py    11L  main
+docs_src/app_testing/__init__.py                  0L  
+docs_src/app_testing/app_a_py310/__init__.py      0L  
+docs_src/app_testing/app_a_py310/main.py          8L  read_main
+docs_src/app_testing/app_a_py310/test_main.py    11L  test_read_main
+docs_src/app_testing/app_b_an_py310/__init__.py     0L  
+docs_src/app_testing/app_b_an_py310/main.py      38L  Item, create_item, read_main
+  ...and 1101 more modules
+
+-- SYM
+get                                 M fastapi/applications.py:1564   function get
+post                                M tests/test_additional_properties_bool.py:19     async_function post
+get_default                         M fastapi/_compat/v2.py:155    function get_default
+add_api_route                       M fastapi/applications.py:1162   function add_api_route
+add_api_websocket_route             M fastapi/applications.py:1279   function add_api_websocket_route
+generate_renamed_section_items      M scripts/mkdocs_hooks.py:107    function generate_renamed_section_items
+get                                 M tests/test_stringified_annotation_dependency_py314.py:24     async_function get
+_bench_get                          M tests/benchmarks/test_general_performance.py:190    function _bench_get
+DBUser                              C tests/test_response_model_as_return_annotation.py:18     class DBUser
+lenient_issubclass                  M fastapi/_compat/shared.py:47     function lenient_issubclass
+api_route                           M fastapi/routing.py:1415   function api_route
+get_fields_from_routes              M fastapi/openapi/utils.py:484    function get_fields_from_routes
+add_api_route                       M fastapi/routing.py:1332   function add_api_route
+Item                                C tests/test_serialize_response_model.py:8      class Item
+get_flat_dependant                  M fastapi/dependencies/utils.py:136    function get_flat_dependant
+get_app_client                      M tests/test_openapi_separate_input_output_schemas.py:30     function get_app_client
+websocket                           M docs_src/app_testing/tutorial002_py310.py:14     async_function websocket
+body                                M docs_src/custom_request_and_route/tutorial001_an_py310.py:10     async_function body
+body                                M docs_src/custom_request_and_route/tutorial001_py310.py:9      async_function body
+get_route_handler                   M docs_src/custom_request_and_route/tutorial002_an_py310.py:10     function get_route_handler
+get_route_handler                   M docs_src/custom_request_and_route/tutorial002_py310.py:9      function get_route_handler
+get_route_handler                   M docs_src/custom_request_and_route/tutorial003_py310.py:9      function get_route_handler
+get                                 M docs_src/websockets_/tutorial001_py310.py:42     async_function get
+get                                 M docs_src/websockets_/tutorial002_an_py310.py:62     async_function get
+get                                 M docs_src/websockets_/tutorial002_py310.py:60     async_function get
+get                                 M docs_src/websockets_/tutorial003_py310.py:67     async_function get
+__call__                            M fastapi/applications.py:1157   async_function __call__
+delete                              M fastapi/applications.py:2693   function delete
+head                                M fastapi/applications.py:3439   function head
+include_router                      M fastapi/applications.py:1359   function include_router
+on_event                            M fastapi/applications.py:4580   function on_event
+options                             M fastapi/applications.py:3066   function options
+patch                               M fastapi/applications.py:3812   function patch
+post                                M fastapi/applications.py:2315   function post
+put                                 M fastapi/applications.py:1937   function put
+trace                               M fastapi/applications.py:4190   function trace
+add_task                            M fastapi/background.py:40     function add_task
+close                               M fastapi/datastructures.py:124    async_function close
+read                                M fastapi/datastructures.py:86     async_function read
+seek                                M fastapi/datastructures.py:104    async_function seek
+write                               M fastapi/datastructures.py:66     async_function write
+isoformat                           M fastapi/encoders.py:37     function isoformat
+Body                                M fastapi/param_functions.py:1324   function Body
+Cookie                              M fastapi/param_functions.py:1019   function Cookie
+Depends                             M fastapi/param_functions.py:2284   function Depends
+File                                M fastapi/param_functions.py:1969   function File
+Form                                M fastapi/param_functions.py:1654   function Form
+Header                              M fastapi/param_functions.py:702    function Header
+Path                                M fastapi/param_functions.py:14     function Path
+Query                               M fastapi/param_functions.py:358    function Query
+Security                            M fastapi/param_functions.py:2373   function Security
+deep_dict_update                    M fastapi/utils.py:103    function deep_dict_update
+__init__                            M scripts/docs.py:72     function __init__
+callback                            M scripts/docs.py:121    function callback
+callback                            M scripts/translation_fixer.py:26     function callback
+middleware                          M tests/test_dependency_contextmanager.py:207    async_function middleware
+set_cookie                          M tests/test_repeated_cookie_headers.py:7      function set_cookie
+jsonable_encoder                    M fastapi/encoders.py:112    function jsonable_encoder
+_serialize_data                     M fastapi/routing.py:467    function _serialize_data
+ItemOut                             C tests/benchmarks/test_general_performance.py:54     class ItemOut
+OtherDependencyError                C tests/test_dependency_contextmanager.py:35     class OtherDependencyError
+Item                                C tests/test_response_model_as_return_annotation.py:22     class Item
+get_graphql_response                M scripts/notify_translations.py:198    function get_graphql_response
+_impartial                          M fastapi/dependencies/models.py:25     function _impartial
+Item                                C tests/test_openapi_separate_input_output_schemas.py:14     class Item
+read_image                          M docs_src/stream_data/tutorial002_py310.py:12     function read_image
+User                                C tests/test_response_model_as_return_annotation.py:14     class User
+get_access_token                    M tests/test_tutorial/test_security/test_tutorial005.py:24     function get_access_token
+get_langs                           M scripts/translate.py:36     function get_langs
+get_lang_paths                      M scripts/docs.py:102    function get_lang_paths
+get_flat_models_from_annotation     M fastapi/_compat/v2.py:433    function get_flat_models_from_annotation
+get_flat_models_from_model          M fastapi/_compat/v2.py:424    function get_flat_models_from_model
+ModelField                          C fastapi/_compat/v2.py:101    class ModelField
+LargeOut                            C tests/benchmarks/test_general_performance.py:65     class LargeOut
+_bench_post_json                    M tests/benchmarks/test_general_performance.py:201    function _bench_post_json
+_expected_large_payload_json_bytes  M tests/benchmarks/test_general_performance.py:313    function _expected_large_payload_json_bytes
+get_client                          M tests/test_regex_deprecated_body.py:12     function get_client
+get_client                          M tests/test_regex_deprecated_params.py:12     function get_client
+Item                                C tests/test_serialize_response_dataclass.py:11     class Item
+ModelDefaults                       C tests/test_skip_defaults.py:23     class ModelDefaults
+Item                                C tests/test_deprecated_responses.py:11     class Item
+  ...and 5171 more symbols
+
+-- FOCUS
+get (fastapi/applications.py:1564-1937)
+  calls: get
+  called_by: get, redoc_html, swagger_ui_html, setup, setup
+
+post (tests/test_additional_properties_bool.py:19-22)
+  calls: post
+  called_by: post, test_call_invalid, test_call_valid
+
+get_default (fastapi/_compat/v2.py:155-158)
+  calls: get_default
+  called_by: default, get_default
+
+add_api_route (fastapi/applications.py:1162-1219)
+  calls: add_api_route
+  called_by: add_api_route, api_route
+
+add_api_websocket_route (fastapi/applications.py:1279-1294)
+  calls: add_api_websocket_route
+  called_by: add_api_websocket_route, websocket
+
+generate_renamed_section_items (scripts/mkdocs_hooks.py:107-129)
+  calls: generate_renamed_section_items
+  called_by: generate_renamed_section_items, on_nav
+
+get (tests/test_stringified_annotation_dependency_py314.py:24-27)
+  calls: get
+  called_by: get, test_stringified_annotation, test_stringified_annotation
+
+_bench_get (tests/benchmarks/test_general_performance.py:190-198)
+  called_by: test_async_return_dict_with_response_model, test_async_return_dict_without_response_model, test_async_return_large_dict_with_response_model, test_async_return_large_dict_without_response_model, test_async_return_large_model_with_response_model
+
+DBUser (tests/test_response_model_as_return_annotation.py:18-19)
+  called_by: no_response_model_annotation_forward_ref_list_of_model, no_response_model_annotation_forward_ref_list_of_model, no_response_model_annotation_list_of_model, no_response_model_annotation_list_of_model, no_response_model_annotation_return_submodel_with_extra_data
+
+lenient_issubclass (fastapi/_compat/shared.py:47-55)
+  called_by: _annotation_is_complex, _annotation_is_sequence, _annotation_is_sequence, is_bytes_or_nonable_bytes_annotation, is_bytes_or_nonable_bytes_annotation
+
+api_route (fastapi/routing.py:1415-1477)
+  calls: add_api_route
+  called_by: delete, get, head, options, patch
+
+get_fields_from_routes (fastapi/openapi/utils.py:484-514)
+  calls: get_fields_from_routes
+  called_by: get_fields_from_routes, get_openapi
+
+add_api_route (fastapi/routing.py:1332-1415)
+  called_by: api_route, include_router
+
+Item (tests/test_serialize_response_model.py:8-11)
+  called_by: get_coerce, get_coerce_exclude_unset, get_valid, get_valid_exclude_unset, get_validdict
+
+get_flat_dependant (fastapi/dependencies/utils.py:136-187)
+  calls: get_flat_dependant
+  called_by: get_flat_dependant, get_flat_params
+
+get_app_client (tests/test_openapi_separate_input_output_schemas.py:30-59)
+  calls: Item, Item, SubItem
+  called_by: test_create_item, test_create_item, test_create_item_list, test_create_item_list, test_create_item_with_sub
+
+websocket (docs_src/app_testing/tutorial002_py310.py:14-17)
+  calls: websocket
+  called_by: websocket
+
+body (docs_src/custom_request_and_route/tutorial001_an_py310.py:10-16)
+  calls: body
+  called_by: body
+
+body (docs_src/custom_request_and_route/tutorial001_py310.py:9-15)
+  calls: body
+  called_by: body
+
+get_route_handler (docs_src/custom_request_and_route/tutorial002_an_py310.py:10-21)
+  calls: get_route_handler
+  called_by: get_route_handler
+
+get_route_handler (docs_src/custom_request_and_route/tutorial002_py310.py:9-20)
+  calls: get_route_handler
+  called_by: get_route_handler
+
+get_route_handler (docs_src/custom_request_and_route/tutorial003_py310.py:9-22)
+  calls: get_route_handler
+  called_by: get_route_handler
+
+get (docs_src/websockets_/tutorial001_py310.py:42-43)
+  calls: get
+  called_by: get
+
+get (docs_src/websockets_/tutorial002_an_py310.py:62-63)
+  calls: get
+  called_by: get
+
+get (docs_src/websockets_/tutorial002_py310.py:60-61)
+  calls: get
+  called_by: get
+
+get (docs_src/websockets_/tutorial003_py310.py:67-68)
+  calls: get
+  called_by: get
+
+__call__ (fastapi/applications.py:1157-1162)
+  calls: __call__
+  called_by: __call__
+
+delete (fastapi/applications.py:2693-3066)
+  calls: delete
+  called_by: delete
+
+head (fastapi/applications.py:3439-3812)
+  calls: head
+  called_by: head
+
+include_router (fastapi/applications.py:1359-1564)
+  calls: include_router
+  called_by: include_router
+
+on_event (fastapi/applications.py:4580-4601)
+  calls: on_event
+  called_by: on_event
+
+options (fastapi/applications.py:3066-3439)
+  calls: options
+  called_by: options
+
+patch (fastapi/applications.py:3812-4190)
+  calls: patch
+  called_by: patch
+
+post (fastapi/applications.py:2315-2693)
+  calls: post
+  called_by: post
+
+put (fastapi/applications.py:1937-2315)
+  calls: put
+  called_by: put
+
+trace (fastapi/applications.py:4190-4563)
+  calls: trace
+  called_by: trace
+
+add_task (fastapi/background.py:40-61)
+  calls: add_task
+  called_by: add_task
+
+close (fastapi/datastructures.py:124-130)
+  calls: close
+  called_by: close
+
+read (fastapi/datastructures.py:86-102)
+  calls: read
+  called_by: read
+
+seek (fastapi/datastructures.py:104-122)
+  calls: seek
+  called_by: seek
+
+write (fastapi/datastructures.py:66-84)
+  calls: write
+  called_by: write
+
+isoformat (fastapi/encoders.py:37-38)
+  calls: isoformat
+  called_by: isoformat
+
+Body (fastapi/param_functions.py:1324-1651)
+  calls: Body
+  called_by: Body
+
+Cookie (fastapi/param_functions.py:1019-1321)
+  calls: Cookie
+  called_by: Cookie
+
+Depends (fastapi/param_functions.py:2284-2370)
+  calls: Depends
+  called_by: Depends
+
+File (fastapi/param_functions.py:1969-2281)
+  calls: File
+  called_by: File
+
+Form (fastapi/param_functions.py:1654-1966)
+  calls: Form
+  called_by: Form
+
+Header (fastapi/param_functions.py:702-1016)
+  calls: Header
+  called_by: Header
+
+Path (fastapi/param_functions.py:14-355)
+  calls: Path
+  called_by: Path
+
+Query (fastapi/param_functions.py:358-699)
+  calls: Query
+  called_by: Query
+
+Security (fastapi/param_functions.py:2373-2461)
+  calls: Security
+  called_by: Security
+
+deep_dict_update (fastapi/utils.py:103-118)
+  calls: deep_dict_update
+  called_by: deep_dict_update
+
+__init__ (scripts/docs.py:72-74)
+  calls: __init__
+  called_by: __init__
+
+callback (scripts/docs.py:121-123)
+  calls: callback
+  called_by: callback
+
+callback (scripts/translation_fixer.py:26-27)
+  calls: callback
+  called_by: callback
+
+middleware (tests/test_dependency_contextmanager.py:207-210)
+  calls: middleware
+  called_by: middleware
+
+set_cookie (tests/test_repeated_cookie_headers.py:7-9)
+  calls: set_cookie
+  called_by: set_cookie
+
+jsonable_encoder (fastapi/encoders.py:112-347)
+  calls: jsonable_encoder, jsonable_encoder, jsonable_encoder, jsonable_encoder, jsonable_encoder
+  called_by: jsonable_encoder, jsonable_encoder, jsonable_encoder, jsonable_encoder, jsonable_encoder
+
+_serialize_data (fastapi/routing.py:467-490)
+  called_by: _serialize_item, _serialize_sse_item, get_request_handler, get_request_handler
+
+ItemOut (tests/benchmarks/test_general_performance.py:54-57)
+  called_by: async_model_no_response_model, async_model_with_response_model, async_validated, sync_model_no_response_model, sync_model_with_response_model
+
+OtherDependencyError (tests/test_dependency_contextmanager.py:35-36)
+  called_by: get_async_raise_other, get_context_b_raise, get_sync_async_raise_other, get_sync_context_b_raise, get_sync_raise_other
+
+-- GAPS
+- Question mentions [configuration, downstream, impact, loading, modifying] — not found in focus or symbol index
+- Module tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial001.py matches question but has no focus detail
+  > drill: tests/test_tutorial/test_path_operation_advanced_configurations/test_tutorial001.py

@@ -1,0 +1,350 @@
+=CC v2 httpx@HEAD 60mod 1241sym
+? What is the downstream impact of modifying the configuration loading?
+
+
+-- TREE
+httpx/  (23 files)
+  _transports/
+tests/  (37 files)
+  client/  models/
+
+-- INDEX
+httpx/__init__.py                               106L  main
+httpx/__version__.py                              3L  
+httpx/_api.py                                   438L  delete, get, head, options, patch
+httpx/_auth.py                                  348L  async_auth_flow, auth_flow, sync_auth_flow, Auth, auth_flow
+httpx/_client.py                               2019L  aclose, delete, get, head, options
+httpx/_config.py                                248L  Limits, raw_auth, Proxy, as_dict, Timeout
+httpx/_content.py                               240L  AsyncIteratorByteStream, ByteStream, IteratorByteStream, UnattachedStream, encode_content
+httpx/_decoders.py                              393L  decode, flush, BrotliDecoder, decode, flush
+httpx/_exceptions.py                            377L  CloseError, ConnectError, ConnectTimeout, CookieConflict, DecodingError
+httpx/_main.py                                  506L  download_response, format_certificate, format_request_headers, format_response_headers, get_lexer_for_response
+httpx/_models.py                               1277L  add_unredirected_header, info, clear, delete, extract_cookies
+httpx/_multipart.py                             300L  get_length, render, render_data, render_headers, DataField
+httpx/_status_codes.py                          162L  get_reason_phrase, is_client_error, is_error, is_informational, is_redirect
+httpx/_transports/__init__.py                    15L  
+httpx/_transports/asgi.py                       187L  ASGIResponseStream, receive, send, handle_async_request, ASGITransport
+httpx/_transports/base.py                        86L  aclose, handle_async_request, AsyncBaseTransport, close, handle_request
+  ...and 44 more modules
+
+-- SYM
+compress                            M tests/test_decoders.py:190    async_function compress
+request                             M httpx/_api.py:39     function request
+splitlines                          M tests/test_main.py:9      function splitlines
+aclose                              M httpx/_models.py:1065   async_function aclose
+close                               M httpx/_models.py:961    function close
+App                                 C tests/client/test_auth.py:23     class App
+items                               M httpx/_urls.py:486    function items
+clear                               M httpx/_models.py:1192   function clear
+keys                                M httpx/_urls.py:463    function keys
+read                                M tests/test_multipart.py:393    function read
+async_streaming_body                M tests/models/test_responses.py:22     async_function async_streaming_body
+streaming_body                      M tests/models/test_responses.py:17     function streaming_body
+DigestApp                           C tests/client/test_auth.py:38     class DigestApp
+stream                              M httpx/_api.py:124    function stream
+add_unredirected_header             M httpx/_models.py:1257   function add_unredirected_header
+items                               M httpx/_models.py:216    function items
+keys                                M httpx/_models.py:202    function keys
+values                              M httpx/_models.py:205    function values
+is_client_error                     M httpx/_models.py:751    function is_client_error
+is_error                            M httpx/_models.py:765    function is_error
+is_informational                    M httpx/_models.py:725    function is_informational
+is_redirect                         M httpx/_models.py:739    function is_redirect
+is_server_error                     M httpx/_models.py:758    function is_server_error
+is_success                          M httpx/_models.py:732    function is_success
+__new__                             M httpx/_status_codes.py:28     function __new__
+__aenter__                          M httpx/_transports/default.py:361    async_function __aenter__
+__enter__                           M httpx/_transports/default.py:217    function __enter__
+__aenter__                          M httpx/_client.py:1990   async_function __aenter__
+__aexit__                           M httpx/_client.py:2008   async_function __aexit__
+__enter__                           M httpx/_client.py:1275   function __enter__
+__exit__                            M httpx/_client.py:1293   function __exit__
+sleep                               M tests/concurrency.py:11     async_function sleep
+QueryParams                         C httpx/_urls.py:420    class QueryParams
+ByteStream                          C httpx/_content.py:31     class ByteStream
+_load_httpcore_exceptions           M httpx/_transports/default.py:74     function _load_httpcore_exceptions
+map_httpcore_exceptions             M httpx/_transports/default.py:96     function map_httpcore_exceptions
+remove_date_header                  M tests/test_main.py:13     function remove_date_header
+application_factory                 M tests/test_wsgi.py:17     function application_factory
+URL                                 C httpx/_urls.py:15     class URL
+PERCENT                             M httpx/_urlparse.py:478    function PERCENT
+get_list                            M httpx/_models.py:252    function get_list
+_port_or_default                    M httpx/_client.py:77     function _port_or_default
+percent_encoded                     M httpx/_urlparse.py:482    function percent_encoded
+_get_content_decoder                M httpx/_models.py:699    function _get_content_decoder
+quote                               M httpx/_urlparse.py:497    function quote
+copy_with                           M httpx/_urls.py:327    function copy_with
+Headers                             C httpx/_models.py:139    class Headers
+iter_chunks                         M httpx/_multipart.py:258    function iter_chunks
+CancelledStream                     C tests/client/test_async_client.py:347    class CancelledStream
+url_to_origin                       M tests/client/test_proxies.py:7      function url_to_origin
+aiter_bytes                         M httpx/_models.py:982    async_function aiter_bytes
+iter_bytes                          M httpx/_models.py:884    function iter_bytes
+_CookieCompatRequest                C httpx/_models.py:1243   class _CookieCompatRequest
+get                                 M httpx/_urls.py:512    function get
+get_lexer_for_response              M httpx/_main.py:103    function get_lexer_for_response
+format_request_headers              M httpx/_main.py:116    function format_request_headers
+format_response_headers             M httpx/_main.py:129    function format_response_headers
+aiter_raw                           M httpx/_models.py:1037   async_function aiter_raw
+iter_raw                            M httpx/_models.py:935    function iter_raw
+is_running_trio                     M httpx/_transports/asgi.py:29     function is_running_trio
+extract_cookies                     M httpx/_models.py:1101   function extract_cookies
+_DigestAuthChallenge                C httpx/_auth.py:343    class _DigestAuthChallenge
+_build_auth                         M httpx/_client.py:445    function _build_auth
+print_help                          M httpx/_main.py:26     function print_help
+multi_items                         M httpx/_models.py:231    function multi_items
+aiter_text                          M httpx/_models.py:1007   async_function aiter_text
+iter_text                           M httpx/_models.py:907    function iter_text
+_parse_content_type_charset         M httpx/_models.py:85     function _parse_content_type_charset
+_parse_header_links                 M httpx/_models.py:93     function _parse_header_links
+get_content_length                  M httpx/_multipart.py:265    function get_content_length
+codes                               C httpx/_status_codes.py:8      class codes
+aclose                              M httpx/_transports/base.py:85     async_function aclose
+close                               M httpx/_transports/base.py:61     function close
+WSGIByteStream                      C httpx/_transports/wsgi.py:30     class WSGIByteStream
+urlparse                            M httpx/_urlparse.py:213    function urlparse
+RepeatAuth                          C tests/client/test_auth.py:87     class RepeatAuth
+ResponseBodyAuth                    C tests/client/test_auth.py:115    class ResponseBodyAuth
+SyncOrAsyncAuth                     C tests/client/test_auth.py:137    class SyncOrAsyncAuth
+Content                             C tests/models/test_requests.py:25     class Content
+StreamingBody                       C tests/models/test_responses.py:11     class StreamingBody
+ExternalURLClass                    C tests/models/test_url.py:463    class ExternalURLClass
+data                                M tests/test_api.py:23     function data
+Data                                C tests/test_api.py:34     class Data
+AsyncBytesIO                        C tests/test_content.py:67     class AsyncBytesIO
+echo_body                           M tests/test_wsgi.py:33     function echo_body
+output_generator                    M tests/test_wsgi.py:57     function output_generator
+  ...and 1155 more symbols
+
+-- FOCUS
+compress (tests/test_decoders.py:190-192)
+  calls: compress
+  called_by: test_deflate, test_gzip, test_multi, test_multi, compress
+
+request (httpx/_api.py:39-120)
+  calls: request
+  called_by: delete, get, head, options, patch
+
+splitlines (tests/test_main.py:9-10)
+  calls: splitlines
+  called_by: splitlines, test_auth, test_binary, test_errors, test_follow_redirects
+
+aclose (httpx/_models.py:1065-1076)
+  calls: aclose
+  called_by: aclose, aiter_raw
+
+close (httpx/_models.py:961-972)
+  calls: close
+  called_by: close, iter_raw
+
+App (tests/client/test_auth.py:23-35)
+  called_by: test_async_auth, test_async_auth_history, test_async_auth_reads_response_body, test_async_digest_auth_raises_protocol_error_on_malformed_header, test_auth_disable_per_request
+
+items (httpx/_urls.py:486-498)
+  calls: items
+  called_by: items, multi_items, values
+
+clear (httpx/_models.py:1192-1203)
+  calls: clear
+  called_by: clear, delete, delete
+
+keys (httpx/_urls.py:463-474)
+  calls: keys
+  called_by: __iter__, keys
+
+read (tests/test_multipart.py:393-394)
+  called_by: test_ascii, test_unicode, test_unicode_escape, test_unicode_with_control_character, test_multipart_encode
+
+async_streaming_body (tests/models/test_responses.py:22-24)
+  called_by: test_aiter_bytes_with_chunk_size, test_aiter_bytes_with_chunk_size, test_aiter_bytes_with_chunk_size, test_aiter_raw, test_aiter_raw_increments_updates_counter
+
+streaming_body (tests/models/test_responses.py:17-19)
+  called_by: test_aclose_on_sync, test_aiter_raw_on_sync, test_cannot_read_after_response_closed, test_cannot_read_after_stream_consumed, test_iter_bytes_with_chunk_size
+
+DigestApp (tests/client/test_auth.py:38-84)
+  called_by: test_digest_auth, test_digest_auth_incorrect_credentials, test_digest_auth_no_specified_qop, test_digest_auth_qop_auth_int_not_implemented, test_digest_auth_qop_including_spaces_and_auth_returns_auth
+
+stream (httpx/_api.py:124-171)
+  calls: stream
+  called_by: stream
+
+add_unredirected_header (httpx/_models.py:1257-1259)
+  calls: add_unredirected_header
+  called_by: add_unredirected_header
+
+items (httpx/_models.py:216-229)
+  calls: items
+  called_by: items
+
+keys (httpx/_models.py:202-203)
+  calls: keys
+  called_by: keys
+
+values (httpx/_models.py:205-214)
+  calls: values
+  called_by: values
+
+is_client_error (httpx/_models.py:751-755)
+  calls: is_client_error
+  called_by: is_client_error
+
+is_error (httpx/_models.py:765-769)
+  calls: is_error
+  called_by: is_error
+
+is_informational (httpx/_models.py:725-729)
+  calls: is_informational
+  called_by: is_informational
+
+is_redirect (httpx/_models.py:739-748)
+  calls: is_redirect
+  called_by: is_redirect
+
+is_server_error (httpx/_models.py:758-762)
+  calls: is_server_error
+  called_by: is_server_error
+
+is_success (httpx/_models.py:732-736)
+  calls: is_success
+  called_by: is_success
+
+__new__ (httpx/_status_codes.py:28-33)
+  calls: __new__
+  called_by: __new__
+
+__aenter__ (httpx/_transports/default.py:361-363)
+  calls: __aenter__
+  called_by: __aenter__
+
+__enter__ (httpx/_transports/default.py:217-219)
+  calls: __enter__
+  called_by: __enter__
+
+__aenter__ (httpx/_client.py:1990-2006)
+  calls: __aenter__, __aenter__
+  called_by: __aenter__, __aenter__
+
+__aexit__ (httpx/_client.py:2008-2019)
+  calls: __aexit__, __aexit__
+  called_by: __aexit__, __aexit__
+
+__enter__ (httpx/_client.py:1275-1291)
+  calls: __enter__, __enter__
+  called_by: __enter__, __enter__
+
+__exit__ (httpx/_client.py:1293-1304)
+  calls: __exit__, __exit__
+  called_by: __exit__, __exit__
+
+sleep (tests/concurrency.py:11-15)
+  calls: sleep, sleep
+  called_by: sleep, sleep
+
+QueryParams (httpx/_urls.py:420-642)
+  called_by: add, merge, remove, set, params
+
+ByteStream (httpx/_content.py:31-39)
+  called_by: encode_content, encode_html, encode_json, encode_request, encode_response
+
+_load_httpcore_exceptions (httpx/_transports/default.py:74-92)
+  called_by: map_httpcore_exceptions
+
+map_httpcore_exceptions (httpx/_transports/default.py:96-118)
+  calls: _load_httpcore_exceptions
+  called_by: __aexit__, handle_async_request, __aiter__, __exit__, handle_request
+
+remove_date_header (tests/test_main.py:13-14)
+  called_by: test_auth, test_binary, test_follow_redirects, test_get, test_json
+
+application_factory (tests/test_wsgi.py:17-30)
+  called_by: test_wsgi, test_wsgi_generator, test_wsgi_generator_empty, test_wsgi_server_port
+
+URL (httpx/_urls.py:15-420)
+  called_by: copy_with, join
+
+PERCENT (httpx/_urlparse.py:478-479)
+  called_by: percent_encoded
+
+get_list (httpx/_models.py:252-272)
+  called_by: _get_content_decoder
+
+_port_or_default (httpx/_client.py:77-80)
+  called_by: _is_https_redirect, _is_https_redirect, _same_origin
+
+percent_encoded (httpx/_urlparse.py:482-494)
+  calls: PERCENT
+  called_by: quote, quote
+
+_get_content_decoder (httpx/_models.py:699-722)
+  calls: get_list
+  called_by: aiter_bytes, iter_bytes
+
+quote (httpx/_urlparse.py:497-527)
+  calls: percent_encoded, percent_encoded
+  called_by: encode_host, urlparse, urlparse, urlparse, urlparse
+
+copy_with (httpx/_urls.py:327-342)
+  calls: URL
+  called_by: copy_add_param, copy_merge_params, copy_remove_param, copy_set_param
+
+Headers (httpx/_models.py:139-379)
+  called_by: __eq__, copy
+
+iter_chunks (httpx/_multipart.py:258-263)
+  called_by: __aiter__, __iter__
+
+CancelledStream (tests/client/test_async_client.py:347-355)
+  called_by: response_with_cancel_during_stream, test_cancellation_during_stream
+
+url_to_origin (tests/client/test_proxies.py:7-13)
+  called_by: test_proxies_environ, test_transport_for_request
+
+aiter_bytes (httpx/_models.py:982-1005)
+  calls: _get_content_decoder, aiter_raw
+  called_by: aiter_text
+
+iter_bytes (httpx/_models.py:884-905)
+  calls: _get_content_decoder, iter_raw
+  called_by: iter_text
+
+_CookieCompatRequest (httpx/_models.py:1243-1259)
+  called_by: extract_cookies, set_cookie_header
+
+get (httpx/_urls.py:512-526)
+  called_by: get_list
+
+get_lexer_for_response (httpx/_main.py:103-113)
+  called_by: print_response
+
+format_request_headers (httpx/_main.py:116-126)
+  called_by: print_request_headers
+
+format_response_headers (httpx/_main.py:129-144)
+  called_by: print_response_headers
+
+aiter_raw (httpx/_models.py:1037-1063)
+  calls: aclose
+  called_by: aiter_bytes
+
+iter_raw (httpx/_models.py:935-959)
+  calls: close
+  called_by: iter_bytes
+
+is_running_trio (httpx/_transports/asgi.py:29-41)
+  called_by: create_event
+
+extract_cookies (httpx/_models.py:1101-1108)
+  calls: _CookieCompatRequest, _CookieCompatResponse, extract_cookies
+  called_by: extract_cookies, cookies
+
+_DigestAuthChallenge (httpx/_auth.py:343-348)
+  called_by: _parse_challenge
+
+_build_auth (httpx/_client.py:445-455)
+  called_by: _build_request_auth
+
+print_help (httpx/_main.py:26-100)
+  called_by: handle_help
+
+-- GAPS
+- Question mentions [configuration, downstream, impact, loading, modifying] — not found in focus or symbol index

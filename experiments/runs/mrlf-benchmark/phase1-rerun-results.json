@@ -1,0 +1,34 @@
+[
+  {
+    "repo": "flask",
+    "mod": 83,
+    "sym": 1629,
+    "words": 1016,
+    "tokens": 3971,
+    "budget_pct": 95.7
+  },
+  {
+    "repo": "httpx",
+    "mod": 60,
+    "sym": 1241,
+    "words": 1008,
+    "tokens": 3945,
+    "budget_pct": 95.1
+  },
+  {
+    "repo": "gin",
+    "mod": 99,
+    "sym": 1481,
+    "words": 859,
+    "tokens": 3521,
+    "budget_pct": 84.8
+  },
+  {
+    "repo": "fastapi",
+    "mod": 1122,
+    "sym": 5252,
+    "words": 982,
+    "tokens": 4083,
+    "budget_pct": 98.4
+  }
+]

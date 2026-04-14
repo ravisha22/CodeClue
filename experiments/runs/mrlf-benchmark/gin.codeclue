@@ -1,0 +1,329 @@
+=CC v2 gin@HEAD 99mod 1481sym
+? What is the downstream impact of modifying the configuration loading?
+
+
+-- TREE
+binding/  (30 files)
+codec/  (5 files)
+  json/
+ginS/  (2 files)
+internal/  (4 files)
+  bytesconv/  fs/
+render/  (17 files)
+testdata/  (1 files)
+  protoexample/
+auth.go  auth_test.go  benchmarks_test.go  context.go  context_appengine.go  context_file_test.go  context_test.go  debug.go  debug_test.go  deprecated.go  deprecated_test.go  doc.go  errors.go  errors_test.go  fs.go
+
+-- INDEX
+auth.go                                         116L  BasicAuth, BasicAuthForProxy, BasicAuthForRealm, authPair, authorizationHeader
+auth_test.go                                    176L  TestBasicAuth401, TestBasicAuth401WithCustomRealm, TestBasicAuth, TestBasicAuthAuthorizationHeader, TestBasicAuthFails
+benchmarks_test.go                              160L  Benchmark404, Benchmark404Many, Benchmark5Params, BenchmarkLoggerMiddleware, BenchmarkManyHandlers
+binding/binding.go                              127L  Default, validate
+binding/binding_msgpack_test.go                  59L  TestBindingDefaultMsgPack, TestBindingMsgPack, testMsgPackBodyBinding
+binding/binding_nomsgpack.go                    121L  Default, validate
+binding/binding_test.go                        1434L  Close, FooBarFileFailStruct, FooBarFileStruct, FooBarStruct, FooBarStructForTimeType
+binding/bson.go                                  30L  Bind, BindBody, Name, bsonBinding
+binding/default_validator.go                     95L  Engine, Error, ValidateStruct, defaultValidator, lazyinit
+binding/default_validator_benchmark_test.go      27L  BenchmarkSliceValidationError
+binding/default_validator_test.go                90L  TestDefaultValidator, TestSliceValidationError, exampleStruct
+binding/form.go                                  64L  Bind, Bind, Bind, Name, Name
+binding/form_mapping.go                         550L  MapFormWithTag, TrySet, head, mapForm, mapFormByTag
+binding/form_mapping_benchmark_test.go           67L  BenchmarkMapFormFull, BenchmarkMapFormName, structFull, structName
+binding/form_mapping_test.go                   1146L  S, TestMapFormWithTag, TestMappingArray, TestMappingBaseTypes, TestMappingCollectionFormat
+binding/header.go                                37L  Bind, Name, TrySet, headerBinding, mapHeader
+  ...and 83 more modules
+
+-- SYM
+BasicAuth                           M auth.go:72     function BasicAuth
+BasicAuthForProxy                   M auth.go:98     function BasicAuthForProxy
+BasicAuthForRealm                   M auth.go:48     function BasicAuthForRealm
+authPair                            S auth.go:25     struct authPair
+authorizationHeader                 M auth.go:91     function authorizationHeader
+processAccounts                     M auth.go:76     function processAccounts
+searchCredential                    M auth.go:32     function searchCredential
+TestBasicAuth401                    M auth_test.go:101    function TestBasicAuth401
+TestBasicAuth401WithCustomRealm     M auth_test.go:121    function TestBasicAuth401WithCustomRealm
+TestBasicAuth                       M auth_test.go:16     function TestBasicAuth
+TestBasicAuthAuthorizationHeader    M auth_test.go:80     function TestBasicAuthAuthorizationHeader
+TestBasicAuthFails                  M auth_test.go:38     function TestBasicAuthFails
+TestBasicAuthForProxy407            M auth_test.go:158    function TestBasicAuthForProxy407
+TestBasicAuthForProxySucceed        M auth_test.go:141    function TestBasicAuthForProxySucceed
+TestBasicAuthSearchCredential       M auth_test.go:48     function TestBasicAuthSearchCredential
+TestBasicAuthSucceed                M auth_test.go:84     function TestBasicAuthSucceed
+Benchmark404                        M benchmarks_test.go:102    function Benchmark404
+Benchmark404Many                    M benchmarks_test.go:109    function Benchmark404Many
+Benchmark5Params                    M benchmarks_test.go:43     function Benchmark5Params
+BenchmarkLoggerMiddleware           M benchmarks_test.go:27     function BenchmarkLoggerMiddleware
+BenchmarkManyHandlers               M benchmarks_test.go:34     function BenchmarkManyHandlers
+BenchmarkManyRoutesFirst            M benchmarks_test.go:90     function BenchmarkManyRoutesFirst
+BenchmarkManyRoutesLast             M benchmarks_test.go:96     function BenchmarkManyRoutesLast
+BenchmarkOneRoute                   M benchmarks_test.go:14     function BenchmarkOneRoute
+BenchmarkOneRouteHTML               M benchmarks_test.go:62     function BenchmarkOneRouteHTML
+BenchmarkOneRouteJSON               M benchmarks_test.go:51     function BenchmarkOneRouteJSON
+BenchmarkOneRouteSet                M benchmarks_test.go:74     function BenchmarkOneRouteSet
+BenchmarkOneRouteString             M benchmarks_test.go:82     function BenchmarkOneRouteString
+BenchmarkRecoveryMiddleware         M benchmarks_test.go:20     function BenchmarkRecoveryMiddleware
+Header                              M benchmarks_test.go:134    function Header
+Write                               M benchmarks_test.go:138    function Write
+WriteHeader                         M benchmarks_test.go:146    function WriteHeader
+WriteString                         M benchmarks_test.go:142    function WriteString
+mockWriter                          S benchmarks_test.go:124    struct mockWriter
+newMockWriter                       M benchmarks_test.go:128    function newMockWriter
+runRequest                          M benchmarks_test.go:148    function runRequest
+Default                             M binding/binding.go:95     function Default
+validate                            M binding/binding.go:122    function validate
+TestBindingDefaultMsgPack           M binding/binding_msgpack_test.go:56     function TestBindingDefaultMsgPack
+TestBindingMsgPack                  M binding/binding_msgpack_test.go:19     function TestBindingMsgPack
+testMsgPackBodyBinding              M binding/binding_msgpack_test.go:39     function testMsgPackBodyBinding
+Default                             M binding/binding_nomsgpack.go:91     function Default
+validate                            M binding/binding_nomsgpack.go:116    function validate
+Close                               M binding/binding_test.go:1372   function Close
+FooBarFileFailStruct                S binding/binding_test.go:52     struct FooBarFileFailStruct
+FooBarFileStruct                    S binding/binding_test.go:47     struct FooBarFileStruct
+FooBarStruct                        S binding/binding_test.go:42     struct FooBarStruct
+FooBarStructForTimeType             S binding/binding_test.go:70     struct FooBarStructForTimeType
+FooDefaultBarStruct                 S binding/binding_test.go:57     struct FooDefaultBarStruct
+FooStruct                           S binding/binding_test.go:38     struct FooStruct
+FooStructDisallowUnknownFields      S binding/binding_test.go:66     struct FooStructDisallowUnknownFields
+FooStructForBoolType                S binding/binding_test.go:137    struct FooStructForBoolType
+FooStructForIgnoreFormTag           S binding/binding_test.go:102    struct FooStructForIgnoreFormTag
+FooStructForMapPtrType              S binding/binding_test.go:146    struct FooStructForMapPtrType
+FooStructForMapType                 S binding/binding_test.go:98     struct FooStructForMapType
+FooStructForSliceMapType            S binding/binding_test.go:132    struct FooStructForSliceMapType
+FooStructForSliceType               S binding/binding_test.go:116    struct FooStructForSliceType
+FooStructForStringPtrType           S binding/binding_test.go:141    struct FooStructForStringPtrType
+FooStructForStructPointerType       S binding/binding_test.go:126    struct FooStructForStructPointerType
+FooStructForStructType              S binding/binding_test.go:120    struct FooStructForStructType
+FooStructForTimeTypeFailFormat      S binding/binding_test.go:90     struct FooStructForTimeTypeFailFormat
+FooStructForTimeTypeFailLocation    S binding/binding_test.go:94     struct FooStructForTimeTypeFailLocation
+FooStructForTimeTypeNotFormat       S binding/binding_test.go:86     struct FooStructForTimeTypeNotFormat
+FooStructForTimeTypeNotUnixFormat   S binding/binding_test.go:79     struct FooStructForTimeTypeNotUnixFormat
+FooStructUseNumber                  S binding/binding_test.go:62     struct FooStructUseNumber
+HogeStruct                          S binding/binding_test.go:769    struct HogeStruct
+HogeStruct                          S binding/binding_test.go:780    struct HogeStruct
+InvalidNameMapType                  S binding/binding_test.go:110    struct InvalidNameMapType
+InvalidNameType                     S binding/binding_test.go:106    struct InvalidNameType
+NotSupportStruct                    S binding/binding_test.go:828    struct NotSupportStruct
+QueryTest                           S binding/binding_test.go:32     struct QueryTest
+Read                                M binding/binding_test.go:1362   function Read
+Read                                M binding/binding_test.go:1368   function Read
+Tag                                 S binding/binding_test.go:819    struct Tag
+Tag                                 S binding/binding_test.go:837    struct Tag
+TestBindingBSON                     M binding/binding_test.go:738    function TestBindingBSON
+TestBindingDefault                  M binding/binding_test.go:150    function TestBindingDefault
+TestBindingDefaultValueFormPost     M binding/binding_test.go:634    function TestBindingDefaultValueFormPost
+TestBindingForm2                    M binding/binding_test.go:241    function TestBindingForm2
+TestBindingForm                     M binding/binding_test.go:235    function TestBindingForm
+  ...and 1401 more symbols
+
+-- FOCUS
+BasicAuth (auth.go:72-72)
+  called_by: go
+
+BasicAuthForProxy (auth.go:98-98)
+  called_by: go
+
+BasicAuthForRealm (auth.go:48-48)
+  called_by: go, go
+
+authPair (auth.go:25-25)
+
+authorizationHeader (auth.go:91-91)
+  called_by: go, go
+
+processAccounts (auth.go:76-76)
+  called_by: go, go, go
+
+searchCredential (auth.go:32-32)
+  called_by: go, go, go
+
+TestBasicAuth401 (auth_test.go:101-101)
+  called_by: go
+
+TestBasicAuth401WithCustomRealm (auth_test.go:121-121)
+  called_by: go
+
+TestBasicAuth (auth_test.go:16-16)
+  called_by: go
+
+TestBasicAuthAuthorizationHeader (auth_test.go:80-80)
+  called_by: go
+
+TestBasicAuthFails (auth_test.go:38-38)
+  called_by: go
+
+TestBasicAuthForProxy407 (auth_test.go:158-158)
+  called_by: go
+
+TestBasicAuthForProxySucceed (auth_test.go:141-141)
+  called_by: go
+
+TestBasicAuthSearchCredential (auth_test.go:48-48)
+  called_by: go
+
+TestBasicAuthSucceed (auth_test.go:84-84)
+  called_by: go
+
+Benchmark404 (benchmarks_test.go:102-102)
+  called_by: go
+
+Benchmark404Many (benchmarks_test.go:109-109)
+  called_by: go
+
+Benchmark5Params (benchmarks_test.go:43-43)
+  called_by: go
+
+BenchmarkLoggerMiddleware (benchmarks_test.go:27-27)
+  called_by: go
+
+BenchmarkManyHandlers (benchmarks_test.go:34-34)
+  called_by: go
+
+BenchmarkManyRoutesFirst (benchmarks_test.go:90-90)
+  called_by: go
+
+BenchmarkManyRoutesLast (benchmarks_test.go:96-96)
+  called_by: go
+
+BenchmarkOneRoute (benchmarks_test.go:14-14)
+  called_by: go
+
+BenchmarkOneRouteHTML (benchmarks_test.go:62-62)
+  called_by: go
+
+BenchmarkOneRouteJSON (benchmarks_test.go:51-51)
+  called_by: go
+
+BenchmarkOneRouteSet (benchmarks_test.go:74-74)
+  called_by: go
+
+BenchmarkOneRouteString (benchmarks_test.go:82-82)
+  called_by: go
+
+BenchmarkRecoveryMiddleware (benchmarks_test.go:20-20)
+  called_by: go
+
+Header (benchmarks_test.go:134-134)
+  called_by: go, go
+
+Write (benchmarks_test.go:138-138)
+  called_by: go
+
+WriteHeader (benchmarks_test.go:146-146)
+  called_by: go
+
+WriteString (benchmarks_test.go:142-142)
+  called_by: go
+
+mockWriter (benchmarks_test.go:124-124)
+
+newMockWriter (benchmarks_test.go:128-128)
+  called_by: go, go, go, go
+
+runRequest (benchmarks_test.go:148-148)
+  called_by: go, go, go, go, go
+
+Default (binding/binding.go:95-95)
+  called_by: go
+
+validate (binding/binding.go:122-122)
+  called_by: go
+
+TestBindingDefaultMsgPack (binding/binding_msgpack_test.go:56-56)
+  called_by: go
+
+TestBindingMsgPack (binding/binding_msgpack_test.go:19-19)
+  called_by: go
+
+testMsgPackBodyBinding (binding/binding_msgpack_test.go:39-39)
+  called_by: go, go
+
+Default (binding/binding_nomsgpack.go:91-91)
+  called_by: go
+
+validate (binding/binding_nomsgpack.go:116-116)
+  called_by: go
+
+Close (binding/binding_test.go:1372-1372)
+  called_by: go, go, go, go, go
+
+FooBarFileFailStruct (binding/binding_test.go:52-52)
+
+FooBarFileStruct (binding/binding_test.go:47-47)
+
+FooBarStruct (binding/binding_test.go:42-42)
+
+FooBarStructForTimeType (binding/binding_test.go:70-70)
+
+FooDefaultBarStruct (binding/binding_test.go:57-57)
+
+FooStruct (binding/binding_test.go:38-38)
+
+FooStructDisallowUnknownFields (binding/binding_test.go:66-66)
+
+FooStructForBoolType (binding/binding_test.go:137-137)
+
+FooStructForIgnoreFormTag (binding/binding_test.go:102-102)
+
+FooStructForMapPtrType (binding/binding_test.go:146-146)
+
+FooStructForMapType (binding/binding_test.go:98-98)
+
+FooStructForSliceMapType (binding/binding_test.go:132-132)
+
+FooStructForSliceType (binding/binding_test.go:116-116)
+
+FooStructForStringPtrType (binding/binding_test.go:141-141)
+
+FooStructForStructPointerType (binding/binding_test.go:126-126)
+
+FooStructForStructType (binding/binding_test.go:120-120)
+
+FooStructForTimeTypeFailFormat (binding/binding_test.go:90-90)
+
+FooStructForTimeTypeFailLocation (binding/binding_test.go:94-94)
+
+FooStructForTimeTypeNotFormat (binding/binding_test.go:86-86)
+
+FooStructForTimeTypeNotUnixFormat (binding/binding_test.go:79-79)
+
+FooStructUseNumber (binding/binding_test.go:62-62)
+
+HogeStruct (binding/binding_test.go:769-769)
+
+HogeStruct (binding/binding_test.go:780-780)
+
+InvalidNameMapType (binding/binding_test.go:110-110)
+
+InvalidNameType (binding/binding_test.go:106-106)
+
+NotSupportStruct (binding/binding_test.go:828-828)
+
+QueryTest (binding/binding_test.go:32-32)
+
+Read (binding/binding_test.go:1362-1362)
+
+Read (binding/binding_test.go:1368-1368)
+  called_by: go, go
+
+Tag (binding/binding_test.go:819-819)
+
+Tag (binding/binding_test.go:837-837)
+
+TestBindingBSON (binding/binding_test.go:738-738)
+  called_by: go
+
+TestBindingDefault (binding/binding_test.go:150-150)
+  called_by: go
+
+TestBindingDefaultValueFormPost (binding/binding_test.go:634-634)
+  called_by: go
+
+TestBindingForm2 (binding/binding_test.go:241-241)
+  called_by: go
+
+TestBindingForm (binding/binding_test.go:235-235)
+  called_by: go
+
+-- GAPS
+- Question mentions [configuration, downstream, impact, loading, modifying] — not found in focus or symbol index

@@ -1,0 +1,31 @@
+{
+  "task_id": "typeorm-tf2-001",
+  "family": "TF2",
+  "operation_family": "OF2",
+  "repo": "typeorm/typeorm",
+  "repo_dir": "typeorm",
+  "language": "typescript",
+  "question": "If Entity metadata resolution is changed from synchronous to lazy/async loading, what subsystems would be impacted?",
+  "ground_truth_summary": "Entity metadata is managed by EntityMetadataFactory and stored in Connection.entityMetadatas. It's consumed by: QueryBuilder for building SQL, Repository for CRUD operations, SchemaBuilder for migrations, FindOptions for query construction, and the subscriber/listener system for lifecycle hooks. Making it async would require: async initialization in Connection, lazy loading in Repository, async QueryBuilder chain start, and updated migration runner.",
+  "relevant_files": [
+    "src/metadata/EntityMetadata.ts"
+  ],
+  "prompt_profile": {
+    "profile_id": "typeorm-impact-metadata-v1",
+    "intent": "impact-analysis",
+    "constraints": {
+      "max_context": "balanced"
+    },
+    "focus_keywords": [
+      "entity",
+      "metadata",
+      "connection",
+      "repository",
+      "query"
+    ],
+    "focus_symbols": [
+      "EntityMetadata"
+    ]
+  },
+  "task_file": "tests\\fixtures\\lane_a_newrepo_tasks.yaml"
+}

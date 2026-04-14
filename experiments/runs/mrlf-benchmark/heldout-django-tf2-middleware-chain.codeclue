@@ -1,0 +1,318 @@
+=CC v2 django@HEAD 3005mod 42888sym
+? What is the downstream impact of removing a middleware from the MIDDLEWARE setting?
+
+
+-- TREE
+django/  (988 files)
+docs/  (4 files)
+js_tests/  (11 files)
+scripts/  (6 files)
+tests/  (1993 files)
+
+-- INDEX
+Gruntfile.js                                     15L  
+django/__init__.py                               24L  setup
+django/__main__.py                               10L  
+django/apps/__init__.py                           4L  
+django/apps/config.py                           274L  create, default_auto_field, get_model, get_models, import_models
+django/apps/registry.py                         438L  check_apps_ready, check_models_ready, clear_cache, do_pending_operations, get_app_config
+django/conf/__init__.py                         257L  configure, configured, LazySettings, is_overridden, Settings
+django/conf/global_settings.py                  680L  gettext_noop
+django/conf/locale/__init__.py                  636L  
+django/conf/locale/ar/__init__.py                 0L  
+django/conf/locale/ar/formats.py                 21L  
+django/conf/locale/ar_DZ/__init__.py              0L  
+django/conf/locale/ar_DZ/formats.py              29L  
+django/conf/locale/az/__init__.py                 0L  
+django/conf/locale/az/formats.py                 30L  
+django/conf/locale/bg/__init__.py                 0L  
+django/conf/locale/bg/formats.py                 21L  
+django/conf/locale/bn/__init__.py                 0L  
+django/conf/locale/bn/formats.py                 32L  
+django/conf/locale/bs/__init__.py                 0L  
+django/conf/locale/bs/formats.py                 21L  
+django/conf/locale/ca/__init__.py                 0L  
+django/conf/locale/ca/formats.py                 30L  
+django/conf/locale/ckb/__init__.py                0L  
+django/conf/locale/ckb/formats.py                21L  
+django/conf/locale/cs/__init__.py                 0L  
+django/conf/locale/cs/formats.py                 43L  
+  ...and 2978 more modules
+
+-- SYM
+_chain                              M django/db/models/query.py:2189   Return a copy of the current QuerySet that's re...
+OGRGeometry                         C django/contrib/gis/gdal/geometries.py:65     Encapsulate an OGR geometry.
+quote_name                          M django/db/backends/base/schema.py:207    function quote_name
+GEOSGeometry                        C django/contrib/gis/geos/geometry.py:739    A class that, generally, encapsulates a GEOS ge...
+must_be                             M django/contrib/admin/checks.py:1356   function must_be
+_from_wkt                           M django/contrib/gis/geos/geometry.py:138    function _from_wkt
+func                                M django/utils/functional.py:19     function func
+_topology                           M django/contrib/gis/geos/geometry.py:534    Return Geometry from the given pointer.
+_combine                            M django/db/models/expressions.py:63     function _combine
+compile                             M django/db/models/expressions.py:816    function compile
+_test_settings_get                  M django/db/backends/oracle/creation.py:386    Return a value from the test settings dict, or ...
+__cast                              M django/utils/functional.py:109    function __cast
+_geomgen                            M django/contrib/gis/gdal/geometries.py:535    A helper routine for the OGR routines that gene...
+add_operation                       M django/db/migrations/autodetector.py:549    function add_operation
+OperationDependency                 C django/db/migrations/autodetector.py:23     class OperationDependency
+_listarr                            M django/contrib/gis/geos/linestring.py:149    Return a sequence (list) corresponding with the...
+_topology                           M django/contrib/gis/gdal/geometries.py:490    A generalized function for topology operations,...
+get_connection                      M django/db/transaction.py:18     Get a database connection by name, or the defau...
+reload_model                        M django/db/migrations/state.py:423    function reload_model
+array                               M django/contrib/gis/geos/linestring.py:161    Return a numpy array for the LineString.
+get_external_cols                   M django/db/models/sql/query.py:1289   function get_external_cols
+_gen_cols                           M django/db/models/sql/query.py:2040   function _gen_cols
+_get_next_prev                      M django/views/generic/dates.py:728    Get the next or the previous valid date.
+_handle_param                       M django/contrib/gis/db/models/functions.py:102    function _handle_param
+get_template                        M django/template/engine.py:172    Return a compiled Template object for the given...
+join                                M django/db/models/sql/query.py:1134   Return an alias for the 'join', either reusing ...
+serializer_factory                  M django/db/migrations/serializer.py:401    function serializer_factory
+_not_support_combined_queries       M django/db/models/query.py:2302   function _not_support_combined_queries
+change_aliases                      M django/db/models/sql/query.py:1000   Change the aliases in change_map (which maps ol...
+make_immutable_fields_list          M django/db/models/options.py:86     function make_immutable_fields_list
+_load_serializers                   M django/core/serializers/__init__.py:149    Register built-in and settings-defined serializ...
+_assert_mutable                     M django/http/request.py:632    function _assert_mutable
+find_template                       M django/template/engine.py:155    function find_template
+translation                         M django/utils/translation/trans_real.py:289    Return a translation object in the default 'dja...
+DjangoTranslation                   C django/utils/translation/trans_real.py:130    Set up the GNUTranslations context with regard ...
+CombinedExpression                  C django/db/models/expressions.py:728    class CombinedExpression
+add                                 M django/db/models/deletion.py:141    Add 'objs' to the collection of objects to be d...
+create                              M django/utils/tree.py:29     Create a new instance using Node() instead of _...
+register_serializer                 M django/core/serializers/__init__.py:55     Register a new serializer.
+relabeled_clone                     M django/db/models/sql/query.py:447    function relabeled_clone
+add_dependency                      M django/db/models/deletion.py:165    function add_dependency
+_key_to_file                        M django/contrib/sessions/backends/file.py:47     Get the file associated with this session key.
+execute                             M django/db/backends/base/schema.py:176    Execute the given SQL statement, with optional ...
+Node                                C django/utils/tree.py:11     A single internal node in the tree graph.
+_aget_session                       M django/contrib/sessions/backends/base.py:257    async_function _aget_session
+aload                               M django/contrib/sessions/backends/base.py:512    async_function aload
+refer_to_missing_field              M django/contrib/admin/checks.py:1376   function refer_to_missing_field
+pop                                 M django/template/context.py:62     function pop
+pretty_name                         M django/contrib/gis/measure.py:49     function pretty_name
+acount                              M django/core/paginator.py:256    See Paginator.count().
+max_name_length                     M django/db/backends/oracle/operations.py:377    function max_name_length
+_get_pk_val                         M django/db/models/base.py:698    function _get_pk_val
+_validate_number                    M django/core/paginator.py:132    Validate the given 1-based page number.
+Value                               C django/db/models/expressions.py:1148   Represent a wrapped value as a node within an e...
+_get_spatialite_func                M django/contrib/gis/db/backends/spatialite/operations.py:153    Helper routine for calling SpatiaLite functions...
+get                                 M django/db/models/query.py:657    Perform the query and return a single object ma...
+ValidationError                     C django/core/exceptions.py:144    An error while validating data.
+compile                             M django/db/models/sql/compiler.py:573    function compile
+render                              M django/forms/utils.py:51     function render
+_combinator_query                   M django/db/models/query.py:1698   function _combinator_query
+initial_form_count                  M django/forms/formsets.py:192    Return the number of forms that are required in...
+rhs_is_direct_value                 M django/db/models/lookups.py:140    function rhs_is_direct_value
+GeoIP2Exception                     C django/contrib/gis/geoip2.py:47     class GeoIP2Exception
+__init__                            M django/core/exceptions.py:147    The `message` argument can be a single error, a...
+_security_middleware                M django/core/checks/security/base.py:149    function _security_middleware
+_url                                M django/contrib/staticfiles/storage.py:176    Return the non-hashed URL in DEBUG mode.
+_update_unget_history               M django/http/multipartparser.py:511    Update the unget history as a sanity check to s...
+convert_query                       M django/db/backends/sqlite3/base.py:372    function convert_query
+path                                M django/core/files/storage/filesystem.py:195    function path
+  ...and 11317 more symbols
+
+-- FOCUS
+get_swappable_settings_name (django/apps/registry.py:284-304)
+  For a given model string (e.g.
+  sig: get_swappable_settings_name(to_string)
+  calls: get_models
+
+LazySettings (django/conf/__init__.py:39-148)
+  A lazy proxy for either global Django settings or a custom settings object.
+  extends: LazyObject
+  imports: importlib, traceback, warnings, django, django.conf
+  calls: _add_script_prefix, _setup, Settings, UserSettingsHolder
+  raises: ImproperlyConfigured, RuntimeError, TypeError
+  uses: ImproperlyConfigured (django.core.exceptions)
+
+Settings (django/conf/__init__.py:151-204)
+  imports: importlib, traceback, warnings, django, django.conf
+  called_by: _setup, LazySettings
+  raises: ValueError, ImproperlyConfigured
+
+SettingsReference (django/conf/__init__.py:26-36)
+  String subclass which references a current settings value.
+  extends: str
+  imports: importlib, traceback, warnings, django, django.conf
+  calls: __new__
+
+UserSettingsHolder (django/conf/__init__.py:207-254)
+  Holder for user configured settings.
+  attrs: SETTINGS_MODULE=None
+  imports: importlib, traceback, warnings, django, django.conf
+  called_by: configure, LazySettings
+  raises: AttributeError
+
+removePopupIndex (django/contrib/admin/static/admin/js/admin/RelatedObjectLookups.js:32-32)
+  called_by: js
+
+removeChildren (django/contrib/admin/static/admin/js/core.js:20-20)
+  called_by: js
+
+setTheme (django/contrib/admin/static/admin/js/theme.js:3-3)
+  called_by: js
+
+remove (django/contrib/admin/static/admin/js/vendor/jquery/jquery.js:5962-5962)
+  called_by: js
+
+remove_non_capturing_groups (django/contrib/admindocs/utils.py:252-264)
+  Find non-capturing groups in the given `pattern` and remove them, e.g.
+  sig: remove_non_capturing_groups(pattern)
+  calls: _find_groups
+
+setter (django/contrib/auth/base_user.py:114-118)
+  sig: setter(raw_password)
+
+setter (django/contrib/auth/base_user.py:103-107)
+  sig: setter(raw_password)
+
+check_middleware (django/contrib/auth/checks.py:239-261)
+  sig: check_middleware(app_configs)
+  calls: _subclass_index
+
+PasswordResetTokenGenerator (django/contrib/auth/tokens.py:8-129)
+  Strategy object used to generate and check tokens for the password
+  attrs: algorithm=None
+  imports: django.conf, django.utils.crypto, django.utils.http
+  calls: _make_hash_value, _make_token_with_timestamp, _now, _num_seconds
+
+_remove_prefetched_objects (django/contrib/contenttypes/fields.py:661-665)
+  called_by: _clear, add, create, GenericRelatedObjectManager, create_generic_related_manager
+
+aremove (django/contrib/contenttypes/fields.py:772-773)
+
+remove (django/contrib/contenttypes/fields.py:765-768)
+  calls: _clear
+  called_by: set, GenericRelatedObjectManager, create_generic_related_manager
+
+remove_field (django/contrib/gis/db/backends/mysql/schema.py:37-49)
+  sig: remove_field(model, field)
+  calls: _delete_spatial_index_sql
+  called_by: MySQLGISSchemaEditor
+
+remove_field (django/contrib/gis/db/backends/oracle/schema.py:83-94)
+  sig: remove_field(model, field)
+  calls: _delete_spatial_index_sql, geo_quote_name
+  called_by: OracleGISSchemaEditor
+
+remove_field (django/contrib/gis/db/backends/spatialite/schema.py:125-136)
+  sig: remove_field(model, field)
+  called_by: SpatialiteSchemaEditor
+
+remove_geometry_metadata (django/contrib/gis/db/backends/spatialite/schema.py:68-82)
+  sig: remove_geometry_metadata(model, field)
+  called_by: delete_model, SpatialiteSchemaEditor
+
+remove (django/contrib/gis/geos/mutable_list.py:208-210)
+  Standard list remove method
+  sig: remove(val)
+  calls: index
+
+remove_sql (django/contrib/postgres/constraints.py:146-151)
+  sig: remove_sql(model, schema_editor)
+
+AttributeSetter (django/contrib/postgres/fields/utils.py:1-3)
+
+_remove_trailing_nulls (django/contrib/postgres/forms/array.py:195-205)
+  sig: _remove_trailing_nulls(values)
+  called_by: SplitArrayField
+
+remove_collation (django/contrib/postgres/operations.py:213-216)
+  sig: remove_collation(schema_editor)
+  called_by: CreateCollation, RemoveCollation
+
+RemoveCollation (django/contrib/postgres/operations.py:249-271)
+  Remove a collation.
+  extends: CollationOperation
+  imports: django.contrib.postgres.signals, django.db, django.db.migrations, django.db.migrations.operations.base, django.db.models.constraints
+  calls: create_collation, remove_collation
+
+RemoveIndexConcurrently (django/contrib/postgres/operations.py:149-172)
+  Remove an index using PostgreSQL's DROP INDEX CONCURRENTLY syntax.
+  extends: NotInTransactionMixin, RemoveIndex
+  attrs: atomic=False
+  imports: django.contrib.postgres.signals, django.db, django.db.migrations, django.db.migrations.operations.base, django.db.models.constraints
+  calls: _ensure_not_in_transaction
+  uses: NotSupportedError (django.db)
+
+load_middleware (django/contrib/staticfiles/handlers.py:24-27)
+
+check_settings (django/contrib/staticfiles/utils.py:42-71)
+  Check if the staticfiles settings have sane values.
+  sig: check_settings(base_url)
+  raises: ImproperlyConfigured
+  uses: ImproperlyConfigured (django.core.exceptions)
+
+check_setting_file_upload_temp_dir (django/core/checks/files.py:9-19)
+  sig: check_setting_file_upload_temp_dir(app_configs)
+
+_security_middleware (django/core/checks/security/base.py:149-150)
+  called_by: check_content_type_nosniff, check_cross_origin_opener_policy, check_referrer_policy, check_security_middleware, check_ssl_redirect, check_sts, check_sts_include_subdomains, check_sts_preload
+
+_xframe_middleware (django/core/checks/security/base.py:153-156)
+  called_by: check_xframe_deny, check_xframe_options_middleware
+
+check_csp_settings (django/core/checks/security/base.py:292-304)
+  Validate that CSP settings are properly configured when enabled.
+  sig: check_csp_settings(app_configs)
+  uses: Error (django.core.checks)
+
+check_security_middleware (django/core/checks/security/base.py:160-162)
+  sig: check_security_middleware(app_configs)
+  calls: _security_middleware
+
+check_xframe_options_middleware (django/core/checks/security/base.py:166-168)
+  sig: check_xframe_options_middleware(app_configs)
+  calls: _xframe_middleware
+
+_csrf_middleware (django/core/checks/security/csrf.py:23-24)
+  called_by: check_csrf_cookie_secure, check_csrf_middleware
+
+check_csrf_middleware (django/core/checks/security/csrf.py:28-30)
+  sig: check_csrf_middleware(app_configs)
+  calls: _csrf_middleware
+
+_session_middleware (django/core/checks/security/sessions.py:93-94)
+  called_by: check_session_cookie_httponly, check_session_cookie_secure
+
+check_language_settings_consistent (django/core/checks/translation.py:59-66)
+  Error if language settings are not consistent with each other.
+  sig: check_language_settings_consistent(app_configs)
+
+check_setting_language_code (django/core/checks/translation.py:30-35)
+  Error if LANGUAGE_CODE setting is invalid.
+  sig: check_setting_language_code(app_configs)
+
+check_setting_languages (django/core/checks/translation.py:39-45)
+  Error if LANGUAGES setting is invalid.
+  sig: check_setting_languages(app_configs)
+
+check_setting_languages_bidi (django/core/checks/translation.py:49-55)
+  Error if LANGUAGES_BIDI setting is invalid.
+  sig: check_setting_languages_bidi(app_configs)
+
+check_url_settings (django/core/checks/urls.py:106-112)
+  sig: check_url_settings(app_configs)
+  calls: E006
+
+MiddlewareNotUsed (django/core/exceptions.py:117-120)
+  This middleware is not used in this server configuration
+  extends: Exception
+  imports: operator, django.utils.hashable
+
+remove_child (django/core/files/storage/memory.py:160-165)
+  sig: remove_child(name)
+  calls: _update_accessed_time, _update_modified_time
+  called_by: delete, InMemoryStorage
+
+_value_or_setting (django/core/files/storage/mixins.py:14-15)
+  sig: _value_or_setting(value, setting)
+
+StorageSettingsMixin (django/core/files/storage/mixins.py:1-15)
+
+-- GAPS
+- Question mentions [downstream, impact, removing, setting] — not found in focus or symbol index
+- Module tests/settings_tests/__init__.py matches question but has no focus detail
+  > drill: tests/settings_tests/__init__.py
+- Module tests/messages_tests/test_middleware.py matches question but has no focus detail
+  > drill: tests/messages_tests/test_middleware.py

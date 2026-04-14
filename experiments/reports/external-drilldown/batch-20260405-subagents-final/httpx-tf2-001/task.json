@@ -1,0 +1,34 @@
+{
+  "task_id": "httpx-tf2-001",
+  "family": "TF2",
+  "operation_family": "OF2",
+  "repo": "encode/httpx",
+  "repo_dir": "httpx",
+  "language": "python",
+  "question": "If I change the Timeout class in _config.py to make all timeouts optional (default None), what components would break?",
+  "ground_truth_summary": "Timeout is used by Client and AsyncClient in _client.py as DEFAULT_TIMEOUT_CONFIG. It's passed to HTTPTransport/AsyncHTTPTransport in _transports/. The transport layers use timeout values for connection pools. Making all None would cause httpcore to use no timeout, potentially hanging on unresponsive servers. The _api.py convenience functions (get, post, etc.) pass timeout through. Test timeouts would also change behavior.",
+  "relevant_files": [
+    "httpx/_config.py",
+    "httpx/_client.py",
+    "httpx/_transports/default.py"
+  ],
+  "prompt_profile": {
+    "profile_id": "httpx-impact-timeout-v1",
+    "intent": "impact-analysis",
+    "constraints": {
+      "max_context": "balanced"
+    },
+    "focus_files": [
+      "httpx/_config.py"
+    ],
+    "focus_symbols": [
+      "Timeout",
+      "DEFAULT_TIMEOUT_CONFIG"
+    ],
+    "focus_keywords": [
+      "timeout",
+      "config"
+    ]
+  },
+  "task_file": "tests\\fixtures\\lane_a_newrepo_tasks.yaml"
+}

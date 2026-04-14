@@ -1,0 +1,2232 @@
+{
+  "task_id": "fastapi-tf4-001",
+  "repo_dir": "fastapi",
+  "operation_family": "OF4",
+  "confidence_overall": 0.851351,
+  "lookup_hint": "clue_only",
+  "projected_nodes": 74,
+  "actions_executed": 20,
+  "budget": {
+    "budget_exhausted": true,
+    "operation_family": "OF4",
+    "calls_made": 20,
+    "budget": 20,
+    "remaining": 0,
+    "unresolved_nodes": []
+  },
+  "tokens": {
+    "clue": 38010,
+    "drill_down": 7547,
+    "total": 45557,
+    "raw_estimate": 944223
+  },
+  "etrr": 0.9518,
+  "h7_pass": true,
+  "tool_results": [
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "docs_src/additional_responses/tutorial001_py310.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:docs_src/additional_responses/tutorial001_py310.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 359,
+      "result": {
+        "status": "ok",
+        "file_path": "docs_src/additional_responses/tutorial001_py310.py",
+        "start_line": 1,
+        "end_line": 22,
+        "total_lines_in_file": 22,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "from fastapi import FastAPI"
+          },
+          {
+            "line_number": 2,
+            "content": "from fastapi.responses import JSONResponse"
+          },
+          {
+            "line_number": 3,
+            "content": "from pydantic import BaseModel"
+          },
+          {
+            "line_number": 4,
+            "content": ""
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "class Item(BaseModel):"
+          },
+          {
+            "line_number": 7,
+            "content": "    id: str"
+          },
+          {
+            "line_number": 8,
+            "content": "    value: str"
+          },
+          {
+            "line_number": 9,
+            "content": ""
+          },
+          {
+            "line_number": 10,
+            "content": ""
+          },
+          {
+            "line_number": 11,
+            "content": "class Message(BaseModel):"
+          },
+          {
+            "line_number": 12,
+            "content": "    message: str"
+          },
+          {
+            "line_number": 13,
+            "content": ""
+          },
+          {
+            "line_number": 14,
+            "content": ""
+          },
+          {
+            "line_number": 15,
+            "content": "app = FastAPI()"
+          },
+          {
+            "line_number": 16,
+            "content": ""
+          },
+          {
+            "line_number": 17,
+            "content": ""
+          },
+          {
+            "line_number": 18,
+            "content": "@app.get(\"/items/{item_id}\", response_model=Item, responses={404: {\"model\": Message}})"
+          },
+          {
+            "line_number": 19,
+            "content": "async def read_item(item_id: str):"
+          },
+          {
+            "line_number": 20,
+            "content": "    if item_id == \"foo\":"
+          },
+          {
+            "line_number": 21,
+            "content": "        return {\"id\": \"foo\", \"value\": \"there goes my hero\"}"
+          },
+          {
+            "line_number": 22,
+            "content": "    return JSONResponse(status_code=404, content={\"message\": \"Item not found\"})"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "docs_src/additional_responses/tutorial002_py310.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:docs_src/additional_responses/tutorial002_py310.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 435,
+      "result": {
+        "status": "ok",
+        "file_path": "docs_src/additional_responses/tutorial002_py310.py",
+        "start_line": 1,
+        "end_line": 28,
+        "total_lines_in_file": 28,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "from fastapi import FastAPI"
+          },
+          {
+            "line_number": 2,
+            "content": "from fastapi.responses import FileResponse"
+          },
+          {
+            "line_number": 3,
+            "content": "from pydantic import BaseModel"
+          },
+          {
+            "line_number": 4,
+            "content": ""
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "class Item(BaseModel):"
+          },
+          {
+            "line_number": 7,
+            "content": "    id: str"
+          },
+          {
+            "line_number": 8,
+            "content": "    value: str"
+          },
+          {
+            "line_number": 9,
+            "content": ""
+          },
+          {
+            "line_number": 10,
+            "content": ""
+          },
+          {
+            "line_number": 11,
+            "content": "app = FastAPI()"
+          },
+          {
+            "line_number": 12,
+            "content": ""
+          },
+          {
+            "line_number": 13,
+            "content": ""
+          },
+          {
+            "line_number": 14,
+            "content": "@app.get("
+          },
+          {
+            "line_number": 15,
+            "content": "    \"/items/{item_id}\","
+          },
+          {
+            "line_number": 16,
+            "content": "    response_model=Item,"
+          },
+          {
+            "line_number": 17,
+            "content": "    responses={"
+          },
+          {
+            "line_number": 18,
+            "content": "        200: {"
+          },
+          {
+            "line_number": 19,
+            "content": "            \"content\": {\"image/png\": {}},"
+          },
+          {
+            "line_number": 20,
+            "content": "            \"description\": \"Return the JSON item or an image.\","
+          },
+          {
+            "line_number": 21,
+            "content": "        }"
+          },
+          {
+            "line_number": 22,
+            "content": "    },"
+          },
+          {
+            "line_number": 23,
+            "content": ")"
+          },
+          {
+            "line_number": 24,
+            "content": "async def read_item(item_id: str, img: bool | None = None):"
+          },
+          {
+            "line_number": 25,
+            "content": "    if img:"
+          },
+          {
+            "line_number": 26,
+            "content": "        return FileResponse(\"image.png\", media_type=\"image/png\")"
+          },
+          {
+            "line_number": 27,
+            "content": "    else:"
+          },
+          {
+            "line_number": 28,
+            "content": "        return {\"id\": \"foo\", \"value\": \"there goes my hero\"}"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "docs_src/additional_responses/tutorial003_py310.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:docs_src/additional_responses/tutorial003_py310.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 579,
+      "result": {
+        "status": "ok",
+        "file_path": "docs_src/additional_responses/tutorial003_py310.py",
+        "start_line": 1,
+        "end_line": 37,
+        "total_lines_in_file": 37,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "from fastapi import FastAPI"
+          },
+          {
+            "line_number": 2,
+            "content": "from fastapi.responses import JSONResponse"
+          },
+          {
+            "line_number": 3,
+            "content": "from pydantic import BaseModel"
+          },
+          {
+            "line_number": 4,
+            "content": ""
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "class Item(BaseModel):"
+          },
+          {
+            "line_number": 7,
+            "content": "    id: str"
+          },
+          {
+            "line_number": 8,
+            "content": "    value: str"
+          },
+          {
+            "line_number": 9,
+            "content": ""
+          },
+          {
+            "line_number": 10,
+            "content": ""
+          },
+          {
+            "line_number": 11,
+            "content": "class Message(BaseModel):"
+          },
+          {
+            "line_number": 12,
+            "content": "    message: str"
+          },
+          {
+            "line_number": 13,
+            "content": ""
+          },
+          {
+            "line_number": 14,
+            "content": ""
+          },
+          {
+            "line_number": 15,
+            "content": "app = FastAPI()"
+          },
+          {
+            "line_number": 16,
+            "content": ""
+          },
+          {
+            "line_number": 17,
+            "content": ""
+          },
+          {
+            "line_number": 18,
+            "content": "@app.get("
+          },
+          {
+            "line_number": 19,
+            "content": "    \"/items/{item_id}\","
+          },
+          {
+            "line_number": 20,
+            "content": "    response_model=Item,"
+          },
+          {
+            "line_number": 21,
+            "content": "    responses={"
+          },
+          {
+            "line_number": 22,
+            "content": "        404: {\"model\": Message, \"description\": \"The item was not found\"},"
+          },
+          {
+            "line_number": 23,
+            "content": "        200: {"
+          },
+          {
+            "line_number": 24,
+            "content": "            \"description\": \"Item requested by ID\","
+          },
+          {
+            "line_number": 25,
+            "content": "            \"content\": {"
+          },
+          {
+            "line_number": 26,
+            "content": "                \"application/json\": {"
+          },
+          {
+            "line_number": 27,
+            "content": "                    \"example\": {\"id\": \"bar\", \"value\": \"The bar tenders\"}"
+          },
+          {
+            "line_number": 28,
+            "content": "                }"
+          },
+          {
+            "line_number": 29,
+            "content": "            },"
+          },
+          {
+            "line_number": 30,
+            "content": "        },"
+          },
+          {
+            "line_number": 31,
+            "content": "    },"
+          },
+          {
+            "line_number": 32,
+            "content": ")"
+          },
+          {
+            "line_number": 33,
+            "content": "async def read_item(item_id: str):"
+          },
+          {
+            "line_number": 34,
+            "content": "    if item_id == \"foo\":"
+          },
+          {
+            "line_number": 35,
+            "content": "        return {\"id\": \"foo\", \"value\": \"there goes my hero\"}"
+          },
+          {
+            "line_number": 36,
+            "content": "    else:"
+          },
+          {
+            "line_number": 37,
+            "content": "        return JSONResponse(status_code=404, content={\"message\": \"Item not found\"})"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "docs_src/additional_responses/tutorial004_py310.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:docs_src/additional_responses/tutorial004_py310.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 473,
+      "result": {
+        "status": "ok",
+        "file_path": "docs_src/additional_responses/tutorial004_py310.py",
+        "start_line": 1,
+        "end_line": 30,
+        "total_lines_in_file": 30,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "from fastapi import FastAPI"
+          },
+          {
+            "line_number": 2,
+            "content": "from fastapi.responses import FileResponse"
+          },
+          {
+            "line_number": 3,
+            "content": "from pydantic import BaseModel"
+          },
+          {
+            "line_number": 4,
+            "content": ""
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "class Item(BaseModel):"
+          },
+          {
+            "line_number": 7,
+            "content": "    id: str"
+          },
+          {
+            "line_number": 8,
+            "content": "    value: str"
+          },
+          {
+            "line_number": 9,
+            "content": ""
+          },
+          {
+            "line_number": 10,
+            "content": ""
+          },
+          {
+            "line_number": 11,
+            "content": "responses = {"
+          },
+          {
+            "line_number": 12,
+            "content": "    404: {\"description\": \"Item not found\"},"
+          },
+          {
+            "line_number": 13,
+            "content": "    302: {\"description\": \"The item was moved\"},"
+          },
+          {
+            "line_number": 14,
+            "content": "    403: {\"description\": \"Not enough privileges\"},"
+          },
+          {
+            "line_number": 15,
+            "content": "}"
+          },
+          {
+            "line_number": 16,
+            "content": ""
+          },
+          {
+            "line_number": 17,
+            "content": ""
+          },
+          {
+            "line_number": 18,
+            "content": "app = FastAPI()"
+          },
+          {
+            "line_number": 19,
+            "content": ""
+          },
+          {
+            "line_number": 20,
+            "content": ""
+          },
+          {
+            "line_number": 21,
+            "content": "@app.get("
+          },
+          {
+            "line_number": 22,
+            "content": "    \"/items/{item_id}\","
+          },
+          {
+            "line_number": 23,
+            "content": "    response_model=Item,"
+          },
+          {
+            "line_number": 24,
+            "content": "    responses={**responses, 200: {\"content\": {\"image/png\": {}}}},"
+          },
+          {
+            "line_number": 25,
+            "content": ")"
+          },
+          {
+            "line_number": 26,
+            "content": "async def read_item(item_id: str, img: bool | None = None):"
+          },
+          {
+            "line_number": 27,
+            "content": "    if img:"
+          },
+          {
+            "line_number": 28,
+            "content": "        return FileResponse(\"image.png\", media_type=\"image/png\")"
+          },
+          {
+            "line_number": 29,
+            "content": "    else:"
+          },
+          {
+            "line_number": 30,
+            "content": "        return {\"id\": \"foo\", \"value\": \"there goes my hero\"}"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "docs_src/additional_status_codes/tutorial001_an_py310.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:docs_src/additional_status_codes/tutorial001_an_py310.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 434,
+      "result": {
+        "status": "ok",
+        "file_path": "docs_src/additional_status_codes/tutorial001_an_py310.py",
+        "start_line": 1,
+        "end_line": 25,
+        "total_lines_in_file": 25,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "from typing import Annotated"
+          },
+          {
+            "line_number": 2,
+            "content": ""
+          },
+          {
+            "line_number": 3,
+            "content": "from fastapi import Body, FastAPI, status"
+          },
+          {
+            "line_number": 4,
+            "content": "from fastapi.responses import JSONResponse"
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "app = FastAPI()"
+          },
+          {
+            "line_number": 7,
+            "content": ""
+          },
+          {
+            "line_number": 8,
+            "content": "items = {\"foo\": {\"name\": \"Fighters\", \"size\": 6}, \"bar\": {\"name\": \"Tenders\", \"size\": 3}}"
+          },
+          {
+            "line_number": 9,
+            "content": ""
+          },
+          {
+            "line_number": 10,
+            "content": ""
+          },
+          {
+            "line_number": 11,
+            "content": "@app.put(\"/items/{item_id}\")"
+          },
+          {
+            "line_number": 12,
+            "content": "async def upsert_item("
+          },
+          {
+            "line_number": 13,
+            "content": "    item_id: str,"
+          },
+          {
+            "line_number": 14,
+            "content": "    name: Annotated[str | None, Body()] = None,"
+          },
+          {
+            "line_number": 15,
+            "content": "    size: Annotated[int | None, Body()] = None,"
+          },
+          {
+            "line_number": 16,
+            "content": "):"
+          },
+          {
+            "line_number": 17,
+            "content": "    if item_id in items:"
+          },
+          {
+            "line_number": 18,
+            "content": "        item = items[item_id]"
+          },
+          {
+            "line_number": 19,
+            "content": "        item[\"name\"] = name"
+          },
+          {
+            "line_number": 20,
+            "content": "        item[\"size\"] = size"
+          },
+          {
+            "line_number": 21,
+            "content": "        return item"
+          },
+          {
+            "line_number": 22,
+            "content": "    else:"
+          },
+          {
+            "line_number": 23,
+            "content": "        item = {\"name\": name, \"size\": size}"
+          },
+          {
+            "line_number": 24,
+            "content": "        items[item_id] = item"
+          },
+          {
+            "line_number": 25,
+            "content": "        return JSONResponse(status_code=status.HTTP_201_CREATED, content=item)"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "docs_src/additional_status_codes/tutorial001_py310.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:docs_src/additional_status_codes/tutorial001_py310.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 406,
+      "result": {
+        "status": "ok",
+        "file_path": "docs_src/additional_status_codes/tutorial001_py310.py",
+        "start_line": 1,
+        "end_line": 23,
+        "total_lines_in_file": 23,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "from fastapi import Body, FastAPI, status"
+          },
+          {
+            "line_number": 2,
+            "content": "from fastapi.responses import JSONResponse"
+          },
+          {
+            "line_number": 3,
+            "content": ""
+          },
+          {
+            "line_number": 4,
+            "content": "app = FastAPI()"
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "items = {\"foo\": {\"name\": \"Fighters\", \"size\": 6}, \"bar\": {\"name\": \"Tenders\", \"size\": 3}}"
+          },
+          {
+            "line_number": 7,
+            "content": ""
+          },
+          {
+            "line_number": 8,
+            "content": ""
+          },
+          {
+            "line_number": 9,
+            "content": "@app.put(\"/items/{item_id}\")"
+          },
+          {
+            "line_number": 10,
+            "content": "async def upsert_item("
+          },
+          {
+            "line_number": 11,
+            "content": "    item_id: str,"
+          },
+          {
+            "line_number": 12,
+            "content": "    name: str | None = Body(default=None),"
+          },
+          {
+            "line_number": 13,
+            "content": "    size: int | None = Body(default=None),"
+          },
+          {
+            "line_number": 14,
+            "content": "):"
+          },
+          {
+            "line_number": 15,
+            "content": "    if item_id in items:"
+          },
+          {
+            "line_number": 16,
+            "content": "        item = items[item_id]"
+          },
+          {
+            "line_number": 17,
+            "content": "        item[\"name\"] = name"
+          },
+          {
+            "line_number": 18,
+            "content": "        item[\"size\"] = size"
+          },
+          {
+            "line_number": 19,
+            "content": "        return item"
+          },
+          {
+            "line_number": 20,
+            "content": "    else:"
+          },
+          {
+            "line_number": 21,
+            "content": "        item = {\"name\": name, \"size\": size}"
+          },
+          {
+            "line_number": 22,
+            "content": "        items[item_id] = item"
+          },
+          {
+            "line_number": 23,
+            "content": "        return JSONResponse(status_code=status.HTTP_201_CREATED, content=item)"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "docs_src/advanced_middleware/tutorial001_py310.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:docs_src/advanced_middleware/tutorial001_py310.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 191,
+      "result": {
+        "status": "ok",
+        "file_path": "docs_src/advanced_middleware/tutorial001_py310.py",
+        "start_line": 1,
+        "end_line": 11,
+        "total_lines_in_file": 11,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "from fastapi import FastAPI"
+          },
+          {
+            "line_number": 2,
+            "content": "from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware"
+          },
+          {
+            "line_number": 3,
+            "content": ""
+          },
+          {
+            "line_number": 4,
+            "content": "app = FastAPI()"
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "app.add_middleware(HTTPSRedirectMiddleware)"
+          },
+          {
+            "line_number": 7,
+            "content": ""
+          },
+          {
+            "line_number": 8,
+            "content": ""
+          },
+          {
+            "line_number": 9,
+            "content": "@app.get(\"/\")"
+          },
+          {
+            "line_number": 10,
+            "content": "async def main():"
+          },
+          {
+            "line_number": 11,
+            "content": "    return {\"message\": \"Hello World\"}"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "docs_src/advanced_middleware/tutorial002_py310.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:docs_src/advanced_middleware/tutorial002_py310.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 222,
+      "result": {
+        "status": "ok",
+        "file_path": "docs_src/advanced_middleware/tutorial002_py310.py",
+        "start_line": 1,
+        "end_line": 13,
+        "total_lines_in_file": 13,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "from fastapi import FastAPI"
+          },
+          {
+            "line_number": 2,
+            "content": "from fastapi.middleware.trustedhost import TrustedHostMiddleware"
+          },
+          {
+            "line_number": 3,
+            "content": ""
+          },
+          {
+            "line_number": 4,
+            "content": "app = FastAPI()"
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "app.add_middleware("
+          },
+          {
+            "line_number": 7,
+            "content": "    TrustedHostMiddleware, allowed_hosts=[\"example.com\", \"*.example.com\"]"
+          },
+          {
+            "line_number": 8,
+            "content": ")"
+          },
+          {
+            "line_number": 9,
+            "content": ""
+          },
+          {
+            "line_number": 10,
+            "content": ""
+          },
+          {
+            "line_number": 11,
+            "content": "@app.get(\"/\")"
+          },
+          {
+            "line_number": 12,
+            "content": "async def main():"
+          },
+          {
+            "line_number": 13,
+            "content": "    return {\"message\": \"Hello World\"}"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "docs_src/advanced_middleware/tutorial003_py310.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:docs_src/advanced_middleware/tutorial003_py310.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 190,
+      "result": {
+        "status": "ok",
+        "file_path": "docs_src/advanced_middleware/tutorial003_py310.py",
+        "start_line": 1,
+        "end_line": 11,
+        "total_lines_in_file": 11,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "from fastapi import FastAPI"
+          },
+          {
+            "line_number": 2,
+            "content": "from fastapi.middleware.gzip import GZipMiddleware"
+          },
+          {
+            "line_number": 3,
+            "content": ""
+          },
+          {
+            "line_number": 4,
+            "content": "app = FastAPI()"
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)"
+          },
+          {
+            "line_number": 7,
+            "content": ""
+          },
+          {
+            "line_number": 8,
+            "content": ""
+          },
+          {
+            "line_number": 9,
+            "content": "@app.get(\"/\")"
+          },
+          {
+            "line_number": 10,
+            "content": "async def main():"
+          },
+          {
+            "line_number": 11,
+            "content": "    return \"somebigcontent\""
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "docs_src/app_testing/app_a_py310/main.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:docs_src/app_testing/app_a_py310/main.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 134,
+      "result": {
+        "status": "ok",
+        "file_path": "docs_src/app_testing/app_a_py310/main.py",
+        "start_line": 1,
+        "end_line": 8,
+        "total_lines_in_file": 8,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "from fastapi import FastAPI"
+          },
+          {
+            "line_number": 2,
+            "content": ""
+          },
+          {
+            "line_number": 3,
+            "content": "app = FastAPI()"
+          },
+          {
+            "line_number": 4,
+            "content": ""
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "@app.get(\"/\")"
+          },
+          {
+            "line_number": 7,
+            "content": "async def read_main():"
+          },
+          {
+            "line_number": 8,
+            "content": "    return {\"msg\": \"Hello World\"}"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "docs_src/app_testing/app_b_an_py310/main.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:docs_src/app_testing/app_b_an_py310/main.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 668,
+      "result": {
+        "status": "ok",
+        "file_path": "docs_src/app_testing/app_b_an_py310/main.py",
+        "start_line": 1,
+        "end_line": 38,
+        "total_lines_in_file": 38,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "from typing import Annotated"
+          },
+          {
+            "line_number": 2,
+            "content": ""
+          },
+          {
+            "line_number": 3,
+            "content": "from fastapi import FastAPI, Header, HTTPException"
+          },
+          {
+            "line_number": 4,
+            "content": "from pydantic import BaseModel"
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "fake_secret_token = \"coneofsilence\""
+          },
+          {
+            "line_number": 7,
+            "content": ""
+          },
+          {
+            "line_number": 8,
+            "content": "fake_db = {"
+          },
+          {
+            "line_number": 9,
+            "content": "    \"foo\": {\"id\": \"foo\", \"title\": \"Foo\", \"description\": \"There goes my hero\"},"
+          },
+          {
+            "line_number": 10,
+            "content": "    \"bar\": {\"id\": \"bar\", \"title\": \"Bar\", \"description\": \"The bartenders\"},"
+          },
+          {
+            "line_number": 11,
+            "content": "}"
+          },
+          {
+            "line_number": 12,
+            "content": ""
+          },
+          {
+            "line_number": 13,
+            "content": "app = FastAPI()"
+          },
+          {
+            "line_number": 14,
+            "content": ""
+          },
+          {
+            "line_number": 15,
+            "content": ""
+          },
+          {
+            "line_number": 16,
+            "content": "class Item(BaseModel):"
+          },
+          {
+            "line_number": 17,
+            "content": "    id: str"
+          },
+          {
+            "line_number": 18,
+            "content": "    title: str"
+          },
+          {
+            "line_number": 19,
+            "content": "    description: str | None = None"
+          },
+          {
+            "line_number": 20,
+            "content": ""
+          },
+          {
+            "line_number": 21,
+            "content": ""
+          },
+          {
+            "line_number": 22,
+            "content": "@app.get(\"/items/{item_id}\", response_model=Item)"
+          },
+          {
+            "line_number": 23,
+            "content": "async def read_main(item_id: str, x_token: Annotated[str, Header()]):"
+          },
+          {
+            "line_number": 24,
+            "content": "    if x_token != fake_secret_token:"
+          },
+          {
+            "line_number": 25,
+            "content": "        raise HTTPException(status_code=400, detail=\"Invalid X-Token header\")"
+          },
+          {
+            "line_number": 26,
+            "content": "    if item_id not in fake_db:"
+          },
+          {
+            "line_number": 27,
+            "content": "        raise HTTPException(status_code=404, detail=\"Item not found\")"
+          },
+          {
+            "line_number": 28,
+            "content": "    return fake_db[item_id]"
+          },
+          {
+            "line_number": 29,
+            "content": ""
+          },
+          {
+            "line_number": 30,
+            "content": ""
+          },
+          {
+            "line_number": 31,
+            "content": "@app.post(\"/items/\")"
+          },
+          {
+            "line_number": 32,
+            "content": "async def create_item(item: Item, x_token: Annotated[str, Header()]) -> Item:"
+          },
+          {
+            "line_number": 33,
+            "content": "    if x_token != fake_secret_token:"
+          },
+          {
+            "line_number": 34,
+            "content": "        raise HTTPException(status_code=400, detail=\"Invalid X-Token header\")"
+          },
+          {
+            "line_number": 35,
+            "content": "    if item.id in fake_db:"
+          },
+          {
+            "line_number": 36,
+            "content": "        raise HTTPException(status_code=409, detail=\"Item already exists\")"
+          },
+          {
+            "line_number": 37,
+            "content": "    fake_db[item.id] = item.model_dump()"
+          },
+          {
+            "line_number": 38,
+            "content": "    return item"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "docs_src/async_tests/app_a_py310/main.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:docs_src/async_tests/app_a_py310/main.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 133,
+      "result": {
+        "status": "ok",
+        "file_path": "docs_src/async_tests/app_a_py310/main.py",
+        "start_line": 1,
+        "end_line": 8,
+        "total_lines_in_file": 8,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "from fastapi import FastAPI"
+          },
+          {
+            "line_number": 2,
+            "content": ""
+          },
+          {
+            "line_number": 3,
+            "content": "app = FastAPI()"
+          },
+          {
+            "line_number": 4,
+            "content": ""
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "@app.get(\"/\")"
+          },
+          {
+            "line_number": 7,
+            "content": "async def root():"
+          },
+          {
+            "line_number": 8,
+            "content": "    return {\"message\": \"Tomato\"}"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "docs_src/async_tests/app_a_py310/test_main.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:docs_src/async_tests/app_a_py310/test_main.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 249,
+      "result": {
+        "status": "ok",
+        "file_path": "docs_src/async_tests/app_a_py310/test_main.py",
+        "start_line": 1,
+        "end_line": 14,
+        "total_lines_in_file": 14,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "import pytest"
+          },
+          {
+            "line_number": 2,
+            "content": "from httpx import ASGITransport, AsyncClient"
+          },
+          {
+            "line_number": 3,
+            "content": ""
+          },
+          {
+            "line_number": 4,
+            "content": "from .main import app"
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": ""
+          },
+          {
+            "line_number": 7,
+            "content": "@pytest.mark.anyio"
+          },
+          {
+            "line_number": 8,
+            "content": "async def test_root():"
+          },
+          {
+            "line_number": 9,
+            "content": "    async with AsyncClient("
+          },
+          {
+            "line_number": 10,
+            "content": "        transport=ASGITransport(app=app), base_url=\"http://test\""
+          },
+          {
+            "line_number": 11,
+            "content": "    ) as ac:"
+          },
+          {
+            "line_number": 12,
+            "content": "        response = await ac.get(\"/\")"
+          },
+          {
+            "line_number": 13,
+            "content": "    assert response.status_code == 200"
+          },
+          {
+            "line_number": 14,
+            "content": "    assert response.json() == {\"message\": \"Tomato\"}"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "fastapi/concurrency.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:fastapi/concurrency.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 760,
+      "result": {
+        "status": "ok",
+        "file_path": "fastapi/concurrency.py",
+        "start_line": 1,
+        "end_line": 41,
+        "total_lines_in_file": 41,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "from collections.abc import AsyncGenerator"
+          },
+          {
+            "line_number": 2,
+            "content": "from contextlib import AbstractContextManager"
+          },
+          {
+            "line_number": 3,
+            "content": "from contextlib import asynccontextmanager as asynccontextmanager"
+          },
+          {
+            "line_number": 4,
+            "content": "from typing import TypeVar"
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "import anyio.to_thread"
+          },
+          {
+            "line_number": 7,
+            "content": "from anyio import CapacityLimiter"
+          },
+          {
+            "line_number": 8,
+            "content": "from starlette.concurrency import iterate_in_threadpool as iterate_in_threadpool  # noqa"
+          },
+          {
+            "line_number": 9,
+            "content": "from starlette.concurrency import run_in_threadpool as run_in_threadpool  # noqa"
+          },
+          {
+            "line_number": 10,
+            "content": "from starlette.concurrency import (  # noqa"
+          },
+          {
+            "line_number": 11,
+            "content": "    run_until_first_complete as run_until_first_complete,"
+          },
+          {
+            "line_number": 12,
+            "content": ")"
+          },
+          {
+            "line_number": 13,
+            "content": ""
+          },
+          {
+            "line_number": 14,
+            "content": "_T = TypeVar(\"_T\")"
+          },
+          {
+            "line_number": 15,
+            "content": ""
+          },
+          {
+            "line_number": 16,
+            "content": ""
+          },
+          {
+            "line_number": 17,
+            "content": "@asynccontextmanager"
+          },
+          {
+            "line_number": 18,
+            "content": "async def contextmanager_in_threadpool("
+          },
+          {
+            "line_number": 19,
+            "content": "    cm: AbstractContextManager[_T],"
+          },
+          {
+            "line_number": 20,
+            "content": ") -> AsyncGenerator[_T, None]:"
+          },
+          {
+            "line_number": 21,
+            "content": "    # blocking __exit__ from running waiting on a free thread"
+          },
+          {
+            "line_number": 22,
+            "content": "    # can create race conditions/deadlocks if the context manager itself"
+          },
+          {
+            "line_number": 23,
+            "content": "    # has its own internal pool (e.g. a database connection pool)"
+          },
+          {
+            "line_number": 24,
+            "content": "    # to avoid this we let __exit__ run without a capacity limit"
+          },
+          {
+            "line_number": 25,
+            "content": "    # since we're creating a new limiter for each call, any non-zero limit"
+          },
+          {
+            "line_number": 26,
+            "content": "    # works (1 is arbitrary)"
+          },
+          {
+            "line_number": 27,
+            "content": "    exit_limiter = CapacityLimiter(1)"
+          },
+          {
+            "line_number": 28,
+            "content": "    try:"
+          },
+          {
+            "line_number": 29,
+            "content": "        yield await run_in_threadpool(cm.__enter__)"
+          },
+          {
+            "line_number": 30,
+            "content": "    except Exception as e:"
+          },
+          {
+            "line_number": 31,
+            "content": "        ok = bool("
+          },
+          {
+            "line_number": 32,
+            "content": "            await anyio.to_thread.run_sync("
+          },
+          {
+            "line_number": 33,
+            "content": "                cm.__exit__, type(e), e, e.__traceback__, limiter=exit_limiter"
+          },
+          {
+            "line_number": 34,
+            "content": "            )"
+          },
+          {
+            "line_number": 35,
+            "content": "        )"
+          },
+          {
+            "line_number": 36,
+            "content": "        if not ok:"
+          },
+          {
+            "line_number": 37,
+            "content": "            raise e"
+          },
+          {
+            "line_number": 38,
+            "content": "    else:"
+          },
+          {
+            "line_number": 39,
+            "content": "        await anyio.to_thread.run_sync("
+          },
+          {
+            "line_number": 40,
+            "content": "            cm.__exit__, None, None, None, limiter=exit_limiter"
+          },
+          {
+            "line_number": 41,
+            "content": "        )"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "fastapi/dependencies/utils.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:fastapi/dependencies/utils.py",
+      "confidence_trigger": 0.65,
+      "output_size_tokens": 742,
+      "result": {
+        "status": "ok",
+        "file_path": "fastapi/dependencies/utils.py",
+        "start_line": 1,
+        "end_line": 50,
+        "total_lines_in_file": 1054,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "import dataclasses"
+          },
+          {
+            "line_number": 2,
+            "content": "import inspect"
+          },
+          {
+            "line_number": 3,
+            "content": "import sys"
+          },
+          {
+            "line_number": 4,
+            "content": "from collections.abc import ("
+          },
+          {
+            "line_number": 5,
+            "content": "    AsyncGenerator,"
+          },
+          {
+            "line_number": 6,
+            "content": "    AsyncIterable,"
+          },
+          {
+            "line_number": 7,
+            "content": "    AsyncIterator,"
+          },
+          {
+            "line_number": 8,
+            "content": "    Callable,"
+          },
+          {
+            "line_number": 9,
+            "content": "    Generator,"
+          },
+          {
+            "line_number": 10,
+            "content": "    Iterable,"
+          },
+          {
+            "line_number": 11,
+            "content": "    Iterator,"
+          },
+          {
+            "line_number": 12,
+            "content": "    Mapping,"
+          },
+          {
+            "line_number": 13,
+            "content": "    Sequence,"
+          },
+          {
+            "line_number": 14,
+            "content": ")"
+          },
+          {
+            "line_number": 15,
+            "content": "from contextlib import AsyncExitStack, contextmanager"
+          },
+          {
+            "line_number": 16,
+            "content": "from copy import copy, deepcopy"
+          },
+          {
+            "line_number": 17,
+            "content": "from dataclasses import dataclass"
+          },
+          {
+            "line_number": 18,
+            "content": "from typing import ("
+          },
+          {
+            "line_number": 19,
+            "content": "    Annotated,"
+          },
+          {
+            "line_number": 20,
+            "content": "    Any,"
+          },
+          {
+            "line_number": 21,
+            "content": "    ForwardRef,"
+          },
+          {
+            "line_number": 22,
+            "content": "    Literal,"
+          },
+          {
+            "line_number": 23,
+            "content": "    Union,"
+          },
+          {
+            "line_number": 24,
+            "content": "    cast,"
+          },
+          {
+            "line_number": 25,
+            "content": "    get_args,"
+          },
+          {
+            "line_number": 26,
+            "content": "    get_origin,"
+          },
+          {
+            "line_number": 27,
+            "content": ")"
+          },
+          {
+            "line_number": 28,
+            "content": ""
+          },
+          {
+            "line_number": 29,
+            "content": "from fastapi import params"
+          },
+          {
+            "line_number": 30,
+            "content": "from fastapi._compat import ("
+          },
+          {
+            "line_number": 31,
+            "content": "    ModelField,"
+          },
+          {
+            "line_number": 32,
+            "content": "    RequiredParam,"
+          },
+          {
+            "line_number": 33,
+            "content": "    Undefined,"
+          },
+          {
+            "line_number": 34,
+            "content": "    copy_field_info,"
+          },
+          {
+            "line_number": 35,
+            "content": "    create_body_model,"
+          },
+          {
+            "line_number": 36,
+            "content": "    evaluate_forwardref,"
+          },
+          {
+            "line_number": 37,
+            "content": "    field_annotation_is_scalar,"
+          },
+          {
+            "line_number": 38,
+            "content": "    field_annotation_is_scalar_sequence,"
+          },
+          {
+            "line_number": 39,
+            "content": "    field_annotation_is_sequence,"
+          },
+          {
+            "line_number": 40,
+            "content": "    get_cached_model_fields,"
+          },
+          {
+            "line_number": 41,
+            "content": "    get_missing_field_error,"
+          },
+          {
+            "line_number": 42,
+            "content": "    is_bytes_or_nonable_bytes_annotation,"
+          },
+          {
+            "line_number": 43,
+            "content": "    is_bytes_sequence_annotation,"
+          },
+          {
+            "line_number": 44,
+            "content": "    is_scalar_field,"
+          },
+          {
+            "line_number": 45,
+            "content": "    is_uploadfile_or_nonable_uploadfile_annotation,"
+          },
+          {
+            "line_number": 46,
+            "content": "    is_uploadfile_sequence_annotation,"
+          },
+          {
+            "line_number": 47,
+            "content": "    lenient_issubclass,"
+          },
+          {
+            "line_number": 48,
+            "content": "    sequence_types,"
+          },
+          {
+            "line_number": 49,
+            "content": "    serialize_sequence_value,"
+          },
+          {
+            "line_number": 50,
+            "content": "    value_is_sequence,"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "fastapi/middleware/asyncexitstack.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:fastapi/middleware/asyncexitstack.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 350,
+      "result": {
+        "status": "ok",
+        "file_path": "fastapi/middleware/asyncexitstack.py",
+        "start_line": 1,
+        "end_line": 18,
+        "total_lines_in_file": 18,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "from contextlib import AsyncExitStack"
+          },
+          {
+            "line_number": 2,
+            "content": ""
+          },
+          {
+            "line_number": 3,
+            "content": "from starlette.types import ASGIApp, Receive, Scope, Send"
+          },
+          {
+            "line_number": 4,
+            "content": ""
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "# Used mainly to close files after the request is done, dependencies are closed"
+          },
+          {
+            "line_number": 7,
+            "content": "# in their own AsyncExitStack"
+          },
+          {
+            "line_number": 8,
+            "content": "class AsyncExitStackMiddleware:"
+          },
+          {
+            "line_number": 9,
+            "content": "    def __init__("
+          },
+          {
+            "line_number": 10,
+            "content": "        self, app: ASGIApp, context_name: str = \"fastapi_middleware_astack\""
+          },
+          {
+            "line_number": 11,
+            "content": "    ) -> None:"
+          },
+          {
+            "line_number": 12,
+            "content": "        self.app = app"
+          },
+          {
+            "line_number": 13,
+            "content": "        self.context_name = context_name"
+          },
+          {
+            "line_number": 14,
+            "content": ""
+          },
+          {
+            "line_number": 15,
+            "content": "    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:"
+          },
+          {
+            "line_number": 16,
+            "content": "        async with AsyncExitStack() as stack:"
+          },
+          {
+            "line_number": 17,
+            "content": "            scope[self.context_name] = stack"
+          },
+          {
+            "line_number": 18,
+            "content": "            await self.app(scope, receive, send)"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "tests/test_tutorial/test_async_tests/test_main_a.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:tests/test_tutorial/test_async_tests/test_main_a.py",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 145,
+      "result": {
+        "status": "ok",
+        "file_path": "tests/test_tutorial/test_async_tests/test_main_a.py",
+        "start_line": 1,
+        "end_line": 8,
+        "total_lines_in_file": 8,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "import pytest"
+          },
+          {
+            "line_number": 2,
+            "content": ""
+          },
+          {
+            "line_number": 3,
+            "content": "from docs_src.async_tests.app_a_py310.test_main import test_root"
+          },
+          {
+            "line_number": 4,
+            "content": ""
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "@pytest.mark.anyio"
+          },
+          {
+            "line_number": 7,
+            "content": "async def test_async_testing():"
+          },
+          {
+            "line_number": 8,
+            "content": "    await test_root()"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "docs_src/additional_responses/tutorial001_py310.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "symbol:docs_src/additional_responses/tutorial001_py310.py:Item:6",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 359,
+      "result": {
+        "status": "ok",
+        "file_path": "docs_src/additional_responses/tutorial001_py310.py",
+        "start_line": 1,
+        "end_line": 22,
+        "total_lines_in_file": 22,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "from fastapi import FastAPI"
+          },
+          {
+            "line_number": 2,
+            "content": "from fastapi.responses import JSONResponse"
+          },
+          {
+            "line_number": 3,
+            "content": "from pydantic import BaseModel"
+          },
+          {
+            "line_number": 4,
+            "content": ""
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "class Item(BaseModel):"
+          },
+          {
+            "line_number": 7,
+            "content": "    id: str"
+          },
+          {
+            "line_number": 8,
+            "content": "    value: str"
+          },
+          {
+            "line_number": 9,
+            "content": ""
+          },
+          {
+            "line_number": 10,
+            "content": ""
+          },
+          {
+            "line_number": 11,
+            "content": "class Message(BaseModel):"
+          },
+          {
+            "line_number": 12,
+            "content": "    message: str"
+          },
+          {
+            "line_number": 13,
+            "content": ""
+          },
+          {
+            "line_number": 14,
+            "content": ""
+          },
+          {
+            "line_number": 15,
+            "content": "app = FastAPI()"
+          },
+          {
+            "line_number": 16,
+            "content": ""
+          },
+          {
+            "line_number": 17,
+            "content": ""
+          },
+          {
+            "line_number": 18,
+            "content": "@app.get(\"/items/{item_id}\", response_model=Item, responses={404: {\"model\": Message}})"
+          },
+          {
+            "line_number": 19,
+            "content": "async def read_item(item_id: str):"
+          },
+          {
+            "line_number": 20,
+            "content": "    if item_id == \"foo\":"
+          },
+          {
+            "line_number": 21,
+            "content": "        return {\"id\": \"foo\", \"value\": \"there goes my hero\"}"
+          },
+          {
+            "line_number": 22,
+            "content": "    return JSONResponse(status_code=404, content={\"message\": \"Item not found\"})"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "docs_src/additional_responses/tutorial001_py310.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "symbol:docs_src/additional_responses/tutorial001_py310.py:Message:11",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 359,
+      "result": {
+        "status": "ok",
+        "file_path": "docs_src/additional_responses/tutorial001_py310.py",
+        "start_line": 1,
+        "end_line": 22,
+        "total_lines_in_file": 22,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "from fastapi import FastAPI"
+          },
+          {
+            "line_number": 2,
+            "content": "from fastapi.responses import JSONResponse"
+          },
+          {
+            "line_number": 3,
+            "content": "from pydantic import BaseModel"
+          },
+          {
+            "line_number": 4,
+            "content": ""
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "class Item(BaseModel):"
+          },
+          {
+            "line_number": 7,
+            "content": "    id: str"
+          },
+          {
+            "line_number": 8,
+            "content": "    value: str"
+          },
+          {
+            "line_number": 9,
+            "content": ""
+          },
+          {
+            "line_number": 10,
+            "content": ""
+          },
+          {
+            "line_number": 11,
+            "content": "class Message(BaseModel):"
+          },
+          {
+            "line_number": 12,
+            "content": "    message: str"
+          },
+          {
+            "line_number": 13,
+            "content": ""
+          },
+          {
+            "line_number": 14,
+            "content": ""
+          },
+          {
+            "line_number": 15,
+            "content": "app = FastAPI()"
+          },
+          {
+            "line_number": 16,
+            "content": ""
+          },
+          {
+            "line_number": 17,
+            "content": ""
+          },
+          {
+            "line_number": 18,
+            "content": "@app.get(\"/items/{item_id}\", response_model=Item, responses={404: {\"model\": Message}})"
+          },
+          {
+            "line_number": 19,
+            "content": "async def read_item(item_id: str):"
+          },
+          {
+            "line_number": 20,
+            "content": "    if item_id == \"foo\":"
+          },
+          {
+            "line_number": 21,
+            "content": "        return {\"id\": \"foo\", \"value\": \"there goes my hero\"}"
+          },
+          {
+            "line_number": 22,
+            "content": "    return JSONResponse(status_code=404, content={\"message\": \"Item not found\"})"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "docs_src/additional_responses/tutorial001_py310.py",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "symbol:docs_src/additional_responses/tutorial001_py310.py:read_item:19",
+      "confidence_trigger": 0.77,
+      "output_size_tokens": 359,
+      "result": {
+        "status": "ok",
+        "file_path": "docs_src/additional_responses/tutorial001_py310.py",
+        "start_line": 1,
+        "end_line": 22,
+        "total_lines_in_file": 22,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "from fastapi import FastAPI"
+          },
+          {
+            "line_number": 2,
+            "content": "from fastapi.responses import JSONResponse"
+          },
+          {
+            "line_number": 3,
+            "content": "from pydantic import BaseModel"
+          },
+          {
+            "line_number": 4,
+            "content": ""
+          },
+          {
+            "line_number": 5,
+            "content": ""
+          },
+          {
+            "line_number": 6,
+            "content": "class Item(BaseModel):"
+          },
+          {
+            "line_number": 7,
+            "content": "    id: str"
+          },
+          {
+            "line_number": 8,
+            "content": "    value: str"
+          },
+          {
+            "line_number": 9,
+            "content": ""
+          },
+          {
+            "line_number": 10,
+            "content": ""
+          },
+          {
+            "line_number": 11,
+            "content": "class Message(BaseModel):"
+          },
+          {
+            "line_number": 12,
+            "content": "    message: str"
+          },
+          {
+            "line_number": 13,
+            "content": ""
+          },
+          {
+            "line_number": 14,
+            "content": ""
+          },
+          {
+            "line_number": 15,
+            "content": "app = FastAPI()"
+          },
+          {
+            "line_number": 16,
+            "content": ""
+          },
+          {
+            "line_number": 17,
+            "content": ""
+          },
+          {
+            "line_number": 18,
+            "content": "@app.get(\"/items/{item_id}\", response_model=Item, responses={404: {\"model\": Message}})"
+          },
+          {
+            "line_number": 19,
+            "content": "async def read_item(item_id: str):"
+          },
+          {
+            "line_number": 20,
+            "content": "    if item_id == \"foo\":"
+          },
+          {
+            "line_number": 21,
+            "content": "        return {\"id\": \"foo\", \"value\": \"there goes my hero\"}"
+          },
+          {
+            "line_number": 22,
+            "content": "    return JSONResponse(status_code=404, content={\"message\": \"Item not found\"})"
+          }
+        ]
+      }
+    }
+  ],
+  "trace_file": "experiments\\reports\\external-drilldown\\batch-20260405-subagents\\fastapi-tf4-001\\traces\\trace-20260405T134249.jsonl"
+}

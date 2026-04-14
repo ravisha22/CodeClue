@@ -1,0 +1,25 @@
+{
+  "task_id": "gin-tf5-001",
+  "question": "How does Gin handle authentication middleware? What is the BasicAuth implementation and are there security concerns?",
+  "before_answer_file": "answers/pre-answer.md",
+  "after_answer_file": "answers/post-answer.md",
+  "judge_result_file": "answers/judge-result.json",
+  "consumer_model_before": null,
+  "consumer_model_after": null,
+  "judge_model": null,
+  "judge_mode": null,
+  "evidence_tier": null,
+  "metrics": {
+    "before_fidelity": null,
+    "after_fidelity": null,
+    "delta": null,
+    "clue_tokens": 120781,
+    "drill_down_tokens": 99551,
+    "total_tokens": 220332,
+    "raw_estimate_tokens": 170116,
+    "etrr": -0.2952,
+    "h5_pass": null,
+    "h7_pass": false
+  },
+  "notes": "Populate token metrics from the measured drill-down run. Set h5_pass true only if after_fidelity - before_fidelity >= 0.10."
+}

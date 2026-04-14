@@ -1,0 +1,262 @@
+=CC v2 chi@HEAD 74mod 410sym
+? How would you refactor the chi router tree for better performance?
+
+
+-- TREE
+_examples/  (19 files)
+  custom-handler/  custom-method/  fileserver/  graceful/  hello-world/  limits/  logging/  pathvalue/  rest/  router-walk/  ...+2
+middleware/  (45 files)
+chain.go  chi.go  context.go  context_test.go  mux.go  mux_test.go  path_value_test.go  pattern_test.go  tree.go  tree_test.go
+
+-- INDEX
+tree.go                                         877L  RegisterMethod, Route, Walk, endpoint, Value
+middleware/compress.go                          392L  Compress, Handler, SetEncoder, selectEncoder, Compressor
+_examples/custom-handler/main.go                 35L  ServeHTTP, customHandler, main
+_examples/custom-method/main.go                  33L  init, main
+_examples/fileserver/main.go                     65L  FileServer, main
+_examples/graceful/main.go                       69L  main, service
+_examples/hello-world/main.go                    21L  main
+_examples/limits/main.go                         92L  main
+_examples/logging/main.go                         9L  main
+_examples/pathvalue/main.go                      25L  main, pathValueHandler
+_examples/rest/main.go                          520L  AdminOnly, Article, ArticleCtx, ArticlePayload, Bind
+_examples/router-walk/main.go                    42L  Ping, main
+_examples/todos-resource/main.go                 30L  main
+_examples/todos-resource/todos.go                53L  Create, Delete, Get, List, Routes
+_examples/todos-resource/users.go                48L  Create, Delete, Get, List, Routes
+_examples/versions/data/article.go                9L  Article
+_examples/versions/data/errors.go                28L  PresentError
+_examples/versions/main.go                      154L  apiVersionCtx, articleRouter, getArticle, listArticles, main
+_examples/versions/presenter/v1/article.go       22L  Render, Article, NewArticleResponse
+_examples/versions/presenter/v2/article.go       30L  Render, Article, NewArticleResponse
+_examples/versions/presenter/v3/article.go       39L  Render, Article, NewArticleResponse
+chain.go                                         49L  Chain, ServeHTTP, ChainHandler, Handler, HandlerFunc
+  ...and 52 more modules
+
+-- SYM
+Mux.handle                          M mux.go:416    handle registers a http.Handler in the routing ...
+compressResponseWriter.writer       M middleware/compress.go:326    function compressResponseWriter.writer
+flushWriter.Flush                   M middleware/wrap_writer.go:147    function flushWriter.Flush
+Mux.Method                          M mux.go:127    Method adds the route `pattern` that matches `m...
+chain                               M chain.go:36     chain builds a http.Handler composed of an inli...
+ThrottleWithOpts                    M middleware/throttle.go:44     ThrottleWithOpts is a middleware that limits nu...
+hijackWriter.Hijack                 M middleware/wrap_writer.go:160    function hijackWriter.Hijack
+patNextSegment                      M tree.go:687    patNextSegment returns the next segment details...
+walk                                M tree.go:838    function walk
+basicWriter.WriteHeader             M middleware/wrap_writer.go:82     function basicWriter.WriteHeader
+UserPayload.Render                  M _examples/rest/main.go:305    function UserPayload.Render
+matchAcceptEncoding                 M middleware/compress.go:240    function matchAcceptEncoding
+NewArticleListResponse              M _examples/rest/main.go:378    function NewArticleListResponse
+Context                             C context.go:45     Context is the default routing context set on t...
+RouteContext                        M context.go:27     RouteContext returns chi's routing Context obje...
+ArticleResponse                     C _examples/rest/main.go:350    ArticleResponse is the response payload for the...
+NewArticleResponse                  M _examples/rest/main.go:360    function NewArticleResponse
+FileServer                          M _examples/fileserver/main.go:48     FileServer conveniently sets up a http.FileServ...
+service                             M _examples/graceful/main.go:45     function service
+adminRouter                         M _examples/rest/main.go:219    A completely separate router for administrator ...
+basicAuthFailed                     M middleware/basic_auth.go:30     function basicAuthFailed
+Compressor.selectEncoder            M middleware/compress.go:211    selectEncoder returns the encoder, the name of ...
+compressResponseWriter.WriteHeader  M middleware/compress.go:290    function compressResponseWriter.WriteHeader
+split                               M middleware/content_charset.go:37     Split a string in two parts, cleaning any white...
+Profiler                            M middleware/profiler.go:23     Profiler is a convenient subrouter used for mou...
+realIP                              M middleware/realip.go:42     function realIP
+prettyStack.decorateSourceLine      M middleware/recoverer.go:166    function prettyStack.decorateSourceLine
+prettyStack.parse                   M middleware/recoverer.go:69     function prettyStack.parse
+Pattern.Match                       M middleware/route_headers.go:141    function Pattern.Match
+Mux.Find                            M mux.go:368    Find searches the routing tree for the pattern ...
+Mux.Handle                          M mux.go:109    Handle adds the route `pattern` that matches an...
+Mux.NotFoundHandler                 M mux.go:398    NotFoundHandler returns the default Mux 404 res...
+Mux.With                            M mux.go:236    With adds inline middlewares for an endpoint ha...
+node.setEndpoint                    M tree.go:344    function node.setEndpoint
+nodes.Swap                          M tree.go:788    function nodes.Swap
+Mux.updateRouteHandler              M mux.go:511    updateRouteHandler builds the single mux handle...
+ErrInvalidRequest                   M _examples/rest/main.go:415    function ErrInvalidRequest
+todosResource.Get                   M _examples/todos-resource/todos.go:39     function todosResource.Get
+NewUserPayloadResponse              M _examples/rest/main.go:295    function NewUserPayloadResponse
+User                                C _examples/rest/main.go:440    User data model
+dbGetUser                           M _examples/rest/main.go:513    function dbGetUser
+UserPayload.Bind                    M _examples/rest/main.go:301    Bind on UserPayload will run after the unmarsha...
+usersResource.Get                   M _examples/todos-resource/users.go:38     function usersResource.Get
+ErrRender                           M _examples/rest/main.go:424    function ErrRender
+apiVersionCtx                       M _examples/versions/main.go:51     function apiVersionCtx
+articleRouter                       M _examples/versions/main.go:60     function articleRouter
+NewRouter                           M chi.go:60     NewRouter returns a new Mux object that impleme...
+Router                              C chi.go:66     Router consisting of the core routing methods u...
+Compressor                          C middleware/compress.go:46     Compressor represents a set of encoding configu...
+NewCompressor                       M middleware/compress.go:63     NewCompressor creates a new Compressor that wil...
+basicWriter.maybeWriteHeader        M middleware/wrap_writer.go:116    function basicWriter.maybeWriteHeader
+Route                               C tree.go:824    Route describes the details of a routing handler.
+node.findRoute                      M tree.go:401    Recursive edge traversal by checking all nodeTy...
+Article                             C _examples/rest/main.go:447    Article data model.
+LogEntry                            C middleware/logger.go:69     LogEntry records the final log when a request c...
+usersResource.Delete                M _examples/todos-resource/users.go:46     function usersResource.Delete
+Context.RoutePattern                M context.go:123    RoutePattern builds the routing pattern string ...
+URLParam                            M context.go:10     URLParam returns the url parameter from a http....
+dbRemoveArticle                     M _examples/rest/main.go:503    function dbRemoveArticle
+todosResource.Delete                M _examples/todos-resource/todos.go:47     function todosResource.Delete
+GetArticle                          M _examples/rest/main.go:173    GetArticle returns the specific Article.
+dbGetArticle                        M _examples/rest/main.go:475    function dbGetArticle
+dbGetArticleBySlug                  M _examples/rest/main.go:484    function dbGetArticleBySlug
+DefaultLogFormatter.NewLogEntry     M middleware/logger.go:98     NewLogEntry creates a new LogEntry for the requ...
+WithLogEntry                        M middleware/logger.go:81     WithLogEntry sets the in-context LogEntry for a...
+defaultLogEntry.Write               M middleware/logger.go:134    function defaultLogEntry.Write
+Handler.ServeHTTP                   M _examples/custom-handler/main.go:12     function Handler.ServeHTTP
+customHandler                       M _examples/custom-handler/main.go:26     function customHandler
+main                                M _examples/custom-handler/main.go:20     function main
+init                                M _examples/custom-method/main.go:10     function init
+main                                M _examples/custom-method/main.go:16     function main
+main                                M _examples/fileserver/main.go:28     function main
+main                                M _examples/graceful/main.go:17     function main
+main                                M _examples/hello-world/main.go:10     function main
+main                                M _examples/limits/main.go:21     function main
+main                                M _examples/logging/main.go:7      function main
+main                                M _examples/pathvalue/main.go:10     function main
+pathValueHandler                    M _examples/pathvalue/main.go:20     pathValueHandler retrieves a URL parameter usin...
+  ...and 215 more symbols
+
+-- FOCUS
+adminRouter (_examples/rest/main.go:219-219)
+  A completely separate router for administrator routes
+  called_by: main
+
+articleRouter (_examples/versions/main.go:60-60)
+  called_by: main, main, main
+
+HeaderRouter.Handler (middleware/route_headers.go:77-77)
+  sig: HeaderRouter.Handler(next http.Handler)
+
+HeaderRouter.Route (middleware/route_headers.go:48-48)
+  sig: HeaderRouter.Route(header, match string, middlewareHandler func(next http.H...)
+
+HeaderRouter.RouteAny (middleware/route_headers.go:58-58)
+  sig: HeaderRouter.RouteAny(header string, match []string, middlewareHandler func(ne...)
+
+HeaderRouter.RouteDefault (middleware/route_headers.go:72-72)
+  sig: HeaderRouter.RouteDefault(handler func(next http.Handler)
+
+Router (chi.go:66-66)
+  Router consisting of the core routing methods used by chi's Mux, using only the standard net/http.
+  called_by: main
+
+Routes (chi.go:118-118)
+  Routes interface adds two methods for router traversal, which is also used by the `docgen` subpackage to generation docu
+
+Route (tree.go:824-824)
+  Route describes the details of a routing handler.
+  called_by: FindRoute
+
+endpoint (tree.go:119-119)
+  type endpoint
+
+node (tree.go:88-88)
+  type node
+  methods: FindRoute, InsertRoute, addChild, findEdge, findPattern, findRoute
+
+Ping (_examples/router-walk/main.go:40-40)
+  Ping returns pong
+  sig: Ping(w http.ResponseWriter, r *http.Request)
+
+main (_examples/router-walk/main.go:11-11)
+
+RegisterMethod (tree.go:61-61)
+  RegisterMethod adds support for custom HTTP method handlers, available via Router#Method and Router#MethodFunc
+  sig: RegisterMethod(method string)
+
+Walk (tree.go:834-834)
+  Walk walks any router tree that implements Routes interface.
+  sig: Walk(r Routes, walkFn WalkFunc)
+  calls: walk
+
+endpoints.Value (tree.go:130-130)
+  sig: endpoints.Value(method methodTyp)
+
+longestPrefix (tree.go:774-774)
+  longestPrefix finds the length of the shared prefix of two strings
+  sig: longestPrefix(k1, k2 string)
+
+node.InsertRoute (tree.go:139-139)
+  sig: node.InsertRoute(method methodTyp, pattern string, handler http.Handler)
+  calls: setEndpoint
+
+node.addChild (tree.go:235-235)
+  addChild appends the new `child` node to the tree using the `pattern` as the trie key.
+  sig: node.addChild(child *node, prefix string)
+  calls: patNextSegment
+
+node.findEdge (tree.go:546-546)
+  sig: node.findEdge(ntyp nodeTyp, label byte)
+
+node.findPattern (tree.go:578-578)
+  sig: node.findPattern(pattern string)
+
+node.getEdge (tree.go:331-331)
+  sig: node.getEdge(ntyp nodeTyp, label, tail byte, prefix string)
+
+node.isLeaf (tree.go:574-574)
+
+node.replaceChild (tree.go:319-319)
+  sig: node.replaceChild(label, tail byte, child *node)
+
+node.walk (tree.go:668-668)
+  sig: node.walk(fn func(eps endpoints, subroutes Routes)
+
+nodes.Len (tree.go:787-787)
+
+nodes.Less (tree.go:789-789)
+  sig: nodes.Less(i, j int)
+
+nodes.Sort (tree.go:786-786)
+  Sort the list of nodes by label
+
+nodes.Swap (tree.go:788-788)
+  sig: nodes.Swap(i, j int)
+  called_by: tailSort
+
+nodes.findEdge (tree.go:802-802)
+  sig: nodes.findEdge(label byte)
+
+main (chi.go:16-16)
+  Package chi is a small, idiomatic and composable router for building HTTP services.
+  calls: NewRouter, Router
+
+NewRouter (chi.go:60-60)
+  NewRouter returns a new Mux object that implements the Router interface.
+  called_by: main
+
+node.FindRoute (tree.go:374-374)
+  sig: node.FindRoute(rctx *Context, method methodTyp, path string)
+  calls: Route, findRoute
+
+node.findRoute (tree.go:401-401)
+  Recursive edge traversal by checking all nodeTyp groups along the way.
+  sig: node.findRoute(rctx *Context, method methodTyp, path string)
+  called_by: FindRoute
+
+walk (tree.go:838-838)
+  sig: walk(r Routes, walkFn WalkFunc, parentRoute string, parentMw ...)
+  called_by: Walk, routes
+
+node.routes (tree.go:620-620)
+  calls: walk
+
+node.setEndpoint (tree.go:344-344)
+  sig: node.setEndpoint(method methodTyp, handler http.Handler, pattern string)
+  called_by: InsertRoute
+
+patNextSegment (tree.go:687-687)
+  patNextSegment returns the next segment details from a pattern: node type, param key, regexp string, param tail byte, pa
+  sig: patNextSegment(pattern string)
+  called_by: addChild, patParamKeys
+
+patParamKeys (tree.go:755-755)
+  sig: patParamKeys(pattern string)
+  calls: patNextSegment
+
+nodes.tailSort (tree.go:793-793)
+  tailSort pushes nodes with '/' as the tail to the end of the list for param nodes.
+  calls: Swap
+
+-- GAPS
+- Question mentions [better, performance, refactor, you] — not found in focus or symbol index
+- Module tree_test.go matches question but has no focus detail
+  > drill: tree_test.go

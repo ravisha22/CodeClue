@@ -1,0 +1,589 @@
+{
+  "total_tasks": 20,
+  "sufficient": 13,
+  "dfcr": 0.65,
+  "ddr": 0.35,
+  "mean_fidelity": 0.637,
+  "per_task": [
+    {
+      "task_id": "flask-tf1-refactor-sessions",
+      "repo": "flask",
+      "family": "TF1",
+      "fidelity": 0.5,
+      "sufficient": false,
+      "answerable": 0,
+      "partial": 4,
+      "missing": 0,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "SessionInterface.open_session and save_session are the core abstract methods",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "SecureCookieSessionInterface uses URLSafeTimedSerializer with SECRET_KEY for signing",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Flask app stores session_interface property which can be replaced",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Session persistence is handled via response hooks in request teardown",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "flask-tf2-request-context-impact",
+      "repo": "flask",
+      "family": "TF2",
+      "fidelity": 0.75,
+      "sufficient": true,
+      "answerable": 3,
+      "partial": 0,
+      "missing": 1,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "RequestContext is created for each request and manages g, request, and session proxies",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "AppContext holds app-level globals and is created via app.app_context()",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "RequestContext depends on AppContext being active in the context stack",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Lifecycle phases trigger signals: appcontext_pushed, request_started, request_finished, appcontext_popped",
+          "score": "MISSING"
+        }
+      ]
+    },
+    {
+      "task_id": "flask-tf3-blueprint-error-handlers",
+      "repo": "flask",
+      "family": "TF3",
+      "fidelity": 1.0,
+      "sufficient": true,
+      "answerable": 4,
+      "partial": 0,
+      "missing": 0,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "Blueprint.errorhandler decorator registers error handlers specific to the blueprint",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "BlueprintSetupState.add_url_rule integrates routes into the app URL map",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Blueprint defers error handler registration until register_blueprint is called",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Error handlers can be registered per blueprint or globally on Flask app",
+          "score": "ANSWERABLE"
+        }
+      ]
+    },
+    {
+      "task_id": "flask-tf4-post-request-lifecycle",
+      "repo": "flask",
+      "family": "TF4",
+      "fidelity": 0.75,
+      "sufficient": true,
+      "answerable": 2,
+      "partial": 2,
+      "missing": 0,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "Flask.wsgi_app is the WSGI entry point that creates RequestContext for each request",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Before dispatch, request_started signal is sent",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "View function is called via Flask.dispatch_request which looks up endpoint and calls view_func",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "After response, request_tearing_down signal fires and session/cookies are finalized",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "flask-tf5-session-security",
+      "repo": "flask",
+      "family": "TF5",
+      "fidelity": 0.375,
+      "sufficient": false,
+      "answerable": 1,
+      "partial": 1,
+      "missing": 2,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "Session data is cryptographically signed with SECRET_KEY to detect tampering",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "itsdangerous URLSafeTimedSerializer includes timestamp to prevent replay attacks",
+          "score": "MISSING"
+        },
+        {
+          "fact": "Session is stored as cookie value with optional secure, httponly, and samesite flags",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "NullSession raises RuntimeError if SECRET_KEY is not set, preventing unencrypted sessions",
+          "score": "MISSING"
+        }
+      ]
+    },
+    {
+      "task_id": "httpx-tf1-auth-extraction",
+      "repo": "httpx",
+      "family": "TF1",
+      "fidelity": 0.625,
+      "sufficient": true,
+      "answerable": 1,
+      "partial": 3,
+      "missing": 0,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "Auth.auth_flow uses generator pattern with yield to dispatch requests and receive responses",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "sync_auth_flow and async_auth_flow override the base flow for blocking/async operations",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "BasicAuth encodes credentials with base64 into Authorization header",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "DigestAuth implements RFC 2617 challenge-response with nonce and opaque values",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "httpx-tf2-transport-impact",
+      "repo": "httpx",
+      "family": "TF2",
+      "fidelity": 0.75,
+      "sufficient": true,
+      "answerable": 2,
+      "partial": 2,
+      "missing": 0,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "BaseTransport.handle_request accepts Request and returns Response",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Client stores _transport and raises RuntimeError if modified after request operations",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Transport is passed on Client instantiation; None creates default HTTPTransport",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "AsyncHTTPTransport.handle_async_request must be implemented for async clients",
+          "score": "ANSWERABLE"
+        }
+      ]
+    },
+    {
+      "task_id": "httpx-tf3-decoder-integration",
+      "repo": "httpx",
+      "family": "TF3",
+      "fidelity": 1.0,
+      "sufficient": true,
+      "answerable": 4,
+      "partial": 0,
+      "missing": 0,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "ContentDecoder base class defines decode(bytes) and flush() interface",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Brotli and Zstandard are optional imports with graceful fallback",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Response body is automatically decoded based on Content-Encoding header",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "DeflateDecoder implements fallback for raw vs zlib format detection",
+          "score": "ANSWERABLE"
+        }
+      ]
+    },
+    {
+      "task_id": "httpx-tf4-multipart-upload",
+      "repo": "httpx",
+      "family": "TF4",
+      "fidelity": 0.625,
+      "sufficient": true,
+      "answerable": 2,
+      "partial": 1,
+      "missing": 1,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "MultipartEncoder generates boundary string and encodes fields with CRLF delimiters",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Content can be bytes, str, file-like with read method, or async generator",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Streaming requests bypass body buffering for memory efficiency",
+          "score": "MISSING"
+        },
+        {
+          "fact": "Content-Length header is set for multipart uploads to enable progress tracking",
+          "score": "ANSWERABLE"
+        }
+      ]
+    },
+    {
+      "task_id": "httpx-tf5-redirect-security",
+      "repo": "httpx",
+      "family": "TF5",
+      "fidelity": 0.5,
+      "sufficient": false,
+      "answerable": 0,
+      "partial": 4,
+      "missing": 0,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "URLs are validated and normalized on instantiation to prevent injection",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Client enforces DEFAULT_MAX_REDIRECTS limit to prevent redirect loops",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "HTTPS-to-HTTP downgrades are detected during redirect following",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "TooManyRedirects exception raised when redirect count exceeds limit",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "gin-tf1-context-pooling",
+      "repo": "gin",
+      "family": "TF1",
+      "fidelity": 0.625,
+      "sufficient": true,
+      "answerable": 2,
+      "partial": 1,
+      "missing": 1,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "Context struct holds writermem, Request, Params, handlers chain, and Keys map",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Engine already uses sync.Pool for Context reuse via engine.pool",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Context has sync.RWMutex protecting Keys map for thread-safe concurrent access",
+          "score": "MISSING"
+        },
+        {
+          "fact": "Handler chain is accumulated from RouterGroup.Handlers via combineHandlers method",
+          "score": "ANSWERABLE"
+        }
+      ]
+    },
+    {
+      "task_id": "gin-tf2-routing-tree-impact",
+      "repo": "gin",
+      "family": "TF2",
+      "fidelity": 0.875,
+      "sufficient": true,
+      "answerable": 3,
+      "partial": 1,
+      "missing": 0,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "methodTrees maintains separate trie for each HTTP method (GET, POST, etc)",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "node struct uses path prefix, children slice, and wildcard indicators for efficient matching",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "addRoute inserts into the radix tree and validates for conflicting wildcards",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Engine.trees is a slice of methodTree; routes are frozen after first request in release mode",
+          "score": "ANSWERABLE"
+        }
+      ]
+    },
+    {
+      "task_id": "gin-tf3-middleware-integration",
+      "repo": "gin",
+      "family": "TF3",
+      "fidelity": 0.75,
+      "sufficient": true,
+      "answerable": 2,
+      "partial": 2,
+      "missing": 0,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "HandlerFunc signature is func(*Context) receiving context for all middleware operations",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "RouterGroup.Use appends middleware to Handlers slice; applies to all routes in group",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Context.handlers holds accumulated chain and Context.index tracks execution position",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Context.Next calls the next handler in chain; Context.Abort stops the chain",
+          "score": "ANSWERABLE"
+        }
+      ]
+    },
+    {
+      "task_id": "gin-tf4-basic-auth-flow",
+      "repo": "gin",
+      "family": "TF4",
+      "fidelity": 0.625,
+      "sufficient": true,
+      "answerable": 2,
+      "partial": 1,
+      "missing": 1,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "BasicAuthForRealm returns HandlerFunc that extracts Authorization header",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "searchCredential uses subtle.ConstantTimeCompare to prevent timing attacks",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Failed auth returns 401 with WWW-Authenticate header and calls Context.AbortWithStatus",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Successful auth stores username in Context via c.Set(AuthUserKey, user)",
+          "score": "MISSING"
+        }
+      ]
+    },
+    {
+      "task_id": "gin-tf5-credential-handling",
+      "repo": "gin",
+      "family": "TF5",
+      "fidelity": 0.25,
+      "sufficient": false,
+      "answerable": 0,
+      "partial": 2,
+      "missing": 2,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "AuthUserKey is a constant string key for storing authenticated user identity",
+          "score": "MISSING"
+        },
+        {
+          "fact": "Context.Keys map is protected by sync.RWMutex for concurrent request safety",
+          "score": "MISSING"
+        },
+        {
+          "fact": "searchCredential uses subtle.ConstantTimeCompare to prevent timing-based credential leaks",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Context provides Set/Get interface for storing request-scoped sensitive data",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "fastapi-tf1-dependency-injection",
+      "repo": "fastapi",
+      "family": "TF1",
+      "fidelity": 0.375,
+      "sufficient": false,
+      "answerable": 1,
+      "partial": 1,
+      "missing": 2,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "get_dependant analyzes function signatures and annotations to extract dependency metadata",
+          "score": "MISSING"
+        },
+        {
+          "fact": "Dependant stores dependency chain including path params, query params, body, and sub-dependents",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Dependencies can be sync callable, async callable, or context manager",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Cache keys are generated per unique dependency signature for memoization",
+          "score": "MISSING"
+        }
+      ]
+    },
+    {
+      "task_id": "fastapi-tf2-openapi-routing",
+      "repo": "fastapi",
+      "family": "TF2",
+      "fidelity": 0.75,
+      "sufficient": true,
+      "answerable": 2,
+      "partial": 2,
+      "missing": 0,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "APIRoute stores operation_id and generates OpenAPI spec via schema generation",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "generate_unique_id creates operationId from route name and path for uniqueness",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "FastAPI.openapi method generates full OpenAPI 3.0 schema with all route metadata",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Operation IDs are used by client generators and must be unique across all paths",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "fastapi-tf3-security-scheme",
+      "repo": "fastapi",
+      "family": "TF3",
+      "fidelity": 0.875,
+      "sufficient": true,
+      "answerable": 3,
+      "partial": 1,
+      "missing": 0,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "SecurityBase is the parent class for all security schemes with model attribute",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "OAuth2PasswordRequestForm collects username/password as form data per OAuth2 spec",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Security is integrated via Depends() annotation on path operation function parameters",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Security schemes appear in OpenAPI spec securitySchemes section automatically",
+          "score": "ANSWERABLE"
+        }
+      ]
+    },
+    {
+      "task_id": "fastapi-tf4-form-parsing",
+      "repo": "fastapi",
+      "family": "TF4",
+      "fidelity": 0.375,
+      "sufficient": false,
+      "answerable": 1,
+      "partial": 1,
+      "missing": 2,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "Form() parameter triggers multipart or urlencoded parsing based on Content-Type",
+          "score": "MISSING"
+        },
+        {
+          "fact": "solve_dependencies resolves all parameters and returns dict of resolved values",
+          "score": "MISSING"
+        },
+        {
+          "fact": "RequestValidationError raised if form data fails Pydantic model validation",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "File uploads use UploadFile wrapper with async read/write interface",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "fastapi-tf5-input-validation",
+      "repo": "fastapi",
+      "family": "TF5",
+      "fidelity": 0.375,
+      "sufficient": false,
+      "answerable": 0,
+      "partial": 3,
+      "missing": 1,
+      "total_facts": 4,
+      "fact_scores": [
+        {
+          "fact": "All inputs are validated against Pydantic models with type checking and coercion",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Path parameters are automatically validated by type hints",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Query parameters support constraints like min_length, max_length, regex",
+          "score": "MISSING"
+        },
+        {
+          "fact": "RequestValidationError raised with detailed field-level error information on validation failure",
+          "score": "PARTIAL"
+        }
+      ]
+    }
+  ]
+}

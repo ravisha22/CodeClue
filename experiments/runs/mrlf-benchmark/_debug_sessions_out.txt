@@ -1,0 +1,98 @@
+=== Session symbols in graph ===
+  function        sym=_get_session                             id=symbol:src/flask/ctx.py:AppContext._get_session:381
+  function        sym=session                                  id=symbol:src/flask/ctx.py:AppContext.session:396
+  class           sym=SessionMixinProxy                        id=symbol:src/flask/globals.py:SessionMixinProxy:30
+  class           sym=NullSession                              id=symbol:src/flask/sessions.py:NullSession:83
+  class           sym=SecureCookieSession                      id=symbol:src/flask/sessions.py:SecureCookieSession:57
+  function        sym=open_session                             id=symbol:src/flask/sessions.py:SecureCookieSessionInterface.open_session
+  function        sym=save_session                             id=symbol:src/flask/sessions.py:SecureCookieSessionInterface.save_session
+  class           sym=SecureCookieSessionInterface             id=symbol:src/flask/sessions.py:SecureCookieSessionInterface:284
+  function        sym=is_null_session                          id=symbol:src/flask/sessions.py:SessionInterface.is_null_session:162
+  function        sym=make_null_session                        id=symbol:src/flask/sessions.py:SessionInterface.make_null_session:150
+  function        sym=open_session                             id=symbol:src/flask/sessions.py:SessionInterface.open_session:249
+  function        sym=save_session                             id=symbol:src/flask/sessions.py:SessionInterface.save_session:263
+  class           sym=SessionInterface                         id=symbol:src/flask/sessions.py:SessionInterface:100
+  class           sym=SessionMixin                             id=symbol:src/flask/sessions.py:SessionMixin:24
+  function        sym=session_transaction                      id=symbol:src/flask/testing.py:FlaskClient.session_transaction:136
+  function        sym=test_missing_session                     id=symbol:tests/test_basic.py:test_missing_session:380
+  function        sym=test_session_accessed                    id=symbol:tests/test_basic.py:test_session_accessed:234
+  function        sym=test_session_cookie_setting              id=symbol:tests/test_basic.py:test_session_cookie_setting:498
+  function        sym=test_session_expiration                  id=symbol:tests/test_basic.py:test_session_expiration:421
+  function        sym=test_session_path                        id=symbol:tests/test_basic.py:test_session_path:276
+  function        sym=test_session_refresh_vary                id=symbol:tests/test_basic.py:test_session_refresh_vary:600
+  function        sym=get_session                              id=symbol:tests/test_basic.py:test_session_secret_key_fallbacks.get_sessi
+  function        sym=set_session                              id=symbol:tests/test_basic.py:test_session_secret_key_fallbacks.set_sessi
+  function        sym=test_session_secret_key_fallbacks        id=symbol:tests/test_basic.py:test_session_secret_key_fallbacks:393
+  function        sym=dump_session_contents                    id=symbol:tests/test_basic.py:test_session_special_types.dump_session_con
+  function        sym=test_session_special_types               id=symbol:tests/test_basic.py:test_session_special_types:467
+  function        sym=dump_session_contents                    id=symbol:tests/test_basic.py:test_session_stored_last.dump_session_conte
+  function        sym=modify_session                           id=symbol:tests/test_basic.py:test_session_stored_last.modify_session:455
+  function        sym=test_session_stored_last                 id=symbol:tests/test_basic.py:test_session_stored_last:453
+  function        sym=test_session_using_application_root      id=symbol:tests/test_basic.py:test_session_using_application_root:288
+  function        sym=test_session_using_samesite_attribute    id=symbol:tests/test_basic.py:test_session_using_samesite_attribute:353
+  function        sym=test_session_using_session_settings      id=symbol:tests/test_basic.py:test_session_using_session_settings:310
+  function        sym=set_session                              id=symbol:tests/test_basic.py:test_session_vary_cookie.set_session:541
+  function        sym=test_session_vary_cookie                 id=symbol:tests/test_basic.py:test_session_vary_cookie:539
+  function        sym=test_session_lifetime                    id=symbol:tests/test_config.py:test_session_lifetime:211
+  function        sym=test_stream_keeps_session                id=symbol:tests/test_helpers.py:TestStreaming.test_stream_keeps_session:2
+  class           sym=PathAwareSessionInterface                id=symbol:tests/test_reqctx.py:test_session_dynamic_cookie_name.PathAware
+  function        sym=test_session_dynamic_cookie_name         id=symbol:tests/test_reqctx.py:test_session_dynamic_cookie_name:229
+  function        sym=open_session                             id=symbol:tests/test_reqctx.py:test_session_error_pops_context.FailingSes
+  class           sym=FailingSessionInterface                  id=symbol:tests/test_reqctx.py:test_session_error_pops_context.FailingSes
+  class           sym=SessionError                             id=symbol:tests/test_reqctx.py:test_session_error_pops_context.SessionErr
+  function        sym=test_session_error_pops_context          id=symbol:tests/test_reqctx.py:test_session_error_pops_context:205
+  function        sym=open_session                             id=symbol:tests/test_session_interface.py:test_open_session_with_endpoint
+  function        sym=save_session                             id=symbol:tests/test_session_interface.py:test_open_session_with_endpoint
+  class           sym=MySessionInterface                       id=symbol:tests/test_session_interface.py:test_open_session_with_endpoint
+  function        sym=test_open_session_with_endpoint          id=symbol:tests/test_session_interface.py:test_open_session_with_endpoint
+  function        sym=get_session                              id=symbol:tests/test_testing.py:test_redirect_session.get_session:147
+  function        sym=test_redirect_session                    id=symbol:tests/test_testing.py:test_redirect_session:140
+  function        sym=test_session_transaction_needs_cookies   id=symbol:tests/test_testing.py:test_session_transaction_needs_cookies:19
+  function        sym=test_session_transactions                id=symbol:tests/test_testing.py:test_session_transactions:157
+  function        sym=test_session_transactions_keep_context   id=symbol:tests/test_testing.py:test_session_transactions_keep_context:18
+  function        sym=test_session_transactions_no_null_sessions id=symbol:tests/test_testing.py:test_session_transactions_no_null_session
+
+=== Focus selection for 'refactor sessions' ===
+Total focus nodes: 80
+Session-related in focus: 36
+  test_missing_session (function)
+  test_session_accessed (function)
+  test_session_cookie_setting (function)
+  test_session_expiration (function)
+  test_session_path (function)
+  test_session_refresh_vary (function)
+  get_session (function)
+  set_session (function)
+  test_session_secret_key_fallbacks (function)
+  dump_session_contents (function)
+  test_session_special_types (function)
+  dump_session_contents (function)
+  modify_session (function)
+  test_session_stored_last (function)
+  test_session_using_application_root (function)
+  test_session_using_samesite_attribute (function)
+  test_session_using_session_settings (function)
+  set_session (function)
+  test_session_vary_cookie (function)
+  test_stream_keeps_session (function)
+  PathAwareSessionInterface (class)
+  test_session_dynamic_cookie_name (function)
+  open_session (function)
+  FailingSessionInterface (class)
+  SessionError (class)
+  test_session_error_pops_context (function)
+  open_session (function)
+  save_session (function)
+  MySessionInterface (class)
+  test_open_session_with_endpoint (function)
+  get_session (function)
+  test_redirect_session (function)
+  test_session_transaction_needs_cookies (function)
+  test_session_transactions (function)
+  test_session_transactions_keep_context (function)
+  test_session_transactions_no_null_sessions (function)
+
+=== Gold name matching ===
+  SessionInterface -> IN GRAPH but NOT in focus: SessionInterface (symbol:src/flask/sessions.py:SessionInterface:100)
+  SecureCookieSessionInterface -> IN GRAPH but NOT in focus: SecureCookieSessionInterface (symbol:src/flask/sessions.py:SecureCookieSessionIn)
+  SecureCookieSession -> IN GRAPH but NOT in focus: SecureCookieSession (symbol:src/flask/sessions.py:SecureCookieSession:5)

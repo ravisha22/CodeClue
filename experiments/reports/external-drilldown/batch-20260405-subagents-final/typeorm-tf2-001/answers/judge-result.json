@@ -1,0 +1,33 @@
+{
+  "task_id": "typeorm-tf2-001",
+  "before": {
+    "fidelity_score": 0.0,
+    "key_points_hit": [],
+    "key_points_missed": [
+      "QueryBuilder",
+      "Repository",
+      "SchemaBuilder",
+      "FindOptions",
+      "subscriber/listener",
+      "Connection"
+    ],
+    "hallucinations": []
+  },
+  "after": {
+    "fidelity_score": 0.5,
+    "key_points_hit": [
+      "QueryBuilder",
+      "subscriber/listener (EntityListenerMetadata)"
+    ],
+    "key_points_missed": [
+      "Repository",
+      "SchemaBuilder",
+      "FindOptions",
+      "Connection"
+    ],
+    "hallucinations": []
+  },
+  "delta": 0.5,
+  "did_drilldown_help": true,
+  "summary": "Drill-down helped identify query builders and listeners as dependent components, but failed to capture major components like Repository and Connection."
+}

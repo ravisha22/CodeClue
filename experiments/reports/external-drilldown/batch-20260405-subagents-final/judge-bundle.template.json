@@ -1,0 +1,60 @@
+{
+  "batch_id": "batch-20260405-subagents-final",
+  "tasks": [
+    {
+      "task_id": "flask-tf2-001",
+      "before": {
+        "fidelity_score": 0.0,
+        "key_points_hit": [],
+        "key_points_missed": [],
+        "hallucinations": []
+      },
+      "after": {
+        "fidelity_score": 0.0,
+        "key_points_hit": [],
+        "key_points_missed": [],
+        "hallucinations": []
+      },
+      "delta": 0.0,
+      "did_drilldown_help": true,
+      "summary": "one short paragraph"
+    },
+    {
+      "task_id": "httpx-tf2-001",
+      "before": {
+        "fidelity_score": 0.0,
+        "key_points_hit": [],
+        "key_points_missed": [],
+        "hallucinations": []
+      },
+      "after": {
+        "fidelity_score": 0.0,
+        "key_points_hit": [],
+        "key_points_missed": [],
+        "hallucinations": []
+      },
+      "delta": 0.0,
+      "did_drilldown_help": true,
+      "summary": "one short paragraph"
+    },
+    {
+      "task_id": "typeorm-tf2-001",
+      "before": {
+        "fidelity_score": 0.0,
+        "key_points_hit": [],
+        "key_points_missed": [],
+        "hallucinations": []
+      },
+      "after": {
+        "fidelity_score": 0.0,
+        "key_points_hit": [],
+        "key_points_missed": [],
+        "hallucinations": []
+      },
+      "delta": 0.0,
+      "did_drilldown_help": true,
+      "summary": "one short paragraph"
+    }
+  ],
+  "batch_summary": "one short paragraph"
+}

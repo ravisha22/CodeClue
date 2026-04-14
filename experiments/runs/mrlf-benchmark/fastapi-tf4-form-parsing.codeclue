@@ -1,0 +1,333 @@
+=CC v2 fastapi@HEAD 1122mod 5252sym
+? Trace the execution of form data parsing in a POST request. What errors could occur?
+
+
+-- TREE
+docs/  (3 files)
+docs_src/  (455 files)
+  additional_responses/  additional_status_codes/  advanced_middleware/  app_testing/  async_tests/  authentication_error_status_code/  background_tasks/  behind_a_proxy/  bigger_applications/  body/  ...+66
+fastapi/  (48 files)
+  _compat/  dependencies/  middleware/  openapi/  security/
+scripts/  (35 files)
+tests/  (581 files)
+  benchmarks/  test_modules_same_name_body/  test_request_params/  test_tutorial/  test_validate_response_recursive/
+
+-- INDEX
+docs/en/docs/js/custom.js                       184L  announceRandom, createTermynals, handleSponsorImages, loadVisibleTermynals, main
+docs/en/docs/js/init_kapa_widget.js              29L  
+docs/en/docs/js/termynal.js                     264L  Termynal
+docs_src/additional_responses/__init__.py         0L  
+docs_src/additional_responses/tutorial001_py310.py    22L  Item, Message, read_item
+docs_src/additional_responses/tutorial002_py310.py    28L  Item, read_item
+docs_src/additional_responses/tutorial003_py310.py    37L  Item, Message, read_item
+docs_src/additional_responses/tutorial004_py310.py    30L  Item, read_item
+docs_src/additional_status_codes/__init__.py      0L  
+docs_src/additional_status_codes/tutorial001_an_py310.py    25L  upsert_item
+docs_src/additional_status_codes/tutorial001_py310.py    23L  upsert_item
+docs_src/advanced_middleware/__init__.py          0L  
+docs_src/advanced_middleware/tutorial001_py310.py    11L  main
+docs_src/advanced_middleware/tutorial002_py310.py    13L  main
+docs_src/advanced_middleware/tutorial003_py310.py    11L  main
+docs_src/app_testing/__init__.py                  0L  
+docs_src/app_testing/app_a_py310/__init__.py      0L  
+docs_src/app_testing/app_a_py310/main.py          8L  read_main
+docs_src/app_testing/app_a_py310/test_main.py    11L  test_read_main
+docs_src/app_testing/app_b_an_py310/__init__.py     0L  
+docs_src/app_testing/app_b_an_py310/main.py      38L  Item, create_item, read_main
+  ...and 1101 more modules
+
+-- SYM
+api_route                           M fastapi/routing.py:1415   function api_route
+lenient_issubclass                  M fastapi/_compat/shared.py:47     function lenient_issubclass
+add_api_route                       M fastapi/routing.py:1332   function add_api_route
+_impartial                          M fastapi/dependencies/models.py:25     function _impartial
+_serialize_data                     M fastapi/routing.py:467    function _serialize_data
+get_graphql_response                M scripts/notify_translations.py:198    function get_graphql_response
+read_image                          M docs_src/stream_data/tutorial002_py310.py:12     function read_image
+get_langs                           M scripts/translate.py:36     function get_langs
+get_flat_models_from_model          M fastapi/_compat/v2.py:424    function get_flat_models_from_model
+make_not_authenticated_error        M fastapi/security/api_key.py:29     The WWW-Authenticate header is not standardized...
+get_lang_paths                      M scripts/docs.py:102    function get_lang_paths
+ModelField                          C fastapi/_compat/v2.py:101    class ModelField
+_unwrapped_call                     M fastapi/dependencies/models.py:18     function _unwrapped_call
+get                                 M fastapi/applications.py:1564   Add a *path operation* using an HTTP GET operat...
+_annotation_is_sequence             M fastapi/_compat/shared.py:58     function _annotation_is_sequence
+body                                M docs_src/custom_request_and_route/tutorial001_an_py310.py:10     async_function body
+body                                M docs_src/custom_request_and_route/tutorial001_py310.py:9      async_function body
+get_model_fields                    M fastapi/_compat/v2.py:382    function get_model_fields
+get_flat_models_from_field          M fastapi/_compat/v2.py:449    function get_flat_models_from_field
+get_default                         M fastapi/_compat/v2.py:155    function get_default
+generate_lang_path                  M scripts/translate.py:40     function generate_lang_path
+UserInDB                            C docs_src/security/tutorial003_an_py310.py:41     class UserInDB
+UserInDB                            C docs_src/security/tutorial003_py310.py:39     class UserInDB
+check_api_key                       M fastapi/security/api_key.py:45     function check_api_key
+make_not_authenticated_error        M fastapi/security/oauth2.py:401    The OAuth 2 specification doesn't define the ch...
+GzipRequest                         C docs_src/custom_request_and_route/tutorial001_an_py310.py:9      class GzipRequest
+GzipRequest                         C docs_src/custom_request_and_route/tutorial001_py310.py:8      class GzipRequest
+_add_lang_code_to_url               M scripts/doc_parsing_utils.py:279    function _add_lang_code_to_url
+get_flat_models_from_fields         M fastapi/_compat/v2.py:465    function get_flat_models_from_fields
+get_validation_alias                M fastapi/dependencies/utils.py:1052   function get_validation_alias
+iter_all_en_paths                   M scripts/translate.py:151    Iterate on the markdown files to translate in o...
+generate_en_path                    M scripts/translate.py:50     function generate_en_path
+EnFile                              C scripts/mkdocs_hooks.py:48     class EnFile
+make_not_authenticated_error        M fastapi/security/http.py:87     function make_not_authenticated_error
+_serialize_item                     M fastapi/routing.py:620    function _serialize_item
+_annotation_is_complex              M fastapi/_compat/shared.py:80     function _annotation_is_complex
+_serialize_sse_item                 M fastapi/routing.py:496    function _serialize_sse_item
+get                                 M fastapi/routing.py:1827   Add a *path operation* using an HTTP GET operat...
+APIWebSocketRoute                   C fastapi/routing.py:765    class APIWebSocketRoute
+_regenerate_error_with_loc          M fastapi/_compat/v2.py:473    function _regenerate_error_with_loc
+asdict                              M fastapi/_compat/v2.py:87     function asdict
+get_en_config                       M scripts/docs.py:98     function get_en_config
+get_graphql_response                M scripts/sponsors.py:92     function get_graphql_response
+_AsyncLiftContextManager            C fastapi/routing.py:165    Wraps a synchronous context manager to make it ...
+User                                C docs_src/graphql_/tutorial001_py310.py:7      class User
+_format_endpoint_context            M fastapi/exceptions.py:193    function _format_endpoint_context
+make_not_authenticated_error        M fastapi/security/open_id_connect_url.py:80     function make_not_authenticated_error
+add_permalinks_page                 M scripts/docs.py:650    Add or update header permalinks in specific pag...
+get_llm_translatable                M scripts/translate.py:212    function get_llm_translatable
+CodeIncludeInfo                     C scripts/doc_parsing_utils.py:37     class CodeIncludeInfo
+iter_en_paths_to_translate          M scripts/translate.py:175    function iter_en_paths_to_translate
+get_graphql_response                M scripts/contributors.py:121    function get_graphql_response
+get_flat_models_from_annotation     M fastapi/_compat/v2.py:433    function get_flat_models_from_annotation
+list_removable                      M scripts/translate.py:272    function list_removable
+resolve_file                        M scripts/mkdocs_hooks.py:63     function resolve_file
+User                                C docs_src/security/tutorial002_an_py310.py:12     class User
+User                                C docs_src/security/tutorial002_py310.py:10     class User
+get_user                            M docs_src/security/tutorial003_an_py310.py:45     function get_user
+get_user                            M docs_src/security/tutorial003_py310.py:43     function get_user
+remove_header_permalinks            M scripts/docs.py:196    function remove_header_permalinks
+UserInDB                            C docs_src/security/tutorial004_an_py310.py:45     class UserInDB
+UserInDB                            C docs_src/security/tutorial004_py310.py:44     class UserInDB
+UserInDB                            C docs_src/security/tutorial005_an_py310.py:57     class UserInDB
+UserInDB                            C docs_src/security/tutorial005_py310.py:56     class UserInDB
+__init__                            M scripts/docs.py:72     function __init__
+translate_page                      M scripts/translate.py:61     function translate_page
+field_annotation_is_sequence        M fastapi/_compat/shared.py:64     function field_annotation_is_sequence
+field_annotation_is_complex         M fastapi/_compat/shared.py:88     function field_annotation_is_complex
+add_event_handler                   M fastapi/routing.py:4901   Add an event handler function for startup or sh...
+HTMLLinkAttribute                   C scripts/doc_parsing_utils.py:58     class HTMLLinkAttribute
+update_languages                    M scripts/docs.py:275    Update the mkdocs.yml file Languages section in...
+process_one_page                    M scripts/translation_fixer.py:65     Fix one translated document by comparing it to ...
+get_request_handler                 M fastapi/routing.py:347    function get_request_handler
+  ...and 1379 more symbols
+
+-- FOCUS
+make_not_authenticated_error (docs_src/authentication_error_status_code/tutorial001_an_py310.py:10-13)
+  uses: HTTPException (fastapi)
+
+GzipRequest (docs_src/custom_request_and_route/tutorial001_an_py310.py:9-16)
+  extends: Request
+  imports: gzip, fastapi, fastapi.routing
+  calls: body
+  called_by: custom_route_handler, get_route_handler, GzipRoute
+
+GzipRequest (docs_src/custom_request_and_route/tutorial001_py310.py:8-15)
+  extends: Request
+  imports: gzip, fastapi, fastapi.routing
+  calls: body
+  called_by: custom_route_handler, get_route_handler, GzipRoute
+
+ValidationErrorLoggingRoute (docs_src/custom_request_and_route/tutorial002_an_py310.py:9-21)
+  extends: APIRoute
+  imports: fastapi, fastapi.exceptions, fastapi.routing
+  calls: get_route_handler
+  raises: HTTPException
+  uses: HTTPException (fastapi)
+
+ValidationErrorLoggingRoute (docs_src/custom_request_and_route/tutorial002_py310.py:8-20)
+  extends: APIRoute
+  imports: fastapi, fastapi.exceptions, fastapi.routing
+  calls: get_route_handler
+  raises: HTTPException
+  uses: HTTPException (fastapi)
+
+OwnerError (docs_src/dependencies/tutorial008b_an_py310.py:14-15)
+  extends: Exception
+  imports: fastapi
+  called_by: get_item
+
+OwnerError (docs_src/dependencies/tutorial008b_py310.py:12-13)
+  extends: Exception
+  imports: fastapi
+  called_by: get_item
+
+InternalError (docs_src/dependencies/tutorial008c_an_py310.py:8-9)
+  extends: Exception
+  imports: fastapi
+  called_by: get_item
+
+InternalError (docs_src/dependencies/tutorial008c_py310.py:6-7)
+  extends: Exception
+  imports: fastapi
+  called_by: get_item
+
+InternalError (docs_src/dependencies/tutorial008d_an_py310.py:8-9)
+  extends: Exception
+  imports: fastapi
+  called_by: get_item
+
+InternalError (docs_src/dependencies/tutorial008d_py310.py:6-7)
+  extends: Exception
+  imports: fastapi
+  called_by: get_item
+
+DataInput (docs_src/json_base64_bytes/tutorial001_py310.py:5-9)
+  extends: BaseModel
+  imports: fastapi, pydantic
+
+DataInputOutput (docs_src/json_base64_bytes/tutorial001_py310.py:19-26)
+  extends: BaseModel
+  imports: fastapi, pydantic
+
+DataOutput (docs_src/json_base64_bytes/tutorial001_py310.py:12-16)
+  extends: BaseModel
+  imports: fastapi, pydantic
+  called_by: get_data
+
+get_data (docs_src/json_base64_bytes/tutorial001_py310.py:39-41)
+  calls: DataOutput
+
+post_data (docs_src/json_base64_bytes/tutorial001_py310.py:33-35)
+  sig: post_data(body)
+
+post_data_in_out (docs_src/json_base64_bytes/tutorial001_py310.py:45-46)
+  sig: post_data_in_out(body)
+
+magic_data_reader (docs_src/path_operation_advanced_configuration/tutorial006_py310.py:6-16)
+  sig: magic_data_reader(raw_body)
+  called_by: create_item
+
+FormData (docs_src/request_form_models/tutorial001_an_py310.py:9-11)
+  extends: BaseModel
+  imports: fastapi, pydantic
+
+FormData (docs_src/request_form_models/tutorial001_py310.py:7-9)
+  extends: BaseModel
+  imports: fastapi, pydantic
+
+FormData (docs_src/request_form_models/tutorial002_an_py310.py:9-12)
+  extends: BaseModel
+  imports: fastapi, pydantic
+
+FormData (docs_src/request_form_models/tutorial002_py310.py:7-10)
+  extends: BaseModel
+  imports: fastapi, pydantic
+
+get_legacy_data (docs_src/response_directly/tutorial002_py310.py:7-18)
+  uses: Response (fastapi)
+
+read_item_public_data (docs_src/response_model/tutorial005_py310.py:36-37)
+  sig: read_item_public_data(item_id)
+
+read_item_public_data (docs_src/response_model/tutorial006_py310.py:36-37)
+  sig: read_item_public_data(item_id)
+
+TokenData (docs_src/security/tutorial004_an_py310.py:34-35)
+  extends: BaseModel
+  imports: jwt, fastapi, fastapi.security, jwt.exceptions, pwdlib
+  called_by: get_current_user
+
+TokenData (docs_src/security/tutorial004_py310.py:33-34)
+  extends: BaseModel
+  imports: jwt, fastapi, fastapi.security, jwt.exceptions, pwdlib
+  called_by: get_current_user
+
+TokenData (docs_src/security/tutorial005_an_py310.py:45-47)
+  extends: BaseModel
+  imports: jwt, fastapi, fastapi.security, jwt.exceptions, pwdlib
+  called_by: get_current_user
+
+TokenData (docs_src/security/tutorial005_py310.py:44-46)
+  extends: BaseModel
+  imports: jwt, fastapi, fastapi.security, jwt.exceptions, pwdlib
+  called_by: get_current_user
+
+__post_init__ (fastapi/_compat/v2.py:128-153)
+  calls: asdict
+  uses: TypeAdapter (pydantic), Field (pydantic)
+
+_regenerate_error_with_loc (fastapi/_compat/v2.py:473-480)
+  called_by: validate, ModelField
+
+get_missing_field_error (fastapi/_compat/v2.py:366-371)
+  sig: get_missing_field_error(loc)
+
+_extract_form_body (fastapi/dependencies/utils.py:909-945)
+  sig: _extract_form_body(body_fields, received_body)
+  calls: _get_multidict_value, get_validation_alias
+  called_by: request_body_to_args
+
+request_body_to_args (fastapi/dependencies/utils.py:948-995)
+  sig: request_body_to_args(body_fields, received_body, embed_body_fields)
+  calls: _extract_form_body, _validate_value_with_model_field, get_validation_alias
+  called_by: solve_dependencies
+
+request_params_to_args (fastapi/dependencies/utils.py:781-863)
+  sig: request_params_to_args(fields, received_params)
+  calls: _get_multidict_value, _validate_value_with_model_field, get_validation_alias
+  called_by: solve_dependencies
+
+isoformat (fastapi/encoders.py:37-38)
+  sig: isoformat(o)
+
+request_validation_exception_handler (fastapi/exception_handlers.py:20-26)
+  sig: request_validation_exception_handler(request, exc)
+  uses: JSONResponse (starlette.responses)
+
+websocket_request_validation_exception_handler (fastapi/exception_handlers.py:29-34)
+  sig: websocket_request_validation_exception_handler(websocket, exc)
+
+DependencyScopeError (fastapi/exceptions.py:167-171)
+  A dependency declared that it depends on another dependency with an invalid
+  extends: FastAPIError
+  imports: annotated_doc, pydantic, starlette.exceptions
+
+FastAPIError (fastapi/exceptions.py:161-164)
+  A generic, FastAPI-specific error.
+  extends: RuntimeError
+  imports: annotated_doc, pydantic, starlette.exceptions
+
+PydanticV1NotSupportedError (fastapi/exceptions.py:246-249)
+  A pydantic.v1 model is used, which is no longer supported.
+  extends: FastAPIError
+  imports: annotated_doc, pydantic, starlette.exceptions
+
+RequestValidationError (fastapi/exceptions.py:212-221)
+  extends: ValidationException
+  imports: annotated_doc, pydantic, starlette.exceptions
+
+ResponseValidationError (fastapi/exceptions.py:234-243)
+  extends: ValidationException
+  imports: annotated_doc, pydantic, starlette.exceptions
+
+_format_endpoint_context (fastapi/exceptions.py:193-202)
+  called_by: __str__, ValidationException
+
+WebSocketRequestValidationError (fastapi/exceptions.py:224-231)
+  extends: ValidationException
+  imports: annotated_doc, pydantic, starlette.exceptions
+
+RequestBody (fastapi/openapi/models.py:267-270)
+  extends: BaseModelWithConfig
+  imports: enum, fastapi._compat, fastapi.logger, pydantic, typing_extensions
+
+get_openapi_operation_metadata (fastapi/openapi/utils.py:237-260)
+  calls: generate_operation_summary
+  called_by: get_openapi_path
+
+get_openapi_operation_request_body (fastapi/openapi/utils.py:181-213)
+  called_by: get_openapi_path
+
+_serialize_data (fastapi/routing.py:467-490)
+  sig: _serialize_data(data)
+  called_by: _serialize_item, _serialize_sse_item, get_request_handler
+  raises: ResponseValidationError
+  uses: ResponseValidationError (fastapi.exceptions), EndpointContext (fastapi.exceptions)
+
+-- GAPS
+- Question mentions [data, execution, occur, parsing, request] — not found in focus or symbol index
+- Module docs_src/metadata/tutorial002_py310.py matches question but has no focus detail
+  > drill: docs_src/metadata/tutorial002_py310.py
+- Module docs_src/request_forms/__init__.py matches question but has no focus detail
+  > drill: docs_src/request_forms/__init__.py

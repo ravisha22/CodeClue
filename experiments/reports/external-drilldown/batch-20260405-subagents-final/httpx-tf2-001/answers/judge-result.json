@@ -1,0 +1,30 @@
+{
+  "task_id": "httpx-tf2-001",
+  "before": {
+    "fidelity_score": 0.25,
+    "key_points_hit": [
+      "_client.py"
+    ],
+    "key_points_missed": [
+      "HTTPTransport/AsyncHTTPTransport",
+      "_api.py convenience functions",
+      "test timeouts"
+    ],
+    "hallucinations": []
+  },
+  "after": {
+    "fidelity_score": 0.25,
+    "key_points_hit": [
+      "_client.py"
+    ],
+    "key_points_missed": [
+      "HTTPTransport/AsyncHTTPTransport",
+      "_api.py convenience functions",
+      "test timeouts"
+    ],
+    "hallucinations": []
+  },
+  "delta": 0.0,
+  "did_drilldown_help": false,
+  "summary": "Drill-down failed to find the actual usage of the Timeout class across the transports and API layers. The answer remained incomplete."
+}

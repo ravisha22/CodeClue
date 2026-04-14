@@ -1,0 +1,143 @@
+[
+  {
+    "task_id": "blind-aiohttp-1",
+    "repo": "aiohttp",
+    "repo_path": "experiments/external-repos/aiohttp",
+    "question": "If a handler reads incoming data from different body formats, what does the request object actually do for JSON, URL-encoded forms, and multipart uploads, and where are payload limits enforced?",
+    "gold_files": [
+      "aiohttp/web_request.py"
+    ],
+    "gold_symbols": [
+      "BaseRequest.read",
+      "BaseRequest.text",
+      "BaseRequest.json",
+      "BaseRequest.multipart",
+      "BaseRequest.post",
+      "FileField"
+    ],
+    "gold_facts": [
+      "BaseRequest.read consumes the payload incrementally with readany, accumulates bytes in memory, and raises HTTPRequestEntityTooLarge as soon as the accumulated body exceeds client_max_size.",
+      "BaseRequest.json first calls text, then rejects unexpected mimetypes by raising HTTPBadRequest when content_type checking is enabled instead of blindly decoding any body as JSON.",
+      "BaseRequest.post returns an empty MultiDict for non-POST-like methods or unsupported content types, rather than attempting to parse arbitrary request bodies.",
+      "For multipart file parts, BaseRequest.post writes decoded chunks into a TemporaryFile via the executor, enforces the same size limit while streaming, and stores the result as a FileField with application/octet-stream as the fallback content type."
+    ]
+  },
+  {
+    "task_id": "blind-aiohttp-2",
+    "repo": "aiohttp",
+    "repo_path": "experiments/external-repos/aiohttp",
+    "question": "During application shutdown, how does the server unwind startup resources, and what happens if cleanup only partially initialized or multiple cleanup steps fail?",
+    "gold_files": [
+      "aiohttp/web_app.py"
+    ],
+    "gold_symbols": [
+      "Application.startup",
+      "Application.shutdown",
+      "Application.cleanup",
+      "CleanupContext._on_startup",
+      "CleanupContext._on_cleanup",
+      "CleanupError"
+    ],
+    "gold_facts": [
+      "Application.startup and Application.shutdown only send the on_startup and on_shutdown signals; the actual resource enter and exit logic is wired through CleanupContext handlers that were appended to those signals during Application initialization.",
+      "Application.cleanup has a fallback path for failed or incomplete startup: if the on_cleanup signal was not frozen yet, it directly calls _cleanup_ctx._on_cleanup so entered cleanup contexts still get unwound.",
+      "CleanupContext._on_startup accepts either async context managers or async-generator callbacks, wrapping generator callbacks with asynccontextmanager before entering them and storing the exit handles in order.",
+      "CleanupContext._on_cleanup unwinds stored exits in reverse order, re-raises a single failure directly, and raises CleanupError with the collected exception list when multiple cleanup callbacks fail."
+    ]
+  },
+  {
+    "task_id": "blind-fiber-1",
+    "repo": "fiber",
+    "repo_path": "experiments/external-repos/fiber",
+    "question": "If middleware rewrites the request path and wants Fiber to match routes again, how does the framework restart dispatch and decide whether the request becomes a normal match, a 404, or a 405?",
+    "gold_files": [
+      "ctx.go",
+      "router.go"
+    ],
+    "gold_symbols": [
+      "DefaultCtx.Path",
+      "DefaultCtx.RestartRouting",
+      "DefaultCtx.Next",
+      "App.next",
+      "Route.match"
+    ],
+    "gold_facts": [
+      "DefaultCtx.Path with an override mutates the underlying fasthttp request URI, records the original override string, and recomputes Fiber's configuration-dependent path fields before routing continues.",
+      "DefaultCtx.RestartRouting does not just call the next handler; it resets indexRoute to -1 and invokes app.next or app.nextCustom so route scanning starts from the beginning of the stack again.",
+      "App.next scans the prebuilt treeStack for the current method and path hash, skips mounted routes, uses Route.match for exact, parameterized, wildcard, and prefix-use matches, and records the matched route on the context before executing its first handler.",
+      "If no route for the current method matches but another method matches the same path, App.next appends to the Allow header and returns ErrMethodNotAllowed; otherwise it returns ErrNotFound."
+    ]
+  },
+  {
+    "task_id": "blind-fiber-2",
+    "repo": "fiber",
+    "repo_path": "experiments/external-repos/fiber",
+    "question": "When a handler panics in Fiber, how is that turned into an HTTP response, and how can mounted sub-apps change which error formatter gets used?",
+    "gold_files": [
+      "middleware/recover/recover.go",
+      "middleware/recover/config.go",
+      "app.go"
+    ],
+    "gold_symbols": [
+      "recover.New",
+      "recover.DefaultPanicHandler",
+      "recover.Config",
+      "DefaultErrorHandler",
+      "App.ErrorHandler",
+      "New"
+    ],
+    "gold_facts": [
+      "The recover middleware wraps c.Next in a defer/recover block; when a panic occurs it optionally emits a stack trace through StackTraceHandler and converts the recovered value into an error with PanicHandler instead of writing a response directly.",
+      "recover.DefaultPanicHandler preserves an existing error panic as-is, but wraps non-error panic values with fmt.Errorf so the rest of the pipeline always receives an error.",
+      "Fiber's constructor installs DefaultErrorHandler when Config.ErrorHandler is nil, so recovered errors flow into a default text/plain response path unless the app or sub-app configured its own handler.",
+      "App.ErrorHandler searches mounted sub-app prefixes and chooses the deepest matching sub-app's configured error handler when one exists; otherwise it falls back to the main app's configured handler, which is DefaultErrorHandler by default."
+    ]
+  },
+  {
+    "task_id": "blind-click-1",
+    "repo": "click",
+    "repo_path": "experiments/external-repos/click",
+    "question": "How does Click turn decorated Python functions into a nested CLI and then dispatch the right subcommand at runtime?",
+    "gold_files": [
+      "src/click/decorators.py",
+      "src/click/core.py"
+    ],
+    "gold_symbols": [
+      "command",
+      "group",
+      "Group.add_command",
+      "Group.parse_args",
+      "Group.resolve_command",
+      "Group.invoke"
+    ],
+    "gold_facts": [
+      "The decorators.command helper converts a callback into a Command, collects any parameters accumulated on __click_params__, uses the function docstring as help when none is supplied, and derives the CLI name from the function name while stripping suffixes like _command or _group.",
+      "The decorators.group helper is just a variant of command that defaults cls to Group, so the decorated callback becomes a Group object rather than a plain Command.",
+      "Group.add_command registers subcommands in the group's command map under their explicit or inferred names, which is what later lookup and help rendering use.",
+      "At runtime Group.parse_args leaves the first remaining token in _protected_args, Group.resolve_command maps that token to a subcommand name with optional token normalization, and Group.invoke creates a subcontext for the chosen command before invoking the subcommand callback."
+    ]
+  },
+  {
+    "task_id": "blind-click-2",
+    "repo": "click",
+    "repo_path": "experiments/external-repos/click",
+    "question": "When an option or argument value is not provided directly on the command line, how does Click decide what value to use, and what extra work do file and path types perform during conversion?",
+    "gold_files": [
+      "src/click/core.py",
+      "src/click/types.py"
+    ],
+    "gold_symbols": [
+      "Parameter.consume_value",
+      "Parameter.type_cast_value",
+      "Choice.convert",
+      "File.convert",
+      "Path.convert"
+    ],
+    "gold_facts": [
+      "Parameter.consume_value resolves a parameter's value in precedence order from command-line parse output, then environment variables, then Context.default_map, and only then the parameter's own default.",
+      "Parameter.type_cast_value applies the parameter's declared type across single values, fixed nargs tuples, variadic nargs=-1 tuples, and multiple=True collections instead of treating every parsed value the same way.",
+      "Choice.convert normalizes incoming values through normalize_choice, including token normalization and optional case-folding, then returns the original declared choice object rather than the normalized string.",
+      "File.convert may return a LazyFile for deferred opening, registers cleanup on the Click context, and Path.convert can resolve real paths plus enforce file-versus-directory and read/write/execute constraints before returning the coerced path object."
+    ]
+  }
+]

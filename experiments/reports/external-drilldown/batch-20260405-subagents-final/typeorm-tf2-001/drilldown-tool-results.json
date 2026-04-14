@@ -1,0 +1,467 @@
+{
+  "task_id": "typeorm-tf2-001",
+  "repo_dir": "typeorm",
+  "operation_family": "OF2",
+  "confidence_overall": 0.0,
+  "lookup_hint": "expanded_lookup",
+  "projected_nodes": 1,
+  "actions_executed": 2,
+  "budget": {
+    "budget_exhausted": false,
+    "operation_family": "OF2",
+    "calls_made": 2,
+    "budget": 15,
+    "remaining": 13,
+    "unresolved_nodes": []
+  },
+  "tokens": {
+    "clue": 474,
+    "drill_down": 2294,
+    "total": 2768,
+    "raw_estimate": 2559461
+  },
+  "etrr": 0.9989,
+  "h7_pass": true,
+  "tool_results": [
+    {
+      "tool": "resolve_dependency",
+      "args": {
+        "node_id": "module:src/metadata/EntityMetadata.ts",
+        "depth": 2
+      },
+      "node_id": "module:src/metadata/EntityMetadata.ts",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 1263,
+      "result": {
+        "status": "ok",
+        "seed_node": "module:src/metadata/EntityMetadata.ts",
+        "depth": 2,
+        "nodes": [
+          {
+            "node_id": "module:src/metadata/EntityMetadata.ts",
+            "node_type": "module",
+            "source_anchor": {
+              "file_path": "src/metadata/EntityMetadata.ts",
+              "byte_start": 0,
+              "byte_end": 37529,
+              "ast_path": "module",
+              "content_hash": "613f3578ed44381c4c0ffbee8281253142dbeb215da9e5e1c1352a7df67df53a"
+            },
+            "semantic_contract": {
+              "called_by": [],
+              "calls": [],
+              "complexity_indicators": {
+                "decorator_depth": 0,
+                "generic_type_param_count": 0
+              },
+              "language": "typescript",
+              "purpose": "Module-level semantic container",
+              "symbol_name": "src/metadata/EntityMetadata.ts",
+              "symbol_type": "module",
+              "tier": 1
+            },
+            "confidence": 1.0
+          },
+          {
+            "node_id": "symbol:src/metadata/EntityMetadata.ts:EntityMetadata:30",
+            "node_type": "class",
+            "source_anchor": {
+              "file_path": "src/metadata/EntityMetadata.ts",
+              "byte_start": 1611,
+              "byte_end": 1625,
+              "ast_path": "class:EntityMetadata",
+              "content_hash": "c0fcb8cd336e2abe47b6b6a41891b838d3c30235ee3a215efbc8d5a2cf58147f"
+            },
+            "semantic_contract": {
+              "called_by": [],
+              "calls": [],
+              "complexity_indicators": {
+                "decorator_depth": 0,
+                "generic_type_param_count": 0
+              },
+              "language": "typescript",
+              "purpose": "class EntityMetadata",
+              "symbol_name": "EntityMetadata",
+              "symbol_type": "class",
+              "tier": 1
+            },
+            "confidence": 0.86
+          },
+          {
+            "node_id": "symbol:src/metadata/EntityMetadata.ts:and:912",
+            "node_type": "class",
+            "source_anchor": {
+              "file_path": "src/metadata/EntityMetadata.ts",
+              "byte_start": 27384,
+              "byte_end": 27387,
+              "ast_path": "class:and",
+              "content_hash": "ac15a82a1cebf583f3af1738fd2e9c68af27d912e22255867e3bf448968fda41"
+            },
+            "semantic_contract": {
+              "called_by": [],
+              "calls": [],
+              "complexity_indicators": {
+                "decorator_depth": 0,
+                "generic_type_param_count": 0
+              },
+              "language": "typescript",
+              "purpose": "class and",
+              "symbol_name": "and",
+              "symbol_type": "class",
+              "tier": 1
+            },
+            "confidence": 0.86
+          },
+          {
+            "node_id": "symbol:src/metadata/EntityMetadata.ts:is:103",
+            "node_type": "class",
+            "source_anchor": {
+              "file_path": "src/metadata/EntityMetadata.ts",
+              "byte_start": 3839,
+              "byte_end": 3841,
+              "ast_path": "class:is",
+              "content_hash": "57611c15aba6dc9ca5060bfef0fdc31f13934496c95203ee7d1780a20dd7179b"
+            },
+            "semantic_contract": {
+              "called_by": [],
+              "calls": [],
+              "complexity_indicators": {
+                "decorator_depth": 0,
+                "generic_type_param_count": 0
+              },
+              "language": "typescript",
+              "purpose": "class is",
+              "symbol_name": "is",
+              "symbol_type": "class",
+              "tier": 1
+            },
+            "confidence": 0.86
+          },
+          {
+            "node_id": "symbol:src/metadata/EntityMetadata.ts:that:918",
+            "node_type": "class",
+            "source_anchor": {
+              "file_path": "src/metadata/EntityMetadata.ts",
+              "byte_start": 27602,
+              "byte_end": 27606,
+              "ast_path": "class:that",
+              "content_hash": "0e63a6c7b3c9fcbf6566b844b678994f15c431c20daf242b9c99a9da2982db6b"
+            },
+            "semantic_contract": {
+              "called_by": [],
+              "calls": [],
+              "complexity_indicators": {
+                "decorator_depth": 0,
+                "generic_type_param_count": 0
+              },
+              "language": "typescript",
+              "purpose": "class that",
+              "symbol_name": "that",
+              "symbol_type": "class",
+              "tier": 1
+            },
+            "confidence": 0.86
+          },
+          {
+            "node_id": "symbol:src/metadata/EntityMetadata.ts:to:89",
+            "node_type": "class",
+            "source_anchor": {
+              "file_path": "src/metadata/EntityMetadata.ts",
+              "byte_start": 3342,
+              "byte_end": 3344,
+              "ast_path": "class:to",
+              "content_hash": "2ef1cac0f54e77b83f73ae47774e310d1809ce0c4c63051fc6aac3d215ca5103"
+            },
+            "semantic_contract": {
+              "called_by": [],
+              "calls": [],
+              "complexity_indicators": {
+                "decorator_depth": 0,
+                "generic_type_param_count": 0
+              },
+              "language": "typescript",
+              "purpose": "class to",
+              "symbol_name": "to",
+              "symbol_type": "class",
+              "tier": 1
+            },
+            "confidence": 0.86
+          }
+        ],
+        "edges": [
+          {
+            "edge_id": "contains:module:src/metadata/EntityMetadata.ts:symbol:src/metadata/EntityMetadata.ts:EntityMetadata:30",
+            "edge_type": "contains",
+            "from_node": "module:src/metadata/EntityMetadata.ts",
+            "to_node": "symbol:src/metadata/EntityMetadata.ts:EntityMetadata:30",
+            "evidence": {
+              "line": 30,
+              "rel": "regex_containment"
+            }
+          },
+          {
+            "edge_id": "contains:module:src/metadata/EntityMetadata.ts:symbol:src/metadata/EntityMetadata.ts:and:912",
+            "edge_type": "contains",
+            "from_node": "module:src/metadata/EntityMetadata.ts",
+            "to_node": "symbol:src/metadata/EntityMetadata.ts:and:912",
+            "evidence": {
+              "line": 912,
+              "rel": "regex_containment"
+            }
+          },
+          {
+            "edge_id": "contains:module:src/metadata/EntityMetadata.ts:symbol:src/metadata/EntityMetadata.ts:is:103",
+            "edge_type": "contains",
+            "from_node": "module:src/metadata/EntityMetadata.ts",
+            "to_node": "symbol:src/metadata/EntityMetadata.ts:is:103",
+            "evidence": {
+              "line": 103,
+              "rel": "regex_containment"
+            }
+          },
+          {
+            "edge_id": "contains:module:src/metadata/EntityMetadata.ts:symbol:src/metadata/EntityMetadata.ts:that:918",
+            "edge_type": "contains",
+            "from_node": "module:src/metadata/EntityMetadata.ts",
+            "to_node": "symbol:src/metadata/EntityMetadata.ts:that:918",
+            "evidence": {
+              "line": 918,
+              "rel": "regex_containment"
+            }
+          },
+          {
+            "edge_id": "contains:module:src/metadata/EntityMetadata.ts:symbol:src/metadata/EntityMetadata.ts:to:89",
+            "edge_type": "contains",
+            "from_node": "module:src/metadata/EntityMetadata.ts",
+            "to_node": "symbol:src/metadata/EntityMetadata.ts:to:89",
+            "evidence": {
+              "line": 89,
+              "rel": "regex_containment"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "tool": "code_slice",
+      "args": {
+        "file_path": "src/metadata/EntityMetadata.ts",
+        "start_line": 1,
+        "end_line": 50
+      },
+      "node_id": "module:src/metadata/EntityMetadata.ts",
+      "confidence_trigger": 0.85,
+      "output_size_tokens": 1031,
+      "result": {
+        "status": "ok",
+        "file_path": "src/metadata/EntityMetadata.ts",
+        "start_line": 1,
+        "end_line": 50,
+        "total_lines_in_file": 1169,
+        "lines": [
+          {
+            "line_number": 1,
+            "content": "import type { ObjectLiteral } from \"../common/ObjectLiteral\""
+          },
+          {
+            "line_number": 2,
+            "content": "import type { DataSource } from \"../data-source/DataSource\""
+          },
+          {
+            "line_number": 3,
+            "content": "import { CannotCreateEntityIdMapError } from \"../error/CannotCreateEntityIdMapError\""
+          },
+          {
+            "line_number": 4,
+            "content": "import type { OrderByCondition } from \"../find-options/OrderByCondition\""
+          },
+          {
+            "line_number": 5,
+            "content": "import type { TableMetadataArgs } from \"../metadata-args/TableMetadataArgs\""
+          },
+          {
+            "line_number": 6,
+            "content": "import type { TreeMetadataArgs } from \"../metadata-args/TreeMetadataArgs\""
+          },
+          {
+            "line_number": 7,
+            "content": "import { OrmUtils } from \"../util/OrmUtils\""
+          },
+          {
+            "line_number": 8,
+            "content": "import type { CheckMetadata } from \"./CheckMetadata\""
+          },
+          {
+            "line_number": 9,
+            "content": "import type { ColumnMetadata } from \"./ColumnMetadata\""
+          },
+          {
+            "line_number": 10,
+            "content": "import type { EmbeddedMetadata } from \"./EmbeddedMetadata\""
+          },
+          {
+            "line_number": 11,
+            "content": "import type { EntityListenerMetadata } from \"./EntityListenerMetadata\""
+          },
+          {
+            "line_number": 12,
+            "content": "import type { ExclusionMetadata } from \"./ExclusionMetadata\""
+          },
+          {
+            "line_number": 13,
+            "content": "import type { ForeignKeyMetadata } from \"./ForeignKeyMetadata\""
+          },
+          {
+            "line_number": 14,
+            "content": "import type { IndexMetadata } from \"./IndexMetadata\""
+          },
+          {
+            "line_number": 15,
+            "content": "import type { RelationIdMetadata } from \"./RelationIdMetadata\""
+          },
+          {
+            "line_number": 16,
+            "content": "import type { RelationMetadata } from \"./RelationMetadata\""
+          },
+          {
+            "line_number": 17,
+            "content": "import type { TableType } from \"./types/TableTypes\""
+          },
+          {
+            "line_number": 18,
+            "content": "import type { TreeType } from \"./types/TreeTypes\""
+          },
+          {
+            "line_number": 19,
+            "content": "import type { UniqueMetadata } from \"./UniqueMetadata\""
+          },
+          {
+            "line_number": 20,
+            "content": "import type { ClosureTreeOptions } from \"./types/ClosureTreeOptions\""
+          },
+          {
+            "line_number": 21,
+            "content": "import { EntityPropertyNotFoundError } from \"../error/EntityPropertyNotFoundError\""
+          },
+          {
+            "line_number": 22,
+            "content": "import { ObjectUtils } from \"../util/ObjectUtils\""
+          },
+          {
+            "line_number": 23,
+            "content": "import { shorten } from \"../util/StringUtils\""
+          },
+          {
+            "line_number": 24,
+            "content": "import type { SelectQueryBuilder } from \"../query-builder/SelectQueryBuilder\""
+          },
+          {
+            "line_number": 25,
+            "content": "import type { QueryRunner } from \"../query-runner/QueryRunner\""
+          },
+          {
+            "line_number": 26,
+            "content": ""
+          },
+          {
+            "line_number": 27,
+            "content": "/**"
+          },
+          {
+            "line_number": 28,
+            "content": " * Contains all entity metadata."
+          },
+          {
+            "line_number": 29,
+            "content": " */"
+          },
+          {
+            "line_number": 30,
+            "content": "export class EntityMetadata {"
+          },
+          {
+            "line_number": 31,
+            "content": "    readonly \"@instanceof\" = Symbol.for(\"EntityMetadata\")"
+          },
+          {
+            "line_number": 32,
+            "content": ""
+          },
+          {
+            "line_number": 33,
+            "content": "    // -------------------------------------------------------------------------"
+          },
+          {
+            "line_number": 34,
+            "content": "    // Properties"
+          },
+          {
+            "line_number": 35,
+            "content": "    // -------------------------------------------------------------------------"
+          },
+          {
+            "line_number": 36,
+            "content": ""
+          },
+          {
+            "line_number": 37,
+            "content": "    /**"
+          },
+          {
+            "line_number": 38,
+            "content": "     * DataSource where this entity metadata is created."
+          },
+          {
+            "line_number": 39,
+            "content": "     */"
+          },
+          {
+            "line_number": 40,
+            "content": "    dataSource: DataSource"
+          },
+          {
+            "line_number": 41,
+            "content": ""
+          },
+          {
+            "line_number": 42,
+            "content": "    /**"
+          },
+          {
+            "line_number": 43,
+            "content": "     * DataSource where this entity metadata is created."
+          },
+          {
+            "line_number": 44,
+            "content": "     *"
+          },
+          {
+            "line_number": 45,
+            "content": "     * @deprecated since 1.0.0. Use {@link dataSource} instance instead."
+          },
+          {
+            "line_number": 46,
+            "content": "     */"
+          },
+          {
+            "line_number": 47,
+            "content": "    get connection(): DataSource {"
+          },
+          {
+            "line_number": 48,
+            "content": "        return this.dataSource"
+          },
+          {
+            "line_number": 49,
+            "content": "    }"
+          },
+          {
+            "line_number": 50,
+            "content": ""
+          }
+        ]
+      }
+    }
+  ],
+  "trace_file": "experiments\\reports\\external-drilldown\\batch-20260405-subagents-final\\typeorm-tf2-001\\traces\\trace-20260405T134656.jsonl"
+}

@@ -1,0 +1,263 @@
+=CC v2 flask@HEAD 83mod 1629sym
+? How does user state persist safely across HTTP requests, and what prevents unauthorized tampering?
+
+
+-- TREE
+docs/  (1 files)
+examples/  (17 files)
+  celery/
+src/  (24 files)
+  flask/
+tests/  (41 files)
+  type_check/
+
+-- INDEX
+docs/conf.py                                    101L  github_link, setup
+examples/celery/make_celery.py                    4L  
+examples/celery/src/task_app/__init__.py         39L  FlaskTask, celery_init_app, index, create_app
+examples/celery/src/task_app/tasks.py            23L  add, block, process
+examples/celery/src/task_app/views.py            38L  add, block, process, result
+examples/javascript/js_example/__init__.py        5L  
+examples/javascript/js_example/views.py          18L  add, index
+examples/javascript/tests/conftest.py            15L  client, fixture_app
+examples/javascript/tests/test_js_example.py     27L  test_add, check, test_index
+examples/tutorial/flaskr/__init__.py             48L  hello, create_app
+examples/tutorial/flaskr/auth.py                116L  load_logged_in_user, login, wrapped_view, login_required, logout
+examples/tutorial/flaskr/blog.py                125L  create, delete, get_post, index, update
+examples/tutorial/flaskr/db.py                   56L  close_db, get_db, init_app, init_db, init_db_command
+examples/tutorial/tests/conftest.py              62L  login, logout, AuthActions, app, auth
+examples/tutorial/tests/test_auth.py             69L  test_login, test_login_validate_input, test_logout, test_register, test_register_validate_input
+examples/tutorial/tests/test_blog.py             83L  test_author_required, test_create, test_create_update_validate, test_delete, test_exists_required
+examples/tutorial/tests/test_db.py               29L  test_get_close_db, Recorder, fake_init_db, test_init_db_command
+examples/tutorial/tests/test_factory.py          12L  test_config, test_hello
+  ...and 65 more modules
+
+-- SYM
+record_once                         M src/flask/sansio/blueprints.py:233    Works like :meth:`record` but wraps the functio...
+record                              M src/flask/sansio/blueprints.py:224    Registers a function that is called when the bl...
+ensure_sync                         M src/flask/app.py:1065   Ensure that the function is synchronous for WSG...
+async_to_sync                       M src/flask/app.py:1079   Return a sync function that will run the corout...
+add_url_rule                        M src/flask/sansio/scaffold.py:368    Register a rule for routing incoming requests a...
+route                               M src/flask/sansio/scaffold.py:336    Decorate a view function to register it with th...
+_method_route                       M src/flask/sansio/scaffold.py:284    function _method_route
+load_app                            M src/flask/cli.py:333    Loads the Flask app (if not yet loaded) and ret...
+prepare_import                      M src/flask/cli.py:200    Given a filename this will try to calculate the...
+get                                 M src/flask/ctx.py:68     Get an attribute by name, or a default value.
+NoAppException                      C src/flask/cli.py:37     Raised if an application cannot be found or loa...
+with_appcontext                     M src/flask/cli.py:380    Wraps a callback so that it's guaranteed to be ...
+DebugFilesKeyError                  C src/flask/debughelpers.py:23     Raised from request.files during debugging.
+_iter_loaders                       M src/flask/templating.py:98     function _iter_loaders
+get_source                          M src/flask/templating.py:57     function get_source
+generate                            M src/flask/templating.py:172    function generate
+command                             M src/flask/cli.py:413    This works exactly like the method of the same ...
+untag                               M src/flask/json/tag.py:297    Convert a tagged representation back to the ori...
+_get_session                        M src/flask/ctx.py:381    Open the session if it is not already open for ...
+from_object                         M src/flask/config.py:218    Updates the values from the given object.
+_get_exc_class_and_code             M src/flask/sansio/scaffold.py:657    Get the exception class being handled.
+get_post                            M examples/tutorial/flaskr/blog.py:28     Get a post and its author by id.
+_prepare_send_file_kwargs           M src/flask/helpers.py:390    function _prepare_send_file_kwargs
+_prepare_response_obj               M src/flask/json/provider.py:75     function _prepare_response_obj
+_check_setup_finished               M src/flask/sansio/scaffold.py:220    function _check_setup_finished
+_render                             M src/flask/templating.py:123    function _render
+_stream                             M src/flask/templating.py:163    function _stream
+get_send_file_max_age               M src/flask/app.py:365    Used by :func:`send_file` to determine the ``ma...
+get_db                              M examples/tutorial/flaskr/db.py:9      Connect to the application's configured database.
+_get_source_explained               M src/flask/templating.py:64     function _get_source_explained
+_get_source_fast                    M src/flask/templating.py:88     function _get_source_fast
+extend                              M src/flask/sansio/blueprints.py:380    function extend
+request_context                     M src/flask/app.py:1501   Create an :class:`.AppContext` with request inf...
+_untag_scan                         M src/flask/json/tag.py:309    function _untag_scan
+BlueprintSetupState                 C src/flask/sansio/blueprints.py:34     Temporary holder object for registering a bluep...
+get_send_file_max_age               M src/flask/blueprints.py:55     Used by :func:`send_file` to determine the ``ma...
+_load_plugin_commands               M src/flask/cli.py:600    function _load_plugin_commands
+from_mapping                        M src/flask/config.py:304    Updates the config like :meth:`update` ignoring...
+from_pyfile                         M src/flask/config.py:187    Updates the values in the config from a Python ...
+match_request                       M src/flask/ctx.py:405    Apply routing to the current request, storing e...
+push                                M src/flask/ctx.py:416    Push this context so that it is the active cont...
+ScriptInfo                          C src/flask/cli.py:293    Helper object to deal with Flask applications.
+register_error_handler              M src/flask/sansio/scaffold.py:642    Alternative error attach function to the :meth:...
+create_jinja_environment            M src/flask/sansio/app.py:476    function create_jinja_environment
+send_static_file                    M src/flask/app.py:392    The view function used to serve files from
+create_url_adapter                  M src/flask/app.py:509    Creates a URL adapter for the given request.
+wsgi_app                            M src/flask/app.py:1566   The actual WSGI application.
+celery_init_app                     M examples/celery/src/task_app/__init__.py:29     function celery_init_app
+init_db                             M examples/tutorial/flaskr/db.py:33     Clear existing data and create new tables.
+load_dotenv                         M src/flask/cli.py:698    Load "dotenv" files to set environment variables.
+_dump_loader_info                   M src/flask/debughelpers.py:107    function _dump_loader_info
+__getitem__                         M src/flask/debughelpers.py:91     function __getitem__
+has_level_handler                   M src/flask/logging.py:31     Check if there is a handler in the logging chai...
+_find_package_path                  M src/flask/sansio/scaffold.py:709    Find the path that contains the package or module.
+__init__                            M src/flask/sessions.py:73     function __init__
+__init_subclass__                   M src/flask/views.py:165    function __init_subclass__
+finalize_request                    M src/flask/app.py:1021   Given the return value from a view function thi...
+make_response                       M src/flask/app.py:1224   Convert the return value from a view function t...
+process_response                    M src/flask/app.py:1394   Can be overridden in order to modify the respon...
+handle_http_exception               M src/flask/app.py:830    Handles an HTTP exception.
+full_dispatch_request               M src/flask/app.py:992    Dispatches the request and on top of that perfo...
+handle_exception                    M src/flask/app.py:897    Handle an exception that did not have an error ...
+log_exception                       M src/flask/app.py:950    Logs an exception.
+_merge_blueprint_funcs              M src/flask/sansio/blueprints.py:379    function _merge_blueprint_funcs
+make_setup_state                    M src/flask/sansio/blueprints.py:246    Creates an instance of :meth:`~flask.blueprints...
+add_ctx                             M src/flask/app.py:97     function add_ctx
+  ...and 394 more symbols
+
+-- FOCUS
+load_logged_in_user (examples/tutorial/flaskr/auth.py:33-43)
+  If a user id is stored in the session, load the user object from
+
+dispatch_request (src/flask/app.py:966-990)
+  Does the request dispatching.
+  sig: dispatch_request(ctx)
+  calls: ensure_sync, make_default_options_response, raise_routing_exception
+  called_by: full_dispatch_request, Flask
+
+do_teardown_request (src/flask/app.py:1420-1451)
+  Called after the request is dispatched and the response is finalized,
+  sig: do_teardown_request(ctx, exc)
+  calls: ensure_sync
+
+finalize_request (src/flask/app.py:1021-1051)
+  Given the return value from a view function this finalizes
+  sig: finalize_request(ctx, rv, from_error_handler)
+  calls: make_response, process_response
+  called_by: full_dispatch_request, handle_exception, Flask
+
+full_dispatch_request (src/flask/app.py:992-1019)
+  Dispatches the request and on top of that performs request
+  sig: full_dispatch_request(ctx)
+  calls: dispatch_request, finalize_request, handle_user_exception, preprocess_request
+  called_by: wsgi_app, Flask
+
+handle_http_exception (src/flask/app.py:830-863)
+  Handles an HTTP exception.
+  sig: handle_http_exception(ctx, e)
+  calls: ensure_sync
+  called_by: handle_user_exception, Flask
+
+handle_user_exception (src/flask/app.py:865-895)
+  This method is called whenever an exception occurs that
+  sig: handle_user_exception(ctx, e)
+  calls: ensure_sync, handle_http_exception
+  called_by: full_dispatch_request, Flask
+
+preprocess_request (src/flask/app.py:1366-1392)
+  Called before the request is dispatched.
+  sig: preprocess_request(ctx)
+  calls: ensure_sync
+  called_by: full_dispatch_request, Flask
+
+request_context (src/flask/app.py:1501-1515)
+  Create an :class:`.AppContext` with request information representing
+  sig: request_context(environ)
+  called_by: test_request_context, wsgi_app, Flask
+
+test_request_context (src/flask/app.py:1517-1564)
+  Create an :class:`.AppContext` with request information created from
+  calls: request_context
+  uses: EnvironBuilder (testing)
+
+has_request (src/flask/ctx.py:351-353)
+  True if this context was created with request data.
+
+match_request (src/flask/ctx.py:405-414)
+  Apply routing to the current request, storing either the matched
+  called_by: push, AppContext
+
+after_this_request (src/flask/ctx.py:118-148)
+  Decorate a function to run after the current request.
+  sig: after_this_request(f)
+  calls: get
+  raises: RuntimeError
+
+copy_current_request_context (src/flask/ctx.py:154-206)
+  Decorate a function to run inside the current request context.
+  sig: copy_current_request_context(f)
+  calls: copy, get
+  raises: RuntimeError
+
+has_request_context (src/flask/ctx.py:209-232)
+  Test if an app context is active and if it has request information.
+  calls: get
+
+RequestProxy (src/flask/globals.py:28-28)
+  extends: Request
+  imports: contextvars, werkzeug.local, app, ctx, sessions
+
+trap_http_exception (src/flask/sansio/app.py:890-923)
+  Checks if an HTTP exception should be trapped or not.
+  sig: trap_http_exception(e)
+
+after_app_request (src/flask/sansio/blueprints.py:624-631)
+  Like :meth:`after_request`, but after every request, not only those handled
+  sig: after_app_request(f)
+  calls: record_once
+
+before_app_request (src/flask/sansio/blueprints.py:614-621)
+  Like :meth:`before_request`, but before every request, not only those handled
+  sig: before_app_request(f)
+  calls: record_once
+
+make_setup_state (src/flask/sansio/blueprints.py:246-253)
+  Creates an instance of :meth:`~flask.blueprints.BlueprintSetupState`
+  sig: make_setup_state(app, options, first_registration)
+  calls: BlueprintSetupState
+  called_by: register, Blueprint
+
+teardown_app_request (src/flask/sansio/blueprints.py:634-641)
+  Like :meth:`teardown_request`, but after every request, not only those
+  sig: teardown_app_request(f)
+  calls: record_once
+
+BlueprintSetupState (src/flask/sansio/blueprints.py:34-116)
+  Temporary holder object for registering a blueprint with the
+  imports: scaffold, app
+  called_by: make_setup_state, Blueprint
+
+after_request (src/flask/sansio/scaffold.py:487-505)
+  Register a function to run after each request to this object.
+  sig: after_request(f)
+
+before_request (src/flask/sansio/scaffold.py:460-484)
+  Register a function to run before each request.
+  sig: before_request(f)
+
+teardown_request (src/flask/sansio/scaffold.py:508-539)
+  Register a function to be called when the request context is
+  sig: teardown_request(f)
+
+get_cookie_httponly (src/flask/sessions.py:195-200)
+  Returns True if the session cookie should be httponly.
+  sig: get_cookie_httponly(app)
+  called_by: SecureCookieSessionInterface
+
+dispatch_request (src/flask/views.py:182-191)
+
+dispatch_request (src/flask/views.py:78-83)
+  The actual view function behavior.
+  raises: NotImplementedError
+
+Request (src/flask/wrappers.py:18-219)
+  The request object used by default in Flask.
+  extends: RequestBase
+  imports: werkzeug.exceptions, werkzeug.wrappers, globals, helpers, werkzeug.routing
+  calls: _load_form_data, on_json_loading_failed
+  raises: BadRequest
+  uses: BadRequest (werkzeug.exceptions)
+
+request (src/flask/ctx.py:371-379)
+  The request object associated with this context.
+  raises: RuntimeError
+
+_load_form_data (src/flask/wrappers.py:197-210)
+  called_by: Request
+
+on_json_loading_failed (src/flask/wrappers.py:212-219)
+  sig: on_json_loading_failed(e)
+  called_by: Request
+  raises: BadRequest
+  uses: BadRequest (werkzeug.exceptions)
+
+-- GAPS
+- Question mentions [across, http, persist, prevents, requests] — not found in focus or symbol index
+- Module tests/test_user_error_handler.py matches question but has no focus detail
+  > drill: tests/test_user_error_handler.py

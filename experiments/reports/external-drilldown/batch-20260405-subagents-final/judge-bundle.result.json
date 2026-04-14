@@ -1,0 +1,98 @@
+{
+  "batch_id": "batch-20260405-subagents-final",
+  "tasks": [
+    {
+      "task_id": "flask-tf2-001",
+      "before": {
+        "fidelity_score": 0.0,
+        "key_points_hit": [],
+        "key_points_missed": [
+          "Flask.wsgi_app()",
+          "Flask.full_dispatch_request()",
+          "before_request/after_request handlers",
+          "testing client"
+        ],
+        "hallucinations": []
+      },
+      "after": {
+        "fidelity_score": 0.75,
+        "key_points_hit": [
+          "Flask.wsgi_app()",
+          "Flask.full_dispatch_request() (via dispatch_request)",
+          "before_request/after_request handlers (preprocess_request, process_response)"
+        ],
+        "key_points_missed": [
+          "testing client"
+        ],
+        "hallucinations": []
+      },
+      "delta": 0.75,
+      "did_drilldown_help": true,
+      "summary": "Drill-down successfully identified the core request lifecycle methods (wsgi_app, dispatching, before/after request) that would be impacted, missing only the testing client."
+    },
+    {
+      "task_id": "httpx-tf2-001",
+      "before": {
+        "fidelity_score": 0.25,
+        "key_points_hit": [
+          "_client.py"
+        ],
+        "key_points_missed": [
+          "HTTPTransport/AsyncHTTPTransport",
+          "_api.py convenience functions",
+          "test timeouts"
+        ],
+        "hallucinations": []
+      },
+      "after": {
+        "fidelity_score": 0.25,
+        "key_points_hit": [
+          "_client.py"
+        ],
+        "key_points_missed": [
+          "HTTPTransport/AsyncHTTPTransport",
+          "_api.py convenience functions",
+          "test timeouts"
+        ],
+        "hallucinations": []
+      },
+      "delta": 0.0,
+      "did_drilldown_help": false,
+      "summary": "Drill-down failed to find the actual usage of the Timeout class across the transports and API layers. The answer remained incomplete."
+    },
+    {
+      "task_id": "typeorm-tf2-001",
+      "before": {
+        "fidelity_score": 0.0,
+        "key_points_hit": [],
+        "key_points_missed": [
+          "QueryBuilder",
+          "Repository",
+          "SchemaBuilder",
+          "FindOptions",
+          "subscriber/listener",
+          "Connection"
+        ],
+        "hallucinations": []
+      },
+      "after": {
+        "fidelity_score": 0.5,
+        "key_points_hit": [
+          "QueryBuilder",
+          "subscriber/listener (EntityListenerMetadata)"
+        ],
+        "key_points_missed": [
+          "Repository",
+          "SchemaBuilder",
+          "FindOptions",
+          "Connection"
+        ],
+        "hallucinations": []
+      },
+      "delta": 0.5,
+      "did_drilldown_help": true,
+      "summary": "Drill-down helped identify query builders and listeners as dependent components, but failed to capture major components like Repository and Connection."
+    }
+  ],
+  "batch_summary": "Drill-down showed mixed results in this batch. It significantly improved the answer for Flask by mapping the request lifecycle, partially helped TypeORM by finding some consumers, but completely failed to expand the dependency closure for httpx timeouts."
+}

@@ -1,0 +1,704 @@
+=CC v2 django@HEAD 3005mod 42888sym
+? What is the downstream impact of modifying the configuration loading?
+
+
+-- TREE
+django/  (988 files)
+  apps/  conf/  contrib/  core/  db/  dispatch/  forms/  http/  middleware/  tasks/  ...+6
+docs/  (4 files)
+  _ext/
+js_tests/  (11 files)
+  admin/  gis/
+scripts/  (6 files)
+tests/  (1993 files)
+  absolute_url_overrides/  admin_autodiscover/  admin_changelist/  admin_checks/  admin_custom_urls/  admin_default_site/  admin_docs/  admin_filters/  admin_inlines/  admin_ordering/  ...+203
+Gruntfile.js  eslint-recommended.js  globals.js
+
+-- INDEX
+Gruntfile.js                                     15L  
+django/__init__.py                               24L  setup
+django/__main__.py                               10L  
+django/apps/__init__.py                           4L  
+django/apps/config.py                           274L  create, default_auto_field, get_model, get_models, import_models
+django/apps/registry.py                         438L  check_apps_ready, check_models_ready, clear_cache, do_pending_operations, get_app_config
+django/conf/__init__.py                         257L  configure, configured, LazySettings, is_overridden, Settings
+django/conf/global_settings.py                  680L  gettext_noop
+django/conf/locale/__init__.py                  636L  
+django/conf/locale/ar/__init__.py                 0L  
+django/conf/locale/ar/formats.py                 21L  
+django/conf/locale/ar_DZ/__init__.py              0L  
+django/conf/locale/ar_DZ/formats.py              29L  
+django/conf/locale/az/__init__.py                 0L  
+django/conf/locale/az/formats.py                 30L  
+django/conf/locale/bg/__init__.py                 0L  
+django/conf/locale/bg/formats.py                 21L  
+django/conf/locale/bn/__init__.py                 0L  
+django/conf/locale/bn/formats.py                 32L  
+django/conf/locale/bs/__init__.py                 0L  
+django/conf/locale/bs/formats.py                 21L  
+django/conf/locale/ca/__init__.py                 0L  
+django/conf/locale/ca/formats.py                 30L  
+django/conf/locale/ckb/__init__.py                0L  
+django/conf/locale/ckb/formats.py                21L  
+django/conf/locale/cs/__init__.py                 0L  
+django/conf/locale/cs/formats.py                 43L  
+django/conf/locale/cy/__init__.py                 0L  
+django/conf/locale/cy/formats.py                 33L  
+django/conf/locale/da/__init__.py                 0L  
+django/conf/locale/da/formats.py                 26L  
+django/conf/locale/de/__init__.py                 0L  
+django/conf/locale/de/formats.py                 29L  
+django/conf/locale/de_CH/__init__.py              0L  
+django/conf/locale/de_CH/formats.py              33L  
+django/conf/locale/el/__init__.py                 0L  
+django/conf/locale/el/formats.py                 34L  
+django/conf/locale/en/__init__.py                 0L  
+django/conf/locale/en/formats.py                 65L  
+django/conf/locale/en_AU/__init__.py              0L  
+django/conf/locale/en_AU/formats.py              41L  
+django/conf/locale/en_CA/__init__.py              0L  
+django/conf/locale/en_CA/formats.py              31L  
+django/conf/locale/en_GB/__init__.py              0L  
+django/conf/locale/en_GB/formats.py              41L  
+django/conf/locale/en_IE/__init__.py              0L  
+django/conf/locale/en_IE/formats.py              37L  
+django/conf/locale/eo/__init__.py                 0L  
+django/conf/locale/eo/formats.py                 44L  
+django/conf/locale/es/__init__.py                 0L  
+django/conf/locale/es/formats.py                 30L  
+django/conf/locale/es_AR/__init__.py              0L  
+django/conf/locale/es_AR/formats.py              30L  
+django/conf/locale/es_CO/__init__.py              0L  
+django/conf/locale/es_CO/formats.py              26L  
+django/conf/locale/es_MX/__init__.py              0L  
+django/conf/locale/es_MX/formats.py              26L  
+django/conf/locale/es_NI/__init__.py              0L  
+django/conf/locale/es_NI/formats.py              26L  
+django/conf/locale/es_PR/__init__.py              0L  
+django/conf/locale/es_PR/formats.py              27L  
+django/conf/locale/et/__init__.py                 0L  
+django/conf/locale/et/formats.py                 21L  
+django/conf/locale/eu/__init__.py                 0L  
+django/conf/locale/eu/formats.py                 21L  
+django/conf/locale/fa/__init__.py                 0L  
+django/conf/locale/fa/formats.py                 21L  
+django/conf/locale/fi/__init__.py                 0L  
+django/conf/locale/fi/formats.py                 36L  
+django/conf/locale/fr/__init__.py                 0L  
+django/conf/locale/fr/formats.py                 27L  
+django/conf/locale/fr_BE/__init__.py              0L  
+django/conf/locale/fr_BE/formats.py              32L  
+django/conf/locale/fr_CA/__init__.py              0L  
+django/conf/locale/fr_CA/formats.py              30L  
+django/conf/locale/fr_CH/__init__.py              0L  
+django/conf/locale/fr_CH/formats.py              36L  
+django/conf/locale/fy/__init__.py                 0L  
+django/conf/locale/fy/formats.py                 21L  
+django/conf/locale/ga/__init__.py                 0L  
+django/conf/locale/ga/formats.py                 21L  
+django/conf/locale/gd/__init__.py                 0L  
+django/conf/locale/gd/formats.py                 21L  
+django/conf/locale/gl/__init__.py                 0L  
+django/conf/locale/gl/formats.py                 21L  
+django/conf/locale/he/__init__.py                 0L  
+django/conf/locale/he/formats.py                 21L  
+django/conf/locale/hi/__init__.py                 0L  
+django/conf/locale/hi/formats.py                 21L  
+django/conf/locale/hr/__init__.py                 0L  
+django/conf/locale/hr/formats.py                 44L  
+django/conf/locale/ht/__init__.py                 0L  
+django/conf/locale/ht/formats.py                 48L  
+django/conf/locale/hu/__init__.py                 0L  
+django/conf/locale/hu/formats.py                 30L  
+django/conf/locale/id/__init__.py                 0L  
+django/conf/locale/id/formats.py                 49L  
+django/conf/locale/ig/__init__.py                 0L  
+django/conf/locale/ig/formats.py                 32L  
+django/conf/locale/is/__init__.py                 0L  
+django/conf/locale/is/formats.py                 21L  
+django/conf/locale/it/__init__.py                 0L  
+django/conf/locale/it/formats.py                 43L  
+django/conf/locale/ja/__init__.py                 0L  
+django/conf/locale/ja/formats.py                 21L  
+django/conf/locale/ka/__init__.py                 0L  
+django/conf/locale/ka/formats.py                 48L  
+django/conf/locale/km/__init__.py                 0L  
+django/conf/locale/km/formats.py                 21L  
+django/conf/locale/kn/__init__.py                 0L  
+django/conf/locale/kn/formats.py                 21L  
+django/conf/locale/ko/__init__.py                 0L  
+django/conf/locale/ko/formats.py                 54L  
+django/conf/locale/ky/__init__.py                 0L  
+django/conf/locale/ky/formats.py                 32L  
+django/conf/locale/lt/__init__.py                 0L  
+django/conf/locale/lt/formats.py                 45L  
+django/conf/locale/lv/__init__.py                 0L  
+django/conf/locale/lv/formats.py                 46L  
+django/conf/locale/mk/__init__.py                 0L  
+django/conf/locale/mk/formats.py                 40L  
+django/conf/locale/ml/__init__.py                 0L  
+django/conf/locale/ml/formats.py                 43L  
+django/conf/locale/mn/__init__.py                 0L  
+django/conf/locale/mn/formats.py                 21L  
+django/conf/locale/ms/__init__.py                 0L  
+django/conf/locale/ms/formats.py                 38L  
+django/conf/locale/nb/__init__.py                 0L  
+django/conf/locale/nb/formats.py                 41L  
+django/conf/locale/nl/__init__.py                 0L  
+django/conf/locale/nl/formats.py                 92L  
+django/conf/locale/nn/__init__.py                 0L  
+django/conf/locale/nn/formats.py                 41L  
+django/conf/locale/pl/__init__.py                 0L  
+django/conf/locale/pl/formats.py                 30L  
+django/conf/locale/pt/__init__.py                 0L  
+django/conf/locale/pt/formats.py                 39L  
+django/conf/locale/pt_BR/__init__.py              0L  
+django/conf/locale/pt_BR/formats.py              34L  
+django/conf/locale/ro/__init__.py                 0L  
+django/conf/locale/ro/formats.py                 35L  
+django/conf/locale/ru/__init__.py                 0L  
+django/conf/locale/ru/formats.py                 30L  
+django/conf/locale/sk/__init__.py                 0L  
+django/conf/locale/sk/formats.py                 30L  
+django/conf/locale/sl/__init__.py                 0L  
+  ...and 2859 more modules
+
+-- SYM
+get_constraints                     M tests/schema/tests.py:223    function get_constraints
+is_valid                            M tests/forms_tests/tests/test_formsets.py:1320   function is_valid
+get_constraints                     M tests/postgres_tests/test_indexes.py:260    function get_constraints
+quote_name                          M django/db/backends/base/schema.py:207    function quote_name
+get_form                            M tests/modeladmin/tests.py:513    function get_form
+get_queryset                        M tests/admin_filters/tests.py:228    function get_queryset
+repr_changes                        M tests/migrations/test_autodetector.py:37     function repr_changes
+urlopen                             M tests/servers/tests.py:42     function urlopen
+traverse_qs                         M tests/prefetch_related/tests.py:520    function traverse_qs
+execute                             M django/db/backends/base/schema.py:176    function execute
+settings_to_cmd_args_env            M tests/dbshell/test_postgresql.py:14     function settings_to_cmd_args_env
+settings_to_cmd_args_env            M tests/dbshell/test_mysql.py:14     function settings_to_cmd_args_env
+get_field                           M tests/schema/tests.py:4681   function get_field
+fix_os_paths                        M tests/forms_tests/field_tests/test_filepathfield.py:10     function fix_os_paths
+record_applied                      M tests/migrations/test_loader.py:83     function record_applied
+render                              M tests/flatpages_tests/test_templatetags.py:154    function render
+decompress                          M tests/middleware/tests.py:883    function decompress
+get_databases                       M tests/test_runner/test_discover_runner.py:800    function get_databases
+close                               M tests/responses/test_fileresponse.py:69     function close
+get_table_description               M tests/migrations/test_base.py:37     function get_table_description
+get_changes                         M tests/migrations/test_autodetector.py:213    function get_changes
+signature                           M django/utils/inspect.py:126    function signature
+make_project_state                  M tests/migrations/test_autodetector.py:206    function make_project_state
+assertIsInvalid                     M tests/modeladmin/test_checks.py:18     function assertIsInvalid
+_populate                           M django/urls/resolvers.py:545    function _populate
+serialize                           M tests/migrations/test_writer.py:1248   function serialize
+login                               M tests/auth_tests/test_views.py:79     function login
+escape                              M django/utils/html.py:53     function escape
+formfield_for_foreignkey            M tests/admin_ordering/tests.py:191    function formfield_for_foreignkey
+format                              M django/test/runner.py:45     function format
+render                              M django/forms/utils.py:51     function render
+execute                             M django/db/backends/mysql/base.py:75     function execute
+_value_from_field                   M django/core/serializers/python.py:42     function _value_from_field
+_get_request                        M tests/csrf_tests/tests.py:255    function _get_request
+get                                 M django/contrib/sessions/backends/base.py:76     function get
+create_model                        M tests/db_functions/datetime/test_extract_trunc.py:106    function create_model
+setup                               M tests/template_tests/syntax_tests/i18n/test_blocktranslate.py:19     function setup
+_find_concrete_model_from_proxy     M django/db/migrations/state.py:564    function _find_concrete_model_from_proxy
+close                               M tests/files/tests.py:333    function close
+get_table_description               M tests/gis_tests/gis_migrations/test_operations.py:44     function get_table_description
+column_classes                      M tests/schema/tests.py:181    function column_classes
+assertOperationAttributes           M tests/migrations/test_autodetector.py:115    function assertOperationAttributes
+execute                             M django/db/backends/postgresql/schema.py:42     function execute
+assertNumberMigrations              M tests/migrations/test_autodetector.py:54     function assertNumberMigrations
+save                                M tests/generic_relations/test_forms.py:221    function save
+get_language_info                   M django/templatetags/i18n.py:40     function get_language_info
+validate                            M tests/constraints/tests.py:887    function validate
+assertOperationTypes                M tests/migrations/test_autodetector.py:89     function assertOperationTypes
+run_test                            M tests/admin_scripts/tests.py:115    function run_test
+_chain                              M django/db/models/query.py:2189   function _chain
+quote_name                          M django/db/models/sql/compiler.py:550    function quote_name
+message_from_bytes                  M tests/mail/tests.py:111    function message_from_bytes
+_ext_backend_paths                  M tests/admin_scripts/tests.py:102    function _ext_backend_paths
+clone                               M django/db/models/sql/where.py:217    function clone
+settings_to_cmd_args_env            M tests/dbshell/test_sqlite.py:12     function settings_to_cmd_args_env
+close                               M tests/cache/tests.py:1321   function close
+settings_to_cmd_args_env            M tests/dbshell/test_oracle.py:10     function settings_to_cmd_args_env
+clear                               M django/core/cache/backends/locmem.py:115    function clear
+assertNoOutput                      M tests/admin_scripts/tests.py:183    function assertNoOutput
+delete_model                        M django/db/backends/sqlite3/schema.py:281    function delete_model
+deep_deconstruct                    M django/db/migrations/autodetector.py:74     function deep_deconstruct
+__setitem__                         M django/utils/datastructures.py:94     function __setitem__
+seek                                M tests/responses/test_fileresponse.py:59     function seek
+pop                                 M django/template/context.py:62     function pop
+hashed_file_path                    M tests/staticfiles_tests/test_storage.py:23     function hashed_file_path
+record_migration                    M django/db/migrations/executor.py:268    function record_migration
+_apply_cpython_128110_workaround    M tests/mail/tests.py:63     function _apply_cpython_128110_workaround
+subclasses                          M django/db/models/query_utils.py:35     function subclasses
+run                                 M scripts/manage_translations.py:45     function run
+join                                M django/template/defaultfilters.py:612    function join
+GEOSGeometry                        C django/contrib/gis/geos/geometry.py:739    class GEOSGeometry
+_get_POST_csrf_cookie_request       M tests/csrf_tests/tests.py:298    function _get_POST_csrf_cookie_request
+assertRenderEqual                   M tests/template_tests/syntax_tests/test_querystring.py:13     function assertRenderEqual
+geo_quote_name                      M django/contrib/gis/db/backends/spatialite/schema.py:36     function geo_quote_name
+_get_csrf_cookie_request            M tests/csrf_tests/tests.py:266    function _get_csrf_cookie_request
+serialize_round_trip                M tests/migrations/test_writer.py:284    function serialize_round_trip
+get_source_expressions              M django/db/models/aggregates.py:110    function get_source_expressions
+must_be                             M django/contrib/admin/checks.py:1356   function must_be
+geo_quote_name                      M django/contrib/gis/db/backends/oracle/schema.py:35     function geo_quote_name
+__init__                            M tests/gis_tests/test_gis_tests_utils.py:13     function __init__
+write                               M django/core/management/base.py:182    function write
+assertOutput                        M tests/admin_scripts/tests.py:189    function assertOutput
+__get__                             M django/utils/decorators.py:8      function __get__
+_get_POST_request_with_token        M tests/csrf_tests/tests.py:315    function _get_POST_request_with_token
+close                               M django/db/backends/oracle/base.py:652    function close
+assertLogRecord                     M tests/logging_tests/tests.py:98     function assertLogRecord
+_gen_cols                           M django/db/models/sql/query.py:2040   function _gen_cols
+_dumpdata_assert                    M tests/fixtures/tests.py:77     function _dumpdata_assert
+log                                 M django/test/runner.py:887    function log
+middleware                          M tests/middleware/test_security.py:7      function middleware
+migration_plan                      M django/db/migrations/executor.py:22     function migration_plan
+items                               M django/utils/translation/trans_real.py:97     function items
+is_cached                           M django/contrib/contenttypes/fields.py:180    function is_cached
+makedirs                            M django/utils/_os.py:13     function makedirs
+__init__                            M tests/aggregation/tests.py:1848   function __init__
+process_request                     M tests/middleware/test_security.py:39     function process_request
+__new__                             M django/utils/deconstruct.py:15     function __new__
+_topology                           M django/contrib/gis/geos/geometry.py:534    function _topology
+no_pool_connection                  M tests/backends/postgresql/tests.py:24     function no_pool_connection
+assert_delayed                      M tests/defer/tests.py:18     function assert_delayed
+assertFormfield                     M tests/admin_widgets/tests.py:72     function assertFormfield
+render                              M tests/admin_widgets/tests.py:911    function render
+process_response                    M tests/middleware/test_security.py:26     function process_response
+setup                               M tests/template_tests/syntax_tests/i18n/test_translate.py:17     function setup
+flatten_bases                       M django/db/migrations/state.py:868    function flatten_bases
+items                               M django/http/response.py:212    function items
+func                                M django/utils/functional.py:19     function func
+resolve_expression                  M django/db/models/sql/query.py:1259   function resolve_expression
+assertIsValid                       M tests/modeladmin/test_checks.py:52     function assertIsValid
+read                                M django/test/client.py:86     function read
+get                                 M tests/auth_tests/test_mixins.py:27     function get
+get_request                         M tests/messages_tests/test_fallback.py:16     function get_request
+response                            M tests/middleware/test_security.py:16     function response
+_combine                            M django/db/models/expressions.py:63     function _combine
+assertFormErrors                    M tests/forms_tests/tests/test_error_messages.py:33     function assertFormErrors
+_test_settings_get                  M django/db/backends/oracle/creation.py:386    function _test_settings_get
+run_manage                          M tests/admin_scripts/tests.py:152    function run_manage
+OGRGeometry                         C django/contrib/gis/gdal/geometries.py:65     class OGRGeometry
+assertSerializedEqual               M tests/migrations/test_writer.py:290    function assertSerializedEqual
+_listarr                            M django/contrib/gis/geos/linestring.py:149    function _listarr
+get_raw_attachments                 M tests/mail/tests.py:187    function get_raw_attachments
+run_django_admin                    M tests/admin_scripts/tests.py:149    function run_django_admin
+__init_subclass__                   M django/contrib/gis/db/backends/postgis/base.py:51     function __init_subclass__
+process_messages                    M django/contrib/messages/storage/cookie.py:34     function process_messages
+assertForeignKeyExists              M tests/schema/tests.py:326    function assertForeignKeyExists
+angular_units                       M django/contrib/gis/gdal/srs.py:236    function angular_units
+linear_units                        M django/contrib/gis/gdal/srs.py:224    function linear_units
+get_base_chain                      M django/db/models/options.py:697    function get_base_chain
+_engine                             M tests/template_tests/tests.py:17     function _engine
+send_headers                        M tests/builtin_server/tests.py:141    function send_headers
+close                               M django/core/handlers/asgi.py:142    function close
+assertNumbersEqual                  M tests/queries/test_qs_combinators.py:39     function assertNumbersEqual
+MockTTY                             C tests/auth_tests/test_management.py:103    class MockTTY
+add_operation                       M django/db/migrations/autodetector.py:549    function add_operation
+array                               M django/contrib/gis/geos/linestring.py:161    function array
+generate_filename                   M django/db/models/fields/files.py:345    function generate_filename
+OperationDependency                 C django/db/migrations/autodetector.py:23     class OperationDependency
+_nodb_cursor                        M django/db/backends/base/creation.py:37     function _nodb_cursor
+rstrip_last_element                 M django/test/html.py:93     function rstrip_last_element
+__cast                              M django/utils/functional.py:109    function __cast
+_create_index_sql                   M django/db/backends/postgresql/schema.py:332    function _create_index_sql
+get_base_project_state              M tests/migrations/test_state.py:1234   function get_base_project_state
+assert_pickles                      M tests/queryset_pickle/tests.py:26     function assert_pickles
+serialize                           M tests/migrations/test_base.py:430    function serialize
+_resolve_replaced_migration_keys    M django/db/migrations/loader.py:224    function _resolve_replaced_migration_keys
+_walk                               M django/utils/autoreload.py:198    function _walk
+set_empty                           M django/db/models/sql/query.py:2181   function set_empty
+has_changed                         M django/forms/formsets.py:473    function has_changed
+reload_model                        M django/db/migrations/state.py:423    function reload_model
+get_migratable_models               M django/db/backends/base/introspection.py:92     function get_migratable_models
+change_aliases                      M django/db/models/sql/query.py:1000   function change_aliases
+update                              M django/utils/translation/trans_real.py:105    function update
+setup_test_environment              M django/test/runner.py:905    function setup_test_environment
+cleanse_setting                     M django/views/debug.py:123    function cleanse_setting
+get_the_message                     M tests/mail/tests.py:2300   function get_the_message
+assertPolicyEqual                   M tests/utils_tests/test_csp.py:32     function assertPolicyEqual
+get                                 M django/utils/translation/trans_real.py:114    function get
+_get_fields                         M django/db/models/options.py:881    function _get_fields
+_count                              M django/test/html.py:118    function _count
+get_template                        M django/template/engine.py:172    function get_template
+assertFullResponse                  M tests/conditional_processing/tests.py:18     function assertFullResponse
+_get_expr_references                M django/db/models/base.py:2488   function _get_expr_references
+_quote_params_for_last_executed_query M django/db/backends/sqlite3/operations.py:129    function _quote_params_for_last_executed_query
+get_primary_key_columns             M tests/composite_pk/tests.py:43     function get_primary_key_columns
+pack                                M django/contrib/gis/db/backends/postgis/pgraster.py:16     function pack
+as_sql                              M django/contrib/gis/db/models/aggregates.py:21     function as_sql
+_init_options                       M django/contrib/gis/serializers/geojson.py:13     function _init_options
+db_type                             M django/contrib/postgres/fields/array.py:114    function db_type
+adelete                             M django/contrib/sessions/backends/cached_db.py:114    async_function adelete
+delete                              M django/contrib/sessions/backends/cached_db.py:106    function delete
+getquoted                           M django/db/backends/postgresql/psycopg_any.py:118    function getquoted
+all_replaced_applied                M django/db/migrations/loader.py:372    function all_replaced_applied
+_expr_refs_base_model               M django/db/models/sql/compiler.py:1980   function _expr_refs_base_model
+upper                               M django/template/defaultfilters.py:360    function upper
+find_template                       M django/template/loader_tags.py:99     function find_template
+localize                            M django/templatetags/l10n.py:8      function localize
+serialize_result                    M tests/admin_views/test_autocomplete_view.py:369    function serialize_result
+get_constraints                     M tests/constraints/tests.py:27     function get_constraints
+__iter__                            M tests/file_uploads/tests.py:595    function __iter__
+__init__                            M tests/forms_tests/field_tests/test_jsonfield.py:86     function __init__
+copytree                            M tests/i18n/utils.py:9      function copytree
+__init__                            M tests/inline_formsets/tests.py:206    function __init__
+__init__                            M tests/queries/test_qs_combinators.py:397    function __init__
+__call__                            M tests/test_utils/tests.py:1294   function __call__
+__init__                            M tests/utils_tests/test_autoreload.py:472    function __init__
+register                            M django/contrib/admin/decorators.py:80     function register
+test_capability                     M django/contrib/gis/gdal/layer.py:226    function test_capability
+check                               M django/contrib/postgres/constraints.py:100    function check
+_load_all_namespaces                M django/core/checks/urls.py:59     function _load_all_namespaces
+close                               M django/core/files/temp.py:53     function close
+_identity                           M django/db/models/expressions.py:529    function _identity
+resolve_expression                  M django/db/models/lookups.py:178    function resolve_expression
+_contains_aggregate                 M django/db/models/sql/where.py:247    function _contains_aggregate
+_contains_over_clause               M django/db/models/sql/where.py:257    function _contains_over_clause
+get_queryset                        M django/forms/models.py:769    function get_queryset
+_update                             M tests/basic/tests.py:881    function _update
+chunks                              M tests/file_storage/tests.py:1082   function chunks
+css_classes                         M tests/forms_tests/tests/test_forms.py:5563   function css_classes
+__getitem__                         M tests/forms_tests/tests/test_formsets.py:1271   function __getitem__
+get_message_structure               M tests/mail/tests.py:217    function get_message_structure
+__init_subclass__                   M tests/model_inheritance/tests.py:277    function __init_subclass__
+__init__                            M tests/model_regress/tests.py:239    function __init__
+urlopen                             M tests/staticfiles_tests/test_liveserver.py:67     function urlopen
+add                                 M django/db/models/deletion.py:141    function add
+execute                             M django/db/backends/sqlite3/base.py:353    function execute
+assertContentBefore                 M tests/admin_views/tests.py:293    function assertContentBefore
+mock_inputs                         M tests/auth_tests/test_management.py:50     function mock_inputs
+lower                               M django/template/defaultfilters.py:249    function lower
+humanize_tester                     M tests/humanize_tests/tests.py:32     function humanize_tester
+add_dependency                      M django/db/models/deletion.py:165    function add_dependency
+truncate_to                         M tests/db_functions/datetime/test_extract_trunc.py:52     function truncate_to
+find_template                       M django/template/engine.py:155    function find_template
+assertRelated                       M tests/migrations/test_state.py:1974   function assertRelated
+create_model                        M tests/migrations/test_state.py:1950   function create_model
+close                               M django/core/servers/basehttp.py:157    function close
+cast_db_type                        M django/contrib/postgres/fields/array.py:118    function cast_db_type
+is_in_memory_db                     M django/db/backends/sqlite3/base.py:333    function is_in_memory_db
+mkdtemp                             M tests/staticfiles_tests/test_management.py:228    function mkdtemp
+ForcedError                         C tests/transaction_hooks/tests.py:9      class ForcedError
+safe_exec                           M tests/migrations/test_writer.py:271    function safe_exec
+wait_until                          M django/contrib/admin/tests.py:39     function wait_until
+get_connection                      M django/db/transaction.py:18     function get_connection
+Stub                                C tests/apps/tests.py:418    class Stub
+_make_authors                       M tests/generic_views/test_list.py:264    function _make_authors
+get_decoded_attachments             M tests/mail/tests.py:199    function get_decoded_attachments
+_load_serializers                   M django/core/serializers/__init__.py:149    function _load_serializers
+now                                 M django/utils/timezone.py:200    function now
+truncate                            M tests/db_functions/datetime/test_extract_trunc.py:57     function truncate
+get_converters                      M django/db/models/sql/compiler.py:1513   function get_converters
+  ...and 42659 more symbols
+
+-- FOCUS
+get_constraints (tests/schema/tests.py:223-228)
+  calls: get_constraints
+  called_by: _test_composed_constraint_with_fk, _test_composed_constraint_with_fk, _test_composed_index_with_fk, _test_composed_index_with_fk, assertForeignKeyExists
+
+is_valid (tests/forms_tests/tests/test_formsets.py:1320-1322)
+  calls: is_valid
+  called_by: test_absolute_max, test_absolute_max, test_absolute_max_with_max_num, test_basic_formset, test_basic_formset
+
+get_constraints (tests/postgres_tests/test_indexes.py:260-265)
+  calls: get_constraints
+  called_by: get_constraints, test_bloom_index, test_bloom_index, test_bloom_parameters, test_bloom_parameters
+
+quote_name (django/db/backends/base/schema.py:207-208)
+  calls: quote_name
+  called_by: _alter_column_comment_sql, _alter_column_comment_sql, _alter_column_database_default_sql, _alter_column_default_sql, _alter_column_null_sql
+
+get_form (tests/modeladmin/tests.py:513-515)
+  calls: get_form
+  called_by: test_custom_form_meta_exclude, test_custom_form_meta_exclude_with_readonly, test_custom_form_validation, test_custom_form_validation, test_custom_formfield_override_readonly
+
+get_queryset (tests/admin_filters/tests.py:228-229)
+  calls: get_queryset
+  called_by: get_queryset, _test_facets, test_allvaluesfieldlistfilter, test_datefieldlistfilter, test_datefieldlistfilter
+
+repr_changes (tests/migrations/test_autodetector.py:37-52)
+  called_by: assertMigrationDependencies, assertMigrationDependencies, assertMigrationDependencies, assertNumberMigrations, assertOperationAttributes
+
+urlopen (tests/servers/tests.py:42-43)
+  calls: urlopen
+  called_by: urlopen, test_database_writes, test_fixtures_loaded, test_in_memory_database_lock, test_closes_connections
+
+traverse_qs (tests/prefetch_related/tests.py:520-549)
+  calls: traverse_qs
+  called_by: test_ambiguous, test_ambiguous, test_ambiguous, test_ambiguous, test_custom_qs
+
+execute (django/db/backends/base/schema.py:176-205)
+  calls: execute
+  called_by: __exit__, _alter_field, _alter_field, _alter_field, _alter_field
+
+settings_to_cmd_args_env (tests/dbshell/test_postgresql.py:14-18)
+  calls: settings_to_cmd_args_env
+  called_by: settings_to_cmd_args_env, test_accent, test_basic, test_column, test_crash_password_does_not_leak
+
+settings_to_cmd_args_env (tests/dbshell/test_mysql.py:14-17)
+  calls: settings_to_cmd_args_env
+  called_by: settings_to_cmd_args_env, test_basic_params_specified_in_settings, test_can_connect_using_sockets, test_crash_password_does_not_leak, test_fails_with_keyerror_on_incomplete_config
+
+get_field (tests/schema/tests.py:4681-4685)
+  called_by: _test_m2m_create, _test_m2m_repoint, _test_m2m_repoint, _test_m2m_repoint, _test_m2m_through_alter
+
+fix_os_paths (tests/forms_tests/field_tests/test_filepathfield.py:10-18)
+  calls: fix_os_paths, fix_os_paths
+  called_by: assertChoices, test_clean, test_fix_os_paths, fix_os_paths, fix_os_paths
+
+record_applied (tests/migrations/test_loader.py:83-85)
+  calls: record_applied
+  called_by: record_applied, test_check_consistent_history, test_check_consistent_history_squashed, test_check_consistent_history_squashed, test_check_consistent_history_squashed
+
+render (tests/flatpages_tests/test_templatetags.py:154-155)
+  calls: render
+  called_by: test_get_flatpages_tag, test_get_flatpages_tag_for_anon_user, test_get_flatpages_tag_for_user, test_get_flatpages_with_prefix, test_get_flatpages_with_prefix_for_anon_user
+
+decompress (tests/middleware/tests.py:883-887)
+  calls: decompress
+  called_by: decompress, test_compress_async_streaming_response, test_compress_file_response, test_compress_non_200_response, test_compress_response
+
+get_databases (tests/test_runner/test_discover_runner.py:800-804)
+  calls: get_databases
+  called_by: assertSkippedDatabases, get_databases, test_all, test_mixed, test_serialize
+
+close (tests/responses/test_fileresponse.py:69-72)
+  calls: close
+  called_by: test_content_disposition_escaping, test_content_disposition_file, test_content_length_file, test_content_length_nonzero_starting_position_file, __exit__
+
+get_table_description (tests/migrations/test_base.py:37-39)
+  calls: get_table_description
+  called_by: _get_column_allows_null, _get_column_collation, assertColumnExists, assertColumnNotExists, get_table_description
+
+get_changes (tests/migrations/test_autodetector.py:213-222)
+  calls: make_project_state, make_project_state
+  called_by: test_add_alter_order_with_respect_to, test_add_auto_field_does_not_request_default, test_add_blank_textfield_and_charfield, test_add_composite_pk, test_add_constraints
+
+signature (django/utils/inspect.py:126-134)
+  calls: signature, signature
+  called_by: _get_func_parameters, signature, signature
+
+make_project_state (tests/migrations/test_autodetector.py:206-211)
+  called_by: test_arrange_for_graph, test_arrange_for_graph, test_arrange_for_graph_with_multiple_initial, test_arrange_for_graph_with_multiple_initial, test_custom_migration_name
+
+assertIsInvalid (tests/modeladmin/test_checks.py:18-34)
+  called_by: test_actions_not_unique, test_custom_permissions_require_matching_has_method, test_autocomplete_e036, test_autocomplete_e037, test_autocomplete_e039
+
+_populate (django/urls/resolvers.py:545-629)
+  calls: _populate
+  called_by: _is_callback, _populate, _reverse_with_prefix, app_dict, namespace_dict
+
+serialize (tests/migrations/test_writer.py:1248-1251)
+  called_by: test_args_kwargs_signature, test_args_signature, test_empty_signature, test_expand_args_signature, test_keyword_only_args_signature
+
+login (tests/auth_tests/test_views.py:79-88)
+  called_by: test_password_change_done_succeeds, test_password_change_fails_with_invalid_old_password, test_password_change_fails_with_mismatched_passwords, test_password_change_redirect_custom, test_password_change_redirect_custom_named
+
+escape (django/utils/html.py:53-62)
+  calls: escape
+  called_by: handle_word, handle_word, handle_word, handle_word, handle_word
+
+formfield_for_foreignkey (tests/admin_ordering/tests.py:191-194)
+  calls: formfield_for_foreignkey
+  called_by: check_ordering_of_field_choices, formfield_for_foreignkey, formfield_for_manytomany, test_custom_queryset_still_wins, test_custom_queryset_still_wins
+
+format (django/test/runner.py:45-63)
+  calls: format
+  called_by: format, _print_unpicklable_subtest, check_picklable, check_picklable, _hash_item
+
+render (django/forms/utils.py:51-55)
+  calls: render
+  called_by: as_text, as_field_group, as_div, as_p, as_table
+
+execute (django/db/backends/mysql/base.py:75-84)
+  calls: execute
+  called_by: execute, check_constraints, disable_constraint_checking, enable_constraint_checking, init_connection_state
+
+_value_from_field (django/core/serializers/python.py:42-49)
+  calls: _value_from_field
+  called_by: _value_from_field, get_dump_object, handle_field, handle_fk_field, handle_m2m_field
+
+_get_request (tests/csrf_tests/tests.py:255-264)
+  called_by: _check_bad_or_missing_cookie, _get_csrf_cookie_request, test_ensures_csrf_cookie_no_logging, test_https_malformed_host, test_origin_malformed_host
+
+get (django/contrib/sessions/backends/base.py:76-77)
+  calls: get
+  called_by: aget, get, get_expire_at_browser_close, get_expiry_age, get_expiry_date
+
+create_model (tests/db_functions/datetime/test_extract_trunc.py:106-120)
+  called_by: _test_trunc_week, _test_trunc_week, test_extract_day_func, test_extract_day_func, test_extract_duration
+
+setup (tests/template_tests/syntax_tests/i18n/test_blocktranslate.py:19-47)
+  called_by: test_blocktrans_syntax_error_missing_assignment, test_blocktrans_tag_using_a_string_that_looks_like_str_fmt, test_count, test_count_not_number, test_i18n03
+
+_find_concrete_model_from_proxy (django/db/migrations/state.py:564-573)
+  calls: _find_concrete_model_from_proxy
+  called_by: _find_concrete_model_from_proxy, _get_concrete_models_mapping_and_proxy_models
+
+close (tests/files/tests.py:333-337)
+  calls: close
+  called_by: close, test_closing_of_filenames, test_file_move_overwrite, test_file_move_overwrite, test_file_move_permissionerror
+
+get_table_description (tests/gis_tests/gis_migrations/test_operations.py:44-46)
+  calls: get_table_description
+  called_by: assertColumnExists, assertColumnNotExists, get_table_description
+
+column_classes (tests/schema/tests.py:181-194)
+  called_by: _test_m2m, _test_m2m, _test_m2m, _test_m2m_create, _test_m2m_create_through
+
+assertOperationAttributes (tests/migrations/test_autodetector.py:115-153)
+  calls: repr_changes, repr_changes, repr_changes, repr_changes
+  called_by: test_add_alter_order_with_respect_to, test_add_alter_order_with_respect_to, test_add_blank_textfield_and_charfield, test_add_composite_pk, test_add_composite_pk
+
+execute (django/db/backends/postgresql/schema.py:42-48)
+  calls: execute, execute
+  called_by: _alter_column_type_sql, _alter_column_type_sql, _alter_field, _alter_field, _is_collation_deterministic
+
+assertNumberMigrations (tests/migrations/test_autodetector.py:54-64)
+  calls: repr_changes
+  called_by: test_add_alter_order_with_respect_to, test_add_blank_textfield_and_charfield, test_add_composite_pk, test_add_constraints, test_add_constraints_with_new_model
+
+save (tests/generic_relations/test_forms.py:221-223)
+  calls: save
+  called_by: test_save_as_new, test_save_new_for_concrete, test_save_new_for_proxy, save, test_save_new_uses_form_save
+
+get_language_info (django/templatetags/i18n.py:40-46)
+  calls: get_language_info, get_language_info
+  called_by: get_language_info, get_language_info, language_bidi, language_name, language_name_local
+
+validate (tests/constraints/tests.py:887-890)
+  called_by: assertGeneratedFieldIsValidated, assertGeneratedFieldIsValidated, assertGeneratedFieldIsValidated, assertGeneratedFieldIsValidated, test_validate_boolean_expressions
+
+assertOperationTypes (tests/migrations/test_autodetector.py:89-113)
+  calls: repr_changes, repr_changes, repr_changes
+  called_by: test_add_alter_order_with_respect_to, test_add_blank_textfield_and_charfield, test_add_composite_pk, test_add_constraints, test_add_constraints_with_new_model
+
+run_test (tests/admin_scripts/tests.py:115-147)
+  calls: _ext_backend_paths
+  called_by: run_django_admin, run_manage, test_program_name_in_help
+
+_chain (django/db/models/query.py:2189-2205)
+  called_by: __and__, __or__, __xor__, _annotate, _combinator_query
+
+quote_name (django/db/models/sql/compiler.py:550-559)
+  calls: quote_name
+  called_by: _order_by_pairs, get_distinct, get_from_clause, get_qualify_sql, get_qualify_sql
+
+message_from_bytes (tests/mail/tests.py:111-123)
+  calls: _apply_cpython_128110_workaround
+  called_by: test_address_header_handling, test_attachments_with_alternative_parts, test_encoding, test_encoding_alternatives, test_localpart_only_address
+
+_ext_backend_paths (tests/admin_scripts/tests.py:102-113)
+  called_by: run_test
+
+clone (django/db/models/sql/where.py:217-223)
+  calls: clone
+  called_by: clone, relabeled_clone, resolve_expression
+
+settings_to_cmd_args_env (tests/dbshell/test_sqlite.py:12-15)
+  calls: settings_to_cmd_args_env
+  called_by: settings_to_cmd_args_env, test_non_zero_exit_status_when_path_to_db_is_path, test_parameters, test_path_name
+
+close (tests/cache/tests.py:1321-1325)
+  calls: close
+  called_by: test_304_response_has_http_caching_headers_but_not_cached, test_304_response_has_http_caching_headers_but_not_cached, test_cache_control_max_age, test_cache_control_max_age, close
+
+settings_to_cmd_args_env (tests/dbshell/test_oracle.py:10-16)
+  calls: settings_to_cmd_args_env
+  called_by: settings_to_cmd_args_env, test_parameters, test_with_rlwrap, test_without_rlwrap
+
+clear (django/core/cache/backends/locmem.py:115-118)
+  calls: clear, clear
+  called_by: _cull, _cull, clear, clear
+
+assertNoOutput (tests/admin_scripts/tests.py:183-187)
+  called_by: _test, _test_base_command, test_app_command, test_app_command_multiple_apps, test_base_command_with_wrong_option
+
+delete_model (django/db/backends/sqlite3/schema.py:281-297)
+  calls: delete_model
+  called_by: _alter_many_to_many, _remake_table, _remake_table, delete_model, remove_field
+
+deep_deconstruct (django/db/migrations/autodetector.py:74-111)
+  calls: deep_deconstruct, deep_deconstruct, deep_deconstruct, deep_deconstruct, deep_deconstruct
+  called_by: create_renamed_fields, create_renamed_fields, deep_deconstruct, deep_deconstruct, deep_deconstruct
+
+__setitem__ (django/utils/datastructures.py:94-95)
+  calls: __setitem__
+  called_by: __deepcopy__, __setitem__, setlist
+
+seek (tests/responses/test_fileresponse.py:59-60)
+  calls: seek
+  called_by: test_content_length_nonzero_starting_position_buffer, test_content_length_nonzero_starting_position_file, seek, test_content_length_nonzero_starting_position_file_seekable_no_tell, test_content_length_nonzero_starting_position_file_seekable_no_tell
+
+pop (django/template/context.py:62-65)
+  calls: pop
+  called_by: pop, update, __exit__, push_state
+
+hashed_file_path (tests/staticfiles_tests/test_storage.py:23-25)
+  called_by: test_file_change_after_collectstatic, test_file_change_after_collectstatic, test_aggregating_modules, test_module_import, test_missing_entry
+
+record_migration (django/db/migrations/executor.py:268-277)
+  calls: record_migration
+  called_by: apply_migration, apply_migration, record_migration, unapply_migration
+
+_apply_cpython_128110_workaround (tests/mail/tests.py:63-108)
+  calls: build_address, rfc2047_decode
+  called_by: message_from_bytes
+
+subclasses (django/db/models/query_utils.py:35-38)
+  calls: subclasses
+  called_by: _clear_cached_class_lookups, subclasses
+
+run (scripts/manage_translations.py:45-48)
+  calls: run
+  called_by: _check_diff, fetch, fetch, fetch, fetch
+
+join (django/template/defaultfilters.py:612-624)
+  calls: join, join
+  called_by: floatformat, join, join, linenumbers, list_formatter
+
+GEOSGeometry (django/contrib/gis/geos/geometry.py:739-799)
+  called_by: _topology, clone, from_ewkt, make_valid, transform
+
+_get_POST_csrf_cookie_request (tests/csrf_tests/tests.py:298-313)
+  calls: _get_csrf_cookie_request
+  called_by: _check_bad_or_missing_token, _get_POST_request_with_token, test_csrf_token_in_header, test_csrf_token_in_header_with_customized_name, test_process_request_csrf_cookie_no_token_exempt_view
+
+assertRenderEqual (tests/template_tests/syntax_tests/test_querystring.py:13-15)
+  called_by: test_querystring_add, test_querystring_add_dict, test_querystring_add_list, test_querystring_dict, test_querystring_dict_list_values
+
+geo_quote_name (django/contrib/gis/db/backends/spatialite/schema.py:36-37)
+  calls: geo_quote_name
+  called_by: alter_db_table, alter_db_table, alter_db_table, column_sql, column_sql
+
+_get_csrf_cookie_request (tests/csrf_tests/tests.py:266-296)
+  calls: _get_request
+  called_by: _get_POST_csrf_cookie_request, test_get_token_for_exempt_view, test_get_token_for_requires_csrf_token_view, test_put_and_delete_allowed, test_put_and_delete_allowed
+
+serialize_round_trip (tests/migrations/test_writer.py:284-288)
+  calls: safe_exec, serialize
+  called_by: assertSerializedEqual, assertSerializedFieldEqual, assertSerializedFunctoolsPartialEqual, test_serialize_class_based_validators, test_serialize_class_based_validators
+
+get_source_expressions (django/db/models/aggregates.py:110-112)
+  calls: get_source_expressions
+  called_by: default_alias, get_source_expressions, get_source_fields, as_sqlite
+
+must_be (django/contrib/admin/checks.py:1356-1363)
+  called_by: _check_autocomplete_fields, _check_autocomplete_fields_item, _check_exclude, _check_fields, _check_fieldsets
+
+geo_quote_name (django/contrib/gis/db/backends/oracle/schema.py:35-36)
+  calls: geo_quote_name
+  called_by: column_sql, column_sql, delete_model, geo_quote_name, remove_field
+
+__init__ (tests/gis_tests/test_gis_tests_utils.py:13-15)
+  calls: __init__
+  called_by: __init__, test, wrapper, test_mutation
+
+-- GAPS
+- Question mentions [configuration, downstream, impact, loading, modifying] — not found in focus or symbol index
+- Module tests/app_loading/__init__.py matches question but has no focus detail
+  > drill: tests/app_loading/__init__.py

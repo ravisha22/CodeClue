@@ -2,14 +2,11 @@
   "repo": "django/django",
   "nodes": 45457,
   "edges": 55208,
-  "extract_time_s": 179.8,
-  "graph_size_mb": 14.4,
-  "legacy_pretty_graph_mb": 60.92,
-  "python_source_mb": 17.93,
-  "storage_source_ratio": 0.8035,
-  "reduction_vs_legacy_pct": 76.36,
-  "under_source_size": true,
-  "file_budget_pass": true,
-  "measurement_scope": "canonical_storage",
-  "measurement_note": "This report measures persisted canonical graph storage only. Projection-level context efficiency must be evaluated separately."
+  "extract_time_s": 164.4,
+  "graph_size_mb": 64.64,
+  "raw_tokens_est": 12997805,
+  "clue_tokens_est": 16945852,
+  "trr": -0.3037,
+  "h1_pass": false,
+  "file_budget_pass": false
 }

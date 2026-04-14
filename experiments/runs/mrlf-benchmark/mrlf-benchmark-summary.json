@@ -1,0 +1,93 @@
+[
+  {
+    "repo": "flask",
+    "modules": 83,
+    "symbols": 1629,
+    "edges": 2163,
+    "clue_words": 2047,
+    "clue_tokens_est": 2661,
+    "detail_records": 1629,
+    "detail_size_kb": 1165.3,
+    "extract_time_s": 11.52,
+    "render_time_s": 6.48,
+    "detail_time_s": 18.82
+  },
+  {
+    "repo": "fastapi",
+    "modules": 1122,
+    "symbols": 5252,
+    "edges": 6048,
+    "clue_words": 2102,
+    "clue_tokens_est": 2732,
+    "detail_records": 5252,
+    "detail_size_kb": 5189.6,
+    "extract_time_s": 31.71,
+    "render_time_s": 21.64,
+    "detail_time_s": 55.59
+  },
+  {
+    "repo": "httpx",
+    "modules": 60,
+    "symbols": 1241,
+    "edges": 1557,
+    "clue_words": 2006,
+    "clue_tokens_est": 2607,
+    "detail_records": 1241,
+    "detail_size_kb": 993.6,
+    "extract_time_s": 4.62,
+    "render_time_s": 5.24,
+    "detail_time_s": 16.34
+  },
+  {
+    "repo": "gin",
+    "modules": 99,
+    "symbols": 1481,
+    "edges": 4275,
+    "clue_words": 1811,
+    "clue_tokens_est": 2354,
+    "detail_records": 1481,
+    "detail_size_kb": 395.0,
+    "extract_time_s": 5.24,
+    "render_time_s": 4.61,
+    "detail_time_s": 18.55
+  },
+  {
+    "repo": "nest",
+    "modules": 1667,
+    "symbols": 2136,
+    "edges": 3060,
+    "clue_words": 1543,
+    "clue_tokens_est": 2005,
+    "detail_records": 2136,
+    "detail_size_kb": 568.9,
+    "extract_time_s": 20.0,
+    "render_time_s": 16.56,
+    "detail_time_s": 13.38
+  },
+  {
+    "repo": "typeorm",
+    "modules": 3444,
+    "symbols": 3017,
+    "edges": 4075,
+    "clue_words": 1562,
+    "clue_tokens_est": 2030,
+    "detail_records": 3017,
+    "detail_size_kb": 761.1,
+    "extract_time_s": 355.74,
+    "render_time_s": 249.69,
+    "detail_time_s": 26.16
+  },
+  {
+    "repo": "django",
+    "modules": 3005,
+    "symbols": 42888,
+    "edges": 56890,
+    "clue_words": 2311,
+    "clue_tokens_est": 3004,
+    "detail_records": 42888,
+    "detail_size_kb": 43954.0,
+    "extract_time_s": 265.15,
+    "render_time_s": 501.75,
+    "detail_time_s": 799.7
+  }
+]

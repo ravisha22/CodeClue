@@ -1,0 +1,34 @@
+{
+  "task_id": "flask-tf2-001",
+  "family": "TF2",
+  "operation_family": "OF2",
+  "question": "If I change the `push` method in RequestContext (ctx.py) to be async, what other components would be impacted?",
+  "ground_truth_summary": "RequestContext.push() is called by Flask.wsgi_app() via RequestContext's __enter__. It sets up _cv_tokens, calls session_interface.open_session(), and triggers appcontext_pushed signal. Making it async would require Flask.wsgi_app(), Flask.full_dispatch_request(), and all before_request/after_request handlers to be async-aware. The testing client (testing.py) also calls push() directly.",
+  "relevant_files": [
+    "src/flask/ctx.py",
+    "src/flask/app.py",
+    "src/flask/testing.py",
+    "src/flask/sessions.py"
+  ],
+  "prompt_profile": {
+    "profile_id": "flask-impact-ctx-v1",
+    "intent": "impact-analysis",
+    "constraints": {
+      "max_context": "balanced"
+    },
+    "focus_files": [
+      "src/flask/ctx.py"
+    ],
+    "focus_symbols": [
+      "push",
+      "RequestContext"
+    ],
+    "focus_keywords": [
+      "push",
+      "context"
+    ]
+  },
+  "repo_dir": "flask",
+  "repo": "pallets/flask",
+  "task_file": "tests\\fixtures\\lane_a_flask_tasks.yaml"
+}

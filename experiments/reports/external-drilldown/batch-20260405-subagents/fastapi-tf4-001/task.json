@@ -1,0 +1,38 @@
+{
+  "task_id": "fastapi-tf4-001",
+  "family": "TF4",
+  "operation_family": "OF4",
+  "repo": "fastapi/fastapi",
+  "question": "What happens when a sync dependency is used inside an async route in FastAPI? Is there a risk of blocking the event loop?",
+  "ground_truth_summary": "FastAPI automatically wraps sync callables using run_in_threadpool() from starlette.concurrency. In solve_dependencies(), if a dependency is not async callable, it's run via run_in_threadpool to avoid blocking. For sync context managers (yield dependencies), contextmanager_in_threadpool in concurrency.py wraps them with a CapacityLimiter to prevent deadlocks. The key risk is that custom middleware or manually called sync functions bypass this protection.",
+  "relevant_files": [
+    "fastapi/dependencies/utils.py",
+    "fastapi/concurrency.py",
+    "fastapi/routing.py"
+  ],
+  "prompt_profile": {
+    "profile_id": "fastapi-behavior-sync-v1",
+    "intent": "behavior-debugging",
+    "constraints": {
+      "max_context": "balanced"
+    },
+    "focus_files": [
+      "fastapi/concurrency.py",
+      "fastapi/dependencies/utils.py"
+    ],
+    "focus_keywords": [
+      "sync",
+      "async",
+      "threadpool",
+      "blocking",
+      "event loop"
+    ],
+    "focus_symbols": [
+      "run_in_threadpool",
+      "contextmanager_in_threadpool",
+      "solve_dependencies"
+    ]
+  },
+  "repo_dir": "fastapi",
+  "task_file": "tests\\fixtures\\lane_a_extended_tasks.yaml"
+}

@@ -1,0 +1,47 @@
+[
+  {
+    "task": "django-tf1-settings-refactor",
+    "time_s": 5.9,
+    "tokens": 4000,
+    "budget_pct": 96.4,
+    "budget_ok": true,
+    "gold_hits": "3/3",
+    "status": "OK"
+  },
+  {
+    "task": "django-tf2-middleware-impact",
+    "time_s": 4.6,
+    "tokens": 3976,
+    "budget_pct": 95.8,
+    "budget_ok": true,
+    "gold_hits": "0/3",
+    "status": "OK"
+  },
+  {
+    "task": "django-tf3-admin-customization",
+    "time_s": 3.5,
+    "tokens": 4033,
+    "budget_pct": 97.2,
+    "budget_ok": true,
+    "gold_hits": "0/3",
+    "status": "OK"
+  },
+  {
+    "task": "django-tf4-orm-query-execution",
+    "time_s": 3.3,
+    "tokens": 3985,
+    "budget_pct": 96.0,
+    "budget_ok": true,
+    "gold_hits": "2/3",
+    "status": "OK"
+  },
+  {
+    "task": "django-tf5-csrf-protection",
+    "time_s": 5.0,
+    "tokens": 3973,
+    "budget_pct": 95.7,
+    "budget_ok": true,
+    "gold_hits": "0/3",
+    "status": "OK"
+  }
+]

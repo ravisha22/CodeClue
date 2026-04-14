@@ -1,0 +1,330 @@
+=CC v2 chi@HEAD 74mod 410sym
+? What rate limiting or request throttling mechanisms exist?
+
+
+-- TREE
+_examples/  (19 files)
+  custom-handler/  custom-method/  fileserver/  graceful/  hello-world/  limits/  logging/  pathvalue/  rest/  router-walk/  ...+2
+middleware/  (45 files)
+chain.go  chi.go  context.go  context_test.go  mux.go  mux_test.go  path_value_test.go  pattern_test.go  tree.go  tree_test.go
+
+-- INDEX
+tree.go                                         877L  RegisterMethod, Route, Walk, endpoint, Value
+middleware/compress.go                          392L  Compress, Handler, SetEncoder, selectEncoder, Compressor
+_examples/custom-handler/main.go                 35L  ServeHTTP, customHandler, main
+_examples/custom-method/main.go                  33L  init, main
+_examples/fileserver/main.go                     65L  FileServer, main
+_examples/graceful/main.go                       69L  main, service
+_examples/hello-world/main.go                    21L  main
+_examples/limits/main.go                         92L  main
+_examples/logging/main.go                         9L  main
+_examples/pathvalue/main.go                      25L  main, pathValueHandler
+_examples/rest/main.go                          520L  AdminOnly, Article, ArticleCtx, ArticlePayload, Bind
+_examples/router-walk/main.go                    42L  Ping, main
+_examples/todos-resource/main.go                 30L  main
+_examples/todos-resource/todos.go                53L  Create, Delete, Get, List, Routes
+_examples/todos-resource/users.go                48L  Create, Delete, Get, List, Routes
+_examples/versions/data/article.go                9L  Article
+_examples/versions/data/errors.go                28L  PresentError
+_examples/versions/main.go                      154L  apiVersionCtx, articleRouter, getArticle, listArticles, main
+_examples/versions/presenter/v1/article.go       22L  Render, Article, NewArticleResponse
+_examples/versions/presenter/v2/article.go       30L  Render, Article, NewArticleResponse
+_examples/versions/presenter/v3/article.go       39L  Render, Article, NewArticleResponse
+chain.go                                         49L  Chain, ServeHTTP, ChainHandler, Handler, HandlerFunc
+  ...and 52 more modules
+
+-- SYM
+Mux.handle                          M mux.go:416    handle registers a http.Handler in the routing ...
+compressResponseWriter.writer       M middleware/compress.go:326    function compressResponseWriter.writer
+flushWriter.Flush                   M middleware/wrap_writer.go:147    function flushWriter.Flush
+Mux.Method                          M mux.go:127    Method adds the route `pattern` that matches `m...
+chain                               M chain.go:36     chain builds a http.Handler composed of an inli...
+ThrottleWithOpts                    M middleware/throttle.go:44     ThrottleWithOpts is a middleware that limits nu...
+hijackWriter.Hijack                 M middleware/wrap_writer.go:160    function hijackWriter.Hijack
+patNextSegment                      M tree.go:687    patNextSegment returns the next segment details...
+walk                                M tree.go:838    function walk
+basicWriter.WriteHeader             M middleware/wrap_writer.go:82     function basicWriter.WriteHeader
+UserPayload.Render                  M _examples/rest/main.go:305    function UserPayload.Render
+matchAcceptEncoding                 M middleware/compress.go:240    function matchAcceptEncoding
+NewArticleListResponse              M _examples/rest/main.go:378    function NewArticleListResponse
+Context                             C context.go:45     Context is the default routing context set on t...
+RouteContext                        M context.go:27     RouteContext returns chi's routing Context obje...
+ArticleResponse                     C _examples/rest/main.go:350    ArticleResponse is the response payload for the...
+NewArticleResponse                  M _examples/rest/main.go:360    function NewArticleResponse
+FileServer                          M _examples/fileserver/main.go:48     FileServer conveniently sets up a http.FileServ...
+service                             M _examples/graceful/main.go:45     function service
+adminRouter                         M _examples/rest/main.go:219    A completely separate router for administrator ...
+basicAuthFailed                     M middleware/basic_auth.go:30     function basicAuthFailed
+Compressor.selectEncoder            M middleware/compress.go:211    selectEncoder returns the encoder, the name of ...
+compressResponseWriter.WriteHeader  M middleware/compress.go:290    function compressResponseWriter.WriteHeader
+split                               M middleware/content_charset.go:37     Split a string in two parts, cleaning any white...
+Profiler                            M middleware/profiler.go:23     Profiler is a convenient subrouter used for mou...
+realIP                              M middleware/realip.go:42     function realIP
+prettyStack.decorateSourceLine      M middleware/recoverer.go:166    function prettyStack.decorateSourceLine
+prettyStack.parse                   M middleware/recoverer.go:69     function prettyStack.parse
+Pattern.Match                       M middleware/route_headers.go:141    function Pattern.Match
+Mux.Find                            M mux.go:368    Find searches the routing tree for the pattern ...
+Mux.Handle                          M mux.go:109    Handle adds the route `pattern` that matches an...
+Mux.NotFoundHandler                 M mux.go:398    NotFoundHandler returns the default Mux 404 res...
+Mux.With                            M mux.go:236    With adds inline middlewares for an endpoint ha...
+node.setEndpoint                    M tree.go:344    function node.setEndpoint
+nodes.Swap                          M tree.go:788    function nodes.Swap
+Mux.updateRouteHandler              M mux.go:511    updateRouteHandler builds the single mux handle...
+ErrInvalidRequest                   M _examples/rest/main.go:415    function ErrInvalidRequest
+todosResource.Get                   M _examples/todos-resource/todos.go:39     function todosResource.Get
+NewUserPayloadResponse              M _examples/rest/main.go:295    function NewUserPayloadResponse
+User                                C _examples/rest/main.go:440    User data model
+dbGetUser                           M _examples/rest/main.go:513    function dbGetUser
+UserPayload.Bind                    M _examples/rest/main.go:301    Bind on UserPayload will run after the unmarsha...
+usersResource.Get                   M _examples/todos-resource/users.go:38     function usersResource.Get
+ErrRender                           M _examples/rest/main.go:424    function ErrRender
+apiVersionCtx                       M _examples/versions/main.go:51     function apiVersionCtx
+articleRouter                       M _examples/versions/main.go:60     function articleRouter
+NewRouter                           M chi.go:60     NewRouter returns a new Mux object that impleme...
+Router                              C chi.go:66     Router consisting of the core routing methods u...
+Compressor                          C middleware/compress.go:46     Compressor represents a set of encoding configu...
+NewCompressor                       M middleware/compress.go:63     NewCompressor creates a new Compressor that wil...
+basicWriter.maybeWriteHeader        M middleware/wrap_writer.go:116    function basicWriter.maybeWriteHeader
+Route                               C tree.go:824    Route describes the details of a routing handler.
+node.findRoute                      M tree.go:401    Recursive edge traversal by checking all nodeTy...
+Article                             C _examples/rest/main.go:447    Article data model.
+LogEntry                            C middleware/logger.go:69     LogEntry records the final log when a request c...
+usersResource.Delete                M _examples/todos-resource/users.go:46     function usersResource.Delete
+Context.RoutePattern                M context.go:123    RoutePattern builds the routing pattern string ...
+URLParam                            M context.go:10     URLParam returns the url parameter from a http....
+dbRemoveArticle                     M _examples/rest/main.go:503    function dbRemoveArticle
+todosResource.Delete                M _examples/todos-resource/todos.go:47     function todosResource.Delete
+GetArticle                          M _examples/rest/main.go:173    GetArticle returns the specific Article.
+dbGetArticle                        M _examples/rest/main.go:475    function dbGetArticle
+dbGetArticleBySlug                  M _examples/rest/main.go:484    function dbGetArticleBySlug
+DefaultLogFormatter.NewLogEntry     M middleware/logger.go:98     NewLogEntry creates a new LogEntry for the requ...
+WithLogEntry                        M middleware/logger.go:81     WithLogEntry sets the in-context LogEntry for a...
+defaultLogEntry.Write               M middleware/logger.go:134    function defaultLogEntry.Write
+Handler.ServeHTTP                   M _examples/custom-handler/main.go:12     function Handler.ServeHTTP
+customHandler                       M _examples/custom-handler/main.go:26     function customHandler
+main                                M _examples/custom-handler/main.go:20     function main
+init                                M _examples/custom-method/main.go:10     function init
+main                                M _examples/custom-method/main.go:16     function main
+main                                M _examples/fileserver/main.go:28     function main
+main                                M _examples/graceful/main.go:17     function main
+main                                M _examples/hello-world/main.go:10     function main
+main                                M _examples/limits/main.go:21     function main
+main                                M _examples/logging/main.go:7      function main
+main                                M _examples/pathvalue/main.go:10     function main
+pathValueHandler                    M _examples/pathvalue/main.go:20     pathValueHandler retrieves a URL parameter usin...
+  ...and 215 more symbols
+
+-- FOCUS
+testRequest (mux_test.go:1983-1983)
+  sig: testRequest(t *testing.T, ts *httptest.Server, method, path string, ...)
+  called_by: TestCustomHTTPMethod, TestMethodNotAllowed, TestMountingSimilarPattern, TestMuxBig, TestMuxEmptyParams, TestMuxMissingParams, TestMuxMounts, TestMuxNestedMethodNotAllowed
+
+Mux.handle (mux.go:416-416)
+  handle registers a http.Handler in the routing tree for a particular http method and routing pattern.
+  sig: Mux.handle(method methodTyp, pattern string, handler http.Handler)
+  called_by: Connect, Delete, Get, Head, Options, Patch, Post, Put
+  raises: panic
+
+compressResponseWriter.writer (middleware/compress.go:326-326)
+  called_by: Close, Flush, Hijack, Push
+
+flushWriter.Flush (middleware/wrap_writer.go:147-147)
+  called_by: Flush
+
+Mux.Method (mux.go:127-127)
+  Method adds the route `pattern` that matches `method` http method to execute the `handler` http.Handler.
+  sig: Mux.Method(method, pattern string, handler http.Handler)
+  called_by: Handle, MethodFunc
+  raises: panic
+
+ctxKey.String (mux_test.go:2017-2017)
+  called_by: TestSingleHandler, testHandler
+
+chain (chain.go:36-36)
+  chain builds a http.Handler composed of an inline middleware stack and endpoint handler in the order they are passed.
+  sig: chain(middlewares []func(http.Handler)
+  called_by: Handler, HandlerFunc
+
+ThrottleWithOpts (middleware/throttle.go:44-44)
+  ThrottleWithOpts is a middleware that limits number of currently processed requests using passed ThrottleOpts.
+  sig: ThrottleWithOpts(opts ThrottleOpts)
+  called_by: Throttle, ThrottleBacklog
+  raises: panic
+
+hijackWriter.Hijack (middleware/wrap_writer.go:160-160)
+  called_by: Hijack
+
+patNextSegment (tree.go:687-687)
+  patNextSegment returns the next segment details from a pattern: node type, param key, regexp string, param tail byte, pa
+  sig: patNextSegment(pattern string)
+  called_by: addChild, patParamKeys
+
+walk (tree.go:838-838)
+  sig: walk(r Routes, walkFn WalkFunc, parentRoute string, parentMw ...)
+  called_by: Walk, routes
+
+debugPrintTree (tree_test.go:447-447)
+  sig: debugPrintTree(parent int, i int, n *node, label byte)
+  called_by: TestTreeRegexp, TestTreeRegexpRecursive
+
+basicWriter.WriteHeader (middleware/wrap_writer.go:82-82)
+  sig: basicWriter.WriteHeader(code int)
+  called_by: Write, maybeWriteHeader
+
+UserPayload.Render (_examples/rest/main.go:305-305)
+  sig: UserPayload.Render(w http.ResponseWriter, r *http.Request)
+  called_by: ArticleCtx, CreateArticle, DeleteArticle, GetArticle, ListArticles, UpdateArticle
+
+matchAcceptEncoding (middleware/compress.go:240-240)
+  sig: matchAcceptEncoding(accepted []string, encoding string)
+  called_by: selectEncoder
+
+NewArticleListResponse (_examples/rest/main.go:378-378)
+  sig: NewArticleListResponse(articles []*Article)
+  calls: ArticleResponse, NewArticleResponse
+  called_by: ListArticles, SearchArticles
+
+Context (context.go:45-45)
+  Context is the default routing context set on the root node of a request context to track route patterns, URL parameters
+  methods: Reset, RoutePattern, URLParam
+  called_by: Instrument, URLParam, URLParamFromCtx
+
+RouteContext (context.go:27-27)
+  RouteContext returns chi's routing Context object from a http.Request Context.
+  sig: RouteContext(ctx context.Context)
+  called_by: Instrument, URLParam, URLParamFromCtx
+
+ArticleResponse (_examples/rest/main.go:350-350)
+  ArticleResponse is the response payload for the Article data model.
+  methods: Render
+  called_by: GetArticle, NewArticleListResponse
+
+NewArticleResponse (_examples/rest/main.go:360-360)
+  sig: NewArticleResponse(article *Article)
+  calls: NewUserPayloadResponse, User, dbGetUser
+  called_by: GetArticle, NewArticleListResponse
+
+split (middleware/content_charset.go:37-37)
+  Split a string in two parts, cleaning any whitespace.
+  sig: split(str, sep string)
+  called_by: contentEncoding
+
+FileServer (_examples/fileserver/main.go:48-48)
+  FileServer conveniently sets up a http.FileServer handler to serve static files from a http.FileSystem.
+  sig: FileServer(r chi.Router, path string, root http.FileSystem)
+  called_by: main
+  raises: panic
+
+service (_examples/graceful/main.go:45-45)
+  called_by: main
+
+adminRouter (_examples/rest/main.go:219-219)
+  A completely separate router for administrator routes
+  called_by: main
+
+basicAuthFailed (middleware/basic_auth.go:30-30)
+  sig: basicAuthFailed(w http.ResponseWriter, realm string)
+  called_by: BasicAuth
+
+Compressor.selectEncoder (middleware/compress.go:211-211)
+  selectEncoder returns the encoder, the name of the encoder, and a closer function.
+  sig: Compressor.selectEncoder(h http.Header, w io.Writer)
+  calls: matchAcceptEncoding
+  called_by: Handler
+
+compressResponseWriter.WriteHeader (middleware/compress.go:290-290)
+  sig: compressResponseWriter.WriteHeader(code int)
+  called_by: Write
+
+Profiler (middleware/profiler.go:23-23)
+  Profiler is a convenient subrouter used for mounting net/http/pprof.
+  called_by: MyService
+
+realIP (middleware/realip.go:42-42)
+  sig: realIP(r *http.Request)
+  called_by: RealIP
+
+prettyStack.decorateSourceLine (middleware/recoverer.go:166-166)
+  sig: prettyStack.decorateSourceLine(line string, useColor bool, num int)
+  called_by: decorateLine
+
+prettyStack.parse (middleware/recoverer.go:69-69)
+  sig: prettyStack.parse(debugStack []byte, rvr interface{})
+  called_by: PrintPrettyStack
+  raises: panic
+
+Pattern.Match (middleware/route_headers.go:141-141)
+  sig: Pattern.Match(v string)
+  called_by: IsMatch
+
+Mux.Find (mux.go:368-368)
+  Find searches the routing tree for the pattern that matches the method/path.
+  sig: Mux.Find(rctx *Context, method, path string)
+  called_by: Match
+
+Mux.Handle (mux.go:109-109)
+  Handle adds the route `pattern` that matches any http method to execute the `handler` http.Handler.
+  sig: Mux.Handle(pattern string, handler http.Handler)
+  calls: Method
+  called_by: HandleFunc
+
+Mux.NotFoundHandler (mux.go:398-398)
+  NotFoundHandler returns the default Mux 404 responder whenever a route cannot be found.
+  called_by: ServeHTTP
+
+Mux.With (mux.go:236-236)
+  With adds inline middlewares for an endpoint handler.
+  sig: Mux.With(middlewares ...func(http.Handler)
+  calls: handle, updateRouteHandler
+  called_by: Group
+
+testHandler (mux_test.go:2006-2006)
+  sig: testHandler(t *testing.T, h http.Handler, method, path string, body ...)
+  calls: String
+  called_by: TestMuxEmptyRoutes
+
+node.setEndpoint (tree.go:344-344)
+  sig: node.setEndpoint(method methodTyp, handler http.Handler, pattern string)
+  called_by: InsertRoute
+
+nodes.Swap (tree.go:788-788)
+  sig: nodes.Swap(i, j int)
+  called_by: tailSort
+
+Mux.updateRouteHandler (mux.go:511-511)
+  updateRouteHandler builds the single mux handler that is a chain of the middleware stack, as defined by calls to Use(), 
+  called_by: With
+
+ErrInvalidRequest (_examples/rest/main.go:415-415)
+  sig: ErrInvalidRequest(err error)
+  called_by: CreateArticle, DeleteArticle, UpdateArticle
+
+todosResource.Get (_examples/todos-resource/todos.go:39-39)
+  sig: todosResource.Get(w http.ResponseWriter, r *http.Request)
+  called_by: Routes
+
+NewUserPayloadResponse (_examples/rest/main.go:295-295)
+  sig: NewUserPayloadResponse(user *User)
+  called_by: NewArticleResponse
+
+User (_examples/rest/main.go:440-440)
+  User data model
+  called_by: NewArticleResponse
+
+dbGetUser (_examples/rest/main.go:513-513)
+  sig: dbGetUser(id int64)
+  called_by: NewArticleResponse
+
+UserPayload.Bind (_examples/rest/main.go:301-301)
+  Bind on UserPayload will run after the unmarshalling is complete, its a good time to focus some post-processing after a 
+  sig: UserPayload.Bind(r *http.Request)
+  called_by: CreateArticle, UpdateArticle
+
+usersResource.Get (_examples/todos-resource/users.go:38-38)
+  sig: usersResource.Get(w http.ResponseWriter, r *http.Request)
+  called_by: Routes
+
+-- GAPS
+- Question mentions [exist, limiting, mechanisms, rate, request] — not found in focus or symbol index
+- Module middleware/request_id.go matches question but has no focus detail
+  > drill: middleware/request_id.go

@@ -1,0 +1,312 @@
+=CC v2 django@HEAD 3005mod 42888sym
+? What mechanisms prevent cross-site request forgery attacks?
+
+
+-- TREE
+django/  (988 files)
+docs/  (4 files)
+js_tests/  (11 files)
+scripts/  (6 files)
+tests/  (1993 files)
+
+-- INDEX
+Gruntfile.js                                     15L  
+django/__init__.py                               24L  setup
+django/__main__.py                               10L  
+django/apps/__init__.py                           4L  
+django/apps/config.py                           274L  create, default_auto_field, get_model, get_models, import_models
+django/apps/registry.py                         438L  check_apps_ready, check_models_ready, clear_cache, do_pending_operations, get_app_config
+django/conf/__init__.py                         257L  configure, configured, LazySettings, is_overridden, Settings
+django/conf/global_settings.py                  680L  gettext_noop
+django/conf/locale/__init__.py                  636L  
+django/conf/locale/ar/__init__.py                 0L  
+django/conf/locale/ar/formats.py                 21L  
+django/conf/locale/ar_DZ/__init__.py              0L  
+django/conf/locale/ar_DZ/formats.py              29L  
+django/conf/locale/az/__init__.py                 0L  
+django/conf/locale/az/formats.py                 30L  
+django/conf/locale/bg/__init__.py                 0L  
+django/conf/locale/bg/formats.py                 21L  
+django/conf/locale/bn/__init__.py                 0L  
+django/conf/locale/bn/formats.py                 32L  
+django/conf/locale/bs/__init__.py                 0L  
+django/conf/locale/bs/formats.py                 21L  
+django/conf/locale/ca/__init__.py                 0L  
+django/conf/locale/ca/formats.py                 30L  
+django/conf/locale/ckb/__init__.py                0L  
+django/conf/locale/ckb/formats.py                21L  
+django/conf/locale/cs/__init__.py                 0L  
+django/conf/locale/cs/formats.py                 43L  
+  ...and 2978 more modules
+
+-- SYM
+_chain                              M django/db/models/query.py:2189   Return a copy of the current QuerySet that's re...
+OGRGeometry                         C django/contrib/gis/gdal/geometries.py:65     Encapsulate an OGR geometry.
+quote_name                          M django/db/backends/base/schema.py:207    function quote_name
+GEOSGeometry                        C django/contrib/gis/geos/geometry.py:739    A class that, generally, encapsulates a GEOS ge...
+must_be                             M django/contrib/admin/checks.py:1356   function must_be
+_from_wkt                           M django/contrib/gis/geos/geometry.py:138    function _from_wkt
+func                                M django/utils/functional.py:19     function func
+_topology                           M django/contrib/gis/geos/geometry.py:534    Return Geometry from the given pointer.
+_combine                            M django/db/models/expressions.py:63     function _combine
+compile                             M django/db/models/expressions.py:816    function compile
+_test_settings_get                  M django/db/backends/oracle/creation.py:386    Return a value from the test settings dict, or ...
+__cast                              M django/utils/functional.py:109    function __cast
+_geomgen                            M django/contrib/gis/gdal/geometries.py:535    A helper routine for the OGR routines that gene...
+add_operation                       M django/db/migrations/autodetector.py:549    function add_operation
+OperationDependency                 C django/db/migrations/autodetector.py:23     class OperationDependency
+_listarr                            M django/contrib/gis/geos/linestring.py:149    Return a sequence (list) corresponding with the...
+_topology                           M django/contrib/gis/gdal/geometries.py:490    A generalized function for topology operations,...
+get_connection                      M django/db/transaction.py:18     Get a database connection by name, or the defau...
+reload_model                        M django/db/migrations/state.py:423    function reload_model
+array                               M django/contrib/gis/geos/linestring.py:161    Return a numpy array for the LineString.
+get_external_cols                   M django/db/models/sql/query.py:1289   function get_external_cols
+_gen_cols                           M django/db/models/sql/query.py:2040   function _gen_cols
+_get_next_prev                      M django/views/generic/dates.py:728    Get the next or the previous valid date.
+_handle_param                       M django/contrib/gis/db/models/functions.py:102    function _handle_param
+get_template                        M django/template/engine.py:172    Return a compiled Template object for the given...
+join                                M django/db/models/sql/query.py:1134   Return an alias for the 'join', either reusing ...
+serializer_factory                  M django/db/migrations/serializer.py:401    function serializer_factory
+_not_support_combined_queries       M django/db/models/query.py:2302   function _not_support_combined_queries
+change_aliases                      M django/db/models/sql/query.py:1000   Change the aliases in change_map (which maps ol...
+make_immutable_fields_list          M django/db/models/options.py:86     function make_immutable_fields_list
+_load_serializers                   M django/core/serializers/__init__.py:149    Register built-in and settings-defined serializ...
+_assert_mutable                     M django/http/request.py:632    function _assert_mutable
+find_template                       M django/template/engine.py:155    function find_template
+translation                         M django/utils/translation/trans_real.py:289    Return a translation object in the default 'dja...
+DjangoTranslation                   C django/utils/translation/trans_real.py:130    Set up the GNUTranslations context with regard ...
+CombinedExpression                  C django/db/models/expressions.py:728    class CombinedExpression
+add                                 M django/db/models/deletion.py:141    Add 'objs' to the collection of objects to be d...
+create                              M django/utils/tree.py:29     Create a new instance using Node() instead of _...
+register_serializer                 M django/core/serializers/__init__.py:55     Register a new serializer.
+relabeled_clone                     M django/db/models/sql/query.py:447    function relabeled_clone
+add_dependency                      M django/db/models/deletion.py:165    function add_dependency
+_key_to_file                        M django/contrib/sessions/backends/file.py:47     Get the file associated with this session key.
+execute                             M django/db/backends/base/schema.py:176    Execute the given SQL statement, with optional ...
+Node                                C django/utils/tree.py:11     A single internal node in the tree graph.
+_aget_session                       M django/contrib/sessions/backends/base.py:257    async_function _aget_session
+aload                               M django/contrib/sessions/backends/base.py:512    async_function aload
+refer_to_missing_field              M django/contrib/admin/checks.py:1376   function refer_to_missing_field
+pop                                 M django/template/context.py:62     function pop
+pretty_name                         M django/contrib/gis/measure.py:49     function pretty_name
+acount                              M django/core/paginator.py:256    See Paginator.count().
+max_name_length                     M django/db/backends/oracle/operations.py:377    function max_name_length
+_get_pk_val                         M django/db/models/base.py:698    function _get_pk_val
+_validate_number                    M django/core/paginator.py:132    Validate the given 1-based page number.
+Value                               C django/db/models/expressions.py:1148   Represent a wrapped value as a node within an e...
+_get_spatialite_func                M django/contrib/gis/db/backends/spatialite/operations.py:153    Helper routine for calling SpatiaLite functions...
+get                                 M django/db/models/query.py:657    Perform the query and return a single object ma...
+ValidationError                     C django/core/exceptions.py:144    An error while validating data.
+compile                             M django/db/models/sql/compiler.py:573    function compile
+render                              M django/forms/utils.py:51     function render
+_combinator_query                   M django/db/models/query.py:1698   function _combinator_query
+initial_form_count                  M django/forms/formsets.py:192    Return the number of forms that are required in...
+rhs_is_direct_value                 M django/db/models/lookups.py:140    function rhs_is_direct_value
+GeoIP2Exception                     C django/contrib/gis/geoip2.py:47     class GeoIP2Exception
+__init__                            M django/core/exceptions.py:147    The `message` argument can be a single error, a...
+_security_middleware                M django/core/checks/security/base.py:149    function _security_middleware
+_url                                M django/contrib/staticfiles/storage.py:176    Return the non-hashed URL in DEBUG mode.
+_update_unget_history               M django/http/multipartparser.py:511    Update the unget history as a sanity check to s...
+convert_query                       M django/db/backends/sqlite3/base.py:372    function convert_query
+path                                M django/core/files/storage/filesystem.py:195    function path
+  ...and 11317 more symbols
+
+-- FOCUS
+_check_view_on_site_url (django/contrib/admin/checks.py:635-646)
+  sig: _check_view_on_site_url(obj)
+  called_by: BaseModelAdminChecks
+
+get_view_on_site_url (django/contrib/admin/options.py:360-377)
+  sig: get_view_on_site_url(obj)
+  calls: get_content_type_for_model
+  called_by: render_change_form, ModelAdmin
+
+AdminSite (django/contrib/admin/sites.py:31-605)
+  An AdminSite object encapsulates an instance of the Django admin
+  attrs: site_url='/', enable_nav_sidebar=True, login_form=None, index_template=None
+  imports: weakref, django.apps, django.conf, django.contrib.admin, django.contrib.admin.exceptions
+  calls: _build_app_dict, admin_view, check, each_context, get_app_list, get_log_entries, get_model_admin, wrap
+  raises: Http404, ImproperlyConfigured, AlreadyRegistered, NotRegistered
+  uses: HttpResponseRedirect (django.http), NotRegistered (django.contrib.admin.exceptions)
+
+DefaultAdminSite (django/contrib/admin/sites.py:608-614)
+  extends: LazyObject
+  imports: weakref, django.apps, django.conf, django.contrib.admin, django.contrib.admin.exceptions
+
+clearAcross (django/contrib/admin/static/admin/js/actions.js:37-37)
+  called_by: js
+
+process_request (django/contrib/admin/views/autocomplete.py:67-119)
+  Validate request integrity, extract and return request parameters.
+  sig: process_request(request)
+  calls: get
+  called_by: get, AutocompleteJsonView
+  raises: Http404, PermissionDenied
+  uses: Http404 (django.http)
+
+process_request (django/contrib/auth/middleware.py:29-39)
+  sig: process_request(request)
+  raises: ImproperlyConfigured
+  uses: SimpleLazyObject (django.utils.functional), ImproperlyConfigured (django.core.exceptions)
+
+aprocess_request (django/contrib/auth/middleware.py:176-216)
+  sig: aprocess_request(request)
+  calls: _aremove_invalid_user, clean_username, auser
+  called_by: __acall__, RemoteUserMiddleware
+  raises: ImproperlyConfigured
+  uses: ImproperlyConfigured (django.core.exceptions)
+
+process_request (django/contrib/auth/middleware.py:133-170)
+  sig: process_request(request)
+  raises: ImproperlyConfigured
+  uses: ImproperlyConfigured (django.core.exceptions)
+
+FlatPageSitemap (django/contrib/flatpages/sitemaps.py:6-14)
+  extends: Sitemap
+  imports: django.apps, django.contrib.sitemaps, django.core.exceptions
+  raises: ImproperlyConfigured
+
+supports_crosses_lookup (django/contrib/gis/db/backends/base/features.py:66-67)
+
+CrossesLookup (django/contrib/gis/db/models/lookups.py:248-249)
+  extends: GISLookup
+  attrs: lookup_name='crosses'
+  imports: django.contrib.gis.db.models.fields, django.contrib.gis.measure, django.db, django.db.models, django.db.models.sql.query
+
+crosses (django/contrib/gis/gdal/geometries.py:518-520)
+  Return True if this geometry crosses the other.
+  sig: crosses(other)
+  calls: _topology
+
+crosses (django/contrib/gis/geos/geometry.py:301-307)
+  Return true if the DE-9IM intersection matrix for the two Geometries
+  sig: crosses(other)
+
+crosses (django/contrib/gis/geos/prepared.py:38-39)
+  sig: crosses(other)
+
+KMLSitemap (django/contrib/gis/sitemaps/kml.py:8-74)
+  A minimal hook to produce KML sitemaps.
+  extends: Sitemap
+  attrs: geo_format='kml'
+  imports: django.apps, django.contrib.gis.db.models, django.contrib.sitemaps, django.db, django.urls
+  calls: _build_kml_sources, get_urls
+  raises: TypeError, ValueError
+
+KMZSitemap (django/contrib/gis/sitemaps/kml.py:77-78)
+  extends: KMLSitemap
+  attrs: geo_format='kmz'
+  imports: django.apps, django.contrib.gis.db.models, django.contrib.sitemaps, django.db, django.urls
+
+process_request (django/contrib/messages/middleware.py:11-12)
+  sig: process_request(request)
+
+process_request (django/contrib/sessions/middleware.py:18-20)
+  sig: process_request(request)
+
+GenericSitemap (django/contrib/sitemaps/__init__.py:175-202)
+  extends: Sitemap
+  attrs: priority=None, changefreq=None
+  imports: django.apps, django.conf, django.core, django.core.exceptions, django.utils
+
+Sitemap (django/contrib/sitemaps/__init__.py:8-172)
+  attrs: limit=50000, protocol=None, i18n=False, languages=None
+  imports: django.apps, django.conf, django.core, django.core.exceptions, django.utils
+  calls: lastmod, _get, _items, _languages, _location, _urls, get_domain, get_languages_for_item
+  raises: ImproperlyConfigured
+  uses: ImproperlyConfigured (django.core.exceptions)
+
+SiteMapsConfig (django/contrib/sitemaps/apps.py:5-8)
+  extends: AppConfig
+  attrs: default_auto_field='django.db.models.AutoField', name='django.contrib.sitemaps'
+  imports: django.apps, django.utils.translation
+
+SitemapIndexItem (django/contrib/sitemaps/views.py:15-17)
+  imports: django.contrib.sites.shortcuts, django.core.paginator, django.http, django.template.response, django.urls
+  called_by: index
+
+sitemap (django/contrib/sitemaps/views.py:92-140)
+  sig: sitemap(request, sitemaps, section, template_name, content_type)
+  calls: _get_latest_lastmod
+  raises: Http404
+  uses: TemplateResponse (django.template.response), Http404 (django.http)
+
+SiteAdmin (django/contrib/sites/admin.py:6-8)
+  extends: ModelAdmin
+  imports: django.contrib, django.contrib.sites.models
+
+SitesConfig (django/contrib/sites/apps.py:10-17)
+  extends: AppConfig
+  attrs: default_auto_field='django.db.models.AutoField', name='django.contrib.sites'
+  imports: django.apps, django.contrib.sites.checks, django.core, django.db.models.signals, django.utils.translation
+
+check_site_id (django/contrib/sites/checks.py:7-14)
+  sig: check_site_id(app_configs)
+  uses: Error (django.core.checks)
+
+create_default_site (django/contrib/sites/management.py:11-47)
+  sig: create_default_site(app_config, verbosity, interactive, using, apps)
+
+CurrentSiteManager (django/contrib/sites/managers.py:7-65)
+  Use this to limit objects to those associated with the current site.
+  extends: Manager
+  attrs: use_in_migrations=True
+  imports: django.conf, django.core, django.core.exceptions, django.db
+  calls: __init__, _check_field_name, _get_field_name, check, get_queryset
+
+process_request (django/contrib/sites/middleware.py:11-12)
+  sig: process_request(request)
+
+CurrentSiteMiddleware (django/contrib/sites/middleware.py:6-12)
+  Middleware that sets `site` attribute to request object.
+  extends: MiddlewareMixin
+  imports: django.utils.deprecation, shortcuts
+
+clear_site_cache (django/contrib/sites/models.py:103-116)
+  Clear the cache (if primed) each time a site is saved or deleted.
+  sig: clear_site_cache(sender)
+
+RequestSite (django/contrib/sites/requests.py:1-20)
+  A class that shares the primary interface of Site (i.e., it has ``domain``
+  raises: NotImplementedError
+
+get_current_site (django/contrib/sites/shortcuts.py:6-18)
+  Check if contrib.sites is installed and return either the current
+  sig: get_current_site(request)
+  uses: RequestSite (requests)
+
+check_cross_origin_opener_policy (django/core/checks/security/base.py:280-288)
+  sig: check_cross_origin_opener_policy(app_configs)
+  calls: _security_middleware
+
+BadRequest (django/core/exceptions.py:99-102)
+  The request is malformed and cannot be processed.
+  extends: Exception
+  imports: operator, django.utils.hashable
+
+RequestAborted (django/core/exceptions.py:93-96)
+  The request was closed before it was completed, or timed out.
+  extends: Exception
+  imports: operator, django.utils.hashable
+
+RequestDataTooBig (django/core/exceptions.py:84-90)
+  The size of the request (excluding any file uploads) exceeded
+  extends: SuspiciousOperation
+  imports: operator, django.utils.hashable
+
+create_request (django/core/handlers/asgi.py:266-281)
+  Create the Request object and returns either (request, None) or
+  sig: create_request(scope, body_file)
+  called_by: handle, ASGIHandler
+  uses: HttpResponseBadRequest (django.http), HttpResponse (django.http)
+
+RequestProcessed (django/core/handlers/asgi.py:194-195)
+  extends: Exception
+  imports: asyncio, logging, tempfile, traceback, asgiref.sync
+
+-- GAPS
+- Question mentions [attacks, cross, forgery, mechanisms, prevent] — not found in focus or symbol index
+- Module tests/requests_tests/tests.py matches question but has no focus detail
+  > drill: tests/requests_tests/tests.py
+- Module tests/composite_pk/test_delete.py matches question but has no focus detail
+  > drill: tests/composite_pk/test_delete.py

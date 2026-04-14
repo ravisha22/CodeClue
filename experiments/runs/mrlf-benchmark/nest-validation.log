@@ -1,0 +1,16 @@
+=== Nest TypeScript Validation Test ===
+Date: 2026-04-09 20:17:15
+Repo: experiments\external-repos\nest (1659 .ts files)
+
+Counting raw source tokens...
+Raw source: 471,104 tokens across 1430 files
+
+Extracting graph...
+FATAL: TypeError: cannot unpack non-iterable NoneType object
+Traceback (most recent call last):
+  File "C:\Users\ranandag\Documents\VSCodeProjects\CodeClue-Research-Scaffold\experiments\runs\_nest_validation_test.py", line 122, in <module>
+    graph = extract_graph(REPO)
+  File "C:\Users\ranandag\Documents\VSCodeProjects\CodeClue-Research-Scaffold\src\codeclue_research\extractor.py", line 415, in extract_graph
+    go_nodes, go_edges = extract_go_nodes_edges(repo_root)
+    ^^^^^^^^^^^^^^^^^^
+TypeError: cannot unpack non-iterable NoneType object

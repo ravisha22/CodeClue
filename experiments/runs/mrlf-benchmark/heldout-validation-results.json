@@ -1,0 +1,243 @@
+{
+  "total": 7,
+  "loc_pass": 4,
+  "fid_pass": 3,
+  "mean_loc": 0.56,
+  "mean_fid": 0.536,
+  "heldout_dfcr": 0.429,
+  "dev_dfcr": 0.75,
+  "overfitting_gap": 0.321,
+  "per_task": [
+    {
+      "task_id": "heldout-chi-tf4-panic-recovery",
+      "repo": "chi",
+      "family": "TF4",
+      "tokens": 4018,
+      "loc": 0.7,
+      "sym_recall": 0.5,
+      "file_recall": 1.0,
+      "loc_sufficient": true,
+      "fidelity": 0.75,
+      "answerable": 2,
+      "partial": 2,
+      "missing": 0,
+      "fid_sufficient": true,
+      "fact_scores": [
+        {
+          "fact": "Recoverer middleware wraps handler in defer/recover to catch panics",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "http.ErrAbortHandler panics are re-raised instead of recovered",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Panic details and stack trace are logged via LogEntry interface",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "Response status is set to 500 Internal Server Error after recovery",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "heldout-chi-tf5-rate-limiting",
+      "repo": "chi",
+      "family": "TF5",
+      "tokens": 4045,
+      "loc": 1.0,
+      "sym_recall": 1.0,
+      "file_recall": 1.0,
+      "loc_sufficient": true,
+      "fidelity": 0.625,
+      "answerable": 1,
+      "partial": 3,
+      "missing": 0,
+      "fid_sufficient": true,
+      "fact_scores": [
+        {
+          "fact": "Throttle uses a buffered channel as semaphore to limit concurrent requests",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "ThrottleBacklog adds a backlog queue with timeout for excess requests",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "HTTP 429 Too Many Requests returned when limit and backlog are both full",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "ThrottleOpts allows configuring custom status code and retry-after header",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "heldout-django-tf2-middleware-chain",
+      "repo": "django",
+      "family": "TF2",
+      "tokens": 3993,
+      "loc": 0.267,
+      "sym_recall": 0.0,
+      "file_recall": 0.667,
+      "loc_sufficient": false,
+      "fidelity": 0.5,
+      "answerable": 1,
+      "partial": 2,
+      "missing": 1,
+      "fid_sufficient": false,
+      "fact_scores": [
+        {
+          "fact": "BaseHandler._get_response processes middleware chain in order via adapt_method_mode",
+          "score": "MISSING"
+        },
+        {
+          "fact": "CSRF middleware validates tokens on POST requests and rejects without valid token",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "SecurityMiddleware handles HTTPS redirect and HSTS headers",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Removing middleware silently disables its protection with no runtime error",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "heldout-django-tf4-password-hashing",
+      "repo": "django",
+      "family": "TF4",
+      "tokens": 4043,
+      "loc": 0.35,
+      "sym_recall": 0.25,
+      "file_recall": 0.5,
+      "loc_sufficient": false,
+      "fidelity": 0.5,
+      "answerable": 1,
+      "partial": 2,
+      "missing": 1,
+      "fid_sufficient": false,
+      "fact_scores": [
+        {
+          "fact": "check_password calls identify_hasher to determine which algorithm was used",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "verify_password uses constant_time_compare to prevent timing attacks",
+          "score": "MISSING"
+        },
+        {
+          "fact": "make_password generates a salt and delegates to the configured hasher",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "ImproperlyConfigured raised if PASSWORD_HASHERS setting is empty or invalid",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "heldout-django-tf5-csrf-protection",
+      "repo": "django",
+      "family": "TF5",
+      "tokens": 4039,
+      "loc": 0.0,
+      "sym_recall": 0.0,
+      "file_recall": 0.0,
+      "loc_sufficient": false,
+      "fidelity": 0.25,
+      "answerable": 0,
+      "partial": 2,
+      "missing": 2,
+      "fid_sufficient": false,
+      "fact_scores": [
+        {
+          "fact": "CSRF tokens are masked using XOR cipher over CSRF_ALLOWED_CHARS alphabet",
+          "score": "MISSING"
+        },
+        {
+          "fact": "CsrfViewMiddleware checks Referer header for HTTPS requests",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Token comparison uses constant_time_compare to prevent timing side-channels",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "csrf_exempt decorator can bypass protection on specific views",
+          "score": "MISSING"
+        }
+      ]
+    },
+    {
+      "task_id": "heldout-flask-tf5-adversarial",
+      "repo": "flask",
+      "family": "TF5",
+      "tokens": 3427,
+      "loc": 0.6,
+      "sym_recall": 0.333,
+      "file_recall": 1.0,
+      "loc_sufficient": true,
+      "fidelity": 0.5,
+      "answerable": 1,
+      "partial": 2,
+      "missing": 1,
+      "fid_sufficient": false,
+      "fact_scores": [
+        {
+          "fact": "Session data is cryptographically signed with SECRET_KEY to detect tampering",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "itsdangerous URLSafeTimedSerializer includes timestamp to prevent replay attacks",
+          "score": "MISSING"
+        },
+        {
+          "fact": "Session is stored as cookie value with optional secure, httponly, and samesite flags",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "NullSession raises RuntimeError if SECRET_KEY is not set, preventing unencrypted sessions",
+          "score": "PARTIAL"
+        }
+      ]
+    },
+    {
+      "task_id": "heldout-httpx-tf4-connection-pooling",
+      "repo": "httpx",
+      "family": "TF4",
+      "tokens": 3702,
+      "loc": 1.0,
+      "sym_recall": 1.0,
+      "file_recall": 1.0,
+      "loc_sufficient": true,
+      "fidelity": 0.625,
+      "answerable": 1,
+      "partial": 3,
+      "missing": 0,
+      "fid_sufficient": true,
+      "fact_scores": [
+        {
+          "fact": "Client implements context manager protocol for connection cleanup on exit",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "Limits configures max_connections and max_keepalive_connections per pool",
+          "score": "PARTIAL"
+        },
+        {
+          "fact": "HTTPTransport wraps httpcore for actual connection management",
+          "score": "ANSWERABLE"
+        },
+        {
+          "fact": "close() or aclose() must be called explicitly if not using context manager",
+          "score": "PARTIAL"
+        }
+      ]
+    }
+  ]
+}

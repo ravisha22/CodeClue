@@ -1,0 +1,107 @@
+[
+  {
+    "task_id": "heldout-django-tf2-middleware-chain",
+    "repo": "django",
+    "repo_path": "experiments/external-repos/django",
+    "family": "TF2",
+    "question": "What is the downstream impact of removing a middleware from the MIDDLEWARE setting?",
+    "gold_files": ["django/core/handlers/base.py", "django/middleware/csrf.py", "django/middleware/security.py"],
+    "gold_symbols": ["BaseHandler", "CsrfViewMiddleware", "SecurityMiddleware", "get_response"],
+    "gold_facts": [
+      "BaseHandler._get_response processes middleware chain in order via adapt_method_mode",
+      "CSRF middleware validates tokens on POST requests and rejects without valid token",
+      "SecurityMiddleware handles HTTPS redirect and HSTS headers",
+      "Removing middleware silently disables its protection with no runtime error"
+    ]
+  },
+  {
+    "task_id": "heldout-django-tf4-password-hashing",
+    "repo": "django",
+    "repo_path": "experiments/external-repos/django",
+    "family": "TF4",
+    "question": "Trace the execution path when a user password is verified during login.",
+    "gold_files": ["django/contrib/auth/hashers.py", "django/contrib/auth/__init__.py"],
+    "gold_symbols": ["check_password", "verify_password", "make_password", "identify_hasher"],
+    "gold_facts": [
+      "check_password calls identify_hasher to determine which algorithm was used",
+      "verify_password uses constant_time_compare to prevent timing attacks",
+      "make_password generates a salt and delegates to the configured hasher",
+      "ImproperlyConfigured raised if PASSWORD_HASHERS setting is empty or invalid"
+    ]
+  },
+  {
+    "task_id": "heldout-django-tf5-csrf-protection",
+    "repo": "django",
+    "repo_path": "experiments/external-repos/django",
+    "family": "TF5",
+    "question": "What mechanisms prevent cross-site request forgery attacks?",
+    "gold_files": ["django/middleware/csrf.py", "django/template/defaulttags.py"],
+    "gold_symbols": ["CsrfViewMiddleware", "_get_new_csrf_string", "_mask_cipher_secret", "csrf_token"],
+    "gold_facts": [
+      "CSRF tokens are masked using XOR cipher over CSRF_ALLOWED_CHARS alphabet",
+      "CsrfViewMiddleware checks Referer header for HTTPS requests",
+      "Token comparison uses constant_time_compare to prevent timing side-channels",
+      "csrf_exempt decorator can bypass protection on specific views"
+    ]
+  },
+  {
+    "task_id": "heldout-chi-tf4-panic-recovery",
+    "repo": "chi",
+    "repo_path": "experiments/external-repos/chi",
+    "family": "TF4",
+    "question": "How does the router handle panics during request processing?",
+    "gold_files": ["middleware/recoverer.go"],
+    "gold_symbols": ["Recoverer", "PrintPrettyStack"],
+    "gold_facts": [
+      "Recoverer middleware wraps handler in defer/recover to catch panics",
+      "http.ErrAbortHandler panics are re-raised instead of recovered",
+      "Panic details and stack trace are logged via LogEntry interface",
+      "Response status is set to 500 Internal Server Error after recovery"
+    ]
+  },
+  {
+    "task_id": "heldout-chi-tf5-rate-limiting",
+    "repo": "chi",
+    "repo_path": "experiments/external-repos/chi",
+    "family": "TF5",
+    "question": "What rate limiting or request throttling mechanisms exist?",
+    "gold_files": ["middleware/throttle.go"],
+    "gold_symbols": ["Throttle", "ThrottleBacklog", "ThrottleOpts", "ThrottleWithOpts"],
+    "gold_facts": [
+      "Throttle uses a buffered channel as semaphore to limit concurrent requests",
+      "ThrottleBacklog adds a backlog queue with timeout for excess requests",
+      "HTTP 429 Too Many Requests returned when limit and backlog are both full",
+      "ThrottleOpts allows configuring custom status code and retry-after header"
+    ]
+  },
+  {
+    "task_id": "heldout-flask-tf5-adversarial",
+    "repo": "flask",
+    "repo_path": "experiments/external-repos/flask",
+    "family": "TF5",
+    "question": "How does user state persist safely across HTTP requests, and what prevents unauthorized tampering?",
+    "gold_files": ["src/flask/sessions.py"],
+    "gold_symbols": ["SecureCookieSessionInterface", "NullSession", "SessionInterface"],
+    "gold_facts": [
+      "Session data is cryptographically signed with SECRET_KEY to detect tampering",
+      "itsdangerous URLSafeTimedSerializer includes timestamp to prevent replay attacks",
+      "Session is stored as cookie value with optional secure, httponly, and samesite flags",
+      "NullSession raises RuntimeError if SECRET_KEY is not set, preventing unencrypted sessions"
+    ]
+  },
+  {
+    "task_id": "heldout-httpx-tf4-connection-pooling",
+    "repo": "httpx",
+    "repo_path": "experiments/external-repos/httpx",
+    "family": "TF4",
+    "question": "How does the HTTP client manage connection lifecycle and pooling?",
+    "gold_files": ["httpx/_client.py", "httpx/_transports/default.py"],
+    "gold_symbols": ["Client", "AsyncClient", "HTTPTransport", "Limits"],
+    "gold_facts": [
+      "Client implements context manager protocol for connection cleanup on exit",
+      "Limits configures max_connections and max_keepalive_connections per pool",
+      "HTTPTransport wraps httpcore for actual connection management",
+      "close() or aclose() must be called explicitly if not using context manager"
+    ]
+  }
+]

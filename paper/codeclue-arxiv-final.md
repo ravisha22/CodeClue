@@ -10,7 +10,7 @@ April 2026
 
 Large Language Model (LLM) coding workflows repeatedly pay comprehension costs on largely unchanged code, consuming tokens and latency proportional to repository size on every interaction. We present CodeClue, a system that generates persistent, versioned comprehension artifacts from source repositories — graph-structured "clue files" optimized for downstream LLM consumption rather than human readability. Each node and edge in a clue graph carries a structural confidence score paired with concrete suggested tool actions, enabling the consuming LLM to selectively drill into source code only where the comprehension artifact signals insufficient density.
 
-We evaluate CodeClue on 23 comprehension tasks across 7 public repositories (Flask, FastAPI, NestJS, httpx, Express, TypeORM, Gin) spanning Python, JavaScript, TypeScript, and Go. Our results show: (1) an 81% token reduction ratio compared to raw-source-first workflows; (2) zero hallucinations for the two consumer models evaluated (Claude and GPT 5.4, with Gemini serving as the judge); (3) structural confidence scores that correctly differentiate task families where clue-only reasoning suffices (edit localization, mean fidelity 0.80) from those requiring source drill-down (impact analysis, mean fidelity 0.29); and (4) ecological validity alignment with Information Foraging Theory at 0.65 (Spearman ρ = −0.30), providing partial support that low confidence correctly predicts where models need more information.
+We evaluate CodeClue on 23 comprehension tasks across 7 public repositories (Flask, FastAPI, NestJS, httpx, Express, TypeORM, Gin) spanning Python, JavaScript, TypeScript, and Go. Our results show: (1) an 81% token reduction ratio compared to raw-source-first workflows; (2) zero hallucinations for the two consumer models evaluated, with Claude assessed across the full benchmark and GPT 5.4 assessed on the cross-model external-validation subset using Gemini as an independent judge; (3) structural confidence scores that correctly differentiate task families where clue-only reasoning suffices (edit localization, mean fidelity 0.80) from those requiring source drill-down (impact analysis, mean fidelity 0.29); and (4) ecological validity alignment with Information Foraging Theory at 0.65 (Spearman ρ = −0.30), providing partial support that low confidence correctly predicts where models need more information.
 
 Cross-model evaluation using GPT 5.4 as consumer and Gemini 3.1 Pro as independent judge provides partial external validation for the zero-hallucination result and low TF4/TF5 deltas, with a mean Arm B fidelity delta of 0.12 between GPT 5.4 and Claude; Arm A deltas remain much larger (0.35). Code and evaluation artifacts are available at https://github.com/ravisha22/CodeClue.
 
@@ -86,7 +86,7 @@ When a node's confidence falls below a task-family threshold, the system emits c
 | `expand_projection` | Widen the projected subgraph around a seed |
 | `fetch_contract` | Retrieve full semantic contract for a compressed node |
 
-These are formalized as MCP (Model Context Protocol) tool definitions, consumable by any MCP-compatible agent (VS Code Copilot, Cursor, Claude Code, etc.).
+These are formalized as MCP (Model Context Protocol) tool definitions and exposed through a real stdio MCP server, making them consumable by any MCP-compatible agent (VS Code Copilot, Cursor, Claude Code, etc.).
 
 ### 2.4 Operation Families
 
@@ -265,7 +265,7 @@ The cross-model evaluation revealed that GPT 5.4 declared 12/23 tasks "clue suff
 
 1. **Sample size:** 23 tasks across 5 families (3–5 per family) provides directional findings but insufficient statistical power for per-family confidence intervals. A 50-task benchmark (10 per family) is specified but not yet executed.
 
-2. **Drill-down loop not fully closed:** While the projection → tool-call → token-measurement loop has been executed through the MCP-compatible tool path (Section 4.8), the full clue → drill-down → revised-answer → re-scoring loop has not yet been evaluated with an external consuming model. The current fidelity gap therefore represents potential improvement, not measured post-drill lift.
+2. **Drill-down loop not fully closed:** While the projection → tool-call → token-measurement loop has been executed through the same typed tool stack exposed by the stdio MCP server, and the transport layer itself has been smoke-tested, the full clue → drill-down → revised-answer → re-scoring loop has not yet been evaluated with an external consuming model. The current fidelity gap therefore represents potential improvement, not measured post-drill lift.
 
 3. **Scoring methodology:** Claude's Arm B/A scores were self-evaluated; GPT's were Gemini-judged. The Arm A scoring discrepancy (Claude self-scored 0.93 vs GPT Gemini-scored 0.58) suggests judge calibration varies. Future work should use a single judge for all conditions.
 

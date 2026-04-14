@@ -1,0 +1,354 @@
+=CC v2 typeorm@HEAD 3444mod 3017sym
+? What is the downstream impact of modifying the configuration loading?
+
+
+-- TREE
+docs/  (7 files)
+extra/  (2 files)
+packages/  (134 files)
+sample/  (132 files)
+  sample10-mixed/  sample11-all-types-entity/  sample12-custom-naming-strategy/  sample13-everywhere-abstraction/  sample14-errors-in-wrong-metdata/  sample16-indexes/  sample17-versioning/  sample18-lazy-relations/  sample19-one-side-relations/  sample20-join-without-relation/  ...+21
+src/  (495 files)
+  cache/  commands/  common/  connection/  data-source/  decorator/  driver/  entity-manager/  entity-schema/  error/  ...+15
+test/  (2673 files)
+  utils/
+gulpfile.ts
+
+-- INDEX
+docs/docusaurus.config.ts                       262L  
+docs/redirects.ts                               129L  
+docs/sidebars.ts                                 94L  
+docs/src/components/icons/github-icon.tsx        14L  GitHubIcon
+docs/src/components/icons/linkedin-icon.tsx      14L  LinkedInIcon
+docs/src/pages/index.tsx                        454L  CallToAction, CodeExampleSection, Feature, Home, HomepageFeatures
+docs/src/pages/maintainers.tsx                  113L  MaintainerCard, Maintainers, SocialLink
+extra/typeorm-class-transformer-shim.js         266L  AfterInsert, AfterLoad, AfterRecover, AfterRemove, AfterSoftRemove
+extra/typeorm-model-shim.js                     293L  AfterInsert, AfterLoad, AfterRecover, AfterRemove, AfterSoftRemove
+gulpfile.ts                                     121L  browserCompile, browserCopyShims, browserCopySources, browserCopyTemplates, copyPackageFile
+packages/codemod/src/cli/list-transforms.ts      32L  listTransforms
+packages/codemod/src/cli/parse-args.ts           57L  parseArgs, requireValue
+packages/codemod/src/cli/print-guide.ts          18L  printGuide
+packages/codemod/src/cli/print-summary.ts       105L  groupLines, printApplied, printDependencyChanges, printGrouped, printParseErrors
+packages/codemod/src/cli/print-todos.ts           9L  printTodos
+packages/codemod/src/cli/print-usage.ts          31L  printUsage
+packages/codemod/src/cli/run-dependencies.ts     60L  depElapsed, runDependencies
+packages/codemod/src/cli/run-transforms.ts      154L  elapsed, progressText, runTransforms
+packages/codemod/src/cli/run.ts                  40L  run
+packages/codemod/src/dependencies/config.ts      23L  
+packages/codemod/src/dependencies/find-package-json.ts    30L  findPackageJsonFiles
+packages/codemod/src/dependencies/index.ts       13L  getConfig
+packages/codemod/src/dependencies/upgrade.ts    202L  checkIncompatible, checkNodeVersion, checkWarnings, detectIndent, findInAnySection
+packages/codemod/src/dependencies/v1.ts          36L  
+packages/codemod/src/index.ts                    52L  main
+packages/codemod/src/lib/colors.ts               11L  wrap
+packages/codemod/src/lib/error.ts                 7L  fail
+packages/codemod/src/lib/format-time.ts           6L  formatTime
+packages/codemod/src/lib/highlight.ts             4L  highlight
+packages/codemod/src/lib/spinner.ts              43L  clear, createSpinner, render
+packages/codemod/src/transforms/ast-helpers.ts   205L  collectParams, fileImportsFrom, forEachDecoratorObjectArg, forEachIdentifierParam, getStringValue
+packages/codemod/src/transforms/index.ts         12L  
+packages/codemod/src/transforms/resolve.ts       33L  getExt, resolveTransforms
+packages/codemod/src/transforms/stats.ts         48L  
+packages/codemod/src/transforms/todo.ts          10L  addTodoComment
+packages/codemod/src/transforms/transformer.ts    28L  
+packages/codemod/src/transforms/v1/column-readonly.ts    39L  columnReadonly
+packages/codemod/src/transforms/v1/column-unsigned-numeric.ts    72L  columnUnsignedNumeric
+packages/codemod/src/transforms/v1/column-width-zerofill.ts    29L  columnWidthZerofill
+packages/codemod/src/transforms/v1/connection-to-datasource.ts   236L  collectTypedIdentifier, connectionToDataSource, renames
+packages/codemod/src/transforms/v1/datasource-mongodb.ts   113L  datasourceMongodb
+packages/codemod/src/transforms/v1/datasource-mssql.ts   105L  datasourceMssql
+packages/codemod/src/transforms/v1/datasource-mysql-connector.ts    24L  datasourceMysqlConnector
+packages/codemod/src/transforms/v1/datasource-name.ts    49L  datasourceName, removeNameFromObject
+packages/codemod/src/transforms/v1/datasource-sap.ts    70L  datasourceSap
+packages/codemod/src/transforms/v1/datasource-sqlite-options.ts    35L  datasourceSqliteOptions
+packages/codemod/src/transforms/v1/datasource-sqlite-type.ts    26L  datasourceSqliteType
+packages/codemod/src/transforms/v1/find-options-lock-modes.ts   103L  findOptionsLockModes
+packages/codemod/src/transforms/v1/find-options-string-relations.ts    81L  buildObjectExpression, convertRelationsArrayToObject, findOptionsStringRelations
+packages/codemod/src/transforms/v1/find-options-string-select.ts    37L  findOptionsStringSelect, properties
+packages/codemod/src/transforms/v1/global-functions.ts   122L  globalFunctions
+packages/codemod/src/transforms/v1/index.ts      76L  
+packages/codemod/src/transforms/v1/migrations-get-all.ts    42L  migrationsGetAll
+packages/codemod/src/transforms/v1/mongodb-stats.ts    48L  mongodbStats
+packages/codemod/src/transforms/v1/mongodb-types.ts   115L  addToExistingImport, createNewImport, mongodbTypes
+packages/codemod/src/transforms/v1/query-builder-native-parameters.ts    23L  queryBuilderNativeParameters
+packages/codemod/src/transforms/v1/query-builder-on-conflict.ts    55L  queryBuilderOnConflict
+packages/codemod/src/transforms/v1/query-builder-or-update.ts    55L  queryBuilderOrUpdate
+packages/codemod/src/transforms/v1/query-builder-print-sql.ts    50L  queryBuilderPrintSql
+packages/codemod/src/transforms/v1/query-builder-replace-property-names.ts    44L  queryBuilderReplacePropertyNames
+packages/codemod/src/transforms/v1/query-builder-where-expression.ts    41L  queryBuilderWhereExpression
+packages/codemod/src/transforms/v1/query-runner-loaded-tables-views.ts    68L  comments, queryRunnerLoadedTablesViews
+packages/codemod/src/transforms/v1/relation-count.ts    47L  relationCount
+packages/codemod/src/transforms/v1/repository-abstract.ts   104L  addGetCustomRepoTodo, repositoryAbstract, with, with, with
+packages/codemod/src/transforms/v1/repository-exist.ts    18L  repositoryExist
+packages/codemod/src/transforms/v1/repository-find-by-ids.ts    92L  repositoryFindByIds
+packages/codemod/src/transforms/v1/repository-find-one-by-id.ts    59L  repositoryFindOneById
+packages/codemod/src/transforms/v1/use-container.ts    60L  useContainer
+packages/codemod/test/cli/list-transforms.test.ts    43L  
+packages/codemod/test/cli/parse-args.test.ts    148L  
+packages/codemod/test/dependencies/find-package-json.test.ts    95L  mkdirp, touch
+packages/codemod/test/dependencies/get-config.test.ts    17L  
+packages/codemod/test/dependencies/upgrade.test.ts   203L  readPackageJson, writePackageJson
+packages/codemod/test/lib/colors.test.ts         28L  
+packages/codemod/test/lib/error.test.ts          49L  
+packages/codemod/test/lib/format-time.test.ts    25L  
+packages/codemod/test/lib/highlight.test.ts      23L  
+packages/codemod/test/transforms/ast-helpers.test.ts    47L  
+packages/codemod/test/transforms/resolve.test.ts    40L  
+packages/codemod/test/transforms/stats.test.ts    68L  
+packages/codemod/test/transforms/transformer.test.ts    71L  makeFile, mod, tracking
+packages/codemod/test/transforms/v1/fixtures/column-readonly/column-readonly.input.ts    10L  Post
+packages/codemod/test/transforms/v1/fixtures/column-readonly/column-readonly.output.ts    10L  Post
+packages/codemod/test/transforms/v1/fixtures/column-unsigned-numeric/column-unsigned-numeric.input.ts     1L  
+packages/codemod/test/transforms/v1/fixtures/column-unsigned-numeric/column-unsigned-numeric.output.ts     4L  
+packages/codemod/test/transforms/v1/fixtures/column-width-zerofill/column-width-zerofill.input.ts    10L  Post
+packages/codemod/test/transforms/v1/fixtures/column-width-zerofill/column-width-zerofill.output.ts    12L  Post
+packages/codemod/test/transforms/v1/fixtures/connection-to-datasource/connection-to-datasource.input.ts    37L  ProductService, migrate
+packages/codemod/test/transforms/v1/fixtures/connection-to-datasource/connection-to-datasource.output.ts    37L  ProductService, migrate
+packages/codemod/test/transforms/v1/fixtures/datasource-mongodb/datasource-mongodb.input.ts     9L  
+packages/codemod/test/transforms/v1/fixtures/datasource-mongodb/datasource-mongodb.output.ts     7L  
+packages/codemod/test/transforms/v1/fixtures/datasource-mssql/datasource-mssql.input.ts    11L  
+  ...and 3352 more modules
+
+-- SYM
+GitHubIcon                          M docs/src/components/icons/github-icon.tsx:3      function GitHubIcon
+LinkedInIcon                        M docs/src/components/icons/linkedin-icon.tsx:3      function LinkedInIcon
+CallToAction                        M docs/src/pages/index.tsx:402    function CallToAction
+CodeExampleSection                  M docs/src/pages/index.tsx:201    function CodeExampleSection
+Feature                             M docs/src/pages/index.tsx:165    function Feature
+Home                                M docs/src/pages/index.tsx:436    function Home
+HomepageFeatures                    M docs/src/pages/index.tsx:187    function HomepageFeatures
+HomepageHeader                      M docs/src/pages/index.tsx:125    function HomepageHeader
+MaintainersSection                  M docs/src/pages/index.tsx:372    function MaintainersSection
+PlatformsSection                    M docs/src/pages/index.tsx:335    function PlatformsSection
+SupportedDatabases                  M docs/src/pages/index.tsx:266    function SupportedDatabases
+User                                C docs/src/pages/index.tsx:101    class User
+User                                C docs/src/pages/index.tsx:69     class User
+handleTabClick                      M docs/src/pages/index.tsx:204    function handleTabClick
+support                             C docs/src/pages/index.tsx:53     class support
+MaintainerCard                      M docs/src/pages/maintainers.tsx:36     function MaintainerCard
+Maintainers                         M docs/src/pages/maintainers.tsx:74     function Maintainers
+SocialLink                          M docs/src/pages/maintainers.tsx:13     function SocialLink
+AfterInsert                         M extra/typeorm-class-transformer-shim.js:110    function AfterInsert
+AfterLoad                           M extra/typeorm-class-transformer-shim.js:115    function AfterLoad
+AfterRecover                        M extra/typeorm-class-transformer-shim.js:120    function AfterRecover
+AfterRemove                         M extra/typeorm-class-transformer-shim.js:130    function AfterRemove
+AfterSoftRemove                     M extra/typeorm-class-transformer-shim.js:125    function AfterSoftRemove
+AfterUpdate                         M extra/typeorm-class-transformer-shim.js:135    function AfterUpdate
+BeforeInsert                        M extra/typeorm-class-transformer-shim.js:140    function BeforeInsert
+BeforeRecover                       M extra/typeorm-class-transformer-shim.js:145    function BeforeRecover
+BeforeRemove                        M extra/typeorm-class-transformer-shim.js:155    function BeforeRemove
+BeforeSoftRemove                    M extra/typeorm-class-transformer-shim.js:150    function BeforeSoftRemove
+BeforeUpdate                        M extra/typeorm-class-transformer-shim.js:160    function BeforeUpdate
+ChildEntity                         M extra/typeorm-class-transformer-shim.js:209    function ChildEntity
+Column                              M extra/typeorm-class-transformer-shim.js:62     function Column
+CreateDateColumn                    M extra/typeorm-class-transformer-shim.js:77     function CreateDateColumn
+DeleteDateColumn                    M extra/typeorm-class-transformer-shim.js:72     function DeleteDateColumn
+Entity                              M extra/typeorm-class-transformer-shim.js:214    function Entity
+EventSubscriber                     M extra/typeorm-class-transformer-shim.js:165    function EventSubscriber
+Generated                           M extra/typeorm-class-transformer-shim.js:258    function Generated
+Index                               M extra/typeorm-class-transformer-shim.js:263    function Index
+JoinColumn                          M extra/typeorm-class-transformer-shim.js:172    function JoinColumn
+JoinTable                           M extra/typeorm-class-transformer-shim.js:177    function JoinTable
+ManyToMany                          M extra/typeorm-class-transformer-shim.js:182    function ManyToMany
+ManyToOne                           M extra/typeorm-class-transformer-shim.js:187    function ManyToOne
+ObjectIdColumn                      M extra/typeorm-class-transformer-shim.js:83     function ObjectIdColumn
+OneToMany                           M extra/typeorm-class-transformer-shim.js:192    function OneToMany
+OneToOne                            M extra/typeorm-class-transformer-shim.js:197    function OneToOne
+PrimaryColumn                       M extra/typeorm-class-transformer-shim.js:88     function PrimaryColumn
+PrimaryGeneratedColumn              M extra/typeorm-class-transformer-shim.js:93     function PrimaryGeneratedColumn
+RelationId                          M extra/typeorm-class-transformer-shim.js:202    function RelationId
+TableInheritance                    M extra/typeorm-class-transformer-shim.js:224    function TableInheritance
+Tree                                M extra/typeorm-class-transformer-shim.js:231    function Tree
+TreeChildren                        M extra/typeorm-class-transformer-shim.js:236    function TreeChildren
+TreeChildrenCount                   M extra/typeorm-class-transformer-shim.js:241    function TreeChildrenCount
+TreeLevelColumn                     M extra/typeorm-class-transformer-shim.js:246    function TreeLevelColumn
+TreeParent                          M extra/typeorm-class-transformer-shim.js:251    function TreeParent
+UpdateDateColumn                    M extra/typeorm-class-transformer-shim.js:98     function UpdateDateColumn
+VersionColumn                       M extra/typeorm-class-transformer-shim.js:103    function VersionColumn
+ViewColumn                          M extra/typeorm-class-transformer-shim.js:67     function ViewColumn
+ViewEntity                          M extra/typeorm-class-transformer-shim.js:219    function ViewEntity
+getDesignTypeFunction               M extra/typeorm-class-transformer-shim.js:31     function getDesignTypeFunction
+makePropertyDecorator               M extra/typeorm-class-transformer-shim.js:49     function makePropertyDecorator
+AfterInsert                         M extra/typeorm-model-shim.js:75     function AfterInsert
+AfterLoad                           M extra/typeorm-model-shim.js:80     function AfterLoad
+AfterRecover                        M extra/typeorm-model-shim.js:90     function AfterRecover
+AfterRemove                         M extra/typeorm-model-shim.js:95     function AfterRemove
+AfterSoftRemove                     M extra/typeorm-model-shim.js:85     function AfterSoftRemove
+AfterUpdate                         M extra/typeorm-model-shim.js:100    function AfterUpdate
+BaseEntity                          C extra/typeorm-model-shim.js:26     class BaseEntity
+BeforeInsert                        M extra/typeorm-model-shim.js:105    function BeforeInsert
+BeforeRecover                       M extra/typeorm-model-shim.js:115    function BeforeRecover
+BeforeRemove                        M extra/typeorm-model-shim.js:120    function BeforeRemove
+BeforeSoftRemove                    M extra/typeorm-model-shim.js:110    function BeforeSoftRemove
+BeforeUpdate                        M extra/typeorm-model-shim.js:125    function BeforeUpdate
+Check                               M extra/typeorm-model-shim.js:275    function Check
+ChildEntity                         M extra/typeorm-model-shim.js:210    function ChildEntity
+Column                              M extra/typeorm-model-shim.js:30     function Column
+ColumnOptions                       M extra/typeorm-model-shim.js:135    function ColumnOptions
+CreateDateColumn                    M extra/typeorm-model-shim.js:35     function CreateDateColumn
+DeleteDateColumn                    M extra/typeorm-model-shim.js:40     function DeleteDateColumn
+Entity                              M extra/typeorm-model-shim.js:205    function Entity
+EntityOptions                       M extra/typeorm-model-shim.js:160    function EntityOptions
+EventSubscriber                     M extra/typeorm-model-shim.js:130    function EventSubscriber
+Exclusion                           M extra/typeorm-model-shim.js:280    function Exclusion
+ForeignKey                          M extra/typeorm-model-shim.js:265    function ForeignKey
+Generated                           M extra/typeorm-model-shim.js:285    function Generated
+Index                               M extra/typeorm-model-shim.js:260    function Index
+IndexOptions                        M extra/typeorm-model-shim.js:140    function IndexOptions
+JoinColumn                          M extra/typeorm-model-shim.js:170    function JoinColumn
+JoinColumnOptions                   M extra/typeorm-model-shim.js:145    function JoinColumnOptions
+JoinTable                           M extra/typeorm-model-shim.js:175    function JoinTable
+JoinTableOptions                    M extra/typeorm-model-shim.js:150    function JoinTableOptions
+ManyToMany                          M extra/typeorm-model-shim.js:180    function ManyToMany
+ManyToOne                           M extra/typeorm-model-shim.js:185    function ManyToOne
+ObjectIdColumn                      M extra/typeorm-model-shim.js:70     function ObjectIdColumn
+OneToMany                           M extra/typeorm-model-shim.js:190    function OneToMany
+OneToOne                            M extra/typeorm-model-shim.js:195    function OneToOne
+PrimaryColumn                       M extra/typeorm-model-shim.js:50     function PrimaryColumn
+PrimaryGeneratedColumn              M extra/typeorm-model-shim.js:45     function PrimaryGeneratedColumn
+RelationId                          M extra/typeorm-model-shim.js:200    function RelationId
+RelationOptions                     M extra/typeorm-model-shim.js:155    function RelationOptions
+TableInheritance                    M extra/typeorm-model-shim.js:215    function TableInheritance
+Transaction                         M extra/typeorm-model-shim.js:225    function Transaction
+TransactionManager                  M extra/typeorm-model-shim.js:230    function TransactionManager
+TransactionRepository               M extra/typeorm-model-shim.js:235    function TransactionRepository
+Tree                                M extra/typeorm-model-shim.js:255    function Tree
+TreeChildren                        M extra/typeorm-model-shim.js:250    function TreeChildren
+TreeLevelColumn                     M extra/typeorm-model-shim.js:240    function TreeLevelColumn
+TreeParent                          M extra/typeorm-model-shim.js:245    function TreeParent
+Unique                              M extra/typeorm-model-shim.js:270    function Unique
+UpdateDateColumn                    M extra/typeorm-model-shim.js:55     function UpdateDateColumn
+ValueTransformer                    M extra/typeorm-model-shim.js:165    function ValueTransformer
+VersionColumn                       M extra/typeorm-model-shim.js:60     function VersionColumn
+ViewColumn                          M extra/typeorm-model-shim.js:65     function ViewColumn
+ViewEntity                          M extra/typeorm-model-shim.js:220    function ViewEntity
+VirtualColumn                       M extra/typeorm-model-shim.js:290    function VirtualColumn
+noop                                M extra/typeorm-model-shim.js:23     function noop
+browserCompile                      M gulpfile.ts:36     function browserCompile
+browserCopyShims                    M gulpfile.ts:40     function browserCopyShims
+browserCopySources                  M gulpfile.ts:13     function browserCopySources
+browserCopyTemplates                M gulpfile.ts:25     function browserCopyTemplates
+copyPackageFile                     M gulpfile.ts:77     function copyPackageFile
+copyReadme                          M gulpfile.ts:98     function copyReadme
+nodeCompile                         M gulpfile.ts:53     function nodeCompile
+nodeCreateEsmIndex                  M gulpfile.ts:57     function nodeCreateEsmIndex
+listTransforms                      M packages/codemod/src/cli/list-transforms.ts:4      function listTransforms
+parseArgs                           M packages/codemod/src/cli/parse-args.ts:20     function parseArgs
+requireValue                        M packages/codemod/src/cli/parse-args.ts:11     function requireValue
+printGuide                          M packages/codemod/src/cli/print-guide.ts:5      function printGuide
+groupLines                          M packages/codemod/src/cli/print-summary.ts:51     function groupLines
+printApplied                        M packages/codemod/src/cli/print-summary.ts:31     function printApplied
+printDependencyChanges              M packages/codemod/src/cli/print-summary.ts:70     function printDependencyChanges
+printGrouped                        M packages/codemod/src/cli/print-summary.ts:59     function printGrouped
+printParseErrors                    M packages/codemod/src/cli/print-summary.ts:41     function printParseErrors
+printStatistics                     M packages/codemod/src/cli/print-summary.ts:20     function printStatistics
+printSummary                        M packages/codemod/src/cli/print-summary.ts:87     function printSummary
+printTodos                          M packages/codemod/src/cli/print-todos.ts:3      function printTodos
+printUsage                          M packages/codemod/src/cli/print-usage.ts:4      function printUsage
+depElapsed                          M packages/codemod/src/cli/run-dependencies.ts:45     function depElapsed
+runDependencies                     M packages/codemod/src/cli/run-dependencies.ts:16     function runDependencies
+elapsed                             M packages/codemod/src/cli/run-transforms.ts:46     function elapsed
+progressText                        M packages/codemod/src/cli/run-transforms.ts:45     function progressText
+runTransforms                       M packages/codemod/src/cli/run-transforms.ts:26     function runTransforms
+run                                 M packages/codemod/src/cli/run.ts:15     function run
+findPackageJsonFiles                M packages/codemod/src/dependencies/find-package-json.ts:9      function findPackageJsonFiles
+getConfig                           M packages/codemod/src/dependencies/index.ts:12     function getConfig
+checkIncompatible                   M packages/codemod/src/dependencies/upgrade.ts:109    function checkIncompatible
+checkNodeVersion                    M packages/codemod/src/dependencies/upgrade.ts:121    function checkNodeVersion
+checkWarnings                       M packages/codemod/src/dependencies/upgrade.ts:137    function checkWarnings
+detectIndent                        M packages/codemod/src/dependencies/upgrade.ts:149    function detectIndent
+findInAnySection                    M packages/codemod/src/dependencies/upgrade.ts:27     function findInAnySection
+getDeps                             M packages/codemod/src/dependencies/upgrade.ts:22     function getDeps
+isStandardVersion                   M packages/codemod/src/dependencies/upgrade.ts:30     function isStandardVersion
+replacePackages                     M packages/codemod/src/dependencies/upgrade.ts:36     function replacePackages
+upgradeDependencies                 M packages/codemod/src/dependencies/upgrade.ts:154    function upgradeDependencies
+upgradePackages                     M packages/codemod/src/dependencies/upgrade.ts:68     function upgradePackages
+main                                M packages/codemod/src/index.ts:11     function main
+wrap                                M packages/codemod/src/lib/colors.ts:1      function wrap
+fail                                M packages/codemod/src/lib/error.ts:3      function fail
+formatTime                          M packages/codemod/src/lib/format-time.ts:1      function formatTime
+highlight                           M packages/codemod/src/lib/highlight.ts:3      function highlight
+clear                               M packages/codemod/src/lib/spinner.ts:22     function clear
+createSpinner                       M packages/codemod/src/lib/spinner.ts:10     function createSpinner
+render                              M packages/codemod/src/lib/spinner.ts:25     function render
+collectParams                       M packages/codemod/src/transforms/ast-helpers.ts:67     function collectParams
+fileImportsFrom                     M packages/codemod/src/transforms/ast-helpers.ts:46     function fileImportsFrom
+forEachDecoratorObjectArg           M packages/codemod/src/transforms/ast-helpers.ts:91     function forEachDecoratorObjectArg
+forEachIdentifierParam              M packages/codemod/src/transforms/ast-helpers.ts:62     function forEachIdentifierParam
+getStringValue                      M packages/codemod/src/transforms/ast-helpers.ts:16     function getStringValue
+isIdentifier                        M packages/codemod/src/transforms/ast-helpers.ts:40     function isIdentifier
+removeImportSpecifiers              M packages/codemod/src/transforms/ast-helpers.ts:143    function removeImportSpecifiers
+removeObjectProperties              M packages/codemod/src/transforms/ast-helpers.ts:118    function removeObjectProperties
+renameMemberMethod                  M packages/codemod/src/transforms/ast-helpers.ts:181    function renameMemberMethod
+setStringValue                      M packages/codemod/src/transforms/ast-helpers.ts:31     function setStringValue
+getExt                              M packages/codemod/src/transforms/resolve.ts:6      function getExt
+resolveTransforms                   M packages/codemod/src/transforms/resolve.ts:8      function resolveTransforms
+addTodoComment                      M packages/codemod/src/transforms/todo.ts:3      function addTodoComment
+columnReadonly                      M packages/codemod/src/transforms/v1/column-readonly.ts:8      function columnReadonly
+columnUnsignedNumeric               M packages/codemod/src/transforms/v1/column-unsigned-numeric.ts:12     function columnUnsignedNumeric
+columnWidthZerofill                 M packages/codemod/src/transforms/v1/column-width-zerofill.ts:14     function columnWidthZerofill
+collectTypedIdentifier              M packages/codemod/src/transforms/v1/connection-to-datasource.ts:179    function collectTypedIdentifier
+connectionToDataSource              M packages/codemod/src/transforms/v1/connection-to-datasource.ts:8      function connectionToDataSource
+renames                             C packages/codemod/src/transforms/v1/connection-to-datasource.ts:13     class renames
+datasourceMongodb                   M packages/codemod/src/transforms/v1/datasource-mongodb.ts:12     function datasourceMongodb
+datasourceMssql                     M packages/codemod/src/transforms/v1/datasource-mssql.ts:18     function datasourceMssql
+datasourceMysqlConnector            M packages/codemod/src/transforms/v1/datasource-mysql-connector.ts:8      function datasourceMysqlConnector
+datasourceName                      M packages/codemod/src/transforms/v1/datasource-name.ts:11     function datasourceName
+removeNameFromObject                M packages/codemod/src/transforms/v1/datasource-name.ts:16     function removeNameFromObject
+datasourceSap                       M packages/codemod/src/transforms/v1/datasource-sap.ts:9      function datasourceSap
+datasourceSqliteOptions             M packages/codemod/src/transforms/v1/datasource-sqlite-options.ts:8      function datasourceSqliteOptions
+datasourceSqliteType                M packages/codemod/src/transforms/v1/datasource-sqlite-type.ts:8      function datasourceSqliteType
+findOptionsLockModes                M packages/codemod/src/transforms/v1/find-options-lock-modes.ts:8      function findOptionsLockModes
+buildObjectExpression               M packages/codemod/src/transforms/v1/find-options-string-relations.ts:63     function buildObjectExpression
+convertRelationsArrayToObject       M packages/codemod/src/transforms/v1/find-options-string-relations.ts:18     function convertRelationsArrayToObject
+findOptionsStringRelations          M packages/codemod/src/transforms/v1/find-options-string-relations.ts:40     function findOptionsStringRelations
+findOptionsStringSelect             M packages/codemod/src/transforms/v1/find-options-string-select.ts:8      function findOptionsStringSelect
+properties                          M packages/codemod/src/transforms/v1/find-options-string-select.ts:25     function properties
+globalFunctions                     M packages/codemod/src/transforms/v1/global-functions.ts:12     function globalFunctions
+migrationsGetAll                    M packages/codemod/src/transforms/v1/migrations-get-all.ts:11     function migrationsGetAll
+mongodbStats                        M packages/codemod/src/transforms/v1/mongodb-stats.ts:10     function mongodbStats
+addToExistingImport                 M packages/codemod/src/transforms/v1/mongodb-types.ts:15     function addToExistingImport
+createNewImport                     M packages/codemod/src/transforms/v1/mongodb-types.ts:36     function createNewImport
+mongodbTypes                        M packages/codemod/src/transforms/v1/mongodb-types.ts:62     function mongodbTypes
+queryBuilderNativeParameters        M packages/codemod/src/transforms/v1/query-builder-native-parameters.ts:8      function queryBuilderNativeParameters
+queryBuilderOnConflict              M packages/codemod/src/transforms/v1/query-builder-on-conflict.ts:12     function queryBuilderOnConflict
+queryBuilderOrUpdate                M packages/codemod/src/transforms/v1/query-builder-or-update.ts:8      function queryBuilderOrUpdate
+queryBuilderPrintSql                M packages/codemod/src/transforms/v1/query-builder-print-sql.ts:11     function queryBuilderPrintSql
+queryBuilderReplacePropertyNames    M packages/codemod/src/transforms/v1/query-builder-replace-property-names.ts:11     function queryBuilderReplacePropertyNames
+queryBuilderWhereExpression         M packages/codemod/src/transforms/v1/query-builder-where-expression.ts:8      function queryBuilderWhereExpression
+comments                            M packages/codemod/src/transforms/v1/query-runner-loaded-tables-views.ts:47     function comments
+queryRunnerLoadedTablesViews        M packages/codemod/src/transforms/v1/query-runner-loaded-tables-views.ts:20     function queryRunnerLoadedTablesViews
+relationCount                       M packages/codemod/src/transforms/v1/relation-count.ts:12     function relationCount
+addGetCustomRepoTodo                M packages/codemod/src/transforms/v1/repository-abstract.ts:61     function addGetCustomRepoTodo
+repositoryAbstract                  M packages/codemod/src/transforms/v1/repository-abstract.ts:12     function repositoryAbstract
+with                                C packages/codemod/src/transforms/v1/repository-abstract.ts:27     class with
+with                                C packages/codemod/src/transforms/v1/repository-abstract.ts:53     class with
+with                                C packages/codemod/src/transforms/v1/repository-abstract.ts:63     class with
+repositoryExist                     M packages/codemod/src/transforms/v1/repository-exist.ts:8      function repositoryExist
+repositoryFindByIds                 M packages/codemod/src/transforms/v1/repository-find-by-ids.ts:9      function repositoryFindByIds
+repositoryFindOneById               M packages/codemod/src/transforms/v1/repository-find-one-by-id.ts:8      function repositoryFindOneById
+useContainer                        M packages/codemod/src/transforms/v1/use-container.ts:12     function useContainer
+mkdirp                              M packages/codemod/test/dependencies/find-package-json.test.ts:18     function mkdirp
+touch                               M packages/codemod/test/dependencies/find-package-json.test.ts:19     function touch
+readPackageJson                     M packages/codemod/test/dependencies/upgrade.test.ts:28     function readPackageJson
+writePackageJson                    M packages/codemod/test/dependencies/upgrade.test.ts:22     function writePackageJson
+makeFile                            M packages/codemod/test/transforms/transformer.test.ts:19     function makeFile
+mod                                 M packages/codemod/test/transforms/transformer.test.ts:24     function mod
+tracking                            M packages/codemod/test/transforms/transformer.test.ts:58     function tracking
+Post                                C packages/codemod/test/transforms/v1/fixtures/column-readonly/column-readonly.input.ts:3      class Post
+Post                                C packages/codemod/test/transforms/v1/fixtures/column-readonly/column-readonly.output.ts:3      class Post
+Post                                C packages/codemod/test/transforms/v1/fixtures/column-width-zerofill/column-width-zerofill.input.ts:3      class Post
+Post                                C packages/codemod/test/transforms/v1/fixtures/column-width-zerofill/column-width-zerofill.output.ts:3      class Post
+  ...and 2788 more symbols
+
+-- FOCUS
+Category (test/functional/relations/lazy-relations/loading-via-base-entitiy-finders/entity/Category.ts:9-9)
+
+Post (test/functional/relations/lazy-relations/loading-via-base-entitiy-finders/entity/Post.ts:9-9)
+
+Configuration (test/github-issues/7113/entity/Configuration.ts:5-5)
+
+-- GAPS
+- Question mentions [downstream, impact, modifying] — not found in focus or symbol index
+- Module test/functional/relations/lazy-relations/loading-via-base-entitiy-finders/loading-via-base-entitiy-finders-lazy-relations.test.ts matches question but has no focus detail
+  > drill: test/functional/relations/lazy-relations/loading-via-base-entitiy-finders/loading-via-base-entitiy-finders-lazy-relations.test.ts

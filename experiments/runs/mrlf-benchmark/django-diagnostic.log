@@ -1,0 +1,49 @@
+=== Django MRLF Diagnostic ===
+Date: 2026-04-08 20:26:47
+Repo: experiments\external-repos\django
+
+STAGE 1: Graph extraction
+  OK: 3005 modules, 42888 symbols, 69361 edges in 509.5s
+  Memory: graph object created
+
+STAGE 2: Rendering django-tf1-settings-refactor
+  2a: Calling render_mrlf...
+  2a: OK in 505.0s, 16796 chars
+  2b: Counting tokens...
+  2b: OK in 0.0s: 837 words, 3824 tokens (92%)
+  2c: Saved to experiments\runs\mrlf-benchmark\django-tf1-settings-refactor.codeclue
+  Budget: PASS (3824/4150)
+
+STAGE 2: Rendering django-tf2-middleware-impact
+  2a: Calling render_mrlf...
+  2a: OK in 704.7s, 16491 chars
+  2b: Counting tokens...
+  2b: OK in 0.0s: 819 words, 3749 tokens (90%)
+  2c: Saved to experiments\runs\mrlf-benchmark\django-tf2-middleware-impact.codeclue
+  Budget: PASS (3749/4150)
+
+STAGE 2: Rendering django-tf3-admin-customization
+  2a: Calling render_mrlf...
+  2a: OK in 381.5s, 16990 chars
+  2b: Counting tokens...
+  2b: OK in 0.0s: 870 words, 4022 tokens (97%)
+  2c: Saved to experiments\runs\mrlf-benchmark\django-tf3-admin-customization.codeclue
+  Budget: PASS (4022/4150)
+
+STAGE 2: Rendering django-tf4-orm-query-execution
+  2a: Calling render_mrlf...
+  2a: OK in 384.2s, 16526 chars
+  2b: Counting tokens...
+  2b: OK in 0.0s: 822 words, 3754 tokens (90%)
+  2c: Saved to experiments\runs\mrlf-benchmark\django-tf4-orm-query-execution.codeclue
+  Budget: PASS (3754/4150)
+
+STAGE 2: Rendering django-tf5-csrf-protection
+  2a: Calling render_mrlf...
+  2a: OK in 373.4s, 16494 chars
+  2b: Counting tokens...
+  2b: OK in 0.0s: 816 words, 3744 tokens (90%)
+  2c: Saved to experiments\runs\mrlf-benchmark\django-tf5-csrf-protection.codeclue
+  Budget: PASS (3744/4150)
+
+=== Diagnostic complete ===
