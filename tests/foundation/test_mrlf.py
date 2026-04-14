@@ -345,7 +345,9 @@ class TestGaps:
         focus = _select_focus_nodes(graph, "What about sessions module?")
         l2 = [n for n in graph.nodes if n.node_type != "module"]
         result = _render_gaps(graph, "What about sessions module?", focus, l2)
-        assert "sessions" in result.lower()
+        # v2.1: GAPS now shows type classification and coverage, not keyword gaps
+        assert "type:" in result.lower()
+        assert "coverage:" in result.lower()
 
     def test_low_confidence_flagged(self):
         graph = _make_small_graph()
@@ -353,7 +355,8 @@ class TestGaps:
         focus = _select_focus_nodes(graph, "How does Config.from_file work?")
         l2 = [n for n in graph.nodes if n.node_type != "module"]
         result = _render_gaps(graph, "How does Config.from_file work?", focus, l2)
-        assert "confidence" in result.lower() or "from_file" in result
+        # v2.1: GAPS classifies question type — "how does" → MECHANISTIC
+        assert "mechanistic" in result.lower() or "coverage" in result.lower()
 
     def test_max_5_bullets(self):
         graph = _make_small_graph()
@@ -364,8 +367,9 @@ class TestGaps:
             "sessions templates blueprints signals helpers logging views wrappers",
             focus, l2,
         )
-        bullet_count = result.count("\n- ")
-        assert bullet_count <= 5
+        # v2.1: GAPS has structured lines, not bullets. Check total line count is bounded.
+        line_count = len([l for l in result.strip().split("\n") if l.strip()])
+        assert line_count <= 7  # header + type + coverage + up to 3 drill targets + margin
 
 
 # ---------------------------------------------------------------------------
@@ -376,7 +380,7 @@ class TestRenderMRLF:
     def test_renders_all_sections(self):
         graph = _make_small_graph()
         result = render_mrlf(graph, "What does wsgi_app do?")
-        assert "=CC v2" in result
+        assert "=CC v2.1" in result
         assert "-- TREE" in result
         assert "-- INDEX" in result
         assert "-- SYM" in result

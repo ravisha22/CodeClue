@@ -1,17 +1,24 @@
-"""MRLF: Multi-Resolution Lattice Format renderer.
+"""MRLF v2.1: Multi-Resolution Lattice Format renderer.
 
 Generates a two-file clue artifact:
   File 1 (.codeclue)        — plain-text primary clue, ≤4150 tokens
   File 2 (.codeclue-detail)  — JSONL detail store, one record per symbol
 
 Design doc: docs/New-Design-Basis.md
+PRD: source/CodeClue-PRD-v0.7.0-generalization.md
 
 Resolution levels in File 1:
   L0 TREE   — directory structure       (~150 tokens, 100% coverage)
   L1 INDEX  — every module + top exports (~400 tokens, 100% modules)
   L2 SYM    — symbols by PageRank       (~1500 tokens, top N)
-  L3 FOCUS  — task-conditioned detail    (~2000 tokens, top K)
-  GAPS      — missing info + drill hints (~100 tokens, 3-5 bullets)
+  L3 FOCUS  — task-conditioned detail with behavioral patterns (~2000 tokens)
+  GAPS      — sufficiency classification + costed drill targets (~100 tokens)
+
+v2.1 changes (Apr 14, 2026):
+  - Graph-structural FOCUS selection (semantic anchoring + betweenness centrality)
+  - Behavioral pattern extraction (GUARD, PRECEDENCE, BRANCH, etc.)
+  - Budget-driven rendering (no fixed node cap)
+  - Enhanced GAPS with question type classification
 """
 
 from __future__ import annotations
@@ -710,6 +717,38 @@ def _render_l3(
 # GAPS — missing information + drill hints
 # ---------------------------------------------------------------------------
 
+def _classify_question_type(question: str) -> str:
+    """Classify question as STRUCTURAL, RELATIONAL, or MECHANISTIC.
+
+    Based on question phrasing, not repo content. Language-agnostic.
+    """
+    q = question.lower()
+    # Mechanistic: asks HOW something works internally
+    mechanistic_signals = [
+        "how does", "how is", "what happens when", "what does .* actually do",
+        "internally", "under the hood", "precedence", "order of",
+        "step by step", "what logic", "how are .* handled",
+        "error handling", "cleanup", "teardown", "fallback",
+        "dispatch", "resolve", "convert", "transform",
+    ]
+    for signal in mechanistic_signals:
+        if re.search(signal, q):
+            return "MECHANISTIC"
+
+    # Relational: asks about relationships between components
+    relational_signals = [
+        "relationship", "calls", "depends on", "inherits",
+        "connected", "hierarchy", "which .* call", "who calls",
+        "interact", "communicate", "flow between",
+    ]
+    for signal in relational_signals:
+        if re.search(signal, q):
+            return "RELATIONAL"
+
+    # Default: structural
+    return "STRUCTURAL"
+
+
 def _render_gaps(
     graph: CanonicalClueGraph,
     question: str,
@@ -717,56 +756,57 @@ def _render_gaps(
     l2_symbols: list[Node],
     budget: int = BUDGET_GAPS,
 ) -> str:
-    """Render GAPS section: what's missing, where to drill."""
-    keywords = _extract_question_keywords(question)
-    gaps: list[str] = []
+    """Render enhanced GAPS: sufficiency classification + coverage + drill targets.
 
-    # Signal 1: uncovered question keywords
-    covered_names: set[str] = set()
-    for node in focus_nodes + l2_symbols:
-        sc = node.semantic_contract or {}
-        sym_name = sc.get("symbol_name", node.node_id).lower()
-        covered_names.update(re.findall(r"[a-z_]\w{2,}", sym_name))
-        covered_names.update(re.findall(r"[a-z_]\w{2,}", node.source_anchor.file_path.lower()))
+    v2.1: Replaces keyword-gap reporting with:
+    1. Question type classification (STRUCTURAL/RELATIONAL/MECHANISTIC)
+    2. Coverage report (how many task-relevant symbols have behavioral annotations)
+    3. Costed drill targets (file:lines + estimated size for informed drill-down)
+    """
+    question_type = _classify_question_type(question)
 
-    uncovered = keywords - covered_names
-    if uncovered:
-        uncovered_str = ", ".join(sorted(uncovered)[:5])
-        gaps.append(f"- Question mentions [{uncovered_str}] — not found in focus or symbol index")
+    # Count coverage
+    total_focus = len(focus_nodes)
+    with_behavior = sum(
+        1 for n in focus_nodes
+        if (n.semantic_contract or {}).get("behavior_patterns")
+    )
 
-    # Signal 2: low-confidence focus nodes
-    for node in focus_nodes[:20]:
-        if node.confidence < 0.70:
+    lines = ["-- GAPS"]
+
+    # Line 1: question type + sufficiency hint
+    if question_type == "STRUCTURAL":
+        lines.append(f"type: STRUCTURAL (answerable from L0-L2)")
+    elif question_type == "RELATIONAL":
+        lines.append(f"type: RELATIONAL (answerable from L2-L3 structure)")
+    else:
+        lines.append(f"type: MECHANISTIC (body logic needed for full answer)")
+
+    # Line 2: coverage
+    lines.append(f"coverage: {total_focus} symbols in L3, {with_behavior} with behavior annotations")
+
+    # Line 3+: drill targets for uncovered or under-annotated focus nodes
+    # Pick top focus nodes that lack behavioral annotations as drill candidates
+    drill_candidates = [
+        n for n in focus_nodes
+        if not (n.semantic_contract or {}).get("behavior_patterns")
+    ]
+
+    if question_type == "MECHANISTIC" and drill_candidates:
+        # Show top 2-3 drill targets with estimated line counts
+        for node in drill_candidates[:3]:
             sc = node.semantic_contract or {}
             sym_name = sc.get("symbol_name", node.node_id)
             fp = node.source_anchor.file_path
-            gaps.append(f"- {sym_name} has low structural confidence ({node.confidence:.2f})")
-            gaps.append(f"  > drill: {fp}")
-            if len(gaps) >= 4:
-                break
-
-    # Signal 3: modules mentioned in question but not detailed
-    module_files = {n.source_anchor.file_path.lower() for n in graph.nodes if n.node_type == "module"}
-    focus_files = {n.source_anchor.file_path.lower() for n in focus_nodes}
-    for kw in keywords:
-        for mf in module_files:
-            if kw in mf and mf not in focus_files:
-                gaps.append(f"- Module {mf} matches question but has no focus detail")
-                gaps.append(f"  > drill: {mf}")
-                break
-        if len(gaps) >= 5:
-            break
-
-    if not gaps:
-        gaps.append("- No significant gaps detected for this question")
-
-    lines = ["-- GAPS"] + gaps[:5]  # Max 5 bullets
-    result = "\n".join(lines) + "\n"
+            byte_span = node.source_anchor.byte_end - node.source_anchor.byte_start
+            est_lines = max(1, byte_span // 40)  # rough estimate: 40 bytes/line
+            lines.append(f"drill: {fp} (~{est_lines} lines, {sym_name})")
 
     # Trim if over budget
-    while _token_count(result) > budget and len(gaps) > 1:
-        gaps.pop()
-        result = "\n".join(["-- GAPS"] + gaps) + "\n"
+    result = "\n".join(lines) + "\n"
+    while _token_count(result) > budget and len(lines) > 2:
+        lines.pop()
+        result = "\n".join(lines) + "\n"
 
     return result
 
@@ -799,7 +839,7 @@ def render_mrlf(
 
     # Header
     commit_short = commit_id[:8] if commit_id else "HEAD"
-    header = f"=CC v2 {repo_name}@{commit_short} {module_count}mod {sym_count}sym\n"
+    header = f"=CC v2.1 {repo_name}@{commit_short} {module_count}mod {sym_count}sym\n"
     header += f"? {question}\n"
 
     # Render each level
