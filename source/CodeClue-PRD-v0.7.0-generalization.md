@@ -270,7 +270,7 @@ language breakdown. Minimum publishable: 60 facts across ≥3 languages.
 
 ## 7. Experimental Results
 
-### 7.1 Baseline (Pre-Generalization)
+### 7.1 Baseline (Pre-Generalization, MRLF v2.0)
 
 | Split | Knowledge Type | Covered | Total | Accuracy | 95% CI |
 |-------|---------------|---------|-------|----------|--------|
@@ -280,9 +280,27 @@ language breakdown. Minimum publishable: 60 facts across ≥3 languages.
 **Note:** All existing gold facts are mechanistic. Structural/relational gold tasks
 not yet created. No overfitting detected (dev ≤ validation).
 
-### 7.2 Post-Generalization (TBD)
+### 7.2 Post-Generalization (MRLF v2.1, Round 2)
 
-_To be populated after Actions 1-4 are implemented and evaluated._
+| Task | v2.0 | v2.1-r2 | Key Findings |
+|------|------|---------|-------------|
+| aiohttp-1 | 0/4 | 0/4 | Payload internals too deep for patterns |
+| aiohttp-2 | 0/4 | 1/4 | UNWIND(reversed) pattern covered reverse cleanup |
+| fiber-1 | 0/4 | 2/4 | Path rewrite + 404/405 branch covered |
+| fiber-2 | 1/4 | 1/4 | DefaultPanicHandler recovered via compound-word fix |
+| click-1 | 0/4 | 3/4 | Decorator→Command + dispatch chain covered |
+| click-2 | 0/4 | 0/4 | Precedence chain still requires body logic |
+| **TOTAL** | **1/24** | **7/24** | **4.2% → 29.2% (7× improvement)** |
+
+**What worked:**
+- Behavioral patterns (UNWIND, BRANCH) directly enabled 3 new coverages
+- Graph-structural selection with compound-word splitting surfaced correct symbols
+- click-1 dispatch chain covered by docstring + call graph + behavioral patterns
+
+**What still fails:**
+- Deep body logic (precedence chains, constructor wiring, specific conditionals)
+- Behavioral patterns capture control flow *structure* but not *content*
+- 17/24 remaining gaps require method body text (File 2 drill-down territory)
 
 ---
 
