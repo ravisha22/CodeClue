@@ -1,0 +1,387 @@
+# Blind Evaluation Prompt
+# Run this in a SEPARATE VS Code Copilot Chat session (fresh chat, no prior context).
+
+You have THREE tasks to complete. Read carefully.
+
+=== TASK 1: ANSWER THE QUESTION ===
+
+You are a senior software engineer. You have been given a codebase
+comprehension artifact (a "clue file") that summarises a repository's
+structure, symbols, and behavior. This is NOT the full source code — it is
+a compressed representation.
+
+Answer the question below using ONLY the information in the clue file.
+Do not use any external knowledge about the framework or library.
+If the clue does not contain enough information to fully answer, say what
+you CAN determine and what you CANNOT.
+
+--- CLUE FILE START ---
+=CC v2 fiber@HEAD 243mod 3893sym
+? If middleware rewrites the request path and wants Fiber to match routes again, how does the framework restart dispatch and decide whether the request becomes a normal match, a 404, or a 405?
+
+
+-- TREE
+addon/  (4 files)
+binder/  (24 files)
+client/  (17 files)
+extractors/  (2 files)
+internal/  (6 files)
+log/  (5 files)
+middleware/  (134 files)
+
+-- INDEX
+client/client.go                                863L  C, AddHeader, AddHeaders, AddParam, AddParams
+client/request.go                              1122L  AcquireFile, AcquireRequest, Add, All, Del
+bind.go                                         477L  AcquireBind, All, Body, CBOR, Cookie
+client/transport.go                             377L  composeRedirectURL, doRedirectsWithClient, extractTLSConfig, forEachHostClient, Client
+res.go                                         1153L  Cookie, App, Append, Attachment, AutoFormat
+app.go                                         1486L  Add, All, Config, Connect, Delete
+client/core.go                                  304L  acquireErrChan, acquireResponseChan, addMissingPort, afterHooks, execFunc
+internal/storage/memory/memory.go               233L  Entry, New, Close, Conn, Delete
+middleware/cache/cache_test.go                 5093L  Benchmark_Cache, Benchmark_Cache_AdditionalHeaders, Benchmark_Cache_MaxSize, Benchmark_Cache_Miss, Benchmark_Cache_Storage
+bind_test.go                                   2870L  ArrayQuery, BenchmarkBind_All, Benchmark_Bind_Body_CBOR, Benchmark_Bind_Body_Form, Benchmark_Bind_Body_Form_Map
+middleware/limiter/limiter_test.go             1722L  Benchmark_Limiter, Benchmark_Limiter_Custom_Store, TestLimiterDefaultConfigNoPanic, TestLimiterFixedPropagatesRequestContextToStorage, TestLimiterFixedStorageGetError
+middleware/paginate/page_info.go                190L  NewPageInfo, CursorValues, NextCursorURL, NextCursorURLWithKeys, NextPageURL
+redirect.go                                     433L  AcquireRedirect, FlashMessage, OldInputData, Back, Message
+client/cookiejar.go                             334L  AcquireCookieJar, Get, Release, Set, SetByHost
+  ...and 229 more modules
+
+-- SYM
+domainRouter.Add                    M domain.go:530    Add allows you to specify multiple HTTP methods...
+App.Add                             M app.go:953    Add allows you to specify multiple HTTP methods...
+Group.Add                           M group.go:167    Add allows you to specify multiple HTTP methods...
+Client.applyDial                    M client/client.go:107    function Client.applyDial
+DefaultReq.getBody                  M req.go:1140   function DefaultReq.getBody
+DefaultReq.Body                     M req.go:149    Body contains the raw body submitted in a POST ...
+Client.SetDial                      M client/client.go:606    SetDial sets the custom dial function for the c...
+Registering.Add                     M register.go:111    Add allows you to specify multiple HTTP methods...
+C                                   M client/client.go:810    C returns the default client.
+Cookie.All                          M client/request.go:816    All returns an iterator over cookie key-value p...
+Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
+DefaultCtx.Get                      M ctx.go:200    Get returns the HTTP request header specified b...
+Bind.returnErr                      M bind.go:160    Check WithAutoHandling/WithoutAutoHandling erro...
+pair.Len                            M client/request.go:140    Len implements sort.Interface and reports the n...
+defaultLogger.privateLog            M log/default.go:24     privateLog logs a message at a given level log ...
+defaultLogger.privateLogf           M log/default.go:47     privateLogf logs a formatted message at a given...
+defaultLogger.privateLogw           M log/default.go:74     privateLogw logs a message at a given level log...
+Cookie.Add                          M client/request.go:781    Add adds a cookie key-value pair.
+domainRouter.registerPath           M domain.go:327    registerPath returns the full path for registra...
+Cookie.Del                          M client/request.go:786    Del deletes a cookie by key.
+domainRouter.registerGroup          M domain.go:336    registerGroup returns the group to associate wi...
+domainRouter.wrapHandlers           M domain.go:278    wrapHandlers wraps every handler in the slice w...
+DefaultReq.Get                      M req.go:427    Get returns the HTTP request header specified b...
+WithStruct                          C client/request.go:24     WithStruct is implemented by types that allow d...
+DefaultCtx.String                   M ctx.go:571    String returns unique string representation of ...
+FormData.Set                        M client/request.go:893    Set sets a single form field, overriding previo...
+Config                              C client/client.go:655    Config is used to easily set request parameters.
+Client                              C client/client.go:37     Client provides Fiber's high-level HTTP API whi...
+manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
+Session.Get                         M middleware/session/session.go:74     Release releases the session back to the pool.
+Bind                                C bind.go:40     Bind provides helper methods for binding reques...
+Request.resetBody                   M client/request.go:438    resetBody clears the existing body.
+domainRouter.Group                  M domain.go:552    Group creates a new sub-router with a common pr...
+wrapContextError                    M internal/storage/memory/memory.go:228    function wrapContextError
+DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
+Request.Reset                       M client/request.go:680    Reset clears the Request object, returning it t...
+buildPaginationURL                  M middleware/paginate/page_info.go:121    buildPaginationURL parses baseURL and sets/repl...
+standardClientTransport.Client      M client/transport.go:82     function standardClientTransport.Client
+domainRouter.Name                   M domain.go:602    Name assigns a name to the most recently regist...
+Request.Params                      M client/request.go:224    Params returns an iterator over all query param...
+Client.TLSConfig                    M client/client.go:236    TLSConfig returns the client's TLS configuration.
+walkBalancingClientWithBreak        M client/transport.go:268    walkBalancingClientWithBreak traverses balancin...
+decodeKey                           M middleware/encryptcookie/utils.go:20     decodeKey decodes the provided base64-encoded k...
+redirectionMsg.Msgsize              M redirect_msgp.go:196    Msgsize returns an upper bound estimate of the ...
+DefaultCtx.MediaType                M req.go:244    MediaType returns the MIME type from the Conten...
+App.hasConfiguredServices           M services.go:29     hasConfiguredServices Checks if there are any s...
+handlerFunc                         M middleware/adaptor/adaptor.go:242    function handlerFunc
+setConfigToRequest                  M client/client.go:672    setConfigToRequest sets the parameters passed v...
+QueryParam.Keys                     M client/request.go:747    Keys returns all keys from the query parameters.
+Response.Body                       M client/response.go:88     Body returns the HTTP response body as a byte s...
+File                                C client/request.go:932    File represents a file to be sent with the requ...
+Request.Get                         M client/request.go:633    Get sends a GET request to the given URL.
+Request.Method                      M client/request.go:76     Method returns the HTTP method set in the Request.
+Request.Send                        M client/request.go:673    Send executes the Request.
+Request.SetMethod                   M client/request.go:82     SetMethod sets the HTTP method for the Request.
+Request.SetURL                      M client/request.go:93     SetURL sets the URL for the Request.
+Request.URL                         M client/request.go:88     URL returns the URL set in the Request.
+Request.Client                      M client/request.go:99     Client returns the Client instance associated w...
+ReleaseFile                         M client/request.go:1053   ReleaseFile returns the File object to the pool.
+SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
+shouldIncludeCharset                M res.go:1069   shouldIncludeCharset determines if a MIME type ...
+parseCacheControlDirectives         M middleware/cache/cache.go:948    function parseCacheControlDirectives
+parseUintDirective                  M middleware/cache/cache.go:937    function parseUintDirective
+App.ShutdownWithContext             M app.go:1147   ShutdownWithContext shuts down the server inclu...
+decoderBuilder                      M binder/mapping.go:64     function decoderBuilder
+CookieJar.SetByHost                 M client/cookiejar.go:154    SetByHost stores the given cookies for the spec...
+Request.Cookies                     M client/request.go:335    Cookies returns an iterator over all cookies.
+Request.Headers                     M client/request.go:160    Headers returns an iterator over all headers in...
+Response.String                     M client/response.go:109    String returns the response body as a trimmed s...
+standardClientTransport.Do          M client/transport.go:50     function standardClientTransport.Do
+standardClientTransport.DoDeadline  M client/transport.go:58     function standardClientTransport.DoDeadline
+standardClientTransport.DoTimeout   M client/transport.go:54     function standardClientTransport.DoTimeout
+DefaultCtx.GetHeaders               M ctx.go:207    GetHeaders returns the HTTP request headers.
+indexedHeap.removeInternal          M middleware/cache/heap.go:84     function indexedHeap.removeInternal
+  ...and 1398 more symbols
+
+-- FOCUS
+pathMatch (client/cookiejar.go:307-307)
+  pathMatch determines whether the request path matches the cookie path according to RFC 6265 section 5.1.4.
+  sig: pathMatch(reqPath, cookiePath []byte)
+  called_by: searchCookieByKeyAndPath
+
+Request.DelPathParams (client/request.go:397-397)
+  DelPathParams deletes one or more path parameters.
+  sig: Request.DelPathParams(key ...string)
+  calls: DelParams, Params
+
+Request.DisablePathNormalizing (client/request.go:614-614)
+  DisablePathNormalizing reports whether path normalizing is disabled for the Request.
+
+Request.FileByPath (client/request.go:561-561)
+  FileByPath returns the file associated with the given file path.
+  sig: Request.FileByPath(path string)
+
+Request.PathParam (client/request.go:365-365)
+  PathParam returns the value of a named path parameter.
+  sig: Request.PathParam(key string)
+
+Request.PathParams (client/request.go:374-374)
+  PathParams returns an iterator over all path parameters.
+  calls: All
+
+Request.ResetPathParams (client/request.go:403-403)
+  ResetPathParams deletes all path parameters.
+  calls: Reset
+
+Request.SetDisablePathNormalizing (client/request.go:619-619)
+  SetDisablePathNormalizing configures the Request to disable or enable path normalizing.
+  sig: Request.SetDisablePathNormalizing(disable bool)
+
+Request.SetPathParam (client/request.go:379-379)
+  SetPathParam sets a single path parameter and value, overriding any previously set value.
+  sig: Request.SetPathParam(key, val string)
+  calls: Param, SetParam
+
+Request.SetPathParams (client/request.go:385-385)
+  SetPathParams sets multiple path parameters and values at once, overriding previously set values.
+  sig: Request.SetPathParams(m map[string]string)
+  calls: Params, SetParams
+
+Request.SetPathParamsWithStruct (client/request.go:391-391)
+  SetPathParamsWithStruct sets multiple path parameters from a struct, overriding previously set values.
+  sig: Request.SetPathParamsWithStruct(v any)
+  calls: SetParamsWithStruct, WithStruct
+
+RoutePatternMatch (path.go:155-155)
+  RoutePatternMatch reports whether path matches the provided Fiber route pattern.
+  sig: RoutePatternMatch(path, pattern string, cfg ...Config)
+
+routeParser.getMatch (path.go:507-507)
+  getMatch parses the passed url and tries to match it against the route segments and determine the parameter positions
+  sig: routeParser.getMatch(detectionPath, path string, params *[maxParams]string, p...)
+
+Route.match (router.go:68-68)
+  sig: Route.match(detectionPath, path string, params *[maxParams]string)
+
+RouteMessage (app.go:479-480)
+  RouteMessage is some message need to be print when server starts
+
+Request (client/request.go:46-46)
+  Request contains all data related to an HTTP request.
+  methods: AddFile, AddFileWithReader, AddFiles, AddFormData, AddFormDataWithMap, AddHeader
+
+requestCacheDirectives (middleware/cache/cache.go:61-61)
+  type requestCacheDirectives
+
+Middleware (middleware/session/middleware.go:13-13)
+  Middleware holds session data and configuration.
+  methods: Delete, Destroy, Fresh, Get, ID, Keys
+
+routeParser (path.go:27-27)
+  routeParser holds the path segments and param names
+  methods: analyseParameterPart, getMatch, parseRoute, reset
+
+routeSegment (path.go:40-41)
+  routeSegment holds the segment metadata
+
+Route (router.go:45-46)
+  Route is a struct that holds all metadata for each registered handler.
+  methods: match
+  called_by: RemoveRouteByName, RemoveRouteFunc
+
+adaptFiberHandler (adapter.go:32-32)
+  sig: adaptFiberHandler(handler any)
+
+toFiberHandler (adapter.go:13-13)
+  toFiberHandler converts a supported handler type to a Fiber handler.
+  sig: toFiberHandler(handler any)
+  called_by: collectHandlers
+
+App.GetRoute (app.go:809-810)
+  GetRoute Get route by name
+  sig: App.GetRoute(name string)
+
+App.GetRoutes (app.go:822-822)
+  GetRoutes Get all routes.
+  sig: App.GetRoutes(filterUseOption ...bool)
+
+App.Route (app.go:1024-1024)
+  Route is used to define routes with a common prefix inside the supplied function.
+  sig: App.Route(prefix string, fn func(router Router)
+  raises: panic
+
+App.RouteChain (app.go:1014-1014)
+  RouteChain creates a Registering instance that lets you declare a stack of handlers for the same route.
+  sig: App.RouteChain(path string)
+
+Client.AddRequestHook (client/client.go:146-146)
+  AddRequestHook adds user-defined request hooks.
+  sig: Client.AddRequestHook(h ...RequestHook)
+
+Client.DelPathParams (client/client.go:474-474)
+  DelPathParams deletes one or more path parameters and their values from the client.
+  sig: Client.DelPathParams(key ...string)
+  calls: DelParams
+
+Client.DisablePathNormalizing (client/client.go:437-437)
+  DisablePathNormalizing reports whether path normalizing is disabled for the client.
+
+Client.PathParam (client/client.go:448-448)
+  PathParam returns the value of the specified path parameter.
+  sig: Client.PathParam(key string)
+
+Client.RequestHook (client/client.go:141-141)
+  RequestHook returns the user-defined request hooks.
+
+Client.SetDisablePathNormalizing (client/client.go:442-442)
+  SetDisablePathNormalizing configures the client to disable or enable path normalizing.
+  sig: Client.SetDisablePathNormalizing(disable bool)
+
+Client.SetPathParam (client/client.go:456-456)
+  SetPathParam sets a single path parameter and its value in the client.
+  sig: Client.SetPathParam(key, val string)
+  calls: Param, SetParam
+
+Client.SetPathParams (client/client.go:462-462)
+  SetPathParams sets multiple path parameters and their values in the client.
+  sig: Client.SetPathParams(m map[string]string)
+  calls: SetParams
+
+Client.SetPathParamsWithStruct (client/client.go:468-468)
+  SetPathParamsWithStruct sets multiple path parameters and their values using a struct.
+  sig: Client.SetPathParamsWithStruct(v any)
+  calls: SetParamsWithStruct
+
+setConfigToRequest (client/client.go:672-672)
+  setConfigToRequest sets the parameters passed via Config to the Request.
+  sig: setConfigToRequest(req *Request, config ...Config)
+  called_by: Custom, Delete, Get, Head, Options, Patch, Post, Put
+
+CookieJar.cookiesForRequest (client/cookiejar.go:103-103)
+  cookiesForRequest returns cookies that match the given host, path and security settings.
+  sig: CookieJar.cookiesForRequest(host string, path []byte, secure bool)
+  calls: domainMatch
+
+CookieJar.getByHostAndPath (client/cookiejar.go:60-60)
+  getByHostAndPath returns cookies stored for a specific host and path.
+  sig: CookieJar.getByHostAndPath(host, path []byte, secure bool)
+  called_by: dumpCookiesToReq
+
+domainMatch (client/cookiejar.go:327-327)
+  domainMatch reports whether host domain-matches the given cookie domain.
+  sig: domainMatch(host, domain string)
+  called_by: cookiesForRequest
+
+searchCookieByKeyAndPath (client/cookiejar.go:294-294)
+  searchCookieByKeyAndPath looks up a cookie by its key and path from the provided slice of cookies.
+  sig: searchCookieByKeyAndPath(key, path []byte, cookies []*fasthttp.Cookie)
+  calls: pathMatch
+
+parserRequestBody (client/hooks.go:196-196)
+  parserRequestBody serializes the request body based on its type and sets it into the RawRequest.
+  sig: parserRequestBody(c *Client, req *Request)
+
+parserRequestBodyFile (client/hooks.go:236-236)
+  parserRequestBodyFile handles the case where the request contains files to be uploaded.
+  sig: parserRequestBodyFile(req *Request)
+
+parserRequestHeader (client/hooks.go:122-122)
+  parserRequestHeader merges client and request headers, and sets headers automatically based on the request data.
+  sig: parserRequestHeader(c *Client, req *Request)
+
+parserRequestURL (client/hooks.go:72-72)
+  parserRequestURL sets options for the hostclient and normalizes the URL.
+  sig: parserRequestURL(c *Client, req *Request)
+
+AcquireRequest (client/request.go:983-983)
+  AcquireRequest returns a new (pooled) Request object.
+  calls: Get
+  raises: panic
+
+File.SetPath (client/request.go:950-950)
+  SetPath sets the file's path.
+  sig: File.SetPath(p string)
+  called_by: SetFilePath
+
+PathParam.Add (client/request.go:829-829)
+  Add adds a path parameter key-value pair.
+  sig: PathParam.Add(key, val string)
+
+PathParam.All (client/request.go:864-864)
+  All returns an iterator over path parameter key-value pairs.
+  calls: All
+
+-- GAPS
+- Question mentions [again, becomes, decide, dispatch, fiber] — not found in focus or symbol index
+- Module log/fiberlog.go matches question but has no focus detail
+  > drill: log/fiberlog.go
+- Module middleware/cors/config.go matches question but has no focus detail
+  > drill: middleware/cors/config.go
+
+--- CLUE FILE END ---
+
+QUESTION: If middleware rewrites the request path and wants Fiber to match routes again, how does the framework restart dispatch and decide whether the request becomes a normal match, a 404, or a 405?
+
+Provide a detailed answer covering:
+1. Which specific files and symbols are involved (cite from the clue)
+2. How the mechanism works (based on what the clue tells you)
+3. Any error handling, invariants, or safety properties visible in the clue
+4. What the clue does NOT tell you (gaps in your understanding)
+
+=== TASK 2: SCORE YOUR ANSWER ===
+
+After writing your answer above, score it against these gold facts.
+For EACH fact, state COVERED (your answer contains or can infer this) or
+MISSED (your answer does not contain this). Be strict — vague proximity
+is not coverage.
+
+FACT 1: DefaultCtx.Path with an override mutates the underlying fasthttp request URI, records the original override string, and recomputes Fiber's configuration-dependent path fields before routing continues.
+FACT 2: DefaultCtx.RestartRouting does not just call the next handler; it resets indexRoute to -1 and invokes app.next or app.nextCustom so route scanning starts from the beginning of the stack again.
+FACT 3: App.next scans the prebuilt treeStack for the current method and path hash, skips mounted routes, uses Route.match for exact, parameterized, wildcard, and prefix-use matches, and records the matched route on the context before executing its first handler.
+FACT 4: If no route for the current method matches but another method matches the same path, App.next appends to the Allow header and returns ErrMethodNotAllowed; otherwise it returns ErrNotFound.
+
+=== TASK 3: WRITE RESULTS TO FILE ===
+
+After completing Tasks 1 and 2, create or append to the file:
+`experiments/runs/blind-eval/blind-eval-results.jsonl`
+
+Write ONE JSON line (append, do not overwrite) with this exact structure:
+```json
+{"task_id": "blind-fiber-1", "model": "<your model name>", "scores": [{"fact": 1, "verdict": "COVERED_or_MISSED", "reason": "..."}, {"fact": 2, "verdict": "COVERED_or_MISSED", "reason": "..."}, {"fact": 3, "verdict": "COVERED_or_MISSED", "reason": "..."}, {"fact": 4, "verdict": "COVERED_or_MISSED", "reason": "..."}], "total_covered": <count>, "total_facts": <total>, "sufficient": <true or false>}
+```
+
+Replace each score entry with your actual COVERED/MISSED judgment.
+
+Also output the scoring block in your response for visibility:
+
+```
+=== BLIND SCORING ===
+Task: blind-fiber-1
+Model: [state which model you are]
+FACT 1: [COVERED or MISSED] - [brief justification]
+FACT 2: [COVERED or MISSED] - [brief justification]
+FACT 3: [COVERED or MISSED] - [brief justification]
+FACT 4: [COVERED or MISSED] - [brief justification]
+Score: [count of COVERED]/[total]
+Sufficient: [YES if >= 60%, NO otherwise]
+```
