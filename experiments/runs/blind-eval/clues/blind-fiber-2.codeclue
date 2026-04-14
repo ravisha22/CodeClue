@@ -1,4 +1,4 @@
-=CC v2 fiber@HEAD 243mod 3893sym
+=CC v2.1 fiber@HEAD 243mod 3893sym
 ? When a handler panics in Fiber, how is that turned into an HTTP response, and how can mounted sub-apps change which error formatter gets used?
 
 
@@ -53,8 +53,8 @@ domainRouter.registerGroup          M domain.go:336    registerGroup returns the
 domainRouter.wrapHandlers           M domain.go:278    wrapHandlers wraps every handler in the slice w...
 DefaultReq.Get                      M req.go:427    Get returns the HTTP request header specified b...
 WithStruct                          C client/request.go:24     WithStruct is implemented by types that allow d...
-DefaultCtx.String                   M ctx.go:571    String returns unique string representation of ...
 FormData.Set                        M client/request.go:893    Set sets a single form field, overriding previo...
+DefaultCtx.String                   M ctx.go:571    String returns unique string representation of ...
 Config                              C client/client.go:655    Config is used to easily set request parameters.
 Client                              C client/client.go:37     Client provides Fiber's high-level HTTP API whi...
 manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
@@ -97,40 +97,18 @@ decoderBuilder                      M binder/mapping.go:64     function decoderB
 CookieJar.SetByHost                 M client/cookiejar.go:154    SetByHost stores the given cookies for the spec...
 Request.Cookies                     M client/request.go:335    Cookies returns an iterator over all cookies.
 Request.Headers                     M client/request.go:160    Headers returns an iterator over all headers in...
-Response.String                     M client/response.go:109    String returns the response body as a trimmed s...
 standardClientTransport.Do          M client/transport.go:50     function standardClientTransport.Do
 standardClientTransport.DoDeadline  M client/transport.go:58     function standardClientTransport.DoDeadline
 standardClientTransport.DoTimeout   M client/transport.go:54     function standardClientTransport.DoTimeout
 DefaultCtx.GetHeaders               M ctx.go:207    GetHeaders returns the HTTP request headers.
 indexedHeap.removeInternal          M middleware/cache/heap.go:84     function indexedHeap.removeInternal
+cachedHeader.Msgsize                M middleware/cache/manager_msgp.go:170    Msgsize returns an upper bound estimate of the ...
   ...and 1398 more symbols
 
 -- FOCUS
-adaptFiberHandler (adapter.go:32-32)
-  sig: adaptFiberHandler(handler any)
-
-toFiberHandler (adapter.go:13-13)
-  toFiberHandler converts a supported handler type to a Fiber handler.
-  sig: toFiberHandler(handler any)
-  called_by: collectHandlers
-
-App.ErrorHandler (app.go:1376-1376)
-  ErrorHandler is the application's method in charge of finding the appropriate handler for the given request.
-  sig: App.ErrorHandler(ctx Ctx, err error)
-
-App.serverErrorHandler (app.go:1411-1411)
-  serverErrorHandler is a wrapper around the application's error handler method user for the fasthttp server configuration
-  sig: App.serverErrorHandler(fctx *fasthttp.RequestCtx, err error)
-  calls: Error, NewError
-
-DefaultErrorHandler (app.go:524-524)
-  DefaultErrorHandler that process return errors from handlers
-  sig: DefaultErrorHandler(c Ctx, err error)
-
-FiberHandler (middleware/adaptor/adaptor.go:194-194)
-  FiberHandler wraps fiber handler to net/http handler
-  sig: FiberHandler(h fiber.Handler)
-  calls: FiberHandlerFunc
+App.mountStartupProcess (mount.go:113-114)
+  mountStartupProcess Handles the startup process of mounted apps by appending sub-app routes, generating app list keys, a
+  calls: appendSubAppLists, generateAppListKeys, hasMountedApps, processSubAppsRoutes
 
 FiberHandlerFunc (middleware/adaptor/adaptor.go:199-199)
   FiberHandlerFunc wraps fiber handler to net/http handler func
@@ -138,17 +116,119 @@ FiberHandlerFunc (middleware/adaptor/adaptor.go:199-199)
   calls: handlerFunc
   called_by: FiberHandler
 
+HTTPHandler (middleware/adaptor/adaptor.go:56-56)
+  HTTPHandler wraps net/http handler to fiber handler
+  sig: HTTPHandler(h http.Handler)
+  called_by: HTTPHandlerFunc, HTTPHandlerWithContext
+
+FiberApp (middleware/adaptor/adaptor.go:204-204)
+  FiberApp wraps fiber app to net/http handler func
+  sig: FiberApp(app *fiber.App)
+  calls: handlerFunc
+
+FiberHandler (middleware/adaptor/adaptor.go:194-194)
+  FiberHandler wraps fiber handler to net/http handler
+  sig: FiberHandler(h fiber.Handler)
+  calls: FiberHandlerFunc
+
+HTTPHandlerFunc (middleware/adaptor/adaptor.go:51-51)
+  HTTPHandlerFunc wraps net/http handler func to fiber handler
+  sig: HTTPHandlerFunc(h http.HandlerFunc)
+  calls: HTTPHandler
+
 defaultErrorHandler (middleware/csrf/config.go:142-142)
   defaultErrorHandler is the default error handler that processes errors from fiber.Handler.
   sig: defaultErrorHandler(_ fiber.Ctx, _ error)
 
-DefaultPanicHandler (middleware/recover/recover.go:16-16)
-  DefaultPanicHandler returns r directly if it's an error, and creates a new one with the %v verb otherwise.
-  sig: DefaultPanicHandler(_ fiber.Ctx, r any)
+wrapHTTPHandler (adapter.go:246-246)
+  wrapHTTPHandler adapts a net/http handler to a Fiber handler.
+  sig: wrapHTTPHandler(handler http.Handler)
 
-DefaultErrorHandler (middleware/session/config.go:109-109)
-  DefaultErrorHandler logs the error and sends a 500 status code.
-  sig: DefaultErrorHandler(c fiber.Ctx, err error)
+Client (client/client.go:37-37)
+  Client provides Fiber's high-level HTTP API while delegating transport work to fasthttp.Client, fasthttp.HostClient, or 
+  methods: AddHeader, AddHeaders, AddParam, AddParams, AddRequestHook, AddResponseHook
+  called_by: Custom, Delete, Get, Head, Options, Patch, Post, Put
+
+State (state.go:21-21)
+  State is a key-value store for Fiber's app in order to be used as a global storage for the app's dependencies.
+  methods: Delete, Get, GetBool, GetComplex128, GetComplex64, GetFloat32
+
+standardClientTransport (client/transport.go:42-42)
+  standardClientTransport adapts fasthttp.Client to the httpClientTransport interface used by Fiber's client helpers.
+  methods: Client, CloseIdleConnections, Do, DoDeadline, DoRedirects, DoTimeout
+
+hostClientTransport (client/transport.go:96-96)
+  hostClientTransport adapts fasthttp.HostClient to the httpClientTransport interface used by Fiber's client helpers.
+  methods: Client, CloseIdleConnections, Do, DoDeadline, DoRedirects, DoTimeout
+
+lbClientTransport (client/transport.go:150-150)
+  lbClientTransport adapts fasthttp.LBClient to the httpClientTransport interface used by Fiber's client helpers.
+  methods: Client, CloseIdleConnections, Do, DoDeadline, DoRedirects, DoTimeout
+
+App.serverErrorHandler (app.go:1411-1411)
+  serverErrorHandler is a wrapper around the application's error handler method user for the fasthttp server configuration
+  sig: App.serverErrorHandler(fctx *fasthttp.RequestCtx, err error)
+  behavior: UNWIND(defer); DISPATCH(switch)
+  calls: Error, NewError
+
+DefaultRes.Attachment (res.go:207-207)
+  Attachment sets the HTTP response Content-Disposition header field to attachment.
+  sig: DefaultRes.Attachment(filename ...string)
+  calls: Type, fallbackFilenameIfInvalid, sanitizeFilename
+
+DefaultRes.SendStatus (res.go:979-979)
+  SendStatus sets the HTTP status code and if the response body is empty, it sets the correct status message in the body.
+  sig: DefaultRes.SendStatus(status int)
+  behavior: PRECEDENCE(if_chain)
+  calls: Status, statusDisallowsBody
+
+HeaderBinding (binder/header.go:9-9)
+  HeaderBinding is the binder implementation used to populate values from HTTP headers.
+  methods: Bind, Reset
+
+Do (middleware/proxy/proxy.go:146-146)
+  Do performs the given http request and fills the given http response.
+  sig: Do(c fiber.Ctx, addr string, clients ...*fasthttp.Client)
+  called_by: DomainForward, Forward
+
+DefaultCtx.GetRespHeader (ctx.go:222-222)
+  GetRespHeader returns the HTTP response header specified by field.
+  sig: DefaultCtx.GetRespHeader(key string, defaultValue ...string)
+  calls: Get
+  called_by: RequestID
+
+Ctx (ctx_interface_gen.go:18-18)
+  Ctx represents the Context which hold the HTTP request and response.
+
+ResFmt (res.go:121-121)
+  ResFmt associates a Content Type to a fiber.Handler for c.Format
+
+sendFileStore (res.go:66-66)
+  sendFileStore is used to keep the SendFile configuration and the handler.
+  methods: configEqual
+
+App.All (app.go:961-961)
+  All will register the handler on all HTTP methods
+  sig: App.All(path string, handler any, handlers ...any)
+  calls: Add
+
+App.Group (app.go:969-969)
+  Group is used for Routes with common prefix to define a new sub-router with optional middleware.
+  sig: App.Group(prefix string, handlers ...any)
+
+App.MountPath (mount.go:103-104)
+  MountPath returns the route pattern where the current app instance was mounted as a sub-application.
+
+App.Test (app.go:1199-1199)
+  Test is used for internal debugging by passing a *http.Request.
+  sig: App.Test(req *http.Request, config ...TestConfig)
+  behavior: GUARD(err); PRECEDENCE(if_chain); ACCUMULATE(loop)
+
+App.appendSubAppLists (mount.go:139-139)
+  appendSubAppLists supports nested for sub apps
+  sig: App.appendSubAppLists(appList map[string]*App, parent ...string)
+  behavior: ACCUMULATE(loop)
+  called_by: mountStartupProcess
 
 App.hasMountedApps (mount.go:108-109)
   hasMountedApps Checks if there are any mounted apps in the current application.
@@ -156,195 +236,75 @@ App.hasMountedApps (mount.go:108-109)
 
 App.processSubAppsRoutes (mount.go:168-169)
   processSubAppsRoutes adds routes of sub-apps recursively when the server is started
+  behavior: ACCUMULATE(loop)
   called_by: mountStartupProcess
 
-Error (app.go:62-63)
-  Error represents an error that occurred while handling a request.
-  methods: Error
-  called_by: serverErrorHandler
+ConvertRequest (middleware/adaptor/adaptor.go:89-89)
+  ConvertRequest converts a fiber.Ctx to a http.Request.
+  sig: ConvertRequest(c fiber.Ctx, forServer bool)
 
-BindError (bind.go:59-59)
-  BindError wraps a binding failure with the source and field that failed.
-  methods: Error, Unwrap
+DefaultCtx.GetRespHeaders (ctx.go:229-229)
+  GetRespHeaders returns the HTTP response headers.
+  calls: GetHeaders
 
-Response (client/response.go:19-19)
-  Response represents the result of a request.
-  methods: Body, BodyStream, CBOR, Close, Cookies, Header
+DefaultCtx.Status (ctx.go:563-563)
+  Status sets the HTTP status for the response.
+  sig: DefaultCtx.Status(status int)
 
-httpClientTransport (client/transport.go:26-26)
-  httpClientTransport unifies the operations exposed by the Fiber client across the fasthttp.Client, fasthttp.HostClient, 
+DefaultRes.Append (res.go:140-140)
+  Append the specified value to the HTTP response header field.
+  sig: DefaultRes.Append(field string, values ...string)
+  behavior: ACCUMULATE(loop)
+  called_by: Vary
 
-responseCacheControl (middleware/cache/cache.go:1049-1049)
-  type responseCacheControl
+DefaultRes.GetHeaders (res.go:483-483)
+  GetHeaders (a.k.a GetRespHeaders) returns the HTTP response headers.
+  behavior: ACCUMULATE(loop)
 
-Handler (middleware/csrf/csrf.go:33-33)
-  Handler for CSRF middleware
-  methods: DeleteToken
-  called_by: DeleteToken
+DefaultRes.Links (res.go:603-603)
+  Links joins the links followed by the property to populate the response's Link HTTP header field.
+  sig: DefaultRes.Links(link ...string)
+  behavior: ACCUMULATE(loop)
 
-healthResponse (middleware/healthcheck/healthcheck.go:8-8)
-  healthResponse represents the JSON/XML/MsgPack/CBOR response structure.
+DefaultRes.Location (res.go:624-624)
+  Location sets the response Location HTTP header to the specified path parameter.
+  sig: DefaultRes.Location(path string)
+  calls: setCanonical
 
-response (middleware/idempotency/response.go:9-9)
-  response is a struct that represents the response of a request.
+DefaultRes.Send (res.go:762-762)
+  Send sets the HTTP response body without copying it.
+  sig: DefaultRes.Send(body []byte)
 
-Handler (middleware/limiter/limiter.go:18-18)
-  Handler defines a rate-limiting strategy that can produce a middleware handler using the provided configuration.
+DefaultRes.SendString (res.go:997-997)
+  SendString sets the HTTP response body for string types.
+  sig: DefaultRes.SendString(body string)
 
-mountFields (mount.go:16-17)
-  Put fields related to mounting.
+DefaultRes.Set (res.go:1022-1022)
+  Set sets the response's HTTP header field to the specified key, value.
+  sig: DefaultRes.Set(key, val string)
 
-adaptExpressHandler (adapter.go:52-52)
-  sig: adaptExpressHandler(handler any)
+DefaultRes.Status (res.go:1032-1032)
+  Status sets the HTTP status for the response.
+  sig: DefaultRes.Status(status int)
+  called_by: SendStatus
 
-App.Handler (app.go:1096-1096)
-  Handler returns the server handler.
-  calls: startupProcess
-  called_by: Use
+DoRedirects (middleware/proxy/proxy.go:155-155)
+  DoRedirects performs the given http request and fills the given http response, following up to maxRedirectsCount redirec
+  sig: DoRedirects(c fiber.Ctx, addr string, maxRedirectsCount int, clients...)
 
-Error.Error (app.go:1042-1042)
-  Error makes it compatible with the `error` interface.
+DomainForward (middleware/proxy/proxy.go:239-239)
+  DomainForward performs an http request based on the given domain and populates the given http response.
+  sig: DomainForward(hostname, addr string, clients ...*fasthttp.Client)
+  calls: Do
 
-NewError (app.go:1046-1046)
-  NewError creates a new Error instance with an optional message
-  sig: NewError(code int, message ...string)
-  called_by: serverErrorHandler
-
-BindError.Error (bind.go:65-65)
-  called_by: newBindError
-
-BindError.Unwrap (bind.go:72-72)
-
-extractFieldFromError (bind.go:76-76)
-  sig: extractFieldFromError(err error)
-  called_by: newBindError
-
-newBindError (bind.go:102-102)
-  sig: newBindError(source string, raw error)
-  calls: Error, extractFieldFromError
-
-Client.AddResponseHook (client/client.go:160-160)
-  AddResponseHook adds user-defined response hooks.
-  sig: Client.AddResponseHook(h ...ResponseHook)
-
-Client.ResponseHook (client/client.go:155-155)
-  ResponseHook returns the user-defined response hooks.
-
-Client.SetStreamResponseBody (client/client.go:538-538)
-  SetStreamResponseBody enables or disables response body streaming.
-  sig: Client.SetStreamResponseBody(enable bool)
-  calls: StreamResponseBody
-
-Client.StreamResponseBody (client/client.go:530-530)
-  StreamResponseBody returns the current StreamResponseBody setting.
-  called_by: SetStreamResponseBody
-
-acquireResponseChan (client/core.go:249-249)
-  acquireResponseChan returns an empty, non-closed *Response channel from the pool.
-  called_by: execFunc
-  raises: panic
-
-releaseResponseChan (client/core.go:262-262)
-  releaseResponseChan returns the *Response channel to the pool.
-  sig: releaseResponseChan(ch chan *Response)
-  called_by: execFunc
-
-parserResponseCookie (client/hooks.go:320-320)
-  parserResponseCookie parses the Set-Cookie headers from the response and stores them.
-  sig: parserResponseCookie(c *Client, resp *Response, req *Request)
-
-AcquireResponse (client/response.go:228-228)
-  AcquireResponse returns a new (pooled) Response object.
-  raises: panic
-
-ReleaseResponse (client/response.go:238-238)
-  ReleaseResponse returns the Response object to the pool.
-  sig: ReleaseResponse(resp *Response)
-  calls: Reset
-
-Response.Body (client/response.go:88-88)
-  Body returns the HTTP response body as a byte slice.
-  called_by: String
-
-Response.BodyStream (client/response.go:95-95)
-  BodyStream returns the response body as a stream reader.
-  called_by: IsStreaming
-
-Response.CBOR (client/response.go:123-123)
-  CBOR unmarshal the response body into the given interface{} using CBOR.
-  sig: Response.CBOR(v any)
-
-Response.Close (client/response.go:208-208)
-  Close releases both the Request and Response objects back to their pools.
-
-Response.Cookies (client/response.go:83-83)
-  Cookies returns all cookies set by the response.
-
-Response.Header (client/response.go:53-53)
-  Header returns the value of the specified response header field.
-  sig: Response.Header(key string)
-  calls: String
-
-Response.Headers (client/response.go:62-62)
-  Headers returns all headers in the response using an iterator.
-  calls: String
-
-Response.IsStreaming (client/response.go:104-104)
-  IsStreaming returns true if the response body is being streamed.
-  calls: BodyStream
-
-Response.JSON (client/response.go:114-114)
-  JSON unmarshal the response body into the given interface{} using JSON.
-  sig: Response.JSON(v any)
-
-Response.Protocol (client/response.go:48-48)
-  Protocol returns the HTTP protocol used for the request.
-
-Response.Reset (client/response.go:193-193)
-  Reset clears the Response object, making it ready for reuse.
-  called_by: ReleaseResponse
-
-Response.Save (client/response.go:144-144)
-  Save writes the response body to a file or io.Writer.
-  sig: Response.Save(v any)
-
-Response.Status (client/response.go:38-38)
-  Status returns the HTTP status message of the executed request.
-
-Response.StatusCode (client/response.go:43-43)
-  StatusCode returns the HTTP status code of the executed request.
-
-Response.String (client/response.go:109-109)
-  String returns the response body as a trimmed string.
-  calls: Body
-  called_by: Header, Headers
-
-Response.XML (client/response.go:132-132)
-  XML unmarshal the response body into the given interface{} using XML.
-  sig: Response.XML(v any)
-
-Response.setClient (client/response.go:28-28)
-  setClient sets the client instance in the response.
-  sig: Response.setClient(c *Client)
-
-Response.setRequest (client/response.go:33-33)
-  setRequest sets the request object in the response.
-  sig: Response.setRequest(req *Request)
-
-hostClientTransport.SetStreamResponseBody (client/transport.go:144-144)
-  sig: hostClientTransport.SetStreamResponseBody(enable bool)
-
-hostClientTransport.StreamResponseBody (client/transport.go:140-140)
-
-lbClientTransport.SetStreamResponseBody (client/transport.go:223-223)
-  sig: lbClientTransport.SetStreamResponseBody(enable bool)
-  calls: forEachHostClient, Client
-
-lbClientTransport.StreamResponseBody (client/transport.go:206-206)
+Forward (middleware/proxy/proxy.go:138-138)
+  Forward performs the given http request and fills the given http response.
+  sig: Forward(addr string, clients ...*fasthttp.Client)
+  calls: Do
 
 -- GAPS
-- Question mentions [apps, change, fiber, formatter, gets] — not found in focus or symbol index
-- Module log/fiberlog_test.go matches question but has no focus detail
-  > drill: log/fiberlog_test.go
-- Module client/response_test.go matches question but has no focus detail
-  > drill: client/response_test.go
+type: MECHANISTIC (body logic needed for full answer)
+coverage: 80 symbols in L3, 20 with behavior annotations
+drill: mount.go (~1 lines, App.mountStartupProcess)
+drill: middleware/adaptor/adaptor.go (~1 lines, FiberHandlerFunc)
+drill: middleware/adaptor/adaptor.go (~1 lines, HTTPHandler)

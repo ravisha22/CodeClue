@@ -1,13 +1,10 @@
-# Blind Evaluation Prompt
-# Run this in a SEPARATE VS Code Copilot Chat session (fresh chat, no prior context).
-
-You have THREE tasks to complete. Read carefully.
-
-=== TASK 1: ANSWER THE QUESTION ===
+# Blind Evaluation Prompt - MRLF v2.1
+# Run this in a SEPARATE session (fresh chat, no prior context).
+# Task: blind-fiber-1
 
 You are a senior software engineer. You have been given a codebase
 comprehension artifact (a "clue file") that summarises a repository's
-structure, symbols, and behavior. This is NOT the full source code — it is
+structure, symbols, and behavior. This is NOT the full source code - it is
 a compressed representation.
 
 Answer the question below using ONLY the information in the clue file.
@@ -16,7 +13,7 @@ If the clue does not contain enough information to fully answer, say what
 you CAN determine and what you CANNOT.
 
 --- CLUE FILE START ---
-=CC v2 fiber@HEAD 243mod 3893sym
+=CC v2.1 fiber@HEAD 243mod 3893sym
 ? If middleware rewrites the request path and wants Fiber to match routes again, how does the framework restart dispatch and decide whether the request becomes a normal match, a 404, or a 405?
 
 
@@ -71,8 +68,8 @@ domainRouter.registerGroup          M domain.go:336    registerGroup returns the
 domainRouter.wrapHandlers           M domain.go:278    wrapHandlers wraps every handler in the slice w...
 DefaultReq.Get                      M req.go:427    Get returns the HTTP request header specified b...
 WithStruct                          C client/request.go:24     WithStruct is implemented by types that allow d...
-DefaultCtx.String                   M ctx.go:571    String returns unique string representation of ...
 FormData.Set                        M client/request.go:893    Set sets a single form field, overriding previo...
+DefaultCtx.String                   M ctx.go:571    String returns unique string representation of ...
 Config                              C client/client.go:655    Config is used to easily set request parameters.
 Client                              C client/client.go:37     Client provides Fiber's high-level HTTP API whi...
 manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
@@ -115,273 +112,213 @@ decoderBuilder                      M binder/mapping.go:64     function decoderB
 CookieJar.SetByHost                 M client/cookiejar.go:154    SetByHost stores the given cookies for the spec...
 Request.Cookies                     M client/request.go:335    Cookies returns an iterator over all cookies.
 Request.Headers                     M client/request.go:160    Headers returns an iterator over all headers in...
-Response.String                     M client/response.go:109    String returns the response body as a trimmed s...
 standardClientTransport.Do          M client/transport.go:50     function standardClientTransport.Do
 standardClientTransport.DoDeadline  M client/transport.go:58     function standardClientTransport.DoDeadline
 standardClientTransport.DoTimeout   M client/transport.go:54     function standardClientTransport.DoTimeout
 DefaultCtx.GetHeaders               M ctx.go:207    GetHeaders returns the HTTP request headers.
 indexedHeap.removeInternal          M middleware/cache/heap.go:84     function indexedHeap.removeInternal
+cachedHeader.Msgsize                M middleware/cache/manager_msgp.go:170    Msgsize returns an upper bound estimate of the ...
   ...and 1398 more symbols
 
 -- FOCUS
-pathMatch (client/cookiejar.go:307-307)
-  pathMatch determines whether the request path matches the cookie path according to RFC 6265 section 5.1.4.
-  sig: pathMatch(reqPath, cookiePath []byte)
-  called_by: searchCookieByKeyAndPath
+Group (group.go:14-15)
+  Group represents a collection of routes that share middleware and a common path prefix.
+  methods: Add, All, Connect, Delete, Domain, Get
 
-Request.DelPathParams (client/request.go:397-397)
-  DelPathParams deletes one or more path parameters.
-  sig: Request.DelPathParams(key ...string)
-  calls: DelParams, Params
+IsFromCache (middleware/idempotency/idempotency.go:29-29)
+  IsFromCache reports whether the middleware served the response from the cache for the current request.
+  sig: IsFromCache(c fiber.Ctx)
+
+Registering.All (register.go:50-50)
+  All registers a middleware route that will match requests with the provided path which is stored in register struct.
+  sig: Registering.All(handler any, handlers ...any)
 
 Request.DisablePathNormalizing (client/request.go:614-614)
   DisablePathNormalizing reports whether path normalizing is disabled for the Request.
 
-Request.FileByPath (client/request.go:561-561)
-  FileByPath returns the file associated with the given file path.
-  sig: Request.FileByPath(path string)
+RoutePatternMatch (path.go:155-155)
+  RoutePatternMatch reports whether path matches the provided Fiber route pattern.
+  sig: RoutePatternMatch(path, pattern string, cfg ...Config)
+  behavior: PRECEDENCE(if_chain); UNWIND(defer)
 
-Request.PathParam (client/request.go:365-365)
-  PathParam returns the value of a named path parameter.
-  sig: Request.PathParam(key string)
+WasPutToCache (middleware/idempotency/idempotency.go:35-35)
+  WasPutToCache reports whether the middleware stored the response produced by the current request in the cache.
+  sig: WasPutToCache(c fiber.Ctx)
 
-Request.PathParams (client/request.go:374-374)
-  PathParams returns an iterator over all path parameters.
-  calls: All
+pathMatch (client/cookiejar.go:307-307)
+  pathMatch determines whether the request path matches the cookie path according to RFC 6265 section 5.1.4.
+  sig: pathMatch(reqPath, cookiePath []byte)
+  behavior: PRECEDENCE(if_chain)
+  called_by: searchCookieByKeyAndPath
 
-Request.ResetPathParams (client/request.go:403-403)
-  ResetPathParams deletes all path parameters.
-  calls: Reset
+core (client/core.go:48-48)
+  core stores middleware and plugin definitions and defines the request execution process.
+  methods: afterHooks, execFunc, execute, getRetryConfig, preHooks, timeout
+
+CookieJar.cookiesForRequest (client/cookiejar.go:103-103)
+  cookiesForRequest returns cookies that match the given host, path and security settings.
+  sig: CookieJar.cookiesForRequest(host string, path []byte, secure bool)
+  behavior: ACCUMULATE(loop); UNWIND(defer)
+  calls: domainMatch
+
+HTTPHandlerWithContext (middleware/adaptor/adaptor.go:65-65)
+  HTTPHandlerWithContext is like HTTPHandler, but additionally stores Fiber’s user context in the request context
+  sig: HTTPHandlerWithContext(h http.Handler)
+  calls: HTTPHandler, LocalContextFromHTTPRequest
+
+DefaultCtx.Matched (ctx.go:375-376)
+  Matched returns true if the current request path was matched by the router.
+  calls: getMatched
+  called_by: OverrideParam
+
+CustomCtx (ctx_interface.go:13-14)
+  CustomCtx extends Ctx with the additional methods required by Fiber's internals and middleware helpers.
+
+domainCheckResult (domain.go:32-33)
+  domainCheckResult caches a domain match result for a single request.
+
+App.Group (app.go:969-969)
+  Group is used for Routes with common prefix to define a new sub-router with optional middleware.
+  sig: App.Group(prefix string, handlers ...any)
+
+App.Use (app.go:860-860)
+  Use registers a middleware route that will match requests with the provided prefix (which is optional and defaults to "/
+  sig: App.Use(args ...any)
+  behavior: PRECEDENCE(if_chain); ACCUMULATE(loop); DISPATCH(switch)
+  calls: Handler
+  raises: panic
+
+App.printRoutesMessage (listen.go:516-517)
+  printRoutesMessage print all routes with method, path, name and handlers in a format of table, like this: method | path 
+  behavior: PRECEDENCE(if_chain); ACCUMULATE(loop)
+  called_by: printMessages
+
+Client.DisablePathNormalizing (client/client.go:437-437)
+  DisablePathNormalizing reports whether path normalizing is disabled for the client.
+
+ConvertRequest (middleware/adaptor/adaptor.go:89-89)
+  ConvertRequest converts a fiber.Ctx to a http.Request.
+  sig: ConvertRequest(c fiber.Ctx, forServer bool)
+
+DefaultCtx.HasHeader (req.go:239-239)
+  HasHeader reports whether the request includes a header with the given key.
+  sig: DefaultCtx.HasHeader(key string)
+
+DefaultCtx.IsMiddleware (ctx.go:380-381)
+  IsMiddleware returns true if the current request handler was registered as middleware.
+  behavior: PRECEDENCE(if_chain)
+
+DefaultCtx.Path (ctx.go:297-297)
+  Path returns the path part of the request URL.
+  sig: DefaultCtx.Path(override ...string)
+  calls: configDependentPaths
+
+FromContext (middleware/session/middleware.go:179-179)
+  FromContext returns the Middleware from the Fiber context.
+  sig: FromContext(ctx any)
+
+Group.Group (group.go:187-187)
+  Group is used for Routes with common prefix to define a new sub-router with optional middleware.
+  sig: Group.Group(prefix string, handlers ...any)
+
+Group.Use (group.go:70-70)
+  Use registers a middleware route that will match requests with the provided prefix (which is optional and defaults to "/
+  sig: Group.Use(args ...any)
+  behavior: PRECEDENCE(if_chain); ACCUMULATE(loop); DISPATCH(switch)
+  raises: panic
+
+HTTPMiddleware (middleware/adaptor/adaptor.go:162-162)
+  HTTPMiddleware wraps net/http middleware to fiber middleware
+  sig: HTTPMiddleware(mw func(http.Handler)
+  behavior: PRECEDENCE(if_chain); ACCUMULATE(loop)
+
+IsEarly (middleware/earlydata/earlydata.go:16-16)
+  IsEarly returns true if the request used early data and was accepted by the middleware.
+  sig: IsEarly(c fiber.Ctx)
+
+Middleware.initialize (middleware/session/middleware.go:111-111)
+  initialize sets up middleware for the request.
+  sig: Middleware.initialize(c fiber.Ctx, cfg *Config)
+  behavior: GUARD(err); UNWIND(defer)
+  raises: panic
+
+New (middleware/skip/skip.go:10-10)
+  New returns a middleware that calls the provided predicate for each request.
+  sig: New(handler fiber.Handler, exclude func(c fiber.Ctx)
+  behavior: PRECEDENCE(if_chain)
 
 Request.SetDisablePathNormalizing (client/request.go:619-619)
   SetDisablePathNormalizing configures the Request to disable or enable path normalizing.
   sig: Request.SetDisablePathNormalizing(disable bool)
 
-Request.SetPathParam (client/request.go:379-379)
-  SetPathParam sets a single path parameter and value, overriding any previously set value.
-  sig: Request.SetPathParam(key, val string)
-  calls: Param, SetParam
+StoreInContext (helpers.go:83-83)
+  StoreInContext stores key/value in both Fiber locals and request context.
+  sig: StoreInContext(c Ctx, key, value any)
 
-Request.SetPathParams (client/request.go:385-385)
-  SetPathParams sets multiple path parameters and values at once, overriding previously set values.
-  sig: Request.SetPathParams(m map[string]string)
-  calls: Params, SetParams
+domainRouter.Use (domain.go:350-350)
+  Use registers a middleware route that will match requests with the provided prefix (which is optional and defaults to "/
+  sig: domainRouter.Use(args ...any)
+  behavior: PRECEDENCE(if_chain); ACCUMULATE(loop); DISPATCH(switch)
+  raises: panic
 
-Request.SetPathParamsWithStruct (client/request.go:391-391)
-  SetPathParamsWithStruct sets multiple path parameters from a struct, overriding previously set values.
-  sig: Request.SetPathParamsWithStruct(v any)
-  calls: SetParamsWithStruct, WithStruct
+hasFlashCookie (redirect.go:50-50)
+  hasFlashCookie is on the request hot path and runs on every request/response cycle.
+  sig: hasFlashCookie(header *fasthttp.RequestHeader)
+  behavior: PRECEDENCE(if_chain)
 
-RoutePatternMatch (path.go:155-155)
-  RoutePatternMatch reports whether path matches the provided Fiber route pattern.
-  sig: RoutePatternMatch(path, pattern string, cfg ...Config)
-
-routeParser.getMatch (path.go:507-507)
-  getMatch parses the passed url and tries to match it against the route segments and determine the parameter positions
-  sig: routeParser.getMatch(detectionPath, path string, params *[maxParams]string, p...)
-
-Route.match (router.go:68-68)
-  sig: Route.match(detectionPath, path string, params *[maxParams]string)
-
-RouteMessage (app.go:479-480)
-  RouteMessage is some message need to be print when server starts
+isValidRequestID (middleware/requestid/requestid.go:61-61)
+  isValidRequestID reports whether the request ID contains only visible ASCII characters (0x20–0x7E) and is non-empty.
+  sig: isValidRequestID(rid string)
+  behavior: PRECEDENCE(if_chain); ACCUMULATE(loop)
+  called_by: sanitizeRequestID
 
 Request (client/request.go:46-46)
   Request contains all data related to an HTTP request.
   methods: AddFile, AddFileWithReader, AddFiles, AddFormData, AddFormDataWithMap, AddHeader
 
-requestCacheDirectives (middleware/cache/cache.go:61-61)
-  type requestCacheDirectives
-
-Middleware (middleware/session/middleware.go:13-13)
-  Middleware holds session data and configuration.
-  methods: Delete, Destroy, Fresh, Get, ID, Keys
-
-routeParser (path.go:27-27)
-  routeParser holds the path segments and param names
-  methods: analyseParameterPart, getMatch, parseRoute, reset
-
-routeSegment (path.go:40-41)
-  routeSegment holds the segment metadata
-
-Route (router.go:45-46)
-  Route is a struct that holds all metadata for each registered handler.
-  methods: match
-  called_by: RemoveRouteByName, RemoveRouteFunc
-
-adaptFiberHandler (adapter.go:32-32)
-  sig: adaptFiberHandler(handler any)
-
-toFiberHandler (adapter.go:13-13)
-  toFiberHandler converts a supported handler type to a Fiber handler.
-  sig: toFiberHandler(handler any)
-  called_by: collectHandlers
-
-App.GetRoute (app.go:809-810)
-  GetRoute Get route by name
-  sig: App.GetRoute(name string)
-
-App.GetRoutes (app.go:822-822)
-  GetRoutes Get all routes.
-  sig: App.GetRoutes(filterUseOption ...bool)
-
-App.Route (app.go:1024-1024)
-  Route is used to define routes with a common prefix inside the supplied function.
-  sig: App.Route(prefix string, fn func(router Router)
-  raises: panic
-
-App.RouteChain (app.go:1014-1014)
-  RouteChain creates a Registering instance that lets you declare a stack of handlers for the same route.
-  sig: App.RouteChain(path string)
-
-Client.AddRequestHook (client/client.go:146-146)
-  AddRequestHook adds user-defined request hooks.
-  sig: Client.AddRequestHook(h ...RequestHook)
-
-Client.DelPathParams (client/client.go:474-474)
-  DelPathParams deletes one or more path parameters and their values from the client.
-  sig: Client.DelPathParams(key ...string)
-  calls: DelParams
-
-Client.DisablePathNormalizing (client/client.go:437-437)
-  DisablePathNormalizing reports whether path normalizing is disabled for the client.
-
-Client.PathParam (client/client.go:448-448)
-  PathParam returns the value of the specified path parameter.
-  sig: Client.PathParam(key string)
-
-Client.RequestHook (client/client.go:141-141)
-  RequestHook returns the user-defined request hooks.
-
-Client.SetDisablePathNormalizing (client/client.go:442-442)
-  SetDisablePathNormalizing configures the client to disable or enable path normalizing.
-  sig: Client.SetDisablePathNormalizing(disable bool)
-
-Client.SetPathParam (client/client.go:456-456)
-  SetPathParam sets a single path parameter and its value in the client.
-  sig: Client.SetPathParam(key, val string)
-  calls: Param, SetParam
-
-Client.SetPathParams (client/client.go:462-462)
-  SetPathParams sets multiple path parameters and their values in the client.
-  sig: Client.SetPathParams(m map[string]string)
-  calls: SetParams
-
-Client.SetPathParamsWithStruct (client/client.go:468-468)
-  SetPathParamsWithStruct sets multiple path parameters and their values using a struct.
-  sig: Client.SetPathParamsWithStruct(v any)
-  calls: SetParamsWithStruct
-
-setConfigToRequest (client/client.go:672-672)
-  setConfigToRequest sets the parameters passed via Config to the Request.
-  sig: setConfigToRequest(req *Request, config ...Config)
+Client (client/client.go:37-37)
+  Client provides Fiber's high-level HTTP API while delegating transport work to fasthttp.Client, fasthttp.HostClient, or 
+  methods: AddHeader, AddHeaders, AddParam, AddParams, AddRequestHook, AddResponseHook
   called_by: Custom, Delete, Get, Head, Options, Patch, Post, Put
 
-CookieJar.cookiesForRequest (client/cookiejar.go:103-103)
-  cookiesForRequest returns cookies that match the given host, path and security settings.
-  sig: CookieJar.cookiesForRequest(host string, path []byte, secure bool)
-  calls: domainMatch
+App (app.go:69-69)
+  App denotes the Fiber application.
+  methods: Add, All, Config, Connect, Delete, Domain
 
-CookieJar.getByHostAndPath (client/cookiejar.go:60-60)
-  getByHostAndPath returns cookies stored for a specific host and path.
-  sig: CookieJar.getByHostAndPath(host, path []byte, secure bool)
-  called_by: dumpCookiesToReq
+Request.PathParam (client/request.go:365-365)
+  PathParam returns the value of a named path parameter.
+  sig: Request.PathParam(key string)
 
-domainMatch (client/cookiejar.go:327-327)
-  domainMatch reports whether host domain-matches the given cookie domain.
-  sig: domainMatch(host, domain string)
-  called_by: cookiesForRequest
+File (client/request.go:932-932)
+  File represents a file to be sent with the request.
+  methods: Reset, SetFieldName, SetName, SetPath, SetReader
+  called_by: AddFile, AddFileWithReader, Reset
 
-searchCookieByKeyAndPath (client/cookiejar.go:294-294)
-  searchCookieByKeyAndPath looks up a cookie by its key and path from the provided slice of cookies.
-  sig: searchCookieByKeyAndPath(key, path []byte, cookies []*fasthttp.Cookie)
-  calls: pathMatch
+State (state.go:21-21)
+  State is a key-value store for Fiber's app in order to be used as a global storage for the app's dependencies.
+  methods: Delete, Get, GetBool, GetComplex128, GetComplex64, GetFloat32
 
-parserRequestBody (client/hooks.go:196-196)
-  parserRequestBody serializes the request body based on its type and sets it into the RawRequest.
-  sig: parserRequestBody(c *Client, req *Request)
+Request.Reset (client/request.go:680-680)
+  Reset clears the Request object, returning it to its default state.
+  behavior: ACCUMULATE(loop)
+  calls: File, ReleaseFile
+  called_by: Reset, ReleaseFile, ReleaseRequest, ResetPathParams
 
-parserRequestBodyFile (client/hooks.go:236-236)
-  parserRequestBodyFile handles the case where the request contains files to be uploaded.
-  sig: parserRequestBodyFile(req *Request)
-
-parserRequestHeader (client/hooks.go:122-122)
-  parserRequestHeader merges client and request headers, and sets headers automatically based on the request data.
-  sig: parserRequestHeader(c *Client, req *Request)
-
-parserRequestURL (client/hooks.go:72-72)
-  parserRequestURL sets options for the hostclient and normalizes the URL.
-  sig: parserRequestURL(c *Client, req *Request)
-
-AcquireRequest (client/request.go:983-983)
-  AcquireRequest returns a new (pooled) Request object.
-  calls: Get
-  raises: panic
-
-File.SetPath (client/request.go:950-950)
-  SetPath sets the file's path.
-  sig: File.SetPath(p string)
-  called_by: SetFilePath
-
-PathParam.Add (client/request.go:829-829)
-  Add adds a path parameter key-value pair.
-  sig: PathParam.Add(key, val string)
-
-PathParam.All (client/request.go:864-864)
-  All returns an iterator over path parameter key-value pairs.
-  calls: All
+Request.AddFile (client/request.go:571-571)
+  AddFile adds a single file by its path.
+  sig: Request.AddFile(path string)
+  calls: AcquireFile, File, resetBody, SetFilePath
 
 -- GAPS
-- Question mentions [again, becomes, decide, dispatch, fiber] — not found in focus or symbol index
-- Module log/fiberlog.go matches question but has no focus detail
-  > drill: log/fiberlog.go
-- Module middleware/cors/config.go matches question but has no focus detail
-  > drill: middleware/cors/config.go
+type: MECHANISTIC (body logic needed for full answer)
+coverage: 80 symbols in L3, 19 with behavior annotations
+drill: group.go (~1 lines, Group)
+drill: middleware/idempotency/idempotency.go (~1 lines, IsFromCache)
+drill: register.go (~1 lines, Registering.All)
 
 --- CLUE FILE END ---
 
 QUESTION: If middleware rewrites the request path and wants Fiber to match routes again, how does the framework restart dispatch and decide whether the request becomes a normal match, a 404, or a 405?
 
-Provide a detailed answer covering:
-1. Which specific files and symbols are involved (cite from the clue)
-2. How the mechanism works (based on what the clue tells you)
-3. Any error handling, invariants, or safety properties visible in the clue
-4. What the clue does NOT tell you (gaps in your understanding)
-
-=== TASK 2: SCORE YOUR ANSWER ===
-
-After writing your answer above, score it against these gold facts.
-For EACH fact, state COVERED (your answer contains or can infer this) or
-MISSED (your answer does not contain this). Be strict — vague proximity
-is not coverage.
-
-FACT 1: DefaultCtx.Path with an override mutates the underlying fasthttp request URI, records the original override string, and recomputes Fiber's configuration-dependent path fields before routing continues.
-FACT 2: DefaultCtx.RestartRouting does not just call the next handler; it resets indexRoute to -1 and invokes app.next or app.nextCustom so route scanning starts from the beginning of the stack again.
-FACT 3: App.next scans the prebuilt treeStack for the current method and path hash, skips mounted routes, uses Route.match for exact, parameterized, wildcard, and prefix-use matches, and records the matched route on the context before executing its first handler.
-FACT 4: If no route for the current method matches but another method matches the same path, App.next appends to the Allow header and returns ErrMethodNotAllowed; otherwise it returns ErrNotFound.
-
-=== TASK 3: WRITE RESULTS TO FILE ===
-
-After completing Tasks 1 and 2, create or append to the file:
-`experiments/runs/blind-eval/blind-eval-results.jsonl`
-
-Write ONE JSON line (append, do not overwrite) with this exact structure:
-```json
-{"task_id": "blind-fiber-1", "model": "<your model name>", "scores": [{"fact": 1, "verdict": "COVERED_or_MISSED", "reason": "..."}, {"fact": 2, "verdict": "COVERED_or_MISSED", "reason": "..."}, {"fact": 3, "verdict": "COVERED_or_MISSED", "reason": "..."}, {"fact": 4, "verdict": "COVERED_or_MISSED", "reason": "..."}], "total_covered": <count>, "total_facts": <total>, "sufficient": <true or false>}
-```
-
-Replace each score entry with your actual COVERED/MISSED judgment.
-
-Also output the scoring block in your response for visibility:
-
-```
-=== BLIND SCORING ===
-Task: blind-fiber-1
-Model: [state which model you are]
-FACT 1: [COVERED or MISSED] - [brief justification]
-FACT 2: [COVERED or MISSED] - [brief justification]
-FACT 3: [COVERED or MISSED] - [brief justification]
-FACT 4: [COVERED or MISSED] - [brief justification]
-Score: [count of COVERED]/[total]
-Sufficient: [YES if >= 60%, NO otherwise]
-```
+Provide a detailed answer based solely on the clue file above.
+For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.

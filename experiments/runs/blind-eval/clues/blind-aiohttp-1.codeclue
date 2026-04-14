@@ -1,4 +1,4 @@
-=CC v2 aiohttp@HEAD 166mod 6741sym
+=CC v2.1 aiohttp@HEAD 166mod 6741sym
 ? If a handler reads incoming data from different body formats, what does the request object actually do for JSON, URL-encoded forms, and multipart uploads, and where are payload limits enforced?
 
 
@@ -114,202 +114,219 @@ _write_chunked_payload              M aiohttp/http_writer.py:124    Write a chun
   ...and 1859 more symbols
 
 -- FOCUS
-FormData (aiohttp/formdata.py:16-167)
-  Helper class for form body generation.
-  imports: io, urllib.parse, multidict, helpers, payload
-  calls: _gen_form_data, _gen_form_urlencoded, add_field, add_fields
-  raises: TypeError, ValueError
-  uses: MultiDict (multidict)
+read (aiohttp/multipart.py:304-322)
+  Reads body part data.
+  behavior: ACCUMULATE(loop)
+  calls: decode_iter, read_chunk
+  called_by: _read_chunk_from_length, _read_chunk_from_stream, form, json, read_chunk, text, BodyPartReader
 
-BodyPartReaderPayload (aiohttp/multipart.py:603-636)
+update_body (aiohttp/client_reqrep.py:1199-1259)
+  Update request body and close previous payload if needed.
+  sig: update_body(body)
+  calls: _update_body, close
+
+_update_body_from_data (aiohttp/client_reqrep.py:1137-1180)
+  Update request body from data.
+  sig: _update_body_from_data(body)
+  behavior: ACCUMULATE(loop); BRANCH(isinstance_body_FormData)
+  calls: body
+  called_by: _update_body, ClientRequest
+  uses: FormData (formdata)
+
+json (aiohttp/multipart.py:467-473)
+  Like read(), but assumes that body parts contains JSON data.
+  calls: get_charset, read
+
+BodyPartReader (aiohttp/multipart.py:257-599)
+  Multipart reader for single body part.
+  attrs: chunk_size=8192
+  imports: base64, binascii, uuid, warnings, types
+  calls: _apply_content_transfer_decoding, _decode_content, _decode_content_async, _decode_content_transfer, _needs_content_decoding, _read_chunk_from_length, _read_chunk_from_stream, decode_iter
+  raises: RuntimeError, StopAsyncIteration, ValueError
+  uses: ZLibDecompressor (compression_utils), CIMultiDict (multidict)
+
+MultipartReader (aiohttp/multipart.py:639-854)
+  Multipart body reader.
+  imports: base64, binascii, uuid, warnings, types
+  calls: read_chunk, readline, _get_boundary, _get_part_reader, _maybe_release_last_part, _read_boundary, _read_headers, _read_until_first_boundary
+  raises: ValueError, StopAsyncIteration, BadHttpMessage, RuntimeError
+  uses: HeadersParser (http), BadHttpMessage (http_exceptions), CIMultiDict (multidict)
+
+MultipartWriter (aiohttp/multipart.py:860-1146)
+  Multipart body writer.
   extends: Payload
   imports: base64, binascii, uuid, warnings, types
-  calls: decode_iter, read_chunk
+  calls: enable_compression, enable_encoding, write_eof, MultipartPayloadWriter, append, append_payload, close
+  raises: ValueError, RuntimeError, TypeError
+  uses: ZLibCompressor (compression_utils), CIMultiDict (multidict)
+
+append_payload (aiohttp/multipart.py:963-999)
+  Adds a new body part to multipart writer.
+  sig: append_payload(payload)
+  behavior: BRANCH(_is_form_data_self)
+  calls: append
+  called_by: append, append_form, append_json, MultipartWriter
+  raises: RuntimeError
+
+read_chunk (aiohttp/multipart.py:324-366)
+  Reads body part content chunk of the specified size.
+  sig: read_chunk(size)
+  behavior: BRANCH(_length_self)
+  calls: _read_chunk_from_length, _read_chunk_from_stream, read, readline
+  called_by: read, BodyPartReader, BodyPartReaderPayload, MultipartReader
+  raises: ValueError
+
+readline (aiohttp/multipart.py:423-450)
+  Reads body part by line by line.
+  behavior: BRANCH(_unread_self)
+  calls: append
+  called_by: read_chunk, BodyPartReader, _read_headers, _readline, MultipartReader
+
+start (aiohttp/web_protocol.py:572-709)
+  Process incoming request.
+  behavior: ACCUMULATE(loop)
+  calls: _handle_request, _make_error_handler, close, force_close, log_debug, log_exception
+  called_by: connection_made, RequestHandler
+  uses: StreamWriter (http)
+
+_update_body (aiohttp/client_reqrep.py:1182-1197)
+  Update request body after its already been set.
+  sig: _update_body(body)
+  calls: _update_body_from_data, _update_transfer_encoding
+  called_by: update_body, ClientRequest
+
+strip_auth_from_url (aiohttp/helpers.py:184-190)
+  Remove user and password from URL if present and return BasicAuth object.
+  sig: strip_auth_from_url(url)
+  calls: BasicAuth
+  called_by: proxies_from_env
+
+read (aiohttp/web_request.py:624-643)
+  Read request body if present.
+  called_by: post, text, BaseRequest
+  raises: HTTPRequestEntityTooLarge
+  uses: HTTPRequestEntityTooLarge (web_exceptions)
+
+_gen_form_data (aiohttp/formdata.py:128-161)
+  Encode a list of fields using the multipart/form-data MIME format
+  behavior: ACCUMULATE(loop)
+  called_by: __call__, FormData
   raises: TypeError
 
-MultipartPayloadWriter (aiohttp/multipart.py:1149-1204)
-  imports: base64, binascii, uuid, warnings, types
-  called_by: MultipartWriter
+multipart (aiohttp/web_request.py:673-680)
+  Return async iterator to process BODY as multipart.
+  behavior: DELEGATE(MultipartReader)
+  called_by: post, BaseRequest
+  uses: MultipartReader (multipart)
+
+form (aiohttp/multipart.py:475-493)
+  Like read(), but assumes that body parts contain form urlencoded data.
+  behavior: BRANCH(encoding)
+  calls: get_charset, read
+  raises: ValueError
+
+text (aiohttp/multipart.py:459-465)
+  Like read(), but assumes that body part contains text data.
+  calls: get_charset, read
 
 JsonBytesPayload (aiohttp/payload.py:943-963)
   JSON payload for encoders that return bytes directly.
   extends: BytesPayload
   imports: asyncio, enum, io, mimetypes, warnings
 
-JsonPayload (aiohttp/payload.py:924-940)
-  extends: BytesPayload
-  imports: asyncio, enum, io, mimetypes, warnings
-
-RequestHandler (aiohttp/web_protocol.py:119-822)
-  HTTP protocol implementation.
-  extends: BaseProtocol
-  imports: asyncio, asyncio.streams, traceback, html, http
-  calls: log, AccessLoggerWrapper, _handle_request, _make_error_handler, close, connection_lost, connection_made, finish_response
-  raises: ConnectionError
-  uses: Response (web_response), HTTPInternalServerError (web_exceptions), StreamWriter (http)
-
-RequestPayloadError (aiohttp/web_protocol.py:75-76)
-  Payload parsing error.
+LookupError (aiohttp/payload.py:50-51)
+  Raised when no payload factory is found for the given data type.
   extends: Exception
-  imports: asyncio, asyncio.streams, traceback, html, http
-
-_update_body_from_data (aiohttp/client_reqrep.py:1137-1180)
-  Update request body from data.
-  sig: _update_body_from_data(body)
-  calls: body
-  called_by: _update_body, ClientRequest
-  uses: FormData (formdata)
+  imports: asyncio, enum, io, mimetypes, warnings
+  called_by: get, PayloadRegistry
 
 _load_json_data (aiohttp/cookiejar.py:164-195)
   Load cookies from parsed JSON data.
   sig: _load_json_data(data)
+  behavior: ACCUMULATE(loop)
   called_by: load, CookieJar
   uses: Morsel (http.cookies)
 
-_gen_form_data (aiohttp/formdata.py:128-161)
-  Encode a list of fields using the multipart/form-data MIME format
-  called_by: __call__, FormData
-  raises: TypeError
+_read (aiohttp/payload.py:779-798)
+  Read a chunk of data from the text file-like object.
+  sig: _read(remaining_content_len)
 
-get_read_buffer_limits (aiohttp/streams.py:176-177)
+_read (aiohttp/payload.py:510-526)
+  Read a chunk of data from the file-like object.
+  sig: _read(remaining_content_len)
+  behavior: DELEGATE(read)
+
+_write_bytes (aiohttp/client_reqrep.py:1332-1405)
+  Write the request body to the connection stream.
+  sig: _write_bytes(writer, conn, content_length)
+  uses: ClientOSError (client_exceptions), ClientConnectionError (client_exceptions)
+
+as_bytes (aiohttp/multipart.py:1067-1092)
+  Return bytes representation of the multipart data.
+  sig: as_bytes(encoding, errors)
+  behavior: ACCUMULATE(loop)
+
+body_exists (aiohttp/web_request.py:612-614)
+  Return True if request has HTTP BODY, False otherwise.
+
+build_client_middlewares (aiohttp/client_middlewares.py:18-55)
+  Apply middlewares to request handler.
+  sig: build_client_middlewares(handler, middlewares)
+  behavior: ACCUMULATE(loop); UNWIND(reversed)
+  calls: make_wrapper
 
 can_read_body (aiohttp/web_request.py:607-609)
   Return True if request's HTTP BODY can be read, False otherwise.
+
+decode (aiohttp/multipart.py:1052-1065)
+  Return string representation of the multipart data.
+  sig: decode(encoding, errors)
+  behavior: DELEGATE(join)
 
 handle_json_data (examples/logging_middleware.py:78-84)
   Endpoint that echoes JSON data.
   sig: handle_json_data(request)
 
-WebSocketDataQueue (aiohttp/_websocket/reader_c.py:60-138)
-  WebSocketDataQueue resumes and pauses an underlying stream.
-  imports: asyncio, builtins, base_protocol, compression_utils, helpers
-  calls: _read_from_buffer, _release_waiter, set_exception
-  raises: EofStream
+handler (aiohttp/abc.py:55-56)
+  Execute matched request handler
 
-WebSocketDataQueue (aiohttp/_websocket/reader_py.py:60-138)
-  WebSocketDataQueue resumes and pauses an underlying stream.
-  imports: asyncio, builtins, base_protocol, compression_utils, helpers
-  calls: _read_from_buffer, _release_waiter, set_exception
-  raises: EofStream
+json (aiohttp/_websocket/models.py:81-85)
+  Return parsed JSON data.
+  behavior: DELEGATE(loads)
 
-_BaseRequestContextManager (aiohttp/client.py:1508-1542)
-  imports: asyncio, base64, hashlib, traceback, warnings
-  calls: __await__, send, throw
+json (aiohttp/web_request.py:654-671)
+  Return BODY as JSON.
+  calls: text
+  raises: HTTPBadRequest
+  uses: HTTPBadRequest (web_exceptions)
 
-_RequestOptions (aiohttp/client.py:176-203)
-  extends: TypedDict
-  imports: asyncio, base64, hashlib, traceback, warnings
+json (aiohttp/_websocket/models.py:70-72)
+  Return parsed JSON data.
+  behavior: DELEGATE(loads)
 
-_SessionRequestContextManager (aiohttp/client.py:1549-1578)
-  imports: asyncio, base64, hashlib, traceback, warnings
+json (aiohttp/_websocket/models.py:55-59)
+  Return parsed JSON data.
+  behavior: DELEGATE(loads)
 
-ClientPayloadError (aiohttp/client_exceptions.py:253-254)
-  Response payload error.
-  extends: ClientError
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
+must_be_empty_body (aiohttp/helpers.py:1105-1111)
+  Check if a request must return an empty body.
+  sig: must_be_empty_body(method, code)
 
-InvalidURL (aiohttp/client_exceptions.py:257-291)
-  Invalid URL.
-  extends: ClientError, ValueError
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
+next (aiohttp/multipart.py:240-247)
+  Emits next multipart reader object.
 
-InvalidUrlClientError (aiohttp/client_exceptions.py:294-295)
-  Invalid URL client error.
-  extends: InvalidURL
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
+next (aiohttp/multipart.py:705-739)
+  Emits the next multipart body part.
+  behavior: BRANCH(_at_bof_self)
+  raises: RuntimeError
 
-InvalidUrlRedirectClientError (aiohttp/client_exceptions.py:306-307)
-  Invalid URL redirect client error.
-  extends: InvalidUrlClientError, RedirectClientError
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
-
-NonHttpUrlClientError (aiohttp/client_exceptions.py:302-303)
-  Non http URL client error.
-  extends: ClientError
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
-
-NonHttpUrlRedirectClientError (aiohttp/client_exceptions.py:310-311)
-  Non http URL redirect client error.
-  extends: NonHttpUrlClientError, RedirectClientError
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
-
-ResponseHandler (aiohttp/client_proto.py:31-371)
-  Helper class to adapt between Protocol and StreamReader.
-  extends: BaseProtocol
-  imports: asyncio, base_protocol, client_exceptions, helpers, http
-  calls: __init__, _drop_timeout, _reschedule_timeout, abort, close, connection_lost, data_received, pause_reading
-  uses: ClientOSError (client_exceptions), ServerDisconnectedError (client_exceptions), ClientConnectionError (client_exceptions), ClientPayloadError (client_exceptions)
-
-_Payload (aiohttp/client_proto.py:27-28)
-  extends: ErrorableProtocol, Protocol
-  imports: asyncio, base_protocol, client_exceptions, helpers, http
-
-ClientRequest (aiohttp/client_reqrep.py:954-1434)
-  extends: ClientRequestBase
-  imports: asyncio, codecs, io, traceback, warnings
-  calls: _update_auto_headers, _update_body, _update_body_from_data, _update_content_encoding, _update_cookies, _update_expect_continue, _update_proxy, _update_transfer_encoding
-  raises: ValueError
-  uses: CIMultiDict (multidict), FormData (formdata), SimpleCookie (http.cookies)
-
-ClientRequestArgs (aiohttp/client_reqrep.py:930-951)
-  extends: TypedDict
-  imports: asyncio, codecs, io, traceback, warnings
-
-ClientRequestBase (aiohttp/client_reqrep.py:686-927)
-  An internal class for proxy requests.
-  attrs: auth=None, method='GET'
-  imports: asyncio, codecs, io, traceback, warnings
-  calls: _get_content_length, _update_auth, _update_headers, _update_host, is_ssl, __new__
-  raises: ValueError, TypeError, InvalidURL
-  uses: CIMultiDict (multidict), InvalidURL (client_exceptions), BasicAuth (helpers)
-
-RequestInfo (aiohttp/client_reqrep.py:109-124)
-  extends: _RequestInfo
-  imports: asyncio, codecs, io, traceback, warnings
-  calls: __new__
-
-_RequestInfo (aiohttp/client_reqrep.py:102-106)
-  extends: NamedTuple
-  imports: asyncio, codecs, io, traceback, warnings
-
-DecompressionBaseHandler (aiohttp/compression_utils.py:153-180)
-  extends: ABC
-  imports: asyncio, zlib, concurrent.futures, brotlicffi, compression.zstd
-
-RequestKey (aiohttp/helpers.py:894-895)
-  Keys for static typing support in Request.
-  imports: asyncio, base64, binascii, enum, inspect
-
-HttpBadRequest (aiohttp/http_exceptions.py:55-57)
-  extends: BadHttpMessage
-  attrs: code=400, message='Bad Request'
-  imports: textwrap, multidict
-
-PayloadEncodingError (aiohttp/http_exceptions.py:60-61)
-  Base class for payload errors
-  extends: BadHttpMessage
-  imports: textwrap, multidict
-
-HttpPayloadParser (aiohttp/http_parser.py:761-966)
-  imports: asyncio, string, enum, multidict, yarl
-  calls: begin_http_chunk_receiving, end_http_chunk_receiving, set_exception, DeflateBuffer
-  called_by: HttpParser
-  raises: ContentLengthError, TransferEncodingError, LineTooLong, BadHttpMessage
-
-HttpRequestParser (aiohttp/http_parser.py:573-676)
-  Read request status line.
-  imports: asyncio, string, enum, multidict, yarl
-  calls: RawRequestMessage
-  raises: BadHttpMessage, BadHttpMethod, BadStatusLine, InvalidURLError
-
-RawRequestMessage (aiohttp/http_parser.py:99-111)
-  extends: NamedTuple
-  imports: asyncio, string, enum, multidict, yarl
-  called_by: HttpRequestParser
+release (aiohttp/multipart.py:741-747)
+  Reads all the body parts to the void till the final boundary.
+  behavior: ACCUMULATE(loop)
 
 -- GAPS
-- Question mentions [actually, data, different, encoded, enforced] — not found in focus or symbol index
-- Module tests/test_web_request_handler.py matches question but has no focus detail
-  > drill: tests/test_web_request_handler.py
-- Module tests/test_websocket_data_queue.py matches question but has no focus detail
-  > drill: tests/test_websocket_data_queue.py
+type: MECHANISTIC (body logic needed for full answer)
+coverage: 80 symbols in L3, 30 with behavior annotations
+drill: aiohttp/client_reqrep.py (~65 lines, update_body)
+drill: aiohttp/multipart.py (~9 lines, json)
+drill: aiohttp/multipart.py (~338 lines, BodyPartReader)
