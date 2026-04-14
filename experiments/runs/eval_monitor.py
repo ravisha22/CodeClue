@@ -101,6 +101,16 @@ GOLD_FACT_KNOWLEDGE_TYPES: dict[str, list[str]] = {
     "blind-click-1": ["mechanistic", "mechanistic", "mechanistic", "mechanistic"],
     # click-2: all mechanistic (require precedence/conversion logic)
     "blind-click-2": ["mechanistic", "mechanistic", "mechanistic", "mechanistic"],
+    # Structural tasks (answerable from L0-L2)
+    "struct-aiohttp-1": ["structural", "structural"],
+    "struct-aiohttp-2": ["structural", "structural"],
+    "struct-fiber-1": ["structural", "structural"],
+    "struct-fiber-2": ["structural", "structural"],
+    # Relational tasks (answerable from L2-L3 structure)
+    "rel-aiohttp-1": ["relational", "relational"],
+    "rel-aiohttp-2": ["relational", "relational"],
+    "rel-fiber-1": ["relational", "relational"],
+    "rel-fiber-2": ["relational", "relational"],
 }
 
 

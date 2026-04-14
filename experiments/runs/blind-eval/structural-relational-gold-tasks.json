@@ -1,0 +1,90 @@
+[
+  {
+    "task_id": "struct-aiohttp-1",
+    "repo": "aiohttp",
+    "repo_path": "experiments/external-repos/aiohttp",
+    "knowledge_type": "structural",
+    "question": "What are the main packages and modules in the aiohttp codebase, and how is the project organized into directories?",
+    "gold_facts": [
+      "The main application code lives in an aiohttp/ package with separate modules for web serving (web_app, web_request, web_response, web_server), client functionality (client, client_reqrep, client_ws), and shared infrastructure (connector, resolver, streams).",
+      "Tests are organized in a tests/ directory that mirrors the main package structure with separate test files for client, server, and shared components."
+    ]
+  },
+  {
+    "task_id": "struct-aiohttp-2",
+    "repo": "aiohttp",
+    "repo_path": "experiments/external-repos/aiohttp",
+    "knowledge_type": "structural",
+    "question": "What modules handle HTTP request and response processing in aiohttp, and which files contain the core web application logic?",
+    "gold_facts": [
+      "HTTP request processing is handled by web_request.py which defines BaseRequest and Request classes, while response handling lives in web_response.py with Response and StreamResponse classes.",
+      "The core web application logic is in web_app.py (Application class) and web_server.py (Server class), with URL routing in web_urldispatcher.py and middleware support in web_middlewares.py."
+    ]
+  },
+  {
+    "task_id": "rel-aiohttp-1",
+    "repo": "aiohttp",
+    "repo_path": "experiments/external-repos/aiohttp",
+    "knowledge_type": "relational",
+    "question": "What is the class hierarchy for request and response objects in aiohttp, and which classes extend which base classes?",
+    "gold_facts": [
+      "Request extends BaseRequest, which provides the core request functionality. Both are defined in web_request.py.",
+      "StreamResponse is the base response class, and Response extends StreamResponse to add body handling. Both are defined in web_response.py."
+    ]
+  },
+  {
+    "task_id": "rel-aiohttp-2",
+    "repo": "aiohttp",
+    "repo_path": "experiments/external-repos/aiohttp",
+    "knowledge_type": "relational",
+    "question": "What are the main call relationships between the Application class and other components in aiohttp's web server stack?",
+    "gold_facts": [
+      "Application calls startup, shutdown, and cleanup methods which trigger signal handlers, and it creates or uses a Server object for the actual HTTP serving.",
+      "Application.startup and Application.shutdown dispatch to registered signal handlers (on_startup, on_shutdown) while cleanup handlers manage resource lifecycle through CleanupContext."
+    ]
+  },
+  {
+    "task_id": "struct-fiber-1",
+    "repo": "fiber",
+    "repo_path": "experiments/external-repos/fiber",
+    "knowledge_type": "structural",
+    "question": "What are the main source files and packages in the Fiber framework, and how is the middleware organized?",
+    "gold_facts": [
+      "The core framework code lives in the root package with app.go (App struct and routing), ctx.go (request context), router.go (route matching), and path.go (path parameter handling).",
+      "Middleware is organized under a middleware/ directory with separate subdirectories for each middleware: recover/, cors/, logger/, compress/, cache/, limiter/, and others."
+    ]
+  },
+  {
+    "task_id": "struct-fiber-2",
+    "repo": "fiber",
+    "repo_path": "experiments/external-repos/fiber",
+    "knowledge_type": "structural",
+    "question": "What modules handle request context and routing in Fiber, and where are the data types for request and response defined?",
+    "gold_facts": [
+      "Request context handling is in ctx.go which defines the Ctx interface and DefaultCtx struct, providing access to request parameters, headers, body, and response methods.",
+      "Routing logic is split between router.go (route registration and tree building) and app.go (route matching and dispatch via the App struct's route methods)."
+    ]
+  },
+  {
+    "task_id": "rel-fiber-1",
+    "repo": "fiber",
+    "repo_path": "experiments/external-repos/fiber",
+    "knowledge_type": "relational",
+    "question": "What is the relationship between the App struct, Router, and Route types in Fiber, and how do they connect?",
+    "gold_facts": [
+      "App embeds or contains routing functionality and stores registered routes. Routes are created through App's HTTP method functions (Get, Post, etc.) which create Route objects.",
+      "The Router and Group types organize routes hierarchically, with Group allowing prefixed sub-routes that are registered back onto the parent App's route table."
+    ]
+  },
+  {
+    "task_id": "rel-fiber-2",
+    "repo": "fiber",
+    "repo_path": "experiments/external-repos/fiber",
+    "knowledge_type": "relational",
+    "question": "What are the call relationships between middleware and the request handling pipeline in Fiber?",
+    "gold_facts": [
+      "Middleware functions are chained through the Ctx.Next() method, which advances to the next handler in the stack. Each middleware wraps the call to Next() with its own logic.",
+      "The App struct's handler dispatch calls middleware in registration order, and each middleware can modify the context, short-circuit by returning early, or continue by calling Next()."
+    ]
+  }
+]
