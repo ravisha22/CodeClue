@@ -1,3 +1,14 @@
+# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
+# Task: blind-aiohttp-1
+
+You are a senior software engineer. You have been given:
+1. A codebase comprehension artifact (clue file) - a compressed representation
+2. Source code snippets for key functions identified as needing deeper analysis
+
+Answer the question using the clue file AND the source snippets below.
+Do not use any external knowledge about the framework or library.
+
+--- CLUE FILE (File 1) ---
 =CC v2.1 aiohttp@HEAD 166mod 6741sym
 ? If a handler reads incoming data from different body formats, what does the request object actually do for JSON, URL-encoded forms, and multipart uploads, and where are payload limits enforced?
 
@@ -324,3 +335,258 @@ coverage: 80 symbols in L3, 25 with behavior annotations
 drill: aiohttp/client_reqrep.py (~65 lines, update_body)
 drill: aiohttp/multipart.py (~9 lines, json)
 drill: aiohttp/multipart.py (~338 lines, BodyPartReader)
+
+--- END CLUE FILE ---
+
+--- SOURCE SNIPPETS (File 2 Drill-Down) ---
+## update_body  (aiohttp/client_reqrep.py L1199-1259)
+```
+    async def update_body(self, body: Any) -> None:
+        """
+        Update request body and close previous payload if needed.
+
+        This method safely updates the request body by first closing any existing
+        payload to prevent resource leaks, then setting the new body.
+
+        IMPORTANT: Always use this method instead of setting request.body directly.
+        Direct assignment to request.body will leak resources if the previous body
+        contains file handles, streams, or other resources that need cleanup.
+
+        Args:
+            body: The new body content. Can be:
+                - bytes/bytearray: Raw binary data
+                - str: Text data (will be encoded using charset from Content-Type)
+                - FormData: Form data that will be encoded as multipart/form-data
+                - Payload: A pre-configured payload object
+                - AsyncIterable: An async iterable of bytes chunks
+                - File-like object: Will be read and sent as binary data
+                - None: Clears the body
+
+        Usage:
+            # CORRECT: Use update_body
+            await request.update_body(b"new request data")
+
+            # WRONG: Don't set body directly
+            # request.body = b"new request data"  # This will leak resources!
+
+            # Update with form data
+            form_data = FormData()
+            form_data.add_field('field', 'value')
+            await request.update_body(form_data)
+
+            # Clear body
+            await request.update_body(None)
+
+        Note:
+            This method is async because it may need to close file handles or
+            other resources associated with the previous payload. Always await
+            this method to ensure proper cleanup.
+
+        Warning:
+            Setting request.body directly is highly discouraged and can lead to:
+            - Resource leaks (unclosed file handles, streams)
+            - Memory leaks (unreleased buffers)
+            - Unexpected behavior with streaming payloads
+
+            It is not recommended to change the payload type in middleware. If the
+            body was already set (e.g., as bytes), it's best to keep the same type
+            rather than converting it (e.g., to str) as this may result in unexpected
+            behavior.
+
+        See Also:
+            - update_body_from_data: Synchronous body update without cleanup
+            - body property: Direct body access (STRONGLY DISCOURAGED)
+
+        """
+        # Close existing payload if it exists and needs closing
+        if self._body is not None:
+            await self._body.close()
+        self._update_body(body)
+```
+
+## json  (aiohttp/web_request.py L654-671)
+```
+    async def json(
+        self,
+        *,
+        loads: JSONDecoder = DEFAULT_JSON_DECODER,
+        content_type: str | None = "application/json",
+    ) -> Any:
+        """Return BODY as JSON."""
+        body = await self.text()
+        if content_type:
+            if not is_expected_content_type(self.content_type, content_type):
+                raise HTTPBadRequest(
+                    text=(
+                        "Attempt to decode JSON with "
+                        "unexpected mimetype: %s" % self.content_type
+                    )
+                )
+
+        return loads(body)
+```
+
+## BodyPartReader  (aiohttp/multipart.py L257-599)
+```
+class BodyPartReader:
+    """Multipart reader for single body part."""
+
+    chunk_size = 8192
+
+    def __init__(
+        self,
+        boundary: bytes,
+        headers: "CIMultiDictProxy[str]",
+        content: StreamReader,
+        *,
+        subtype: str = "mixed",
+        default_charset: str | None = None,
+        max_decompress_size: int = DEFAULT_MAX_DECOMPRESS_SIZE,
+    ) -> None:
+        self.headers = headers
+        self._boundary = boundary
+        self._boundary_len = len(boundary) + 2  # Boundary + \r\n
+        self._content = content
+        self._default_charset = default_charset
+        self._at_eof = False
+        self._is_form_data = subtype == "form-data"
+        # https://datatracker.ietf.org/doc/html/rfc7578#section-4.8
+        length = None if self._is_form_data else self.headers.get(CONTENT_LENGTH, None)
+        self._length = int(length) if length is not None else None
+        self._read_bytes = 0
+        self._unread: deque[bytes] = deque()
+        self._prev_chunk: bytes | None = None
+        self._content_eof = 0
+        self._cache: dict[str, Any] = {}
+        self._max_decompress_size = max_decompress_size
+
+    def __aiter__(self) -> Self:
+        return self
+
+    async def __anext__(self) -> bytes:
+        part = await self.next()
+        if part is None:
+            raise StopAsyncIteration
+        return part
+
+    async def next(self) -> bytes | None:
+        item = await self.read()
+        if not item:
+            return None
+        return item
+
+    async def read(self, *, decode: bool = False) -> bytes:
+        """Reads body part data.
+
+        decode: Decodes data following by encoding
+                method from Content-Encoding header. If it missed
+                data remains untouched
+        """
+        if self._at_eof:
+            return b""
+        data = bytearray()
+        while not self._at_eof:
+            data.extend(await self.read_chunk(self.chunk_size))
+        # https://github.com/python/mypy/issues/17537
+        if decode:  # type: ignore[unreachable]
+            decoded_data = bytearray()
+            async for d in self.decode_iter(data):
+                decoded_data.extend(d)
+            return decoded_data
+        return data
+
+    async def read_chunk(self, size: int = chunk_size) -> bytes:
+        """Reads body part content chunk of the specified size.
+
+        size: chunk size
+        """
+        if self._at_eof:
+            return b""
+        if self._length:
+            chunk = await self._read_chunk_from_length(size)
+        else:
+            chunk = await self._read_chunk_from_stream(size)
+
+        # For the case of base64 data, we must read a fragment of size with a
+        # remainder of 0 by dividing by 4 for string without symbols \n or \r
+        encoding = self.headers.get(CONTENT_TRANSFER_ENCODING)
+        if encoding and encoding.lower() == "base64":
+            stripped_chunk = b"".join(chunk.split())
+            remainder = len(stripped_chunk) % 4
+
+            while remainder != 0 and not self.at_eof():
+                over_chunk_size = 4 - remainder
+                over_chunk = b""
+
+                if self._prev_chunk:
+                    over_chunk = self._prev_chunk[:over_chunk_size]
+                    self._prev_chunk = self._prev_chunk[len(over_chunk) :]
+
+                if len(over_chunk) != over_chunk_size:
+                    over_chunk += await self._content.read(4 - len(over_chunk))
+
+                if not over_chunk:
+                    self._at_eof = True
+
+                stripped_chunk += b"".join(over_chunk.split())
+                chunk += over_chunk
+                remainder = len(stripped_chunk) % 4
+
+        self._read_bytes += len(chunk)
+        if self._read_bytes == self._length:
+            self._at_eof = True
+        if self._at_eof and await self._content.readline() != b"\r\n":
+            raise ValueError("Reader did not read all the data or it is malformed")
+        return chunk
+
+    async def _read_chunk_from_length(self, size: int) -> bytes:
+        # Reads body part content chunk of the specified size.
+        # The body part must has Content-Length header with proper value.
+        assert self._length is not None, "Content-Length required for chunked read"
+        chunk_size = min(size, self._length - self._read_bytes)
+        chunk = await self._content.read(chunk_size)
+        if self._content.at_eof():
+            self._at_eof = True
+        return chunk
+
+    async def _read_chunk_from_stream(self, size: int) -> bytes:
+        # Reads content chunk of body part with unknown length.
+        # The Content-Length header for body part is not necessary.
+        assert (
+            size >= self._boundary_len
+        ), "Chunk size must be greater or equal than boundary length + 2"
+        first_chunk = self._prev_chunk is None
+        if first_chunk:
+            # We need to re-add the CRLF that got removed from headers parsing.
+            self._prev_chunk = b"\r\n" + await self._content.read(size)
+
+        chunk = b""
+        # content.read() may return less than size, so we need to loop to ensure
+        # we have enough data to detect the boundary.
+        while len(chunk) < self._boundary_len:
+            chunk += await self._content.read(size)
+            self._content_eof += int(self._content.at_eof())
+            if self._content_eof > 2:
+                raise ValueError("Reading after EOF")
+            if self._content_eof:
+                break
+        if len(chunk) > size:
+            self._content.unread_data(chunk[size:])
+            chunk = chunk[:size]
+
+        assert self._prev_chunk is not None
+        window = self._prev_chunk + chunk
+        sub = b"\r\n" + self._boundary
+        if first_chunk:
+            idx = window.find(sub)
+        else:
+            idx = window.find(sub, max(0, len(self._prev_chunk) - len(sub)))
+        if idx >= 0:
+... (truncated)
+```
+--- END SOURCE SNIPPETS ---
+
+QUESTION: If a handler reads incoming data from different body formats, what does the request object actually do for JSON, URL-encoded forms, and multipart uploads, and where are payload limits enforced?
+
+Provide a detailed answer based on the clue file and source snippets above.
+For each claim you make, cite the specific clue entry or source snippet that supports it.

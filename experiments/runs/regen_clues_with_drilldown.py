@@ -111,11 +111,12 @@ def _parse_gaps(clue: str) -> dict:
     """
     result: dict = {"question_type": "STRUCTURAL", "drill_targets": []}
 
-    gaps_match = re.search(r"^-- GAPS\n(.*?)(?:\n--|$)", clue, re.MULTILINE | re.DOTALL)
-    if not gaps_match:
+    # GAPS is always the last section — grab everything after "-- GAPS\n"
+    gaps_idx = clue.find("\n-- GAPS\n")
+    if gaps_idx == -1:
         return result
 
-    gaps_text = gaps_match.group(1)
+    gaps_text = clue[gaps_idx + len("\n-- GAPS\n"):]
 
     # Extract question type
     type_match = re.search(r"type:\s*(STRUCTURAL|RELATIONAL|MECHANISTIC)", gaps_text)
@@ -370,7 +371,12 @@ def main():
                       f"total: {_token_count(prompt)} tok")
                 print(f"    drill targets: {[t['symbol'] for t in drill_targets]}")
             else:
-                stats[q_type.lower()] += 1
+                key = q_type.lower()
+                if key == "mechanistic":
+                    # MECHANISTIC but no drill targets — still count as mechanistic
+                    stats["mechanistic"] += 1
+                else:
+                    stats[key] += 1
                 prompt = PLAIN_PROMPT_TEMPLATE.format(
                     task_id=task_id,
                     clue=clue,

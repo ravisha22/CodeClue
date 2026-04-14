@@ -1,5 +1,17 @@
+# Blind Evaluation Prompt - MRLF v2.1 (Structural/Relational)
+# Task: rel-aiohttp-1
+
+You are a senior software engineer. You have been given a codebase
+comprehension artifact (a "clue file") that summarises a repository's
+structure, symbols, and behavior. This is NOT the full source code - it is
+a compressed representation.
+
+Answer the question below using ONLY the information in the clue file.
+Do not use any external knowledge about the framework or library.
+
+--- CLUE FILE START ---
 =CC v2.1 aiohttp@HEAD 166mod 6741sym
-? During application shutdown, how does the server unwind startup resources, and what happens if cleanup only partially initialized or multiple cleanup steps fail?
+? What is the class hierarchy for request and response objects in aiohttp, and which classes extend which base classes?
 
 
 -- TREE
@@ -114,93 +126,91 @@ _write_chunked_payload              M aiohttp/http_writer.py:124    Write a chun
   ...and 1859 more symbols
 
 -- FOCUS
-_cleanup_server (aiohttp/web_runner.py:337-338)
-  Run any cleanup steps after the server is shutdown.
+BaseRequest (aiohttp/web_request.py:109-823)
+  extends: HeadersMixin
+  imports: asyncio, io, socket, string, tempfile
+  calls: _etag_values, _if_match_or_none_impl, get_extra_info, multipart, read, text, FileField
+  raises: RuntimeError, ValueError, HTTPUnsupportedMediaType, HTTPBadRequest
+  uses: ETag (helpers), MultipartReader (multipart), HTTPRequestEntityTooLarge (web_exceptions), HTTPUnsupportedMediaType (web_exceptions)
 
-_cleanup_server (aiohttp/web_runner.py:452-453)
+_BaseRequestContextManager (aiohttp/client.py:1508-1542)
+  imports: asyncio, base64, hashlib, traceback, warnings
+  calls: __await__, send, throw
 
-_cleanup_server (aiohttp/web_runner.py:376-377)
+ClientResponseError (aiohttp/client_exceptions.py:59-99)
+  Base class for exceptions that occur after getting a response.
+  extends: ClientError
+  imports: asyncio, multidict, typedefs, ssl, client_reqrep
 
-shutdown (aiohttp/web_runner.py:302-303)
-  Call any shutdown hooks to help server close gracefully.
+WebSocketResponse (aiohttp/web_ws.py:78-773)
+  extends: StreamResponse
+  imports: asyncio, base64, binascii, hashlib, multidict
+  calls: WebSocketReady, __init__, _cancel_heartbeat, _cancel_pong_response_cb, _close_transport, _handle_ping_pong_exception, _handshake, _ping_task_done
+  raises: RuntimeError, HTTPBadRequest, ConnectionResetError, TypeError
+  uses: WSMessageError (http_websocket), CIMultiDict (multidict), HTTPBadRequest (web_exceptions), WebSocketReader (http)
 
-Application (aiohttp/web_app.py:71-400)
-  imports: asyncio, logging, warnings, aiosignal, frozenlist
-  calls: _add_subapp, _check_frozen, _prepare_middleware, handler, reg_handler, _reg_subapp_signals, add_routes, freeze
-  raises: TypeError, RuntimeError, ValueError
+ClientResponse (aiohttp/client_reqrep.py:184-683)
+  extends: HeadersMixin
+  imports: asyncio, codecs, io, traceback, warnings
+  calls: _cleanup_writer, _notify_content, _release_connection, _wait_released, close, get_encoding, read, release
+  raises: ClientResponseError, RuntimeError, ClientConnectionError, ContentTypeError
+  uses: ClientConnectionError (client_exceptions)
 
-TestServer (examples/token_refresh_middleware.py:121-243)
-  Test server with JWT-like token authentication.
-  imports: asyncio, hashlib, logging, secrets, http
-  calls: _process_token_refresh, generate_access_token, verify_bearer_token
-  called_by: run_test_server
+ClientRequest (aiohttp/client_reqrep.py:954-1434)
+  extends: ClientRequestBase
+  imports: asyncio, codecs, io, traceback, warnings
+  calls: _update_auto_headers, _update_body, _update_body_from_data, _update_content_encoding, _update_cookies, _update_expect_continue, _update_proxy, _update_transfer_encoding
+  raises: ValueError
+  uses: CIMultiDict (multidict), FormData (formdata), SimpleCookie (http.cookies)
 
-_on_cleanup (aiohttp/web_app.py:430-441)
-  sig: _on_cleanup(app)
-  behavior: ACCUMULATE(loop -> errors); UNWIND(reversed)
-  calls: CleanupError
-  called_by: cleanup, Application
-  raises: CleanupError
+ClientWebSocketResponse (aiohttp/client_ws.py:60-560)
+  imports: asyncio, types, client_exceptions, client_reqrep, helpers
+  calls: _cancel_heartbeat, _cancel_pong_response_cb, _handle_ping_pong_exception, _ping_task_done, _reset_heartbeat, _set_closed, _set_closing, close
+  raises: TypeError, WSMessageTypeError, StopAsyncIteration, RuntimeError
+  uses: WSMessageError (http_websocket)
 
-_cleanup_writer (aiohttp/client_reqrep.py:563-566)
-  called_by: __del__, _response_eof, close, release, ClientResponse
+BaseConnector (aiohttp/connector.py:226-793)
+  Base connector class.
+  imports: asyncio, random, socket, traceback, warnings
+  calls: _available_connections, _cleanup_closed, _get, _release_acquired, _release_waiter, _update_proxy_auth_header_and_build_proxy_req, _wait_for_available_connection, Connection
+  raises: NotImplementedError, ValueError, ClientConnectionError
+  uses: ClientRequestBase (client_reqrep)
 
-run_test_server (examples/token_refresh_middleware.py:246-258)
-  Run a test server with JWT auth endpoints.
-  calls: TestServer
-  called_by: main
+StreamResponse (aiohttp/web_response.py:74-532)
+  extends: HeadersMixin, CookieMixin
+  imports: asyncio, enum, math, warnings, concurrent.futures
+  calls: _generate_content_type_header, _prepare_headers, _set_status, _start_compression, _write_headers, drain, enable_compression, write
+  raises: RuntimeError, ValueError, TypeError
 
-CleanupContext (aiohttp/web_app.py:415-441)
-  imports: asyncio, logging, warnings, aiosignal, frozenlist
-  calls: CleanupError
-  called_by: Application
-  raises: CleanupError
+Response (aiohttp/web_response.py:535-740)
+  extends: StreamResponse
+  imports: asyncio, enum, math, warnings, concurrent.futures
+  calls: write
+  called_by: json_bytes_response, json_response
+  raises: RuntimeError, ValueError, TypeError
 
-ResourcesView (aiohttp/web_urldispatcher.py:934-945)
-  extends: Sized
-  imports: asyncio, base64, hashlib, html, inspect
-  called_by: resources, UrlDispatcher
+basicauth_from_netrc (aiohttp/helpers.py:244-270)
+  Return :py:class:`~aiohttp.BasicAuth` credentials for ``host`` from ``netrc_obj``.
+  sig: basicauth_from_netrc(netrc_obj, host)
+  calls: BasicAuth
+  called_by: proxies_from_env
+  raises: LookupError
 
-resources (aiohttp/web_urldispatcher.py:1029-1030)
-  behavior: DELEGATE(ResourcesView -> result)
-  calls: ResourcesView
-  called_by: _add_prefix_to_resources, PrefixedSubAppResource
+BaseSite (aiohttp/web_runner.py:47-78)
+  extends: ABC
+  imports: asyncio, signal, socket, yarl, http_parser
+  calls: _check_site, _reg_site, _unreg_site
+  raises: RuntimeError
 
-cleanup (aiohttp/web_runner.py:305-330)
-  behavior: ACCUMULATE(loop -> result)
-  calls: stop
-  called_by: AppRunner
+BaseProtocol (aiohttp/base_protocol.py:9-100)
+  extends: Protocol
+  imports: asyncio, client_exceptions, helpers, tcp_helpers
+  calls: pause_reading, resume_reading
+  raises: ClientConnectionResetError
 
-_add_prefix_to_resources (aiohttp/web_urldispatcher.py:717-724)
-  sig: _add_prefix_to_resources(prefix)
-  behavior: ACCUMULATE(loop -> result)
-  calls: index_resource, resources, unindex_resource
-  called_by: PrefixedSubAppResource
-
-run_test_server (examples/combined_middleware.py:238-252)
-  Run a test server with various endpoints.
-  calls: TestServer
-  called_by: main
-
-run_test_server (examples/logging_middleware.py:87-102)
-  Run a simple test server.
-  calls: TestServer
-  called_by: main
-
-run_test_server (examples/retry_middleware.py:150-164)
-  Run a simple test server.
-  calls: TestServer
-  called_by: main
-
-run_test_server (examples/basic_auth_middleware.py:119-131)
-  Run a simple test server with basic auth endpoints.
-  calls: TestServer
-  called_by: main
-
-CleanupError (aiohttp/web_app.py:403-406)
-  extends: RuntimeError
-  imports: asyncio, logging, warnings, aiosignal, frozenlist
-  called_by: _on_cleanup, CleanupContext
+AiohttpClient (aiohttp/pytest_plugin.py:31-48)
+  extends: Protocol
+  imports: asyncio, inspect, warnings, pytest, test_utils
 
 AiohttpRawServer (aiohttp/pytest_plugin.py:57-64)
   extends: Protocol
@@ -210,140 +220,109 @@ AiohttpServer (aiohttp/pytest_plugin.py:51-54)
   extends: Protocol
   imports: asyncio, inspect, warnings, pytest, test_utils
 
-AppKey (aiohttp/helpers.py:890-891)
-  Keys for static typing support in Application.
+BaseKey (aiohttp/helpers.py:837-887)
+  Base for concrete context storage key classes.
   imports: asyncio, base64, binascii, enum, inspect
-
-AppRunner (aiohttp/web_runner.py:380-453)
-  Web Application runner
-  imports: asyncio, signal, socket, yarl, http_parser
-  calls: cleanup
-  raises: TypeError
-
-HTTPInternalServerError (aiohttp/web_exceptions.py:463-464)
-  extends: HTTPServerError
-  attrs: status_code=500
-  imports: warnings, http, multidict, yarl, helpers
-
-NotAppKeyWarning (aiohttp/web_exceptions.py:75-76)
-  Warning when not using AppKey in Application.
-  extends: UserWarning
-  imports: warnings, http, multidict, yarl, helpers
-
-Server (aiohttp/web_server.py:30-126)
-  imports: asyncio, warnings, http_parser, streams, web_protocol
-  calls: shutdown
-
-ServerConnectionError (aiohttp/client_exceptions.py:212-213)
-  Server connection errors.
-  extends: ClientConnectionError
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
-
-ServerDisconnectedError (aiohttp/client_exceptions.py:216-224)
-  Server disconnected.
-  extends: ServerConnectionError
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
-
-ServerRunner (aiohttp/web_runner.py:355-377)
-  Low-level web server runner
-  imports: asyncio, signal, socket, yarl, http_parser
-
-ServerTimeoutError (aiohttp/client_exceptions.py:227-228)
-  Server timeout error.
-  extends: ServerConnectionError, TimeoutError
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
-
-TestServer (examples/basic_auth_middleware.py:59-116)
-  Test server for basic auth endpoints.
-  imports: asyncio, base64, binascii, logging, aiohttp
-  called_by: run_test_server
-
-TestServer (examples/retry_middleware.py:91-147)
-  Test server with stateful endpoints for retry testing.
-  imports: asyncio, logging, http, aiohttp
-  called_by: run_test_server
-
-TestServer (examples/logging_middleware.py:59-84)
-  Test server for logging middleware demo.
-  imports: asyncio, logging, aiohttp
-  called_by: run_test_server
-
-TestServer (examples/combined_middleware.py:159-235)
-  Test server with stateful endpoints for middleware testing.
-  imports: asyncio, base64, binascii, logging, http
-  called_by: run_test_server
-
-WSServerHandshakeError (aiohttp/client_exceptions.py:106-107)
-  websocket server handshake error.
-  extends: ClientResponseError
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
-
-_cleanup (aiohttp/connector.py:380-417)
-  Cleanup unused transports.
-
-_create_ssl_context (aiohttp/worker.py:205-220)
-  Creates SSLContext instance for usage in asyncio.create_server.
-  sig: _create_ssl_context(cfg)
-  called_by: _run, GunicornWebWorker
   raises: RuntimeError
 
-_make_server (aiohttp/web_runner.py:373-374)
+BaseRunner (aiohttp/web_runner.py:252-352)
+  extends: ABC
+  imports: asyncio, signal, socket, yarl, http_parser
+  calls: stop
+  raises: RuntimeError
 
-_make_server (aiohttp/web_runner.py:421-430)
-  behavior: DELEGATE(Server -> result)
-  uses: Server (web_server)
+BaseTimerContext (aiohttp/helpers.py:649-654)
+  imports: asyncio, base64, binascii, enum, inspect
 
-_make_server (aiohttp/web_runner.py:333-334)
-  Return a new server for the runner to serve requests.
+ClientConnectionError (aiohttp/client_exceptions.py:123-124)
+  Base class for client socket errors.
+  extends: ClientError
+  imports: asyncio, multidict, typedefs, ssl, client_reqrep
 
-_on_startup (aiohttp/web_app.py:420-428)
-  sig: _on_startup(app)
-  behavior: ACCUMULATE(loop -> exits)
+ClientError (aiohttp/client_exceptions.py:55-56)
+  Base class for client connection errors.
+  extends: Exception
+  imports: asyncio, multidict, typedefs, ssl, client_reqrep
 
-add_app (aiohttp/abc.py:84-85)
-  Add application to the nested apps stack.
-  sig: add_app(app)
+ClientRequestArgs (aiohttp/client_reqrep.py:930-951)
+  extends: TypedDict
+  imports: asyncio, codecs, io, traceback, warnings
 
-aiohttp_raw_server (aiohttp/pytest_plugin.py:325-349)
-  Factory to create a RawTestServer instance, given a web handler.
-  sig: aiohttp_raw_server(loop)
-  uses: RawTestServer (test_utils)
+DecompressionBaseHandler (aiohttp/compression_utils.py:153-180)
+  extends: ABC
+  imports: asyncio, zlib, concurrent.futures, brotlicffi, compression.zstd
 
-aiohttp_server (aiohttp/pytest_plugin.py:296-321)
-  Factory to create a TestServer instance, given an app.
-  sig: aiohttp_server(loop)
-  uses: TestServer (test_utils)
+HTTPBadRequest (aiohttp/web_exceptions.py:288-289)
+  extends: HTTPClientError
+  attrs: status_code=400
+  imports: warnings, http, multidict, yarl, helpers
 
-app (aiohttp/web_request.py:862-866)
-  Application instance.
+HTTPError (aiohttp/web_exceptions.py:172-173)
+  Base class for exceptions with status codes in the 400s and 500s.
+  extends: HTTPException
+  imports: warnings, http, multidict, yarl, helpers
 
-cleanup (aiohttp/web_app.py:351-360)
-  Causes on_cleanup signal
-  behavior: BRANCH(on_cleanup.frozen -> result, else -> result)
-  calls: _on_cleanup
+HTTPMisdirectedRequest (aiohttp/web_exceptions.py:394-395)
+  extends: HTTPClientError
+  attrs: status_code=421
+  imports: warnings, http, multidict, yarl, helpers
 
-cleanup_ctx (aiohttp/web_app.py:326-327)
+HTTPRedirection (aiohttp/web_exceptions.py:176-177)
+  Base class for exceptions with status codes in the 300s.
+  extends: HTTPException
+  imports: warnings, http, multidict, yarl, helpers
 
-close (aiohttp/payload.py:681-689)
-  Close the payload if it holds any resources.
+HTTPSuccessful (aiohttp/web_exceptions.py:180-181)
+  Base class for exceptions with status codes in the 200s.
+  extends: HTTPException
+  imports: warnings, http, multidict, yarl, helpers
 
-close (aiohttp/payload.py:325-335)
-  Close the payload if it holds any resources.
+HttpBadRequest (aiohttp/http_exceptions.py:55-57)
+  extends: BadHttpMessage
+  attrs: code=400, message='Bad Request'
+  imports: textwrap, multidict
 
-iter_chunks (aiohttp/streams.py:84-90)
-  Yield chunks of data as they are received by the server.
-  behavior: DELEGATE(ChunkTupleAsyncStreamIterator -> result)
-  calls: ChunkTupleAsyncStreamIterator
+LoggingMiddleware (examples/combined_middleware.py:38-63)
+  Middleware that logs request timing and response status.
+  imports: asyncio, base64, binascii, logging, http
+  called_by: run_tests
 
-named_resources (aiohttp/web_urldispatcher.py:1035-1036)
-  behavior: DELEGATE(MappingProxyType -> result)
-  uses: MappingProxyType (types)
+LoggingMiddleware (examples/logging_middleware.py:27-56)
+  Middleware that logs request timing and response status.
+  imports: asyncio, logging, aiohttp
+  called_by: run_tests
 
-on_cleanup (aiohttp/web_app.py:322-323)
+PayloadEncodingError (aiohttp/http_exceptions.py:60-61)
+  Base class for payload errors
+  extends: BadHttpMessage
+  imports: textwrap, multidict
+
+RawRequestMessage (aiohttp/http_parser.py:99-111)
+  extends: NamedTuple
+  imports: asyncio, string, enum, multidict, yarl
+  called_by: HttpRequestParser
+
+RawResponseMessage (aiohttp/http_parser.py:112-123)
+  extends: NamedTuple
+  imports: asyncio, string, enum, multidict, yarl
+  called_by: HttpResponseParser
+
+Request (aiohttp/web_request.py:826-884)
+  extends: BaseRequest
+  imports: asyncio, io, socket, string, tempfile
+
+RequestInfo (aiohttp/client_reqrep.py:109-124)
+  extends: _RequestInfo
+  imports: asyncio, codecs, io, traceback, warnings
+  calls: __new__
 
 -- GAPS
-type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 13 with behavior annotations
-drill: aiohttp/web_runner.py (~2 lines, _cleanup_server)
-drill: aiohttp/web_runner.py (~1 lines, _cleanup_server)
-drill: aiohttp/web_runner.py (~1 lines, _cleanup_server)
+type: RELATIONAL (answerable from L2-L3 structure)
+coverage: 80 symbols in L3, 2 with behavior annotations
+
+--- CLUE FILE END ---
+
+QUESTION: What is the class hierarchy for request and response objects in aiohttp, and which classes extend which base classes?
+
+Provide a detailed answer based solely on the clue file above.
+For each claim, cite the specific clue entry that supports it.

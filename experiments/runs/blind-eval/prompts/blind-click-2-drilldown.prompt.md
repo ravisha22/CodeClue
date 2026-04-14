@@ -1,5 +1,17 @@
+# Blind Evaluation Prompt - MRLF v2.1
+# Task: blind-click-2
+
+You are a senior software engineer. You have been given a codebase
+comprehension artifact (a "clue file") that summarises a repository's
+structure, symbols, and behavior. This is NOT the full source code - it is
+a compressed representation.
+
+Answer the question below using ONLY the information in the clue file.
+Do not use any external knowledge about the framework or library.
+
+--- CLUE FILE START ---
 =CC v2.1 click@HEAD 63mod 1620sym
-? How does Click turn decorated Python functions into a nested CLI and then dispatch the right subcommand at runtime?
+? When an option or argument value is not provided directly on the command line, how does Click decide what value to use, and what extra work do file and path types perform during conversion?
 
 
 -- TREE
@@ -110,37 +122,6 @@ get_best_encoding                   M src/click/_compat.py:48     Returns the de
   ...and 579 more symbols
 
 -- FOCUS
-_expand_args (src/click/utils.py:578-628)
-  Simulate Unix shell expansion with Python functions.
-  sig: _expand_args(args)
-  behavior: ACCUMULATE(loop)
-
-_check_nested_chain (src/click/core.py:73-90)
-  sig: _check_nested_chain(base_command, cmd_name, cmd, register)
-  behavior: GUARD(chain_base_command_isinstance); BRANCH(register)
-  called_by: CommandCollection, add_command, Group
-  raises: RuntimeError
-
-_resolve_incomplete (src/click/shell_completion.py:623-667)
-  Find the Click object that will handle the completion of the
-  sig: _resolve_incomplete(ctx, args, incomplete)
-  behavior: ACCUMULATE(loop); BRANCH(incomplete)
-  calls: _is_incomplete_argument, _is_incomplete_option, _start_of_option
-  called_by: get_completions, ShellComplete
-
-shell_complete (src/click/shell_completion.py:19-54)
-  Perform shell completion for the given CLI program.
-  sig: shell_complete(cli, ctx_args, prog_name, complete_var, instruction)
-  calls: complete, get_completion_class
-  called_by: get_completions, ShellComplete
-
-convert_type (src/click/types.py:1112-1169)
-  Find the most appropriate :class:`ParamType` for the given Python
-  sig: convert_type(ty, default)
-  calls: FuncParamType, Tuple
-  called_by: Choice, Tuple
-  raises: AssertionError
-
 Tuple (src/click/types.py:1060-1109)
   The default behavior of Click is to apply a type on a value directly.
   extends: CompositeParamType
@@ -149,20 +130,66 @@ Tuple (src/click/types.py:1060-1109)
   called_by: convert_type
   uses: BadParameter (exceptions)
 
-Abort (src/click/exceptions.py:294-295)
-  An internal signalling exception that signals Click to abort.
-  extends: RuntimeError
+MissingParameter (src/click/exceptions.py:137-205)
+  Raised if click required an option or argument but it was not
+  extends: BadParameter
+  imports: gettext, globals, utils, core
+  calls: _join_param_hints
+
+Command (src/click/core.py:873-1485)
+  Commands are the basic building block of command line interfaces in
+  attrs: allow_extra_args=False, allow_interspersed_args=True, ignore_unknown_options=False
+  imports: enum, errno, inspect, gettext, itertools
+  calls: _main_shell_completion, format_epilog, format_help, format_help_text, format_usage, get_help_option, get_help_option_names, get_params
+  raises: NoArgsIsHelpError, Abort
+  uses: Exit (exceptions), UsageError (exceptions)
+
+Path (src/click/types.py:879-1057)
+  The ``Path`` type is similar to the :class:`File` type, but
+  extends: ParamType
+  imports: enum, stat, gettext, exceptions, utils
+  calls: fail, coerce_path_result
+  uses: BadParameter (exceptions)
+
+option (src/click/decorators.py:352-377)
+  Attaches an option to the command.
+  calls: _param_memo
+  called_by: confirmation_option, help_option, password_option, version_option
+
+Option (src/click/core.py:2646-3335)
+  Options are usually optional values on the command line and
+  extends: Parameter
+  attrs: param_type_name='option'
+  imports: enum, errno, inspect, gettext, itertools
+  calls: get_help_extra, _write_opts, prompt_for_value, batch
+  raises: TypeError, ValueError
+
+open_file (src/click/utils.py:358-404)
+  Open a file, with extra behavior to handle ``'-'`` to indicate
+  sig: open_file(filename, mode, encoding, errors, lazy...)
+  calls: KeepOpenFile, LazyFile
+
+pager (src/click/_termui_impl.py:369-408)
+  Decide what method to use for paging through text.
+  sig: pager(generator, color)
+  calls: _nullpager, _pipepager, _tempfilepager
+  uses: StringIO (io)
+
+cli (examples/repo/repo.py:44-57)
+  Repo is a command line tool that showcases how to build complex
+  sig: cli(ctx, repo_home, config, verbose)
+  behavior: ACCUMULATE(loop)
+  calls: set_config, Repo
+
+BadArgumentUsage (src/click/exceptions.py:259-265)
+  Raised if an argument is generally supplied but the use of the argument
+  extends: UsageError
   imports: gettext, globals, utils, core
 
-ClickException (src/click/exceptions.py:26-53)
-  An exception that Click can handle and show to the user.
-  extends: Exception
-  attrs: exit_code=1
+BadOptionUsage (src/click/exceptions.py:242-256)
+  Raised if an option is generally supplied but the use of the option
+  extends: UsageError
   imports: gettext, globals, utils, core
-
-ComplexCLI (examples/complex/complex/cli.py:31-45)
-  extends: Group
-  imports: click
 
 FloatRange (src/click/types.py:618-658)
   Restrict a :data:`click.FLOAT` value to a range of accepted
@@ -177,51 +204,54 @@ IntRange (src/click/types.py:584-607)
   attrs: name='integer range'
   imports: enum, stat, gettext, exceptions, utils
 
-MissingParameter (src/click/exceptions.py:137-205)
-  Raised if click required an option or argument but it was not
-  extends: BadParameter
-  imports: gettext, globals, utils, core
-  calls: _join_param_hints
-
 NoSuchOption (src/click/exceptions.py:208-239)
   Raised if click attempted to handle an option that does not
   extends: UsageError
   imports: gettext, globals, utils, core
 
-cli (examples/termui/termui.py:9-11)
-  This script showcases different terminal UI helpers in Click.
+OptionHelpExtra (src/click/types.py:1205-1209)
+  extends: TypedDict
+  imports: enum, stat, gettext, exceptions, utils
 
-cli (examples/completion/completion.py:8-9)
-  calls: group
+_detect_program_name (src/click/utils.py:523-577)
+  Determine the command used to run the program, for use in help
+  sig: _detect_program_name(path, _main)
 
-command (src/click/decorators.py:168-255)
-  Creates a new :class:`Command` and uses the decorated function as
-  sig: command(name, cls)
-  behavior: UNWIND(reversed)
-  raises: TypeError
+_is_incomplete_option (src/click/shell_completion.py:537-559)
+  Determine if the given parameter is an option that needs a value.
+  sig: _is_incomplete_option(ctx, args, param)
+  behavior: ACCUMULATE(loop); UNWIND(reversed)
+  calls: _start_of_option
+  called_by: _resolve_incomplete
 
-get_current_context (src/click/globals.py:20-41)
-  Returns the current click context.
-  sig: get_current_context(silent)
-  raises: RuntimeError
+_start_of_option (src/click/shell_completion.py:528-534)
+  Check if the value looks like the start of an option.
+  sig: _start_of_option(ctx, value)
+  called_by: _is_incomplete_option, _resolve_incomplete
 
-list_commands (src/click/core.py:1784-1786)
-  Returns a list of subcommand names in the order they should appear.
-  sig: list_commands(ctx)
-  behavior: DELEGATE(sorted)
+argument (src/click/decorators.py:324-349)
+  Attaches an argument to the command.
+  calls: _param_memo
 
-make_formatter (src/click/core.py:561-573)
-  Creates the :class:`~click.HelpFormatter` for the help and
-  behavior: DELEGATE(formatter_class)
+cli (examples/complex/complex/cli.py:56-60)
+  A complex command line interface.
+  sig: cli(ctx, verbose, home)
+
+command_path (src/click/core.py:642-658)
+  The computed command path.
+  calls: get_params
+
+consume_value (src/click/core.py:3256-3318)
+  For :class:`Option`, the value can be collected from an interactive prompt
+  sig: consume_value(ctx, opts)
+  behavior: BRANCH(value_FLAG_NEEDS_VALUE)
+
+make_parser (src/click/core.py:1081-1086)
+  Creates the underlying option parser for this command.
+  sig: make_parser(ctx)
+  behavior: ACCUMULATE(loop)
+  calls: get_params
   called_by: Command
-
-Command (src/click/core.py:873-1485)
-  Commands are the basic building block of command line interfaces in
-  attrs: allow_extra_args=False, allow_interspersed_args=True, ignore_unknown_options=False
-  imports: enum, errno, inspect, gettext, itertools
-  calls: _main_shell_completion, format_epilog, format_help, format_help_text, format_usage, get_help_option, get_help_option_names, get_params
-  raises: NoArgsIsHelpError, Abort
-  uses: Exit (exceptions), UsageError (exceptions)
 
 Group (src/click/core.py:1503-1951)
   A group is a command that nests other commands (or more groups).
@@ -239,6 +269,36 @@ fail (src/click/types.py:136-143)
   raises: BadParameter
   uses: BadParameter (exceptions)
 
+handle_parse_result (src/click/core.py:2543-2607)
+  Process the value produced by the parser from user input.
+  sig: handle_parse_result(ctx, opts, args)
+  calls: set_parameter_source, augment_usage_errors
+  called_by: Command
+
+_OptionParser (src/click/parser.py:220-499)
+  The option parser is an internal class that is ultimately used to
+  imports: gettext, exceptions, core, warnings, shell_completion
+  calls: _Argument, _Option, _get_value_from_state, _match_long_opt, _match_short_opt, _process_args_for_args, _process_args_for_options, _process_opts
+  raises: NoSuchOption, BadOptionUsage
+  uses: BadOptionUsage (exceptions), NoSuchOption (exceptions)
+
+Parameter (src/click/core.py:2027-2643)
+  A parameter to a command comes in two versions: they are either
+  attrs: param_type_name='parameter'
+  imports: enum, errno, inspect, gettext, itertools
+  calls: set_parameter_source, check_iter, type_cast_value, value_is_missing, _check_iter, augment_usage_errors
+  raises: NotImplementedError, MissingParameter, ValueError, BadParameter
+  uses: BadParameter (exceptions)
+
+type_cast_value (src/click/core.py:2342-2396)
+  Convert and validate a value against the parameter's
+  sig: type_cast_value(ctx, value)
+  behavior: BRANCH(is_composite_nargs_type)
+  calls: check_iter, _check_iter
+  called_by: Context, Parameter
+  raises: BadParameter
+  uses: BadParameter (exceptions)
+
 Choice (src/click/types.py:233-398)
   The choice type allows a value to be checked against a fixed set
   extends: ParamType
@@ -247,12 +307,10 @@ Choice (src/click/types.py:233-398)
   calls: _normalized_mapping, get_invalid_choice_message, normalize_choice, fail, convert_type
   uses: BadParameter (exceptions)
 
-fail (src/click/core.py:718-724)
-  Aborts the execution of the program with a specific error
-  sig: fail(message)
-  called_by: Command, resolve_command, Group
-  raises: UsageError
-  uses: UsageError (exceptions)
+augment_usage_errors (src/click/core.py:98-113)
+  Context manager that attaches extra information to exceptions.
+  sig: augment_usage_errors(ctx, param)
+  called_by: Context, handle_parse_result, Parameter
 
 get_short_help_str (src/click/core.py:1097-1118)
   Gets short help for the command or makes it by shortening the
@@ -260,63 +318,16 @@ get_short_help_str (src/click/core.py:1097-1118)
   behavior: BRANCH(short_help_self)
   called_by: Command, format_commands, Group
 
-_complete_visible_commands (src/click/core.py:54-70)
-  List all the subcommands of a group that start with the
-  sig: _complete_visible_commands(ctx, incomplete)
-  behavior: ACCUMULATE(loop)
-  called_by: Command, Group
-
-make_context (src/click/core.py:1182-1217)
-  This function when given an info name and arguments will kick
-  sig: make_context(info_name, args, parent)
-  behavior: ACCUMULATE(loop)
-  calls: scope
-  called_by: Command, Group
-
-scope (src/click/core.py:496-531)
-  This helper method can be used with the context object to promote
-  sig: scope(cleanup)
-  called_by: make_context, Command, Group
-
-ShellComplete (src/click/shell_completion.py:200-301)
-  Base class for providing shell completion support.
-  imports: gettext, core, utils, shlex, shutil
-  calls: get_completions, source_vars, _resolve_context, _resolve_incomplete, shell_complete
-  raises: NotImplementedError
-
-get_completions (src/click/shell_completion.py:271-281)
-  Determine the context and last complete command or parameter
-  sig: get_completions(args, incomplete)
-  calls: _resolve_context, _resolve_incomplete, shell_complete
-  called_by: complete, ShellComplete
-
-FuncParamType (src/click/types.py:171-192)
-  extends: ParamType
-  imports: enum, stat, gettext, exceptions, utils
-  calls: fail
-  called_by: convert_type
-  uses: BadParameter (exceptions)
-
-format_help (src/click/core.py:1120-1135)
-  Writes the help into the formatter if it exists.
-  sig: format_help(ctx, formatter)
-  calls: format_epilog, format_help_text, format_usage
-  called_by: Command
-
-_join_param_hints (src/click/exceptions.py:19-23)
-  sig: _join_param_hints(param_hint)
-  behavior: GUARD(param_hint_isinstance_str)
-  called_by: BadParameter, MissingParameter
-
-_normalized_mapping (src/click/types.py:270-286)
-  Returns mapping where keys are the original choices and the values are
-  sig: _normalized_mapping(ctx)
-  calls: normalize_choice
-  called_by: get_invalid_choice_message, Choice
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 70 symbols in L3, 17 with behavior annotations
-drill: src/click/shell_completion.py (~26 lines, shell_complete)
-drill: src/click/types.py (~40 lines, convert_type)
+coverage: 80 symbols in L3, 13 with behavior annotations
 drill: src/click/types.py (~45 lines, Tuple)
+drill: src/click/exceptions.py (~61 lines, MissingParameter)
+drill: src/click/core.py (~606 lines, Command)
+
+--- CLUE FILE END ---
+
+QUESTION: When an option or argument value is not provided directly on the command line, how does Click decide what value to use, and what extra work do file and path types perform during conversion?
+
+Provide a detailed answer based solely on the clue file above.
+For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.

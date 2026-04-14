@@ -1,3 +1,15 @@
+# Blind Evaluation Prompt - MRLF v2.1
+# Task: blind-fiber-2
+
+You are a senior software engineer. You have been given a codebase
+comprehension artifact (a "clue file") that summarises a repository's
+structure, symbols, and behavior. This is NOT the full source code - it is
+a compressed representation.
+
+Answer the question below using ONLY the information in the clue file.
+Do not use any external knowledge about the framework or library.
+
+--- CLUE FILE START ---
 =CC v2.1 fiber@HEAD 243mod 3893sym
 ? When a handler panics in Fiber, how is that turned into an HTTP response, and how can mounted sub-apps change which error formatter gets used?
 
@@ -305,3 +317,10 @@ coverage: 80 symbols in L3, 20 with behavior annotations
 drill: client/transport.go (~1 lines, standardClientTransport)
 drill: client/transport.go (~1 lines, hostClientTransport)
 drill: client/transport.go (~1 lines, lbClientTransport)
+
+--- CLUE FILE END ---
+
+QUESTION: When a handler panics in Fiber, how is that turned into an HTTP response, and how can mounted sub-apps change which error formatter gets used?
+
+Provide a detailed answer based solely on the clue file above.
+For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.

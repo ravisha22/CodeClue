@@ -1,3 +1,15 @@
+# Blind Evaluation Prompt - MRLF v2.1
+# Task: blind-click-1
+
+You are a senior software engineer. You have been given a codebase
+comprehension artifact (a "clue file") that summarises a repository's
+structure, symbols, and behavior. This is NOT the full source code - it is
+a compressed representation.
+
+Answer the question below using ONLY the information in the clue file.
+Do not use any external knowledge about the framework or library.
+
+--- CLUE FILE START ---
 =CC v2.1 click@HEAD 63mod 1620sym
 ? How does Click turn decorated Python functions into a nested CLI and then dispatch the right subcommand at runtime?
 
@@ -320,3 +332,10 @@ coverage: 70 symbols in L3, 17 with behavior annotations
 drill: src/click/shell_completion.py (~26 lines, shell_complete)
 drill: src/click/types.py (~40 lines, convert_type)
 drill: src/click/types.py (~45 lines, Tuple)
+
+--- CLUE FILE END ---
+
+QUESTION: How does Click turn decorated Python functions into a nested CLI and then dispatch the right subcommand at runtime?
+
+Provide a detailed answer based solely on the clue file above.
+For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.

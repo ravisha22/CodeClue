@@ -1,5 +1,17 @@
+# Blind Evaluation Prompt - MRLF v2.1
+# Task: blind-fiber-1
+
+You are a senior software engineer. You have been given a codebase
+comprehension artifact (a "clue file") that summarises a repository's
+structure, symbols, and behavior. This is NOT the full source code - it is
+a compressed representation.
+
+Answer the question below using ONLY the information in the clue file.
+Do not use any external knowledge about the framework or library.
+
+--- CLUE FILE START ---
 =CC v2.1 fiber@HEAD 243mod 3893sym
-? When a handler panics in Fiber, how is that turned into an HTTP response, and how can mounted sub-apps change which error formatter gets used?
+? If middleware rewrites the request path and wants Fiber to match routes again, how does the framework restart dispatch and decide whether the request becomes a normal match, a 404, or a 405?
 
 
 -- TREE
@@ -106,202 +118,199 @@ cachedHeader.Msgsize                M middleware/cache/manager_msgp.go:170    Ms
   ...and 1398 more symbols
 
 -- FOCUS
-standardClientTransport (client/transport.go:42-42)
-  standardClientTransport adapts fasthttp.Client to the httpClientTransport interface used by Fiber's client helpers.
-  methods: Client, CloseIdleConnections, Do, DoDeadline, DoRedirects, DoTimeout
+RoutePatternMatch (path.go:155-155)
+  RoutePatternMatch reports whether path matches the provided Fiber route pattern.
+  sig: RoutePatternMatch(path, pattern string, cfg ...Config)
+  behavior: PRECEDENCE(if_chain); UNWIND(defer)
 
-hostClientTransport (client/transport.go:96-96)
-  hostClientTransport adapts fasthttp.HostClient to the httpClientTransport interface used by Fiber's client helpers.
-  methods: Client, CloseIdleConnections, Do, DoDeadline, DoRedirects, DoTimeout
+pathMatch (client/cookiejar.go:307-307)
+  pathMatch determines whether the request path matches the cookie path according to RFC 6265 section 5.1.4.
+  sig: pathMatch(reqPath, cookiePath []byte)
+  behavior: PRECEDENCE(if_chain)
+  called_by: searchCookieByKeyAndPath
 
-lbClientTransport (client/transport.go:150-150)
-  lbClientTransport adapts fasthttp.LBClient to the httpClientTransport interface used by Fiber's client helpers.
-  methods: Client, CloseIdleConnections, Do, DoDeadline, DoRedirects, DoTimeout
+Group (group.go:14-15)
+  Group represents a collection of routes that share middleware and a common path prefix.
+  methods: Add, All, Connect, Delete, Domain, Get
 
-App.mountStartupProcess (mount.go:113-114)
-  mountStartupProcess Handles the startup process of mounted apps by appending sub-app routes, generating app list keys, a
-  calls: appendSubAppLists, generateAppListKeys, hasMountedApps, processSubAppsRoutes
+CookieJar.cookiesForRequest (client/cookiejar.go:103-103)
+  cookiesForRequest returns cookies that match the given host, path and security settings.
+  sig: CookieJar.cookiesForRequest(host string, path []byte, secure bool)
+  behavior: ACCUMULATE(loop); UNWIND(defer)
+  calls: domainMatch
 
-FiberHandlerFunc (middleware/adaptor/adaptor.go:199-199)
-  FiberHandlerFunc wraps fiber handler to net/http handler func
-  sig: FiberHandlerFunc(h fiber.Handler)
-  calls: handlerFunc
-  called_by: FiberHandler
+IsFromCache (middleware/idempotency/idempotency.go:29-29)
+  IsFromCache reports whether the middleware served the response from the cache for the current request.
+  sig: IsFromCache(c fiber.Ctx)
 
-HTTPHandler (middleware/adaptor/adaptor.go:56-56)
-  HTTPHandler wraps net/http handler to fiber handler
-  sig: HTTPHandler(h http.Handler)
-  called_by: HTTPHandlerFunc, HTTPHandlerWithContext
+Registering.All (register.go:50-50)
+  All registers a middleware route that will match requests with the provided path which is stored in register struct.
+  sig: Registering.All(handler any, handlers ...any)
 
-FiberApp (middleware/adaptor/adaptor.go:204-204)
-  FiberApp wraps fiber app to net/http handler func
-  sig: FiberApp(app *fiber.App)
-  calls: handlerFunc
+Request.DisablePathNormalizing (client/request.go:614-614)
+  DisablePathNormalizing reports whether path normalizing is disabled for the Request.
 
-FiberHandler (middleware/adaptor/adaptor.go:194-194)
-  FiberHandler wraps fiber handler to net/http handler
-  sig: FiberHandler(h fiber.Handler)
-  calls: FiberHandlerFunc
+WasPutToCache (middleware/idempotency/idempotency.go:35-35)
+  WasPutToCache reports whether the middleware stored the response produced by the current request in the cache.
+  sig: WasPutToCache(c fiber.Ctx)
 
-HTTPHandlerFunc (middleware/adaptor/adaptor.go:51-51)
-  HTTPHandlerFunc wraps net/http handler func to fiber handler
-  sig: HTTPHandlerFunc(h http.HandlerFunc)
-  calls: HTTPHandler
+core (client/core.go:48-48)
+  core stores middleware and plugin definitions and defines the request execution process.
+  methods: afterHooks, execFunc, execute, getRetryConfig, preHooks, timeout
 
-defaultErrorHandler (middleware/csrf/config.go:142-142)
-  defaultErrorHandler is the default error handler that processes errors from fiber.Handler.
-  sig: defaultErrorHandler(_ fiber.Ctx, _ error)
+HTTPHandlerWithContext (middleware/adaptor/adaptor.go:65-65)
+  HTTPHandlerWithContext is like HTTPHandler, but additionally stores Fiber’s user context in the request context
+  sig: HTTPHandlerWithContext(h http.Handler)
+  calls: HTTPHandler, LocalContextFromHTTPRequest
 
-wrapHTTPHandler (adapter.go:246-246)
-  wrapHTTPHandler adapts a net/http handler to a Fiber handler.
-  sig: wrapHTTPHandler(handler http.Handler)
+DefaultCtx.Matched (ctx.go:375-376)
+  Matched returns true if the current request path was matched by the router.
+  calls: getMatched
+  called_by: OverrideParam
+
+CustomCtx (ctx_interface.go:13-14)
+  CustomCtx extends Ctx with the additional methods required by Fiber's internals and middleware helpers.
+
+domainCheckResult (domain.go:32-33)
+  domainCheckResult caches a domain match result for a single request.
+
+App.Group (app.go:969-969)
+  Group is used for Routes with common prefix to define a new sub-router with optional middleware.
+  sig: App.Group(prefix string, handlers ...any)
+
+App.Use (app.go:860-860)
+  Use registers a middleware route that will match requests with the provided prefix (which is optional and defaults to "/
+  sig: App.Use(args ...any)
+  behavior: PRECEDENCE(if_chain); ACCUMULATE(loop); DISPATCH(switch)
+  calls: Handler
+  raises: panic
+
+App.printRoutesMessage (listen.go:516-517)
+  printRoutesMessage print all routes with method, path, name and handlers in a format of table, like this: method | path 
+  behavior: PRECEDENCE(if_chain); ACCUMULATE(loop)
+  called_by: printMessages
+
+Client.DisablePathNormalizing (client/client.go:437-437)
+  DisablePathNormalizing reports whether path normalizing is disabled for the client.
+
+ConvertRequest (middleware/adaptor/adaptor.go:89-89)
+  ConvertRequest converts a fiber.Ctx to a http.Request.
+  sig: ConvertRequest(c fiber.Ctx, forServer bool)
+
+CopyContextToFiberContext (middleware/adaptor/adaptor.go:101-101)
+  CopyContextToFiberContext copies the values of context.Context to a fasthttp.RequestCtx.
+  sig: CopyContextToFiberContext(src any, requestContext *fasthttp.RequestCtx)
+  behavior: PRECEDENCE(if_chain); ACCUMULATE(loop); DISPATCH(switch)
+
+DefaultCtx.HasHeader (req.go:239-239)
+  HasHeader reports whether the request includes a header with the given key.
+  sig: DefaultCtx.HasHeader(key string)
+
+DefaultCtx.IsMiddleware (ctx.go:380-381)
+  IsMiddleware returns true if the current request handler was registered as middleware.
+  behavior: PRECEDENCE(if_chain)
+
+DefaultCtx.Path (ctx.go:297-297)
+  Path returns the path part of the request URL.
+  sig: DefaultCtx.Path(override ...string)
+  calls: configDependentPaths
+
+FromContext (middleware/session/middleware.go:179-179)
+  FromContext returns the Middleware from the Fiber context.
+  sig: FromContext(ctx any)
+
+Group.Group (group.go:187-187)
+  Group is used for Routes with common prefix to define a new sub-router with optional middleware.
+  sig: Group.Group(prefix string, handlers ...any)
+
+Group.Use (group.go:70-70)
+  Use registers a middleware route that will match requests with the provided prefix (which is optional and defaults to "/
+  sig: Group.Use(args ...any)
+  behavior: PRECEDENCE(if_chain); ACCUMULATE(loop); DISPATCH(switch)
+  raises: panic
+
+HTTPMiddleware (middleware/adaptor/adaptor.go:162-162)
+  HTTPMiddleware wraps net/http middleware to fiber middleware
+  sig: HTTPMiddleware(mw func(http.Handler)
+  behavior: PRECEDENCE(if_chain); ACCUMULATE(loop)
+
+IsEarly (middleware/earlydata/earlydata.go:16-16)
+  IsEarly returns true if the request used early data and was accepted by the middleware.
+  sig: IsEarly(c fiber.Ctx)
+
+Middleware.initialize (middleware/session/middleware.go:111-111)
+  initialize sets up middleware for the request.
+  sig: Middleware.initialize(c fiber.Ctx, cfg *Config)
+  behavior: GUARD(err); UNWIND(defer)
+  raises: panic
+
+New (middleware/skip/skip.go:10-10)
+  New returns a middleware that calls the provided predicate for each request.
+  sig: New(handler fiber.Handler, exclude func(c fiber.Ctx)
+  behavior: PRECEDENCE(if_chain)
+
+Request.SetDisablePathNormalizing (client/request.go:619-619)
+  SetDisablePathNormalizing configures the Request to disable or enable path normalizing.
+  sig: Request.SetDisablePathNormalizing(disable bool)
+
+StoreInContext (helpers.go:83-83)
+  StoreInContext stores key/value in both Fiber locals and request context.
+  sig: StoreInContext(c Ctx, key, value any)
+
+domainMatch (client/cookiejar.go:327-327)
+  domainMatch reports whether host domain-matches the given cookie domain.
+  sig: domainMatch(host, domain string)
+  called_by: cookiesForRequest
+
+domainRouter.Use (domain.go:350-350)
+  Use registers a middleware route that will match requests with the provided prefix (which is optional and defaults to "/
+  sig: domainRouter.Use(args ...any)
+  behavior: PRECEDENCE(if_chain); ACCUMULATE(loop); DISPATCH(switch)
+  raises: panic
+
+hasFlashCookie (redirect.go:50-50)
+  hasFlashCookie is on the request hot path and runs on every request/response cycle.
+  sig: hasFlashCookie(header *fasthttp.RequestHeader)
+  behavior: PRECEDENCE(if_chain)
+
+isValidRequestID (middleware/requestid/requestid.go:61-61)
+  isValidRequestID reports whether the request ID contains only visible ASCII characters (0x20–0x7E) and is non-empty.
+  sig: isValidRequestID(rid string)
+  behavior: PRECEDENCE(if_chain); ACCUMULATE(loop)
+  called_by: sanitizeRequestID
+
+paramsMatch (helpers.go:412-412)
+  paramsMatch returns whether offerParams contains all parameters present in specParams.
+  sig: paramsMatch(specParamStr headerParams, offerParams string)
+  behavior: GUARD(err); PRECEDENCE(if_chain); ACCUMULATE(loop)
+
+Request (client/request.go:46-46)
+  Request contains all data related to an HTTP request.
+  methods: AddFile, AddFileWithReader, AddFiles, AddFormData, AddFormDataWithMap, AddHeader
 
 Client (client/client.go:37-37)
   Client provides Fiber's high-level HTTP API while delegating transport work to fasthttp.Client, fasthttp.HostClient, or 
   methods: AddHeader, AddHeaders, AddParam, AddParams, AddRequestHook, AddResponseHook
   called_by: Custom, Delete, Get, Head, Options, Patch, Post, Put
 
-State (state.go:21-21)
-  State is a key-value store for Fiber's app in order to be used as a global storage for the app's dependencies.
-  methods: Delete, Get, GetBool, GetComplex128, GetComplex64, GetFloat32
+App (app.go:69-69)
+  App denotes the Fiber application.
+  methods: Add, All, Config, Connect, Delete, Domain
 
-App.serverErrorHandler (app.go:1411-1411)
-  serverErrorHandler is a wrapper around the application's error handler method user for the fasthttp server configuration
-  sig: App.serverErrorHandler(fctx *fasthttp.RequestCtx, err error)
-  behavior: UNWIND(defer); DISPATCH(switch)
-  calls: Error, NewError
-
-DefaultRes.Attachment (res.go:207-207)
-  Attachment sets the HTTP response Content-Disposition header field to attachment.
-  sig: DefaultRes.Attachment(filename ...string)
-  calls: Type, fallbackFilenameIfInvalid, sanitizeFilename
-
-DefaultRes.SendStatus (res.go:979-979)
-  SendStatus sets the HTTP status code and if the response body is empty, it sets the correct status message in the body.
-  sig: DefaultRes.SendStatus(status int)
-  behavior: PRECEDENCE(if_chain)
-  calls: Status, statusDisallowsBody
-
-HeaderBinding (binder/header.go:9-9)
-  HeaderBinding is the binder implementation used to populate values from HTTP headers.
-  methods: Bind, Reset
-
-Do (middleware/proxy/proxy.go:146-146)
-  Do performs the given http request and fills the given http response.
-  sig: Do(c fiber.Ctx, addr string, clients ...*fasthttp.Client)
-  called_by: DomainForward, Forward
-
-DefaultCtx.GetRespHeader (ctx.go:222-222)
-  GetRespHeader returns the HTTP response header specified by field.
-  sig: DefaultCtx.GetRespHeader(key string, defaultValue ...string)
-  calls: Get
-  called_by: RequestID
-
-Ctx (ctx_interface_gen.go:18-18)
-  Ctx represents the Context which hold the HTTP request and response.
-
-ResFmt (res.go:121-121)
-  ResFmt associates a Content Type to a fiber.Handler for c.Format
-
-httpClientTransport (client/transport.go:26-26)
-  httpClientTransport unifies the operations exposed by the Fiber client across the fasthttp.Client, fasthttp.HostClient, 
-
-sendFileStore (res.go:66-66)
-  sendFileStore is used to keep the SendFile configuration and the handler.
-  methods: configEqual
-
-App.All (app.go:961-961)
-  All will register the handler on all HTTP methods
-  sig: App.All(path string, handler any, handlers ...any)
-  calls: Add
-
-App.ErrorHandler (app.go:1376-1376)
-  ErrorHandler is the application's method in charge of finding the appropriate handler for the given request.
-  sig: App.ErrorHandler(ctx Ctx, err error)
-  behavior: PRECEDENCE(if_chain); ACCUMULATE(loop)
-
-App.Group (app.go:969-969)
-  Group is used for Routes with common prefix to define a new sub-router with optional middleware.
-  sig: App.Group(prefix string, handlers ...any)
-
-App.MountPath (mount.go:103-104)
-  MountPath returns the route pattern where the current app instance was mounted as a sub-application.
-
-App.Test (app.go:1199-1199)
-  Test is used for internal debugging by passing a *http.Request.
-  sig: App.Test(req *http.Request, config ...TestConfig)
-  behavior: GUARD(err); PRECEDENCE(if_chain); ACCUMULATE(loop)
-
-App.appendSubAppLists (mount.go:139-139)
-  appendSubAppLists supports nested for sub apps
-  sig: App.appendSubAppLists(appList map[string]*App, parent ...string)
-  behavior: ACCUMULATE(loop)
-  called_by: mountStartupProcess
-
-App.hasMountedApps (mount.go:108-109)
-  hasMountedApps Checks if there are any mounted apps in the current application.
-  called_by: mountStartupProcess
-
-App.processSubAppsRoutes (mount.go:168-169)
-  processSubAppsRoutes adds routes of sub-apps recursively when the server is started
-  behavior: ACCUMULATE(loop)
-  called_by: mountStartupProcess
-
-ConvertRequest (middleware/adaptor/adaptor.go:89-89)
-  ConvertRequest converts a fiber.Ctx to a http.Request.
-  sig: ConvertRequest(c fiber.Ctx, forServer bool)
-
-DefaultCtx.GetRespHeaders (ctx.go:229-229)
-  GetRespHeaders returns the HTTP response headers.
-  calls: GetHeaders
-
-DefaultCtx.Status (ctx.go:563-563)
-  Status sets the HTTP status for the response.
-  sig: DefaultCtx.Status(status int)
-
-DefaultErrorHandler (middleware/session/config.go:109-109)
-  DefaultErrorHandler logs the error and sends a 500 status code.
-  sig: DefaultErrorHandler(c fiber.Ctx, err error)
-
-DefaultErrorHandler (app.go:524-524)
-  DefaultErrorHandler that process return errors from handlers
-  sig: DefaultErrorHandler(c Ctx, err error)
-
-DefaultPanicHandler (middleware/recover/recover.go:16-16)
-  DefaultPanicHandler returns r directly if it's an error, and creates a new one with the %v verb otherwise.
-  sig: DefaultPanicHandler(_ fiber.Ctx, r any)
-
-DefaultRes.Append (res.go:140-140)
-  Append the specified value to the HTTP response header field.
-  sig: DefaultRes.Append(field string, values ...string)
-  behavior: ACCUMULATE(loop)
-  called_by: Vary
-
-DefaultRes.GetHeaders (res.go:483-483)
-  GetHeaders (a.k.a GetRespHeaders) returns the HTTP response headers.
-  behavior: ACCUMULATE(loop)
-
-DefaultRes.Links (res.go:603-603)
-  Links joins the links followed by the property to populate the response's Link HTTP header field.
-  sig: DefaultRes.Links(link ...string)
-  behavior: ACCUMULATE(loop)
-
-DefaultRes.Location (res.go:624-624)
-  Location sets the response Location HTTP header to the specified path parameter.
-  sig: DefaultRes.Location(path string)
-  calls: setCanonical
-
-DefaultRes.Send (res.go:762-762)
-  Send sets the HTTP response body without copying it.
-  sig: DefaultRes.Send(body []byte)
-
-DefaultRes.SendString (res.go:997-997)
-  SendString sets the HTTP response body for string types.
-  sig: DefaultRes.SendString(body string)
+Request.PathParam (client/request.go:365-365)
+  PathParam returns the value of a named path parameter.
+  sig: Request.PathParam(key string)
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 20 with behavior annotations
-drill: client/transport.go (~1 lines, standardClientTransport)
-drill: client/transport.go (~1 lines, hostClientTransport)
-drill: client/transport.go (~1 lines, lbClientTransport)
+coverage: 80 symbols in L3, 21 with behavior annotations
+drill: group.go (~1 lines, Group)
+drill: middleware/idempotency/idempotency.go (~1 lines, IsFromCache)
+drill: register.go (~1 lines, Registering.All)
+
+--- CLUE FILE END ---
+
+QUESTION: If middleware rewrites the request path and wants Fiber to match routes again, how does the framework restart dispatch and decide whether the request becomes a normal match, a 404, or a 405?
+
+Provide a detailed answer based solely on the clue file above.
+For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.

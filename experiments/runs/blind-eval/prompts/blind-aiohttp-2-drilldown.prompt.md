@@ -1,3 +1,14 @@
+# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
+# Task: blind-aiohttp-2
+
+You are a senior software engineer. You have been given:
+1. A codebase comprehension artifact (clue file) - a compressed representation
+2. Source code snippets for key functions identified as needing deeper analysis
+
+Answer the question using the clue file AND the source snippets below.
+Do not use any external knowledge about the framework or library.
+
+--- CLUE FILE (File 1) ---
 =CC v2.1 aiohttp@HEAD 166mod 6741sym
 ? During application shutdown, how does the server unwind startup resources, and what happens if cleanup only partially initialized or multiple cleanup steps fail?
 
@@ -347,3 +358,321 @@ coverage: 80 symbols in L3, 13 with behavior annotations
 drill: aiohttp/web_runner.py (~2 lines, _cleanup_server)
 drill: aiohttp/web_runner.py (~1 lines, _cleanup_server)
 drill: aiohttp/web_runner.py (~1 lines, _cleanup_server)
+
+--- END CLUE FILE ---
+
+--- SOURCE SNIPPETS (File 2 Drill-Down) ---
+## _cleanup_server  (aiohttp/web_runner.py L376-377)
+```
+    async def _cleanup_server(self) -> None:
+        pass
+```
+
+## __init__  (aiohttp/web_runner.py L385-412)
+```
+    def __init__(
+        self,
+        app: Application,
+        *,
+        handle_signals: bool = False,
+        access_log_class: type[AbstractAccessLogger] = AccessLogger,
+        **kwargs: Any,
+    ) -> None:
+        if not isinstance(app, Application):
+            raise TypeError(
+                f"The first argument should be web.Application instance, got {app!r}"
+            )
+        kwargs["access_log_class"] = access_log_class
+
+        if app._handler_args:
+            for k, v in app._handler_args.items():
+                kwargs[k] = v
+
+        if not issubclass(kwargs["access_log_class"], AbstractAccessLogger):
+            raise TypeError(
+                "access_log_class must be subclass of "
+                "aiohttp.abc.AbstractAccessLogger, got {}".format(
+                    kwargs["access_log_class"]
+                )
+            )
+
+        super().__init__(handle_signals=handle_signals, **kwargs)
+        self._app = app
+```
+
+## _make_request  (aiohttp/web_runner.py L432-450)
+```
+    def _make_request(
+        self,
+        message: RawRequestMessage,
+        payload: StreamReader,
+        protocol: RequestHandler[Request],
+        writer: AbstractStreamWriter,
+        task: "asyncio.Task[None]",
+        _cls: type[Request] = Request,
+    ) -> Request:
+        loop = asyncio.get_running_loop()
+        return _cls(
+            message,
+            payload,
+            protocol,
+            writer,
+            task,
+            loop,
+            client_max_size=self.app._client_max_size,
+        )
+```
+
+## _make_server  (aiohttp/web_runner.py L421-430)
+```
+    async def _make_server(self) -> Server[Request]:
+        self._app.on_startup.freeze()
+        await self._app.startup()
+        self._app.freeze()
+
+        return Server(
+            self._app._handle,
+            request_factory=self._make_request,
+            **self._kwargs,
+        )
+```
+
+## app  (aiohttp/web_runner.py L415-416)
+```
+    def app(self) -> Application:
+        return self._app
+```
+
+## shutdown  (aiohttp/web_runner.py L418-419)
+```
+    async def shutdown(self) -> None:
+        await self._app.shutdown()
+```
+
+## AppRunner  (aiohttp/web_runner.py L380-453)
+```
+class AppRunner(BaseRunner[Request]):
+    """Web Application runner"""
+
+    __slots__ = ("_app",)
+
+    def __init__(
+        self,
+        app: Application,
+        *,
+        handle_signals: bool = False,
+        access_log_class: type[AbstractAccessLogger] = AccessLogger,
+        **kwargs: Any,
+    ) -> None:
+        if not isinstance(app, Application):
+            raise TypeError(
+                f"The first argument should be web.Application instance, got {app!r}"
+            )
+        kwargs["access_log_class"] = access_log_class
+
+        if app._handler_args:
+            for k, v in app._handler_args.items():
+                kwargs[k] = v
+
+        if not issubclass(kwargs["access_log_class"], AbstractAccessLogger):
+            raise TypeError(
+                "access_log_class must be subclass of "
+                "aiohttp.abc.AbstractAccessLogger, got {}".format(
+                    kwargs["access_log_class"]
+                )
+            )
+
+        super().__init__(handle_signals=handle_signals, **kwargs)
+        self._app = app
+
+    @property
+    def app(self) -> Application:
+        return self._app
+
+    async def shutdown(self) -> None:
+        await self._app.shutdown()
+
+    async def _make_server(self) -> Server[Request]:
+        self._app.on_startup.freeze()
+        await self._app.startup()
+        self._app.freeze()
+
+        return Server(
+            self._app._handle,
+            request_factory=self._make_request,
+            **self._kwargs,
+        )
+
+    def _make_request(
+        self,
+        message: RawRequestMessage,
+        payload: StreamReader,
+        protocol: RequestHandler[Request],
+        writer: AbstractStreamWriter,
+        task: "asyncio.Task[None]",
+        _cls: type[Request] = Request,
+    ) -> Request:
+        loop = asyncio.get_running_loop()
+        return _cls(
+            message,
+            payload,
+            protocol,
+            writer,
+            task,
+            loop,
+            client_max_size=self.app._client_max_size,
+        )
+
+    async def _cleanup_server(self) -> None:
+        await self._app.cleanup()
+```
+
+## _check_site  (aiohttp/web_runner.py L345-347)
+```
+    def _check_site(self, site: BaseSite) -> None:
+        if site not in self._sites:
+            raise RuntimeError(f"Site {site} is not registered in runner {self}")
+```
+
+## _reg_site  (aiohttp/web_runner.py L340-343)
+```
+    def _reg_site(self, site: BaseSite) -> None:
+        if site in self._sites:
+            raise RuntimeError(f"Site {site} is already registered in runner {self}")
+        self._sites.append(site)
+```
+
+## _unreg_site  (aiohttp/web_runner.py L349-352)
+```
+    def _unreg_site(self, site: BaseSite) -> None:
+        if site not in self._sites:
+            raise RuntimeError(f"Site {site} is not registered in runner {self}")
+        self._sites.remove(site)
+```
+
+## addresses  (aiohttp/web_runner.py L273-282)
+```
+    def addresses(self) -> list[Any]:
+        ret: list[Any] = []
+        for site in self._sites:
+            server = site._server
+            if server is not None:
+                sockets = server.sockets
+                if sockets is not None:
+                    for sock in sockets:
+                        ret.append(sock.getsockname())
+        return ret
+```
+
+## cleanup  (aiohttp/web_runner.py L305-330)
+```
+    async def cleanup(self) -> None:
+        # The loop over sites is intentional, an exception on gather()
+        # leaves self._sites in unpredictable state.
+        # The loop guarantees that a site is either deleted on success or
+        # still present on failure
+        for site in list(self._sites):
+            await site.stop()
+
+        if self._server:  # If setup succeeded
+            # Yield to event loop to ensure incoming requests prior to stopping the sites
+            # have all started to be handled before we proceed to close idle connections.
+            await asyncio.sleep(0)
+            self._server.pre_shutdown()
+            await self.shutdown()
+            await self._server.shutdown(self._shutdown_timeout)
+        await self._cleanup_server()
+
+        self._server = None
+        if self._handle_signals:
+            loop = asyncio.get_running_loop()
+            try:
+                loop.remove_signal_handler(signal.SIGINT)
+                loop.remove_signal_handler(signal.SIGTERM)
+            except NotImplementedError:
+                # remove_signal_handler is not implemented on Windows
+                pass
+```
+
+## server  (aiohttp/web_runner.py L269-270)
+```
+    def server(self) -> Server[_Request] | None:
+        return self._server
+```
+
+## setup  (aiohttp/web_runner.py L288-299)
+```
+    async def setup(self) -> None:
+        loop = asyncio.get_event_loop()
+
+        if self._handle_signals:
+            try:
+                loop.add_signal_handler(signal.SIGINT, _raise_graceful_exit)
+                loop.add_signal_handler(signal.SIGTERM, _raise_graceful_exit)
+            except NotImplementedError:
+                # add_signal_handler is not implemented on Windows
+                pass
+
+        self._server = await self._make_server()
+```
+
+## sites  (aiohttp/web_runner.py L285-286)
+```
+    def sites(self) -> set[BaseSite]:
+        return set(self._sites)
+```
+
+## BaseRunner  (aiohttp/web_runner.py L252-352)
+```
+class BaseRunner(ABC, Generic[_Request]):
+    __slots__ = ("_handle_signals", "_kwargs", "_server", "_sites", "_shutdown_timeout")
+
+    def __init__(
+        self,
+        *,
+        handle_signals: bool = False,
+        shutdown_timeout: float = 60.0,
+        **kwargs: Any,
+    ) -> None:
+        self._handle_signals = handle_signals
+        self._kwargs = kwargs
+        self._server: Server[_Request] | None = None
+        self._sites: list[BaseSite] = []
+        self._shutdown_timeout = shutdown_timeout
+
+    @property
+    def server(self) -> Server[_Request] | None:
+        return self._server
+
+    @property
+    def addresses(self) -> list[Any]:
+        ret: list[Any] = []
+        for site in self._sites:
+            server = site._server
+            if server is not None:
+                sockets = server.sockets
+                if sockets is not None:
+                    for sock in sockets:
+                        ret.append(sock.getsockname())
+        return ret
+
+    @property
+    def sites(self) -> set[BaseSite]:
+        return set(self._sites)
+
+    async def setup(self) -> None:
+        loop = asyncio.get_event_loop()
+
+        if self._handle_signals:
+            try:
+                loop.add_signal_handler(signal.SIGINT, _raise_graceful_exit)
+                loop.add_signal_handler(signal.SIGTERM, _raise_graceful_exit)
+            except NotImplementedError:
+... (truncated)
+```
+--- END SOURCE SNIPPETS ---
+
+QUESTION: During application shutdown, how does the server unwind startup resources, and what happens if cleanup only partially initialized or multiple cleanup steps fail?
+
+Provide a detailed answer based on the clue file and source snippets above.
+For each claim you make, cite the specific clue entry or source snippet that supports it.

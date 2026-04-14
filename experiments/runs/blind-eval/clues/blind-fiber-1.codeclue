@@ -97,12 +97,12 @@ decoderBuilder                      M binder/mapping.go:64     function decoderB
 CookieJar.SetByHost                 M client/cookiejar.go:154    SetByHost stores the given cookies for the spec...
 Request.Cookies                     M client/request.go:335    Cookies returns an iterator over all cookies.
 Request.Headers                     M client/request.go:160    Headers returns an iterator over all headers in...
-Response.String                     M client/response.go:109    String returns the response body as a trimmed s...
 standardClientTransport.Do          M client/transport.go:50     function standardClientTransport.Do
 standardClientTransport.DoDeadline  M client/transport.go:58     function standardClientTransport.DoDeadline
 standardClientTransport.DoTimeout   M client/transport.go:54     function standardClientTransport.DoTimeout
 DefaultCtx.GetHeaders               M ctx.go:207    GetHeaders returns the HTTP request headers.
 indexedHeap.removeInternal          M middleware/cache/heap.go:84     function indexedHeap.removeInternal
+cachedHeader.Msgsize                M middleware/cache/manager_msgp.go:170    Msgsize returns an upper bound estimate of the ...
   ...and 1398 more symbols
 
 -- FOCUS

@@ -1,5 +1,17 @@
+# Blind Evaluation Prompt - MRLF v2.1 (Structural/Relational)
+# Task: struct-aiohttp-1
+
+You are a senior software engineer. You have been given a codebase
+comprehension artifact (a "clue file") that summarises a repository's
+structure, symbols, and behavior. This is NOT the full source code - it is
+a compressed representation.
+
+Answer the question below using ONLY the information in the clue file.
+Do not use any external knowledge about the framework or library.
+
+--- CLUE FILE START ---
 =CC v2.1 aiohttp@HEAD 166mod 6741sym
-? During application shutdown, how does the server unwind startup resources, and what happens if cleanup only partially initialized or multiple cleanup steps fail?
+? What are the main packages and modules in the aiohttp codebase, and how is the project organized into directories?
 
 
 -- TREE
@@ -114,77 +126,139 @@ _write_chunked_payload              M aiohttp/http_writer.py:124    Write a chun
   ...and 1859 more symbols
 
 -- FOCUS
-_cleanup_server (aiohttp/web_runner.py:337-338)
-  Run any cleanup steps after the server is shutdown.
+DigestAuthMiddleware (aiohttp/client_middleware_digest_auth.py:145-469)
+  HTTP digest authentication middleware for aiohttp client.
+  imports: hashlib, yarl, client_exceptions, client_middlewares, client_reqrep
+  calls: _authenticate, H, KD, _encode, _in_protection_space, escape_quotes, parse_header_pairs
+  raises: ValueError, ClientError
+  uses: URL (yarl), ClientError (client_exceptions)
 
-_cleanup_server (aiohttp/web_runner.py:452-453)
+main (examples/fake_server.py:98-117)
+  calls: start, stop, FakeFacebook, FakeResolver
+  uses: TCPConnector (aiohttp), ClientSession (aiohttp)
 
-_cleanup_server (aiohttp/web_runner.py:376-377)
+basicauth_from_netrc (aiohttp/helpers.py:244-270)
+  Return :py:class:`~aiohttp.BasicAuth` credentials for ``host`` from ``netrc_obj``.
+  sig: basicauth_from_netrc(netrc_obj, host)
+  calls: BasicAuth
+  called_by: proxies_from_env
+  raises: LookupError
 
-shutdown (aiohttp/web_runner.py:302-303)
-  Call any shutdown hooks to help server close gracefully.
+main (examples/combined_middleware.py:308-316)
+  calls: run_test_server, run_tests
 
-Application (aiohttp/web_app.py:71-400)
-  imports: asyncio, logging, warnings, aiosignal, frozenlist
-  calls: _add_subapp, _check_frozen, _prepare_middleware, handler, reg_handler, _reg_subapp_signals, add_routes, freeze
-  raises: TypeError, RuntimeError, ValueError
+main (examples/logging_middleware.py:157-166)
+  calls: run_test_server, run_tests
 
-TestServer (examples/token_refresh_middleware.py:121-243)
-  Test server with JWT-like token authentication.
-  imports: asyncio, hashlib, logging, secrets, http
-  calls: _process_token_refresh, generate_access_token, verify_bearer_token
-  called_by: run_test_server
+main (examples/basic_auth_middleware.py:179-186)
+  calls: run_test_server, run_tests
 
-_on_cleanup (aiohttp/web_app.py:430-441)
-  sig: _on_cleanup(app)
-  behavior: ACCUMULATE(loop -> errors); UNWIND(reversed)
-  calls: CleanupError
-  called_by: cleanup, Application
-  raises: CleanupError
+main (examples/token_refresh_middleware.py:326-333)
+  calls: run_test_server, run_tests
 
-_cleanup_writer (aiohttp/client_reqrep.py:563-566)
-  called_by: __del__, _response_eof, close, release, ClientResponse
+main (examples/retry_middleware.py:234-241)
+  calls: run_test_server, run_tests
 
-run_test_server (examples/token_refresh_middleware.py:246-258)
-  Run a test server with JWT auth endpoints.
-  calls: TestServer
+main (tools/bench-asyncio-write.py:97-126)
+  sig: main(loop)
+  behavior: ACCUMULATE(loop -> result)
+  calls: fm_time, bench, time
+
+AiohttpClient (aiohttp/pytest_plugin.py:31-48)
+  extends: Protocol
+  imports: asyncio, inspect, warnings, pytest, test_utils
+
+AiohttpRawServer (aiohttp/pytest_plugin.py:57-64)
+  extends: Protocol
+  imports: asyncio, inspect, warnings, pytest, test_utils
+
+AiohttpServer (aiohttp/pytest_plugin.py:51-54)
+  extends: Protocol
+  imports: asyncio, inspect, warnings, pytest, test_utils
+
+aiohttp_client_cls (aiohttp/pytest_plugin.py:353-376)
+  Client class to use in ``aiohttp_client`` factory.
+  called_by: aiohttp_client
+
+main (tools/check_changes.py:33-55)
+  sig: main(argv)
+  behavior: BRANCH(failed -> result, else -> result); ACCUMULATE(loop -> result)
+  calls: get_root
+
+main (examples/digest_auth_qop_auth.py:34-64)
+  uses: DigestAuthMiddleware (aiohttp.client_middleware_digest_auth), ClientSession (aiohttp), URL (yarl)
+
+main (aiohttp/web.py:501-565)
+  sig: main(argv)
+  behavior: BRANCH(args.path_and_args.hostname -> result, else -> result)
+  calls: run_app
+  uses: ArgumentParser (argparse)
+
+main (tools/check_sum.py:15-46)
+  sig: main(argv)
+  behavior: BRANCH(dst.exists -> result, else -> result)
+
+main (tools/cleanup_changes.py:27-41)
+  behavior: ACCUMULATE(loop -> delete)
+
+main (examples/lowlevel_srv.py:10-17)
+  sig: main(loop)
+
+proxies_from_env (aiohttp/helpers.py:273-296)
+  behavior: ACCUMULATE(loop -> result)
+  calls: ProxyInfo, basicauth_from_netrc, netrc_from_env, strip_auth_from_url
+  called_by: get_env_proxy_for_url
+  uses: URL (yarl)
+
+BasicAuth (aiohttp/helpers.py:121-181)
+  Http basic authentication helper.
+  imports: asyncio, base64, binascii, enum, inspect
+  calls: __new__, decode, encode
+  called_by: basicauth_from_netrc, strip_auth_from_url
+  raises: ValueError, TypeError
+
+run_tests (examples/combined_middleware.py:255-305)
+  Run all the middleware tests.
+  calls: BasicAuthMiddleware, LoggingMiddleware, RetryMiddleware
+  called_by: main
+  uses: ClientSession (aiohttp)
+
+FakeResolver (examples/fake_server.py:12-42)
+  extends: AbstractResolver
+  imports: asyncio, socket, ssl, aiohttp, aiohttp.abc
+  calls: close, resolve
   called_by: main
 
-CleanupContext (aiohttp/web_app.py:415-441)
-  imports: asyncio, logging, warnings, aiosignal, frozenlist
-  calls: CleanupError
-  called_by: Application
-  raises: CleanupError
+parse_header_pairs (aiohttp/client_middleware_digest_auth.py:118-142)
+  Parse key-value pairs from WWW-Authenticate or similar HTTP headers.
+  sig: parse_header_pairs(header)
+  calls: unescape_quotes
+  called_by: _authenticate, DigestAuthMiddleware
 
-ResourcesView (aiohttp/web_urldispatcher.py:934-945)
-  extends: Sized
-  imports: asyncio, base64, hashlib, html, inspect
-  called_by: resources, UrlDispatcher
-
-resources (aiohttp/web_urldispatcher.py:1029-1030)
-  behavior: DELEGATE(ResourcesView -> result)
-  calls: ResourcesView
-  called_by: _add_prefix_to_resources, PrefixedSubAppResource
-
-cleanup (aiohttp/web_runner.py:305-330)
-  behavior: ACCUMULATE(loop -> result)
-  calls: stop
-  called_by: AppRunner
-
-_add_prefix_to_resources (aiohttp/web_urldispatcher.py:717-724)
-  sig: _add_prefix_to_resources(prefix)
-  behavior: ACCUMULATE(loop -> result)
-  calls: index_resource, resources, unindex_resource
-  called_by: PrefixedSubAppResource
+strip_auth_from_url (aiohttp/helpers.py:184-190)
+  Remove user and password from URL if present and return BasicAuth object.
+  sig: strip_auth_from_url(url)
+  calls: BasicAuth
+  called_by: proxies_from_env
 
 run_test_server (examples/combined_middleware.py:238-252)
   Run a test server with various endpoints.
   calls: TestServer
   called_by: main
 
-run_test_server (examples/logging_middleware.py:87-102)
-  Run a simple test server.
-  calls: TestServer
+_encode (aiohttp/client_middleware_digest_auth.py:202-361)
+  Build digest authorization header for the current challenge.
+  sig: _encode(method, url, body)
+  behavior: BRANCH(nonce_bytes_eq_last_nonce -> result, else -> result); ACCUMULATE(loop -> pairs)
+  calls: H, KD, escape_quotes
+  called_by: __call__, DigestAuthMiddleware
+  raises: ClientError
+  uses: ClientError (client_exceptions), URL (yarl)
+
+run_app (aiohttp/web.py:426-498)
+  Run an app locally
+  sig: run_app(app)
+  calls: _cancel_tasks, _run_app
   called_by: main
 
 run_test_server (examples/retry_middleware.py:150-164)
@@ -197,153 +271,92 @@ run_test_server (examples/basic_auth_middleware.py:119-131)
   calls: TestServer
   called_by: main
 
-CleanupError (aiohttp/web_app.py:403-406)
-  extends: RuntimeError
-  imports: asyncio, logging, warnings, aiosignal, frozenlist
-  called_by: _on_cleanup, CleanupContext
+run_test_server (examples/token_refresh_middleware.py:246-258)
+  Run a test server with JWT auth endpoints.
+  calls: TestServer
+  called_by: main
 
-AiohttpRawServer (aiohttp/pytest_plugin.py:57-64)
-  extends: Protocol
-  imports: asyncio, inspect, warnings, pytest, test_utils
+run_test_server (examples/logging_middleware.py:87-102)
+  Run a simple test server.
+  calls: TestServer
+  called_by: main
 
-AiohttpServer (aiohttp/pytest_plugin.py:51-54)
-  extends: Protocol
-  imports: asyncio, inspect, warnings, pytest, test_utils
+run_tests (examples/basic_auth_middleware.py:134-176)
+  Run all basic auth middleware tests.
+  calls: BasicAuthMiddleware
+  called_by: main
+  uses: ClientSession (aiohttp)
 
-AppKey (aiohttp/helpers.py:890-891)
-  Keys for static typing support in Application.
-  imports: asyncio, base64, binascii, enum, inspect
+run_tests (examples/retry_middleware.py:167-231)
+  Run all retry middleware tests.
+  calls: RetryMiddleware
+  called_by: main
+  uses: ClientSession (aiohttp)
 
-AppRunner (aiohttp/web_runner.py:380-453)
-  Web Application runner
-  imports: asyncio, signal, socket, yarl, http_parser
-  calls: cleanup
-  raises: TypeError
+run_tests (examples/token_refresh_middleware.py:261-323)
+  Run all token refresh middleware tests.
+  calls: TokenRefreshMiddleware
+  called_by: main
+  uses: ClientSession (aiohttp)
 
-HTTPInternalServerError (aiohttp/web_exceptions.py:463-464)
-  extends: HTTPServerError
-  attrs: status_code=500
-  imports: warnings, http, multidict, yarl, helpers
+run_tests (examples/logging_middleware.py:105-154)
+  Run all the middleware tests.
+  calls: LoggingMiddleware
+  called_by: main
+  uses: ClientSession (aiohttp)
 
-NotAppKeyWarning (aiohttp/web_exceptions.py:75-76)
-  Warning when not using AppKey in Application.
-  extends: UserWarning
-  imports: warnings, http, multidict, yarl, helpers
+_authenticate (aiohttp/client_middleware_digest_auth.py:383-440)
+  Takes the given response and tries digest-auth, if needed.
+  sig: _authenticate(response)
+  behavior: BRANCH(namedexpr -> result, else -> result); ACCUMULATE(loop -> result)
+  calls: parse_header_pairs
+  called_by: __call__, DigestAuthMiddleware
+  uses: URL (yarl)
 
-Server (aiohttp/web_server.py:30-126)
-  imports: asyncio, warnings, http_parser, streams, web_protocol
-  calls: shutdown
+__call__ (aiohttp/client_middleware_digest_auth.py:442-469)
+  Run the digest auth middleware.
+  sig: __call__(request, handler)
+  behavior: ACCUMULATE(loop -> result)
+  calls: _authenticate, _encode, _in_protection_space
 
-ServerConnectionError (aiohttp/client_exceptions.py:212-213)
-  Server connection errors.
-  extends: ClientConnectionError
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
+bench (tools/bench-asyncio-write.py:106-119)
+  sig: bench(job_title, w, body, base)
+  calls: fm_time, time
+  called_by: main
 
-ServerDisconnectedError (aiohttp/client_exceptions.py:216-224)
-  Server disconnected.
-  extends: ServerConnectionError
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
+_in_protection_space (aiohttp/client_middleware_digest_auth.py:363-381)
+  Check if the given URL is within the current protection space.
+  sig: _in_protection_space(url)
+  behavior: ACCUMULATE(loop -> result)
+  called_by: __call__, DigestAuthMiddleware
 
-ServerRunner (aiohttp/web_runner.py:355-377)
-  Low-level web server runner
-  imports: asyncio, signal, socket, yarl, http_parser
-
-ServerTimeoutError (aiohttp/client_exceptions.py:227-228)
-  Server timeout error.
-  extends: ServerConnectionError, TimeoutError
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
-
-TestServer (examples/basic_auth_middleware.py:59-116)
-  Test server for basic auth endpoints.
+BasicAuthMiddleware (examples/basic_auth_middleware.py:31-56)
+  Middleware that adds Basic Authentication to all requests.
   imports: asyncio, base64, binascii, logging, aiohttp
-  called_by: run_test_server
+  calls: _encode_credentials
+  called_by: run_tests
 
-TestServer (examples/retry_middleware.py:91-147)
-  Test server with stateful endpoints for retry testing.
-  imports: asyncio, logging, http, aiohttp
-  called_by: run_test_server
-
-TestServer (examples/logging_middleware.py:59-84)
-  Test server for logging middleware demo.
-  imports: asyncio, logging, aiohttp
-  called_by: run_test_server
-
-TestServer (examples/combined_middleware.py:159-235)
-  Test server with stateful endpoints for middleware testing.
+BasicAuthMiddleware (examples/combined_middleware.py:66-92)
+  Middleware that adds Basic Authentication to all requests.
   imports: asyncio, base64, binascii, logging, http
-  called_by: run_test_server
+  calls: _encode_credentials
+  called_by: run_tests
 
-WSServerHandshakeError (aiohttp/client_exceptions.py:106-107)
-  websocket server handshake error.
-  extends: ClientResponseError
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
-
-_cleanup (aiohttp/connector.py:380-417)
-  Cleanup unused transports.
-
-_create_ssl_context (aiohttp/worker.py:205-220)
-  Creates SSLContext instance for usage in asyncio.create_server.
-  sig: _create_ssl_context(cfg)
-  called_by: _run, GunicornWebWorker
-  raises: RuntimeError
-
-_make_server (aiohttp/web_runner.py:373-374)
-
-_make_server (aiohttp/web_runner.py:421-430)
-  behavior: DELEGATE(Server -> result)
-  uses: Server (web_server)
-
-_make_server (aiohttp/web_runner.py:333-334)
-  Return a new server for the runner to serve requests.
-
-_on_startup (aiohttp/web_app.py:420-428)
-  sig: _on_startup(app)
-  behavior: ACCUMULATE(loop -> exits)
-
-add_app (aiohttp/abc.py:84-85)
-  Add application to the nested apps stack.
-  sig: add_app(app)
-
-aiohttp_raw_server (aiohttp/pytest_plugin.py:325-349)
-  Factory to create a RawTestServer instance, given a web handler.
-  sig: aiohttp_raw_server(loop)
-  uses: RawTestServer (test_utils)
-
-aiohttp_server (aiohttp/pytest_plugin.py:296-321)
-  Factory to create a TestServer instance, given an app.
-  sig: aiohttp_server(loop)
-  uses: TestServer (test_utils)
-
-app (aiohttp/web_request.py:862-866)
-  Application instance.
-
-cleanup (aiohttp/web_app.py:351-360)
-  Causes on_cleanup signal
-  behavior: BRANCH(on_cleanup.frozen -> result, else -> result)
-  calls: _on_cleanup
-
-cleanup_ctx (aiohttp/web_app.py:326-327)
-
-close (aiohttp/payload.py:681-689)
-  Close the payload if it holds any resources.
-
-close (aiohttp/payload.py:325-335)
-  Close the payload if it holds any resources.
-
-iter_chunks (aiohttp/streams.py:84-90)
-  Yield chunks of data as they are received by the server.
-  behavior: DELEGATE(ChunkTupleAsyncStreamIterator -> result)
-  calls: ChunkTupleAsyncStreamIterator
-
-named_resources (aiohttp/web_urldispatcher.py:1035-1036)
-  behavior: DELEGATE(MappingProxyType -> result)
-  uses: MappingProxyType (types)
-
-on_cleanup (aiohttp/web_app.py:322-323)
+FakeFacebook (examples/fake_server.py:45-95)
+  imports: asyncio, socket, ssl, aiohttp, aiohttp.abc
+  calls: start
+  called_by: main
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 13 with behavior annotations
-drill: aiohttp/web_runner.py (~2 lines, _cleanup_server)
-drill: aiohttp/web_runner.py (~1 lines, _cleanup_server)
-drill: aiohttp/web_runner.py (~1 lines, _cleanup_server)
+coverage: 73 symbols in L3, 21 with behavior annotations
+drill: aiohttp/client_middleware_digest_auth.py (~306 lines, DigestAuthMiddleware)
+drill: examples/fake_server.py (~16 lines, main)
+drill: aiohttp/helpers.py (~27 lines, basicauth_from_netrc)
+
+--- CLUE FILE END ---
+
+QUESTION: What are the main packages and modules in the aiohttp codebase, and how is the project organized into directories?
+
+Provide a detailed answer based solely on the clue file above.
+For each claim, cite the specific clue entry that supports it.
