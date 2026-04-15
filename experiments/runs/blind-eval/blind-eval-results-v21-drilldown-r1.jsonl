@@ -1,0 +1,38 @@
+{"eval_version": "v2.1-drilldown-r1", "date": "2026-04-15", "protocol": "File 1 + File 2 drill-down (max 2000 tok source snippets)", "answerer": "GPT-5.4", "scorer": "Claude Opus 4.6", "total_covered": 15, "total_facts": 24, "accuracy": 0.625, "wilson_ci_95": [0.423, 0.792], "progression": {"v2.0_file1": {"covered": 1, "total": 24, "accuracy": 0.042}, "v2.1_file1": {"covered": 7, "total": 24, "accuracy": 0.292}, "v2.1_drilldown": {"covered": 15, "total": 24, "accuracy": 0.625}}, "per_task": [
+{"task_id": "blind-aiohttp-1", "covered": 2, "total": 4, "facts": [
+  {"fact": 1, "covered": true, "notes": "read() accumulation + HTTPRequestEntityTooLarge identified. readany not named."},
+  {"fact": 2, "covered": true, "notes": "json->text->content-type check->HTTPBadRequest. Exact match."},
+  {"fact": 3, "covered": false, "notes": "post body not in drill-down snippets. Empty MultiDict for non-POST not identified."},
+  {"fact": 4, "covered": false, "notes": "TemporaryFile, executor not identified. Multipart chunking described but not post wiring."}
+]},
+{"task_id": "blind-aiohttp-2", "covered": 3, "total": 4, "facts": [
+  {"fact": 1, "covered": true, "notes": "startup/shutdown signal vs CleanupContext resource distinction captured."},
+  {"fact": 2, "covered": true, "notes": "cleanup branch on on_cleanup.frozen explicitly identified. Full match."},
+  {"fact": 3, "covered": false, "notes": "async context manager vs generator callback dispatch not covered."},
+  {"fact": 4, "covered": true, "notes": "Reverse unwind + error accumulation + CleanupError. Single/multiple nuance partial."}
+]},
+{"task_id": "blind-fiber-1", "covered": 2, "total": 4, "facts": [
+  {"fact": 1, "covered": true, "notes": "Path override mutation concept identified. fasthttp URI detail missing."},
+  {"fact": 2, "covered": false, "notes": "RestartRouting / indexRoute reset not in snippets."},
+  {"fact": 3, "covered": false, "notes": "treeStack, path hash, mounted route skipping not in snippets."},
+  {"fact": 4, "covered": true, "notes": "404 vs 405 distinction correctly inferred from method registration evidence."}
+]},
+{"task_id": "blind-fiber-2", "covered": 4, "total": 4, "facts": [
+  {"fact": 1, "covered": true, "notes": "defer/recover panic recovery identified. Stack trace detail partial."},
+  {"fact": 2, "covered": true, "notes": "DefaultPanicHandler preserves error, wraps non-error with %v. Exact match."},
+  {"fact": 3, "covered": true, "notes": "DefaultErrorHandler as fallback when no custom handler configured."},
+  {"fact": 4, "covered": true, "notes": "Recursive mount metadata + request-specific handler selection. Good inference."}
+]},
+{"task_id": "blind-click-1", "covered": 3, "total": 4, "facts": [
+  {"fact": 1, "covered": true, "notes": "command decorator creates Command, reverse param collection via UNWIND."},
+  {"fact": 2, "covered": false, "notes": "group decorator defaulting cls to Group not explicitly stated."},
+  {"fact": 3, "covered": true, "notes": "add_command + list_commands + _check_nested_chain. Covered."},
+  {"fact": 4, "covered": true, "notes": "Dispatch chain: make_context -> subcontext -> resolve_command. _protected_args not named."}
+]},
+{"task_id": "blind-click-2", "covered": 1, "total": 4, "facts": [
+  {"fact": 1, "covered": false, "notes": "Precedence chain (CLI/envvar/default_map/default) not in snippets."},
+  {"fact": 2, "covered": false, "notes": "type_cast_value single/tuple/variadic dispatch not described."},
+  {"fact": 3, "covered": false, "notes": "Choice.convert / normalize_choice not mentioned."},
+  {"fact": 4, "covered": true, "notes": "LazyFile/KeepOpenFile via open_file identified. File.convert chain partial."}
+]}
+]}
