@@ -310,20 +310,25 @@ drill: register.go (~1 lines, Registering.All)
 --- END CLUE FILE ---
 
 --- SOURCE SNIPPETS (File 2 Drill-Down) ---
+## IsFromCache  (middleware/idempotency/idempotency.go L29-29)
+```
+func IsFromCache(c fiber.Ctx) bool {
+```
+
 ## Group  (group.go L14-15)
 ```
 type Group struct {
 	app         *App
 ```
 
-## IsFromCache  (middleware/idempotency/idempotency.go L29-29)
-```
-func IsFromCache(c fiber.Ctx) bool {
-```
-
 ## Registering.All  (register.go L50-50)
 ```
 func (r *Registering) All(handler any, handlers ...any) Register {
+```
+
+## Registering.RouteChain  (register.go L119-119)
+```
+func (r *Registering) RouteChain(path string) Register {
 ```
 
 ## Register  (register.go L8-9)
@@ -377,11 +382,6 @@ func (r *Registering) Post(handler any, handlers ...any) Register {
 func (r *Registering) Put(handler any, handlers ...any) Register {
 ```
 
-## Registering.RouteChain  (register.go L119-119)
-```
-func (r *Registering) RouteChain(path string) Register {
-```
-
 ## Registering.Trace  (register.go L99-99)
 ```
 func (r *Registering) Trace(handler any, handlers ...any) Register {
@@ -391,6 +391,16 @@ func (r *Registering) Trace(handler any, handlers ...any) Register {
 ```
 type Registering struct {
 	app   *App
+```
+
+## New  (middleware/timeout/timeout.go L21-21)
+```
+func New(h fiber.Handler, config ...Config) fiber.Handler {
+```
+
+## WasPutToCache  (middleware/idempotency/idempotency.go L35-35)
+```
+func WasPutToCache(c fiber.Ctx) bool {
 ```
 
 ## Group.Add  (group.go L167-167)
@@ -413,29 +423,14 @@ func (grp *Group) Connect(path string, handler any, handlers ...any) Router {
 func (grp *Group) Delete(path string, handler any, handlers ...any) Router {
 ```
 
-## Group.Domain  (group.go L215-215)
-```
-func (grp *Group) Domain(host string) Router {
-```
-
 ## Group.Get  (group.go L114-114)
 ```
 func (grp *Group) Get(path string, handler any, handlers ...any) Router {
 ```
 
-## Group.Group  (group.go L187-187)
-```
-func (grp *Group) Group(prefix string, handlers ...any) Router {
-```
-
 ## Group.Head  (group.go L120-120)
 ```
 func (grp *Group) Head(path string, handler any, handlers ...any) Router {
-```
-
-## Group.Name  (group.go L27-27)
-```
-func (grp *Group) Name(name string) Router {
 ```
 
 ## Group.Options  (group.go L149-149)
@@ -458,11 +453,6 @@ func (grp *Group) Post(path string, handler any, handlers ...any) Router {
 func (grp *Group) Put(path string, handler any, handlers ...any) Router {
 ```
 
-## Group.Route  (group.go L235-235)
-```
-func (grp *Group) Route(prefix string, fn func(router Router), name ...string) Router {
-```
-
 ## Group.RouteChain  (group.go L225-225)
 ```
 func (grp *Group) RouteChain(path string) Register {
@@ -473,19 +463,29 @@ func (grp *Group) RouteChain(path string) Register {
 func (grp *Group) Trace(path string, handler any, handlers ...any) Router {
 ```
 
+## Group.Domain  (group.go L215-215)
+```
+func (grp *Group) Domain(host string) Router {
+```
+
+## Group.Group  (group.go L187-187)
+```
+func (grp *Group) Group(prefix string, handlers ...any) Router {
+```
+
+## Group.Name  (group.go L27-27)
+```
+func (grp *Group) Name(name string) Router {
+```
+
+## Group.Route  (group.go L235-235)
+```
+func (grp *Group) Route(prefix string, fn func(router Router), name ...string) Router {
+```
+
 ## Group.Use  (group.go L70-70)
 ```
 func (grp *Group) Use(args ...any) Router {
-```
-
-## New  (middleware/timeout/timeout.go L21-21)
-```
-func New(h fiber.Handler, config ...Config) fiber.Handler {
-```
-
-## WasPutToCache  (middleware/idempotency/idempotency.go L35-35)
-```
-func WasPutToCache(c fiber.Ctx) bool {
 ```
 --- END SOURCE SNIPPETS ---
 

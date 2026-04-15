@@ -10,7 +10,7 @@ Answer the question below using ONLY the information in the clue file.
 Do not use any external knowledge about the framework or library.
 
 --- CLUE FILE START ---
-=CC v2.1 zod@HEAD 390mod 686sym
+=CC v2.1 zod@HEAD 390mod 1321sym
 ? How do parsing APIs, schema-level checks, and error maps relate to one another in Zod's validation pipeline?
 
 
@@ -21,8 +21,9 @@ scripts/  (4 files)
 play.ts  vitest.config.ts
 
 -- INDEX
+packages/zod/src/v3/types.ts                   5138L  constructor, Class, path, ParseInputLazyPath, RefinementCtx
 packages/bench/array.ts                          20L  
-packages/bench/benchUtil.ts                      69L  formatNumber, makeData, randomPick, randomString, toFixed
+packages/bench/benchUtil.ts                      69L  formatNumber, makeData, makeSchema, randomPick, randomString
 packages/bench/boolean.ts                        16L  
 packages/bench/datetime-regex.ts                 52L  
 packages/bench/datetime.ts                       16L  
@@ -30,290 +31,286 @@ packages/bench/discriminated-union.ts           159L  makeSchema
 packages/bench/error-handling.ts                 33L  
 packages/bench/index.ts                          20L  run
 packages/bench/init.ts                           89L  
-packages/bench/instanceof.ts                     69L  ZodFailure, falsyThenCheckSymbol, falsyThenCheckTag, instanceofClass, instanceofObjectThenCheckSymbol
+packages/bench/instanceof.ts                     69L  constructor, ZodFailure, instanceofClass
 packages/bench/ipv4-regex.ts                     46L  
 packages/bench/jit-union.ts                      79L  
 packages/bench/key-iteration.ts                  50L  
-packages/bench/lazy-box.ts                       59L  
+packages/bench/lazy-box.ts                       59L  lazyWithGetterOverride, lazyWithInternalProp, lazyWithScopeProp
 packages/bench/libs.ts                           57L  
-packages/bench/metabench.ts                     227L  BenchmarkJS, Metabench, Mitata, Tinybench
+packages/bench/metabench.ts                     227L  BenchWithDataParams, run, BenchmarkJS, run, Metabench
 packages/bench/number.ts                         16L  
 packages/bench/object-async.ts                   13L  
-packages/bench/object-creation.ts                18L  ZodFail
+packages/bench/object-creation.ts                18L  constructor, ZodFail
 packages/bench/object-fail.ts                    13L  
 packages/bench/object-moltar-jitless.ts          89L  
 packages/bench/object-moltar.ts                  81L  
 packages/bench/object-safe.ts                    13L  
 packages/bench/object-safeasync.ts               13L  
 packages/bench/object-setup.ts                   35L  
-packages/bench/object.ts                         48L  
-packages/bench/property-access.ts                84L  
-  ...and 363 more modules
+  ...and 364 more modules
 
 -- SYM
-formatNumber                        M packages/bench/benchUtil.ts:36     function formatNumber
-makeData                            M packages/bench/benchUtil.ts:27     function makeData
-randomPick                          M packages/bench/benchUtil.ts:23     function randomPick
-randomString                        M packages/bench/benchUtil.ts:14     function randomString
-toFixed                             M packages/bench/benchUtil.ts:67     function toFixed
-makeSchema                          M packages/bench/discriminated-union.ts:53     function makeSchema
-run                                 M packages/bench/index.ts:5      function run
-ZodFailure                          C packages/bench/instanceof.ts:6      class ZodFailure
-falsyThenCheckSymbol                M packages/bench/instanceof.ts:30     function falsyThenCheckSymbol
-falsyThenCheckTag                   M packages/bench/instanceof.ts:29     function falsyThenCheckTag
-instanceofClass                     M packages/bench/instanceof.ts:21     function instanceofClass
-instanceofObjectThenCheckSymbol     M packages/bench/instanceof.ts:27     function instanceofObjectThenCheckSymbol
-instanceofObjectThenCheckTag        M packages/bench/instanceof.ts:28     function instanceofObjectThenCheckTag
-instanceofPromise                   M packages/bench/instanceof.ts:22     function instanceofPromise
-keyin                               M packages/bench/instanceof.ts:23     function keyin
-nullChainCheckSymbol                M packages/bench/instanceof.ts:31     function nullChainCheckSymbol
-nullChainCheckTag                   M packages/bench/instanceof.ts:32     function nullChainCheckTag
-typeofObject                        M packages/bench/instanceof.ts:24     function typeofObject
-typeofThenCheckSymbol               M packages/bench/instanceof.ts:25     function typeofThenCheckSymbol
-typeofThenCheckTag                  M packages/bench/instanceof.ts:26     function typeofThenCheckTag
-BenchmarkJS                         C packages/bench/metabench.ts:148    class BenchmarkJS
-Metabench                           C packages/bench/metabench.ts:65     class Metabench
-Mitata                              C packages/bench/metabench.ts:216    class Mitata
-Tinybench                           C packages/bench/metabench.ts:80     class Tinybench
-ZodFail                             C packages/bench/object-creation.ts:3      class ZodFail
-ZodFail                             C packages/bench/safe.ts:4      class ZodFail
-makeFail                            M packages/bench/safe.ts:14     function makeFail
-makeSuccess                         M packages/bench/safe.ts:11     function makeSuccess
-Page                                M packages/docs/app/(doc)/[[...slug]]/page.tsx:15     function Page
-generateMetadata                    M packages/docs/app/(doc)/[[...slug]]/page.tsx:79     function generateMetadata
-generateStaticParams                M packages/docs/app/(doc)/[[...slug]]/page.tsx:75     function generateStaticParams
-Layout                              M packages/docs/app/(doc)/layout.tsx:68     function Layout
-Page                                M packages/docs/app/blog/[slug]/page.tsx:9      function Page
-generateMetadata                    M packages/docs/app/blog/[slug]/page.tsx:80     function generateMetadata
-generateStaticParams                M packages/docs/app/blog/[slug]/page.tsx:74     function generateStaticParams
-BlogLayout                          M packages/docs/app/blog/layout.tsx:5      function BlogLayout
-BlogIndexPage                       M packages/docs/app/blog/page.tsx:6      function BlogIndexPage
-logo                                M packages/docs/app/layout.config.tsx:5      function logo
-Layout                              M packages/docs/app/layout.tsx:16     function Layout
-GET                                 M packages/docs/app/llms-full.txt/route.ts:8      function GET
-GET                                 M packages/docs/app/llms.txt/route.ts:40     function GET
-stringifyTitle                      M packages/docs/app/llms.txt/route.ts:6      function stringifyTitle
-GET                                 M packages/docs/app/og.png/route.tsx:15     function GET
-loadImage                           M packages/docs/app/og.png/route.tsx:10     function loadImage
-Bronze                              M packages/docs/components/bronze.tsx:1      function Bronze
-ThemedImage                         M packages/docs/components/codec-image.tsx:12     function ThemedImage
-CopyMarkdownButton                  M packages/docs/components/copy-markdown-button.tsx:11     function CopyMarkdownButton
-handleCopy                          M packages/docs/components/copy-markdown-button.tsx:14     function handleCopy
-ApiLibraries                        M packages/docs/components/ecosystem.tsx:364    function ApiLibraries
-FormIntegrations                    M packages/docs/components/ecosystem.tsx:368    function FormIntegrations
-MockingLibraries                    M packages/docs/components/ecosystem.tsx:380    function MockingLibraries
-PoweredByZod                        M packages/docs/components/ecosystem.tsx:384    function PoweredByZod
-ResourceTable                       M packages/docs/components/ecosystem.tsx:358    function ResourceTable
-Table                               M packages/docs/components/ecosystem.tsx:325    function Table
-XToZod                              M packages/docs/components/ecosystem.tsx:377    function XToZod
-ZodToX                              M packages/docs/components/ecosystem.tsx:373    function ZodToX
-ZodUtilities                        M packages/docs/components/ecosystem.tsx:388    function ZodUtilities
-Featured                            M packages/docs/components/featured.tsx:8      function Featured
-Gold                                M packages/docs/components/gold.tsx:1      function Gold
-SDKs                                C packages/docs/components/gold.tsx:45     class SDKs
-__handleScroll                      M packages/docs/components/heading.tsx:27     function __handleScroll
-HeroLogo                            M packages/docs/components/hero-logo.tsx:10     function HeroLogo
-If                                  M packages/docs/components/if.tsx:3      function If
-InkeepBubble                        M packages/docs/components/inkeep-bubble.tsx:6      function InkeepBubble
-InkeepSearchBox                     M packages/docs/components/inkeep-search.tsx:7      function InkeepSearchBox
-Platinum                            M packages/docs/components/platinum.tsx:1      function Platinum
-Scroller                            M packages/docs/components/scroller.tsx:7      function Scroller
-handleScroll                        M packages/docs/components/scroller.tsx:23     function handleScroll
-SidebarItem                         M packages/docs/components/sidebar-item.tsx:17     function SidebarItem
-SidebarSeparator                    M packages/docs/components/sidebar-item.tsx:41     function SidebarSeparator
-SidebarLogo                         M packages/docs/components/sidebar-logo.tsx:6      function SidebarLogo
-Silver                              M packages/docs/components/silver.tsx:1      function Silver
-Tabs                                M packages/docs/components/tabs.tsx:11     function Tabs
-ThemedImage                         M packages/docs/components/themed-image.tsx:12     function ThemedImage
-getLLMText                          M packages/docs/loaders/get-llm-text.ts:14     function getLLMText
-  ...and 437 more symbols
+ZodString._addCheck                 M packages/zod/src/v3/types.ts:1050   method ZodString._addCheck
+ZodNumber._addCheck                 M packages/zod/src/v3/types.ts:1497   method ZodNumber._addCheck
+ZodBigInt._addCheck                 M packages/zod/src/v3/types.ts:1749   method ZodBigInt._addCheck
+ZodDate._addCheck                   M packages/zod/src/v3/types.ts:1943   method ZodDate._addCheck
+ZodType._parse                      M packages/zod/src/v3/types.ts:170    method ZodType._parse
+ZodString                           C packages/zod/src/v3/types.ts:731    class ZodString
+Class.constructor                   M packages/zod/src/v3/types.ts:5036   method Class.constructor
+ZodType.constructor                 M packages/zod/src/v3/types.ts:411    method ZodType.constructor
+ZodType._getOrReturnCtx             M packages/zod/src/v3/types.ts:176    method ZodType._getOrReturnCtx
+ZodNumber                           C packages/zod/src/v3/types.ts:1369   class ZodNumber
+ZodBigInt                           C packages/zod/src/v3/types.ts:1635   class ZodBigInt
+ZodBigInt.setLimit                  M packages/zod/src/v3/types.ts:1734   method ZodBigInt.setLimit
+ZodNumber.setLimit                  M packages/zod/src/v3/types.ts:1482   method ZodNumber.setLimit
+ZodString._parse                    M packages/zod/src/v3/types.ts:732    method ZodString._parse
+ZodNumber._parse                    M packages/zod/src/v3/types.ts:1370   method ZodNumber._parse
+ZodEffects._parse                   M packages/zod/src/v3/types.ts:4322   method ZodEffects._parse
+ZodBigInt._parse                    M packages/zod/src/v3/types.ts:1636   method ZodBigInt._parse
+ZodIntersection._parse              M packages/zod/src/v3/types.ts:3292   method ZodIntersection._parse
+ZodArray._parse                     M packages/zod/src/v3/types.ts:2241   method ZodArray._parse
+ZodDate._parse                      M packages/zod/src/v3/types.ts:1878   method ZodDate._parse
+ZodFunction._parse                  M packages/zod/src/v3/types.ts:3822   method ZodFunction._parse
+ZodPipeline._parse                  M packages/zod/src/v3/types.ts:4782   method ZodPipeline._parse
+ZodUnion._parse                     M packages/zod/src/v3/types.ts:2947   method ZodUnion._parse
+ZodBoolean._parse                   M packages/zod/src/v3/types.ts:1834   method ZodBoolean._parse
+ZodEnum._parse                      M packages/zod/src/v3/types.ts:4082   method ZodEnum._parse
+ZodNaN._parse                       M packages/zod/src/v3/types.ts:4702   method ZodNaN._parse
+ZodNull._parse                      M packages/zod/src/v3/types.ts:2080   method ZodNull._parse
+ZodPromise._parse                   M packages/zod/src/v3/types.ts:4244   method ZodPromise._parse
+ZodSymbol._parse                    M packages/zod/src/v3/types.ts:2010   method ZodSymbol._parse
+ZodUndefined._parse                 M packages/zod/src/v3/types.ts:2045   method ZodUndefined._parse
+ZodVoid._parse                      M packages/zod/src/v3/types.ts:2193   method ZodVoid._parse
+ZodLiteral._parse                   M packages/zod/src/v3/types.ts:4007   method ZodLiteral._parse
+ZodMap._parse                       M packages/zod/src/v3/types.ts:3603   method ZodMap._parse
+ZodNativeEnum._parse                M packages/zod/src/v3/types.ts:4179   method ZodNativeEnum._parse
+ZodNever._parse                     M packages/zod/src/v3/types.ts:2164   method ZodNever._parse
+ZodRecord._parse                    M packages/zod/src/v3/types.ts:3514   method ZodRecord._parse
+ZodSet._parse                       M packages/zod/src/v3/types.ts:3691   method ZodSet._parse
+ZodTuple._parse                     M packages/zod/src/v3/types.ts:3399   method ZodTuple._parse
+ZodBranded._parse                   M packages/zod/src/v3/types.ts:4748   method ZodBranded._parse
+ZodCatch._parse                     M packages/zod/src/v3/types.ts:4619   method ZodCatch._parse
+ZodDefault._parse                   M packages/zod/src/v3/types.ts:4569   method ZodDefault._parse
+ZodLazy._parse                      M packages/zod/src/v3/types.ts:3979   method ZodLazy._parse
+ZodNullable._parse                  M packages/zod/src/v3/types.ts:4530   method ZodNullable._parse
+ZodOptional._parse                  M packages/zod/src/v3/types.ts:4490   method ZodOptional._parse
+ZodAny._parse                       M packages/zod/src/v3/types.ts:2115   method ZodAny._parse
+ZodReadonly._parse                  M packages/zod/src/v3/types.ts:4877   method ZodReadonly._parse
+ZodUnknown._parse                   M packages/zod/src/v3/types.ts:2140   method ZodUnknown._parse
+ZodNullable.unwrap                  M packages/zod/src/v3/types.ts:4538   method ZodNullable.unwrap
+ZodBranded.unwrap                   M packages/zod/src/v3/types.ts:4758   method ZodBranded.unwrap
+ZodOptional.unwrap                  M packages/zod/src/v3/types.ts:4498   method ZodOptional.unwrap
+ZodPromise.unwrap                   M packages/zod/src/v3/types.ts:4240   method ZodPromise.unwrap
+ZodReadonly.unwrap                  M packages/zod/src/v3/types.ts:4896   method ZodReadonly.unwrap
+ZodType._parseSync                  M packages/zod/src/v3/types.ts:210    method ZodType._parseSync
+ZodBigInt.maxValue                  M packages/zod/src/v3/types.ts:1810   method ZodBigInt.maxValue
+ZodBigInt.minValue                  M packages/zod/src/v3/types.ts:1800   method ZodBigInt.minValue
+ZodNumber.maxValue                  M packages/zod/src/v3/types.ts:1587   method ZodNumber.maxValue
+ZodNumber.minValue                  M packages/zod/src/v3/types.ts:1577   method ZodNumber.minValue
+  ...and 1103 more symbols
 
 -- FOCUS
-ZodError (packages/zod/src/v3/ZodError.ts:194-194)
-  called_by: ts
+ZodPipeline._parse (packages/zod/src/v3/types.ts:4782-4827)
+  method ZodPipeline._parse
+  sig: ZodPipeline._parse(input: ParseInput)
+  behavior: PRECEDENCE(ctx -> inResult -> default)
+  calls: _parse, _parseAsync, _parseSync, _processInputParams
+  called_by: _parse, ZodAny, ZodArray, ZodBigInt, ZodBoolean, ZodBranded, ZodCatch, ZodDate
 
-ZodPipeline (packages/zod/src/v3/types.ts:4777-4777)
-  called_by: ts
+ZodError (packages/zod/src/v3/ZodError.ts:194-316)
+  extends: Error
+  methods: assert, constructor, errors, flatten, formErrors, format
+  calls: assert, constructor, errors, flatten, formErrors, format, isEmpty, message
 
-ZodAny (packages/zod/src/v3/types.ts:2112-2112)
-  called_by: ts
+ZodPipeline (packages/zod/src/v3/types.ts:4777-4839)
+  extends: ZodType
+  calls: _parse, _parseAsync, _parseSync, _processInputParams
+  called_by: ZodDiscriminatedUnion, ZodObject
 
-ZodArray (packages/zod/src/v3/types.ts:2236-2236)
-  called_by: ts
+ZodError (packages/zod/src/v4/classic/errors.ts:9-23)
+  interface ZodError
+  methods: addIssue, addIssues, flatten, format
+  calls: addIssue, addIssues, flatten, format
 
-ZodBigInt (packages/zod/src/v3/types.ts:1635-1635)
-  called_by: ts
+ZodMap.keySchema (packages/zod/src/v3/types.ts:3597-3600)
+  method ZodMap.keySchema
+  calls: keySchema
+  called_by: ZodDiscriminatedUnion, ZodMap, ZodObject, keySchema, ZodRecord
 
-ZodBoolean (packages/zod/src/v3/types.ts:1833-1833)
-  called_by: ts
+ZodMap.valueSchema (packages/zod/src/v3/types.ts:3600-3603)
+  method ZodMap.valueSchema
+  calls: valueSchema
+  called_by: ZodDiscriminatedUnion, ZodMap, ZodObject, valueSchema, ZodRecord
 
-ZodBranded (packages/zod/src/v3/types.ts:4743-4743)
-  called_by: ts
+ZodRecord.keySchema (packages/zod/src/v3/types.ts:3508-3511)
+  method ZodRecord.keySchema
+  calls: keySchema
+  called_by: ZodDiscriminatedUnion, keySchema, ZodMap, ZodObject, ZodRecord
 
-ZodCatch (packages/zod/src/v3/types.ts:4614-4614)
-  called_by: ts
+ZodRecord.valueSchema (packages/zod/src/v3/types.ts:3511-3514)
+  method ZodRecord.valueSchema
+  calls: valueSchema
+  called_by: ZodDiscriminatedUnion, valueSchema, ZodMap, ZodObject, ZodRecord
 
-ZodDate (packages/zod/src/v3/types.ts:1877-1877)
-  called_by: ts
+ZodLazy.schema (packages/zod/src/v3/types.ts:3975-3979)
+  method ZodLazy.schema
+  behavior: DELEGATE(this._def.getter -> result)
+  called_by: ZodDiscriminatedUnion, ZodLazy, ZodObject
 
-ZodDefault (packages/zod/src/v3/types.ts:4564-4564)
-  called_by: ts
+ZodPipelineDef (packages/zod/src/v3/types.ts:4771-4777)
+  interface ZodPipelineDef
+  extends: ZodTypeDef
 
-ZodDiscriminatedUnion (packages/zod/src/v3/types.ts:3116-3117)
+ZodError.addIssue (packages/zod/src/v4/classic/errors.ts:17-17)
+  method ZodError.addIssue
+  sig: ZodError.addIssue(issue: core.$ZodIssue)
+  called_by: ZodError
 
-ZodEffects (packages/zod/src/v3/types.ts:4307-4307)
-  called_by: ts
+ZodError.addIssues (packages/zod/src/v4/classic/errors.ts:19-19)
+  method ZodError.addIssues
+  sig: ZodError.addIssues(issues: core.$ZodIssue[])
+  called_by: ZodError
 
-ZodEnum (packages/zod/src/v3/types.ts:4079-4079)
-  called_by: ts
+ZodError.assert (packages/zod/src/v3/ZodError.ts:271-275)
+  method ZodError.assert
+  sig: ZodError.assert(value: unknown)
+  called_by: ZodError
 
-ZodFail (packages/bench/object-creation.ts:3-3)
-  called_by: ts
+ZodError.constructor (packages/zod/src/v3/ZodError.ts:201-213)
+  method ZodError.constructor
+  sig: ZodError.constructor(issues: ZodIssue[])
+  called_by: ZodError
 
-ZodFail (packages/bench/safe.ts:4-4)
-  called_by: ts
+ZodError.errors (packages/zod/src/v3/ZodError.ts:197-199)
+  method ZodError.errors
+  called_by: ZodError
 
-ZodFailure (packages/bench/instanceof.ts:6-6)
-  called_by: ts
+ZodError.flatten (packages/zod/src/v4/classic/errors.ts:14-14)
+  method ZodError.flatten
+  called_by: ZodError
 
-ZodFunction (packages/zod/src/v3/types.ts:3817-3817)
-  called_by: ts
+ZodError.flatten (packages/zod/src/v3/ZodError.ts:296-296)
+  method ZodError.flatten
+  called_by: formErrors, ZodError
 
-ZodIntersection (packages/zod/src/v3/types.ts:3287-3287)
-  called_by: ts
+ZodError.formErrors (packages/zod/src/v3/ZodError.ts:313-315)
+  method ZodError.formErrors
+  behavior: DELEGATE(this.flatten -> result)
+  calls: flatten
+  called_by: ZodError
 
-ZodLazy (packages/zod/src/v3/types.ts:3974-3974)
-  called_by: ts
+ZodError.format (packages/zod/src/v3/ZodError.ts:215-215)
+  method ZodError.format
+  called_by: format, ZodError
 
-ZodLiteral (packages/zod/src/v3/types.ts:4006-4006)
-  called_by: ts
+ZodError.format (packages/zod/src/v3/ZodError.ts:217-264)
+  method ZodError.format
+  sig: ZodError.format(_mapper?: any)
+  behavior: PRECEDENCE(issue -> default); ACCUMULATE(loop -> result); TRANSFORM(map)
+  calls: format
+  called_by: ZodError
 
-ZodMap (packages/zod/src/v3/types.ts:3592-3592)
-  called_by: ts
+ZodError.format (packages/zod/src/v4/classic/errors.ts:11-11)
+  method ZodError.format
+  called_by: ZodError
 
-ZodNaN (packages/zod/src/v3/types.ts:4701-4701)
-  called_by: ts
+ZodError.isEmpty (packages/zod/src/v3/ZodError.ts:284-286)
+  method ZodError.isEmpty
+  called_by: ZodError
 
-ZodNativeEnum (packages/zod/src/v3/types.ts:4177-4177)
-  called_by: ts
+ZodError.message (packages/zod/src/v3/ZodError.ts:280-282)
+  method ZodError.message
+  behavior: DELEGATE(JSON.stringify -> result)
+  called_by: ZodError
 
-ZodNever (packages/zod/src/v3/types.ts:2163-2163)
-  called_by: ts
+ZodError.toString (packages/zod/src/v3/ZodError.ts:277-279)
+  method ZodError.toString
+  called_by: ZodError
 
-ZodNull (packages/zod/src/v3/types.ts:2079-2079)
-  called_by: ts
+ZodType.setError (packages/zod/src/v3/types.ts:362-362)
+  method ZodType.setError
+  called_by: ZodType
 
-ZodNullable (packages/zod/src/v3/types.ts:4525-4525)
-  called_by: ts
+ZodType.setError (packages/zod/src/v3/types.ts:354-354)
+  method ZodType.setError
+  called_by: ZodType
 
-ZodNumber (packages/zod/src/v3/types.ts:1369-1369)
-  called_by: ts
-
-ZodObject (packages/zod/src/v3/types.ts:2452-2453)
-  called_by: ts
-
-ZodOptional (packages/zod/src/v3/types.ts:4485-4485)
-  called_by: ts
-
-ZodPromise (packages/zod/src/v3/types.ts:4235-4235)
-  called_by: ts
-
-ZodReadonly (packages/zod/src/v3/types.ts:4872-4872)
-  called_by: ts
-
-ZodRecord (packages/zod/src/v3/types.ts:3503-3503)
-  called_by: ts
-
-ZodSet (packages/zod/src/v3/types.ts:3686-3686)
-  called_by: ts
-
-ZodString (packages/zod/src/v3/types.ts:731-731)
-  called_by: ts
-
-ZodSymbol (packages/zod/src/v3/types.ts:2009-2009)
-  called_by: ts
-
-ZodTuple (packages/zod/src/v3/types.ts:3395-3396)
-  called_by: ts
-
-ZodType (packages/zod/src/v3/types.ts:158-158)
-
-ZodUndefined (packages/zod/src/v3/types.ts:2044-2044)
-  called_by: ts
-
-ZodUnion (packages/zod/src/v3/types.ts:2942-2942)
-  called_by: ts
-
-ZodUnknown (packages/zod/src/v3/types.ts:2137-2137)
-  called_by: ts
-
-ZodVoid (packages/zod/src/v3/types.ts:2192-2192)
-  called_by: ts
-
-PoweredByZod (packages/docs/components/ecosystem.tsx:384-385)
-  called_by: tsx
-
-XToZod (packages/docs/components/ecosystem.tsx:377-377)
-  called_by: tsx
-
-ZodToX (packages/docs/components/ecosystem.tsx:373-373)
-  called_by: tsx
-
-ZodUtilities (packages/docs/components/ecosystem.tsx:388-389)
-  called_by: tsx
-
-convertBaseSchema (packages/zod/src/v4/classic/from-json-schema.ts:146-146)
-  behavior: GUARD(ctx -> pass_through); DISPATCH(type); PRECEDENCE(schema -> default)
-  called_by: ts
-
-convertSchema (packages/zod/src/v4/classic/from-json-schema.ts:541-541)
+convertSchema (packages/zod/src/v4/classic/from-json-schema.ts:541-620)
+  sig: convertSchema(schema: JSONSchema.JSONSchema | boolean, ctx: ConversionC...)
   behavior: GUARD(typeof -> schema); PRECEDENCE(typeof -> schema -> default); ACCUMULATE(loop -> result)
-  called_by: ts
+  calls: convertBaseSchema
+  called_by: convertBaseSchema, fromJSONSchema
 
-createZodEnum (packages/zod/src/v3/types.ts:4071-4071)
-  called_by: ts
+convertBaseSchema (packages/zod/src/v4/classic/from-json-schema.ts:146-539)
+  sig: convertBaseSchema(schema: JSONSchema.JSONSchema, ctx: ConversionContext)
+  behavior: GUARD(ctx -> pass_through); DISPATCH(type); PRECEDENCE(schema -> default)
+  calls: convertSchema, resolveRef
+  called_by: convertSchema
 
-getErrorMap (packages/zod/src/v3/errors.ts:11-11)
-  called_by: ts
+ZodType.pipe (packages/zod/src/v3/types.ts:522-524)
+  method ZodType.pipe
+  sig: ZodType.pipe(target: T)
+  behavior: DELEGATE(ZodPipeline.create -> result)
+  calls: create
 
-getErrorMap (packages/zod/src/v4/classic/compat.ts:53-53)
-  behavior: DELEGATE(core.config -> result)
-  called_by: ts
+ArraySchema (packages/zod/src/v4/core/json-schema.ts:125-127)
+  interface ArraySchema
+  extends: JSONSchema
 
-makeSchema (packages/bench/discriminated-union.ts:53-53)
-  called_by: ts
+BooleanSchema (packages/zod/src/v4/core/json-schema.ts:141-143)
+  interface BooleanSchema
+  extends: JSONSchema
 
-prettifyError (packages/zod/src/v4/core/errors.ts:435-435)
-  behavior: DELEGATE(lines.join -> result); ACCUMULATE(loop -> lines)
-  called_by: ts
+IntegerSchema (packages/zod/src/v4/core/json-schema.ts:137-139)
+  interface IntegerSchema
+  extends: JSONSchema
 
-processError (packages/zod/src/v4/core/errors.ts:342-342)
-  behavior: ACCUMULATE(loop -> result); TRANSFORM(map)
-  called_by: ts
+NullSchema (packages/zod/src/v4/core/json-schema.ts:145-147)
+  interface NullSchema
+  extends: JSONSchema
 
-processError (packages/zod/src/v4/core/errors.ts:294-294)
-  behavior: ACCUMULATE(loop -> result); TRANSFORM(map)
+NumberSchema (packages/zod/src/v4/core/json-schema.ts:133-135)
+  interface NumberSchema
+  extends: JSONSchema
 
-processError (packages/zod/src/v3/ZodError.ts:224-224)
-  behavior: ACCUMULATE(loop -> result); TRANSFORM(map)
-  called_by: ts
+ObjectSchema (packages/zod/src/v4/core/json-schema.ts:121-123)
+  interface ObjectSchema
+  extends: JSONSchema
 
-runChecks (packages/zod/src/v4/core/schemas.ts:213-213)
-  behavior: PRECEDENCE(ch -> isAborted -> _ -> default); ACCUMULATE(loop -> result)
-  called_by: ts
+SchemaPart (packages/zod/src/v4/core/schemas.ts:4069-4071)
+  interface SchemaPart
 
-setError (packages/zod/src/v3/types.ts:346-346)
-  called_by: ts
+SchemaPartInternals (packages/zod/src/v4/core/schemas.ts:4066-4068)
+  interface SchemaPartInternals
 
-setErrorMap (packages/zod/src/v4/classic/compat.ts:46-46)
-  called_by: ts
+StandardSchemaV1 (packages/zod/src/v4/core/standard-schema.ts:34-37)
+  interface StandardSchemaV1
 
-setErrorMap (packages/zod/src/v3/errors.ts:7-7)
-  called_by: ts
+StandardSchemaWithJSON (packages/zod/src/v4/core/standard-schema.ts:157-159)
+  interface StandardSchemaWithJSON
+
+StandardSchemaWithJSONProps (packages/zod/src/v4/core/standard-schema.ts:150-152)
+  interface StandardSchemaWithJSONProps
+
+StringSchema (packages/zod/src/v4/core/json-schema.ts:129-131)
+  interface StringSchema
+  extends: JSONSchema
+
+ZodCustomIssue (packages/zod/src/v3/ZodError.ts:145-148)
+  interface ZodCustomIssue
+  extends: ZodIssueBase
+
+ZodInvalidArgumentsIssue (packages/zod/src/v3/ZodError.ts:74-77)
+  interface ZodInvalidArgumentsIssue
+  extends: ZodIssueBase
+
+ZodInvalidDateIssue (packages/zod/src/v3/ZodError.ts:84-86)
+  interface ZodInvalidDateIssue
+  extends: ZodIssueBase
 
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 59 symbols in L3, 8 with behavior annotations
+coverage: 80 symbols in L3, 25 with behavior annotations
 
 --- CLUE FILE END ---
 

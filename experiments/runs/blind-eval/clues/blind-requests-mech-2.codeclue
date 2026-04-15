@@ -106,15 +106,32 @@ build_connection_pool_key_attributes M src/requests/adapters.py:374    Build the
   ...and 217 more symbols
 
 -- FOCUS
-__init__ (src/requests/exceptions.py:18-25)
-  Initialize RequestException with `request` and `response` objects.
-
 build_response (src/requests/adapters.py:337-372)
   Builds a :class:`Response <requests.Response>` object from a urllib3
   sig: build_response(req, resp)
   behavior: BRANCH(isinstance_bytes -> result, else -> result)
   called_by: HTTPAdapter
   uses: Response (models), CaseInsensitiveDict (structures)
+
+__init__ (src/requests/exceptions.py:18-25)
+  Initialize RequestException with `request` and `response` objects.
+
+Response (src/requests/models.py:642-1041)
+  The :class:`Response <Response>` object, which contains a
+  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
+  calls: close, generate, iter_content, raise_for_status
+  raises: StreamConsumedError, HTTPError, TypeError, RuntimeError
+  uses: ChunkedEncodingError (exceptions), ContentDecodingError (exceptions), ConnectionError (exceptions), RequestsSSLError (exceptions)
+
+ContentDecodingError (src/requests/exceptions.py:124-125)
+  Failed to decode response content.
+  extends: RequestException, BaseHTTPError
+  imports: urllib3.exceptions, compat
+
+handle_401 (src/requests/auth.py:241-283)
+  Takes the given response and tries digest-auth, if needed.
+  sig: handle_401(r)
+  calls: build_digest_header
 
 MockRequest (src/requests/cookies.py:23-100)
   Wraps a `requests.Request` to mimic a `urllib2.Request`.
@@ -151,13 +168,6 @@ copy (src/requests/cookies.py:428-433)
   calls: get_policy, update, RequestsCookieJar
   called_by: __getstate__, update, RequestsCookieJar, _copy_cookie_jar
 
-Response (src/requests/models.py:642-1041)
-  The :class:`Response <Response>` object, which contains a
-  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
-  calls: close, generate, iter_content, raise_for_status
-  raises: StreamConsumedError, HTTPError, TypeError, RuntimeError
-  uses: ChunkedEncodingError (exceptions), ContentDecodingError (exceptions), ConnectionError (exceptions), RequestsSSLError (exceptions)
-
 iter_content (src/requests/models.py:801-857)
   Iterates over the response data.
   sig: iter_content(chunk_size, decode_unicode)
@@ -176,11 +186,6 @@ get_redirect_target (src/requests/sessions.py:108-126)
   Receives a Response.
   sig: get_redirect_target(resp)
   called_by: resolve_redirects, SessionRedirectMixin
-
-ContentDecodingError (src/requests/exceptions.py:124-125)
-  Failed to decode response content.
-  extends: RequestException, BaseHTTPError
-  imports: urllib3.exceptions, compat
 
 FileModeWarning (src/requests/exceptions.py:147-148)
   A file was opened in text mode, but Requests determined its binary length.
@@ -233,11 +238,6 @@ get_netrc_auth (src/requests/utils.py:206-247)
   sig: get_netrc_auth(url, raise_errors)
   behavior: BRANCH(netrc_file -> result, else -> result)
 
-handle_401 (src/requests/auth.py:241-283)
-  Takes the given response and tries digest-auth, if needed.
-  sig: handle_401(r)
-  calls: build_digest_header
-
 is_permanent_redirect (src/requests/models.py:779-784)
   True if this Response one of the permanent versions of redirect.
 
@@ -260,6 +260,12 @@ links (src/requests/models.py:985-999)
 
 text (src/requests/models.py:912-947)
   Content of the response, in unicode.
+
+MockResponse (src/requests/cookies.py:103-121)
+  Wraps a `httplib.HTTPMessage` to mimic a `urllib.addinfourl`.
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: getheaders
+  called_by: extract_cookies_to_jar
 
 RequestsCookieJar (src/requests/cookies.py:176-437)
   Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
@@ -290,17 +296,10 @@ HTTPAdapter (src/requests/adapters.py:144-697)
   raises: OSError, InvalidURL, InvalidProxyURL, ConnectionError
   uses: Response (models), CaseInsensitiveDict (structures), InvalidURL (exceptions), InvalidProxyURL (exceptions)
 
-update (src/requests/cookies.py:358-364)
-  Updates this jar with cookies from another CookieJar or dict-like
-  sig: update(other)
-  behavior: BRANCH(isinstance_cookielib.CookieJ -> result, else -> result)
-  calls: copy, set_cookie
-  called_by: __setstate__, copy, RequestsCookieJar, create_cookie, merge_cookies
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 25 with behavior annotations
-drill: src/requests/sessions.py (~92 lines, request)
-drill: src/requests/sessions.py (~67 lines, __init__)
-drill: src/requests/models.py (~58 lines, iter_content)
-drill: src/requests/models.py (~42 lines, json)
+coverage: 80 symbols in L3, 24 with behavior annotations
+drill: src/requests/adapters.py (~33 lines, build_response)
+drill: src/requests/exceptions.py (~10 lines, __init__)
+drill: src/requests/auth.py (~39 lines, handle_401)
+drill: src/requests/cookies.py (~5 lines, copy)

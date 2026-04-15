@@ -1,0 +1,334 @@
+# Blind Evaluation Prompt - MRLF v2.1
+# Task: blind-echo-rel-1
+
+You are a senior software engineer. You have been given a codebase
+comprehension artifact (a "clue file") that summarises a repository's
+structure, symbols, and behavior. This is NOT the full source code - it is
+a compressed representation.
+
+Answer the question below using ONLY the information in the clue file.
+Do not use any external knowledge about the framework or library.
+
+--- CLUE FILE START ---
+=CC v2.1 echo@HEAD 44mod 565sym
+? What are the main relationships among `Echo`, `Group`, `Context`, and handlers during normal request dispatch?
+
+
+-- TREE
+echotest/  (2 files)
+middleware/  (24 files)
+bind.go  binder.go  binder_generic.go  context.go  context_generic.go  echo.go  group.go  httperror.go  ip.go  json.go  renderer.go  response.go  route.go  router.go  router_concurrent.go
+
+-- INDEX
+echo.go                                         865L  Config, DefaultHTTPErrorHandler, AcquireContext, Add, AddRoute
+context.go                                      667L  Attachment, Bind, Blob, Cookie, Cookies
+router.go                                      1074L  Error, Unwrap, AddRouteError, Add, Remove
+bind.go                                         472L  BindBody, BindHeaders, BindPathValues, BindQueryParams, BindUnmarshaler
+group.go                                        178L  Add, AddRoute, Any, CONNECT, DELETE
+binder.go                                      1329L  Error, BindingError, FormFieldBinder, NewBindingError, PathValuesBinder
+binder_generic.go                               571L  TimeOpts, bindValue
+context_generic.go                               43L  
+echotest/context.go                             183L  ServeWithHandler, ToContext, ToContextRecorder, ContextConfig, MultipartForm
+echotest/reader.go                               46L  LoadBytes, TrimNewlineEnd, loadBytes
+httperror.go                                    162L  Error, StatusCode, Unwrap, Wrap, HTTPError
+ip.go                                           309L  ExtractIPDirect, ExtractIPFromRealIPHeader, ExtractIPFromXFFHeader, LegacyIPExtractor, TrustIPRange
+json.go                                          29L  Deserialize, Serialize, DefaultJSONSerializer
+middleware/basic_auth.go                        156L  BasicAuth, ToMiddleware, BasicAuthConfig, BasicAuthWithConfig
+middleware/body_dump.go                         201L  BodyDump, ToMiddleware, BodyDumpConfig, BodyDumpWithConfig, Flush
+middleware/body_limit.go                         99L  BodyLimit, ToMiddleware, BodyLimitConfig, BodyLimitWithConfig, Close
+middleware/compress.go                          235L  Gzip, ToMiddleware, GzipConfig, GzipWithConfig, bufferPool
+  ...and 27 more modules
+
+-- SYM
+Echo.add                            M echo.go:621    function Echo.add
+Echo.AddRoute                       M echo.go:617    AddRoute registers a new Route with default hos...
+ValueBinder.intValue                M binder.go:499    function ValueBinder.intValue
+ValueBinder.intsValue               M binder.go:541    function ValueBinder.intsValue
+Group.Add                           M group.go:158    Add implements `Echo#Add()` for sub-routes with...
+Group.AddRoute                      M group.go:172    AddRoute registers a new Routable with Router
+Echo.Add                            M echo.go:642    Add registers a new route for an HTTP method an...
+Context.writeContentType            M context.go:121    function Context.writeContentType
+Context.Get                         M context.go:380    Get retrieves data from the context.
+Context.Set                         M context.go:387    Set saves data in the context.
+ValueBinder.uintValue               M binder.go:727    function ValueBinder.uintValue
+ValueBinder.uintsValue              M binder.go:769    function ValueBinder.uintsValue
+ValueBinder.time                    M binder.go:1095   function ValueBinder.time
+Context.Blob                        M context.go:552    Blob sends a blob response with status code and...
+ValueBinder.floatValue              M binder.go:990    function ValueBinder.floatValue
+ValueBinder.floatsValue             M binder.go:1022   function ValueBinder.floatsValue
+fsFile                              M context.go:584    function fsFile
+BindingError.Error                  M binder.go:87     Error returns error message
+ValueBinder.setError                M binder.go:177    function ValueBinder.setError
+ValueBinder.Time                    M binder.go:1086   Time binds parameter to time.Time variable
+ValueBinder.unixTime                M binder.go:1301   function ValueBinder.unixTime
+Context.File                        M context.go:571    File sends a response with the content of the f...
+ValueBinder.boolValue               M binder.go:905    function ValueBinder.boolValue
+WWWRedirectWithConfig               M middleware/redirect.go:99     WWWRedirectWithConfig returns a WWW redirect mi...
+ValueBinder.duration                M binder.go:1167   function ValueBinder.duration
+Context.Response                    M context.go:139    Response returns `*Response`.
+NewDefaultFS                        M echo.go:804    NewDefaultFS returns a new defaultFS instance w...
+bindData                            M bind.go:139    bindData will bind data ONLY fields in destinat...
+ValueBinder.bindWithDelimiter       M binder.go:411    function ValueBinder.bindWithDelimiter
+ValueBinder.boolsValue              M binder.go:931    function ValueBinder.boolsValue
+ValueBinder.customFunc              M binder.go:215    function ValueBinder.customFunc
+ValueBinder.durationsValue          M binder.go:1198   function ValueBinder.durationsValue
+ValueBinder.times                   M binder.go:1126   function ValueBinder.times
+Context.contentDisposition          M context.go:630    function Context.contentDisposition
+Context.json                        M context.go:464    function Context.json
+Context.xml                         M context.go:517    function Context.xml
+ContextConfig.ToContextRecorder     M echotest/context.go:81     ToContextRecorder converts ContextConfig to ech...
+ProxyWithConfig                     M middleware/proxy.go:300    ProxyWithConfig returns a Proxy middleware or p...
+RequestLoggerConfig.ToMiddleware    M middleware/request_logger.go:246    ToMiddleware converts RequestLoggerConfig into ...
+ValueBinder.int                     M binder.go:515    function ValueBinder.int
+Echo.File                           M echo.go:609    File registers a new route with path to serve a...
+Echo.Use                            M echo.go:431    Use adds middleware to the chain which is run a...
+subFS                               M echo.go:827    function subFS
+New                                 M echo.go:333    New creates an instance of Echo.
+BindPathValues                      M bind.go:42     BindPathValues binds path parameter values to b...
+unmarshalInputToField               M bind.go:352    function unmarshalInputToField
+ValueBinder.bool                    M binder.go:920    function ValueBinder.bool
+ValueBinder.float                   M binder.go:1006   function ValueBinder.float
+Context.FormValue                   M context.go:319    FormValue returns the form field value for the ...
+Context.IsTLS                       M context.go:150    IsTLS returns true if HTTP connection is TLS ot...
+applyMiddleware                     M echo.go:785    function applyMiddleware
+loadBytes                           M echotest/reader.go:36     function loadBytes
+Group.GET                           M group.go:37     GET implements `Echo#GET()` for sub-routes with...
+Group.StaticFS                      M group.go:122    StaticFS implements `Echo#StaticFS()` for sub-r...
+Group                               C group.go:14     Group is a set of sub-routes for a specified ro...
+newIPChecker                        M ip.go:183    function newIPChecker
+BasicAuthWithConfig                 M middleware/basic_auth.go:92     BasicAuthWithConfig returns an BasicAuthWithCon...
+BodyDumpWithConfig                  M middleware/body_dump.go:68     BodyDumpWithConfig returns a BodyDump middlewar...
+bodyDumpResponseWriter.Write        M middleware/body_dump.go:150    function bodyDumpResponseWriter.Write
+BodyLimitWithConfig                 M middleware/body_limit.go:42     BodyLimitWithConfig returns a BodyLimitWithConf...
+GzipWithConfig                      M middleware/compress.go:64     GzipWithConfig returns a middleware which compr...
+gzipResponseWriter.WriteHeader      M middleware/compress.go:147    function gzipResponseWriter.WriteHeader
+ContextTimeoutWithConfig            M middleware/context_timeout.go:33     ContextTimeoutWithConfig returns a Timeout midd...
+CSRFWithConfig                      M middleware/csrf.go:121    CSRFWithConfig returns a CSRF middleware with c...
+DecompressWithConfig                M middleware/decompress.go:60     DecompressWithConfig returns a decompress middl...
+createExtractors                    M middleware/extractor.go:78     function createExtractors
+KeyAuthWithConfig                   M middleware/key_auth.go:133    KeyAuthWithConfig returns an KeyAuth middleware...
+MethodOverrideWithConfig            M middleware/method_override.go:41     MethodOverrideWithConfig returns a Method Overr...
+Proxy                               M middleware/proxy.go:291    Proxy returns a Proxy middleware.
+NewRateLimiterMemoryStoreWithConfig M middleware/rate_limiter.go:203    function NewRateLimiterMemoryStoreWithConfig
+RateLimiterWithConfig               M middleware/rate_limiter.go:104    function RateLimiterWithConfig
+RecoverWithConfig                   M middleware/recover.go:48     RecoverWithConfig returns a Recovery middleware...
+HTTPSRedirectWithConfig             M middleware/redirect.go:57     HTTPSRedirectWithConfig returns a HTTPS redirec...
+RequestIDWithConfig                 M middleware/request_id.go:37     RequestIDWithConfig returns a middleware with g...
+RequestLoggerWithConfig             M middleware/request_logger.go:237    RequestLoggerWithConfig returns a RequestLogger...
+RewriteWithConfig                   M middleware/rewrite.go:48     RewriteWithConfig returns a Rewrite middleware ...
+SecureWithConfig                    M middleware/secure.go:96     SecureWithConfig returns a Secure middleware wi...
+  ...and 488 more symbols
+
+-- FOCUS
+RequestLogger (middleware/request_logger.go:395-395)
+  RequestLogger creates Request Logger middleware with Echo default settings that uses Context.Logger() as logger.
+  calls: RequestLoggerWithConfig
+
+Echo.AcquireContext (echo.go:684-684)
+  AcquireContext returns an empty `Context` instance from the pool.
+  behavior: DELEGATE(e.contextPool.Get -> result)
+
+Echo.NewContext (echo.go:357-357)
+  NewContext returns a new Context instance.
+  sig: Echo.NewContext(r *http.Request, w http.ResponseWriter)
+  behavior: DELEGATE(newContext -> result)
+
+Context (context.go:40-40)
+  Context represents the context of the current HTTP request.
+  methods: Attachment, Bind, Blob, Cookie, Cookies, Echo
+
+Group.Add (group.go:158-158)
+  Add implements `Echo#Add()` for sub-routes within the Group.
+  sig: Group.Add(method, path string, handler HandlerFunc, middleware ......)
+  calls: AddRoute
+  called_by: Any, CONNECT, DELETE, GET, HEAD, OPTIONS, PATCH, POST
+  raises: panic
+
+ContextConfig (echotest/context.go:20-20)
+  ContextConfig is configuration for creating echo.Context for testing purposes.
+  methods: ServeWithHandler, ToContext, ToContextRecorder
+
+Context.InitializeRoute (context.go:263-263)
+  InitializeRoute sets the route related variables of this request to the context.
+  sig: Context.InitializeRoute(ri *RouteInfo, pathValues *PathValues)
+  calls: PathValues, setPathValues
+
+ContextConfig.ToContextRecorder (echotest/context.go:81-81)
+  ToContextRecorder converts ContextConfig to echo.Context and httptest.ResponseRecorder
+  sig: ContextConfig.ToContextRecorder(t *testing.T)
+  behavior: ACCUMULATE(loop -> conf_RouteInfo_Parameter)
+  called_by: ServeWithHandler, ToContext
+
+Group.GET (group.go:37-37)
+  GET implements `Echo#GET()` for sub-routes within the Group.
+  sig: Group.GET(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(g.Add -> result)
+  calls: Add
+  called_by: FileFS
+
+Group.StaticFS (group.go:122-122)
+  StaticFS implements `Echo#StaticFS()` for sub-routes within the Group.
+  sig: Group.StaticFS(pathPrefix string, filesystem fs.FS, middleware ...Middl...)
+  behavior: DELEGATE(g.Add -> result)
+  calls: Add
+  called_by: Static
+
+Context.Reset (context.go:107-107)
+  Reset resets the context after request completes.
+  sig: Context.Reset(r *http.Request, w http.ResponseWriter)
+
+ContextConfig.ToContext (echotest/context.go:75-75)
+  ToContext converts ContextConfig to echo.Context
+  sig: ContextConfig.ToContext(t *testing.T)
+  calls: ToContextRecorder
+
+Group.Any (group.go:72-72)
+  Any implements `Echo#Any()` for sub-routes within the Group.
+  sig: Group.Any(path string, handler HandlerFunc, middleware ...Middlewa...)
+  behavior: DELEGATE(g.Add -> result)
+  calls: Add
+
+Group.CONNECT (group.go:27-27)
+  CONNECT implements `Echo#CONNECT()` for sub-routes within the Group.
+  sig: Group.CONNECT(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(g.Add -> result)
+  calls: Add
+
+Group.DELETE (group.go:32-32)
+  DELETE implements `Echo#DELETE()` for sub-routes within the Group.
+  sig: Group.DELETE(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(g.Add -> result)
+  calls: Add
+
+Group.File (group.go:143-143)
+  File implements `Echo#File()` for sub-routes within the Group.
+  sig: Group.File(path, file string, middleware ...MiddlewareFunc)
+
+Group.FileFS (group.go:135-135)
+  FileFS implements `Echo#FileFS()` for sub-routes within the Group.
+  sig: Group.FileFS(path, file string, filesystem fs.FS, m ...MiddlewareFunc)
+  behavior: DELEGATE(g.GET -> result)
+  calls: GET
+
+Group.HEAD (group.go:42-42)
+  HEAD implements `Echo#HEAD()` for sub-routes within the Group.
+  sig: Group.HEAD(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(g.Add -> result)
+  calls: Add
+
+Group.Match (group.go:77-77)
+  Match implements `Echo#Match()` for sub-routes within the Group.
+  sig: Group.Match(methods []string, path string, handler HandlerFunc, midd...)
+  behavior: ACCUMULATE(loop -> errs)
+  calls: AddRoute
+
+Group.OPTIONS (group.go:47-47)
+  OPTIONS implements `Echo#OPTIONS()` for sub-routes within the Group.
+  sig: Group.OPTIONS(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(g.Add -> result)
+  calls: Add
+
+Group.PATCH (group.go:52-52)
+  PATCH implements `Echo#PATCH()` for sub-routes within the Group.
+  sig: Group.PATCH(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(g.Add -> result)
+  calls: Add
+
+Group.POST (group.go:57-57)
+  POST implements `Echo#POST()` for sub-routes within the Group.
+  sig: Group.POST(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(g.Add -> result)
+  calls: Add
+
+Group.PUT (group.go:62-62)
+  PUT implements `Echo#PUT()` for sub-routes within the Group.
+  sig: Group.PUT(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(g.Add -> result)
+  calls: Add
+
+Group.RouteNotFound (group.go:153-153)
+  RouteNotFound implements `Echo#RouteNotFound()` for sub-routes within the Group.
+  sig: Group.RouteNotFound(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(g.Add -> result)
+  calls: Add
+
+Group.Static (group.go:112-112)
+  Static implements `Echo#Static()` for sub-routes within the Group.
+  sig: Group.Static(pathPrefix, fsRoot string, middleware ...MiddlewareFunc)
+  behavior: DELEGATE(g.StaticFS -> result)
+  calls: StaticFS
+
+Group.TRACE (group.go:67-67)
+  TRACE implements `Echo#TRACE()` for sub-routes within the Group.
+  sig: Group.TRACE(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(g.Add -> result)
+  calls: Add
+
+Group.Use (group.go:22-22)
+  Use implements `Echo#Use()` for sub-routes within the Group.
+  sig: Group.Use(middleware ...MiddlewareFunc)
+
+NewContext (context.go:64-64)
+  NewContext returns a new Context instance.
+  sig: NewContext(r *http.Request, w http.ResponseWriter, opts ...any)
+  behavior: DELEGATE(newContext -> result); ACCUMULATE(loop -> result); DISPATCH(v)
+
+main (echo.go:24-24)
+  calls: GET, Start, Use, New
+
+Context.Echo (context.go:665-665)
+  Echo returns the `Echo` instance.
+
+Context.Request (context.go:129-129)
+  Request returns `*http.Request`.
+
+Context.SetRequest (context.go:134-134)
+  SetRequest sets `*http.Request`.
+  sig: Context.SetRequest(r *http.Request)
+
+Echo.Group (echo.go:659-659)
+  Group creates a new router group with prefix and optional group-level middleware.
+  sig: Echo.Group(prefix string, m ...MiddlewareFunc)
+  calls: Use
+
+Echo.ReleaseContext (echo.go:690-690)
+  ReleaseContext returns the `Context` instance back to the pool.
+  sig: Echo.ReleaseContext(c *Context)
+
+Context.json (context.go:464-464)
+  sig: Context.json(code int, i any, indent string)
+  behavior: DELEGATE(c.echo.JSONSerializer.Serialize -> result); UNWIND(defer)
+  calls: Response, SetResponse, writeContentType
+  called_by: JSON, JSONPretty
+
+Context.Bind (context.go:399-399)
+  Bind binds path params, query params and the request body into provided type `i`.
+  sig: Context.Bind(i any)
+  behavior: DELEGATE(c.echo.Binder.Bind -> result)
+
+Context.Cookie (context.go:364-364)
+  Cookie returns the named cookie provided in the request.
+  sig: Context.Cookie(name string)
+  behavior: DELEGATE(c.request.Cookie -> result)
+  called_by: SetCookie
+
+Context.Cookies (context.go:374-374)
+  Cookies returns the HTTP cookies sent with the request.
+  behavior: DELEGATE(c.request.Cookies -> result)
+
+ContextConfig.ServeWithHandler (echotest/context.go:167-167)
+  ServeWithHandler serves ContextConfig with given handler and returns httptest.ResponseRecorder for response checking
+  sig: ContextConfig.ServeWithHandler(t *testing.T, handler echo.HandlerFunc, opts ...any)
+  behavior: ACCUMULATE(loop -> result); DISPATCH(o)
+  calls: ToContextRecorder
+
+-- GAPS
+type: RELATIONAL (answerable from L2-L3 structure)
+coverage: 80 symbols in L3, 48 with behavior annotations
+
+--- CLUE FILE END ---
+
+QUESTION: What are the main relationships among `Echo`, `Group`, `Context`, and handlers during normal request dispatch?
+
+Provide a detailed answer based solely on the clue file above.
+For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.

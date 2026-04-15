@@ -9,31 +9,34 @@ Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
 
 --- CLUE FILE (File 1) ---
-=CC v2.1 echo@HEAD 90mod 1272sym
+=CC v2.1 echo@HEAD 44mod 565sym
 ? How does Echo relate its router, route match types, and middleware ordering?
 
 
 -- TREE
-echotest/  (6 files)
-middleware/  (47 files)
-bind.go  bind_test.go  binder.go  binder_external_test.go  binder_generic.go  binder_generic_test.go  binder_test.go  context.go  context_generic.go  context_generic_test.go  context_test.go  echo.go  echo_test.go  group.go  group_test.go
+echotest/  (2 files)
+middleware/  (24 files)
+bind.go  binder.go  binder_generic.go  context.go  context_generic.go  echo.go  group.go  httperror.go  ip.go  json.go  renderer.go  response.go  route.go  router.go  router_concurrent.go
 
 -- INDEX
 echo.go                                         865L  Config, DefaultHTTPErrorHandler, AcquireContext, Add, AddRoute
 context.go                                      667L  Attachment, Bind, Blob, Cookie, Cookies
 router.go                                      1074L  Error, Unwrap, AddRouteError, Add, Remove
 bind.go                                         472L  BindBody, BindHeaders, BindPathValues, BindQueryParams, BindUnmarshaler
-context_test.go                                1428L  BenchmarkAllocJSON, BenchmarkAllocJSONP, BenchmarkAllocXML, BenchmarkContext_Store, BenchmarkRealIPForHeaderXForwardFor
 group.go                                        178L  Add, AddRoute, Any, CONNECT, DELETE
-bind_test.go                                   1693L  Bar, BenchmarkBindbindDataWithTags, UnmarshalParam, UnmarshalParams, Node
 binder.go                                      1329L  Error, BindingError, FormFieldBinder, NewBindingError, PathValuesBinder
-binder_external_test.go                         134L  ExampleValueBinder_BindError, ExampleValueBinder_BindErrors, ExampleValueBinder_CustomFunc
 binder_generic.go                               571L  TimeOpts, bindValue
-binder_generic_test.go                         1616L  UnmarshalJSON, JSONUnmarshalerType, TestFormValue, TestFormValueOr, TestFormValue_UnsupportedType
-binder_test.go                                 3252L  BenchmarkDefaultBinder_BindInt64_10_fields, BenchmarkDefaultBinder_BindInt64_single, BenchmarkRawFunc_Int64_single, BenchmarkValueBinder_BindInt64_10_fields, BenchmarkValueBinder_BindInt64_single
 context_generic.go                               43L  
-context_generic_test.go                          70L  TestContextGetInvalidCast, TestContextGetNonExistentKey, TestContextGetOK, TestContextGetOrInvalidCast, TestContextGetOrNonExistentKey
-  ...and 76 more modules
+echotest/context.go                             183L  ServeWithHandler, ToContext, ToContextRecorder, ContextConfig, MultipartForm
+echotest/reader.go                               46L  LoadBytes, TrimNewlineEnd, loadBytes
+httperror.go                                    162L  Error, StatusCode, Unwrap, Wrap, HTTPError
+ip.go                                           309L  ExtractIPDirect, ExtractIPFromRealIPHeader, ExtractIPFromXFFHeader, LegacyIPExtractor, TrustIPRange
+json.go                                          29L  Deserialize, Serialize, DefaultJSONSerializer
+middleware/basic_auth.go                        156L  BasicAuth, ToMiddleware, BasicAuthConfig, BasicAuthWithConfig
+middleware/body_dump.go                         201L  BodyDump, ToMiddleware, BodyDumpConfig, BodyDumpWithConfig, Flush
+middleware/body_limit.go                         99L  BodyLimit, ToMiddleware, BodyLimitConfig, BodyLimitWithConfig, Close
+middleware/compress.go                          235L  Gzip, ToMiddleware, GzipConfig, GzipWithConfig, bufferPool
+  ...and 27 more modules
 
 -- SYM
 Echo.add                            M echo.go:621    function Echo.add
@@ -80,19 +83,18 @@ Echo.File                           M echo.go:609    File registers a new route 
 Echo.Use                            M echo.go:431    Use adds middleware to the chain which is run a...
 subFS                               M echo.go:827    function subFS
 New                                 M echo.go:333    New creates an instance of Echo.
-applyMiddleware                     M echo.go:785    function applyMiddleware
-newIPChecker                        M ip.go:183    function newIPChecker
-Response.Unwrap                     M response.go:105    Unwrap returns the original http.ResponseWriter.
 BindPathValues                      M bind.go:42     BindPathValues binds path parameter values to b...
 unmarshalInputToField               M bind.go:352    function unmarshalInputToField
 ValueBinder.bool                    M binder.go:920    function ValueBinder.bool
 ValueBinder.float                   M binder.go:1006   function ValueBinder.float
 Context.FormValue                   M context.go:319    FormValue returns the form field value for the ...
 Context.IsTLS                       M context.go:150    IsTLS returns true if HTTP connection is TLS ot...
+applyMiddleware                     M echo.go:785    function applyMiddleware
 loadBytes                           M echotest/reader.go:36     function loadBytes
 Group.GET                           M group.go:37     GET implements `Echo#GET()` for sub-routes with...
 Group.StaticFS                      M group.go:122    StaticFS implements `Echo#StaticFS()` for sub-r...
 Group                               C group.go:14     Group is a set of sub-routes for a specified ro...
+newIPChecker                        M ip.go:183    function newIPChecker
 BasicAuthWithConfig                 M middleware/basic_auth.go:92     BasicAuthWithConfig returns an BasicAuthWithCon...
 BodyDumpWithConfig                  M middleware/body_dump.go:68     BodyDumpWithConfig returns a BodyDump middlewar...
 bodyDumpResponseWriter.Write        M middleware/body_dump.go:150    function bodyDumpResponseWriter.Write
@@ -114,9 +116,19 @@ RequestIDWithConfig                 M middleware/request_id.go:37     RequestIDW
 RequestLoggerWithConfig             M middleware/request_logger.go:237    RequestLoggerWithConfig returns a RequestLogger...
 RewriteWithConfig                   M middleware/rewrite.go:48     RewriteWithConfig returns a Rewrite middleware ...
 SecureWithConfig                    M middleware/secure.go:96     SecureWithConfig returns a Secure middleware wi...
-  ...and 487 more symbols
+  ...and 488 more symbols
 
 -- FOCUS
+Echo.Match (echo.go:510-510)
+  Match registers a new route for multiple HTTP methods and path with matching handler in the router with optional route-l
+  sig: Echo.Match(methods []string, path string, handler HandlerFunc, midd...)
+  behavior: ACCUMULATE(loop -> errs)
+  calls: AddRoute
+
+concurrentRouter.Route (router_concurrent.go:21-21)
+  sig: concurrentRouter.Route(c *Context)
+  behavior: DELEGATE(r.router.Route -> result); UNWIND(defer)
+
 Echo.GET (echo.go:449-449)
   GET registers a new GET route for a path with matching handler in the router with optional route-level middleware.
   sig: Echo.GET(path string, h HandlerFunc, m ...MiddlewareFunc)
@@ -147,12 +159,6 @@ Echo.HEAD (echo.go:455-455)
   behavior: DELEGATE(e.Add -> result)
   calls: Add
 
-Echo.Match (echo.go:510-510)
-  Match registers a new route for multiple HTTP methods and path with matching handler in the router with optional route-l
-  sig: Echo.Match(methods []string, path string, handler HandlerFunc, midd...)
-  behavior: ACCUMULATE(loop -> errs)
-  calls: AddRoute
-
 Echo.PATCH (echo.go:467-467)
   PATCH registers a new PATCH route for a path with matching handler in the router with optional route-level middleware.
   sig: Echo.PATCH(path string, h HandlerFunc, m ...MiddlewareFunc)
@@ -181,6 +187,33 @@ Echo.TRACE (echo.go:485-485)
   behavior: DELEGATE(e.Add -> result)
   calls: Add
 
+AddRouteError (router.go:428-428)
+  AddRouteError is error returned by Router.Add containing information what actual route adding failed.
+  methods: Error, Unwrap
+  called_by: Add
+
+Echo.AddRoute (echo.go:617-617)
+  AddRoute registers a new Route with default host Router
+  sig: Echo.AddRoute(route Route)
+  behavior: DELEGATE(e.add -> result)
+  calls: add
+  called_by: Match, add
+
+DefaultRouter.storeRouteInfo (router.go:538-538)
+  sig: DefaultRouter.storeRouteInfo(ri RouteInfo)
+  behavior: GUARD(ri -> result); ACCUMULATE(loop -> result)
+
+WrapMiddleware (echo.go:766-766)
+  WrapMiddleware wraps `func(http.Handler) http.Handler` into `echo.MiddlewareFunc`
+  sig: WrapMiddleware(m func(http.Handler)
+  behavior: ACCUMULATE(loop -> result)
+
+Group.AddRoute (group.go:172-172)
+  AddRoute registers a new Routable with Router
+  sig: Group.AddRoute(route Route)
+  behavior: DELEGATE(g.echo.add -> result)
+  called_by: Add, Match
+
 Echo.Add (echo.go:642-642)
   Add registers a new route for an HTTP method and path with matching handler in the router with optional route-level midd
   sig: Echo.Add(method, path string, handler HandlerFunc, middleware ......)
@@ -197,36 +230,14 @@ Echo.File (echo.go:609-609)
   sig: Echo.File(path, file string, middleware ...MiddlewareFunc)
   called_by: StaticFileHandler
 
-AddRouteError (router.go:428-428)
-  AddRouteError is error returned by Router.Add containing information what actual route adding failed.
-  methods: Error, Unwrap
-  called_by: Add
-
 Route (route.go:16-16)
   Route contains information to adding/registering new route with the router.
   methods: ToRouteInfo, WithPrefix
-
-Echo.AddRoute (echo.go:617-617)
-  AddRoute registers a new Route with default host Router
-  sig: Echo.AddRoute(route Route)
-  behavior: DELEGATE(e.add -> result)
-  calls: add
-  called_by: Match, add
-
-Group.AddRoute (group.go:172-172)
-  AddRoute registers a new Routable with Router
-  sig: Group.AddRoute(route Route)
-  behavior: DELEGATE(g.echo.add -> result)
-  called_by: Add, Match
 
 AddTrailingSlash (middleware/slash.go:29-29)
   AddTrailingSlash returns a root level (before router) middleware which adds a trailing slash to the request `URL#Path`.
   behavior: DELEGATE(AddTrailingSlashWithConfig -> result)
   calls: AddTrailingSlashWithConfig
-
-DefaultRouter.storeRouteInfo (router.go:538-538)
-  sig: DefaultRouter.storeRouteInfo(ri RouteInfo)
-  behavior: GUARD(ri -> result); ACCUMULATE(loop -> result)
 
 Echo.CONNECT (echo.go:437-437)
   CONNECT registers a new CONNECT route for a path with matching handler in the router with optional route-level middlewar
@@ -266,375 +277,343 @@ RequestLogger (middleware/request_logger.go:395-395)
   RequestLogger creates Request Logger middleware with Echo default settings that uses Context.Logger() as logger.
   calls: RequestLoggerWithConfig
 
-WrapMiddleware (echo.go:766-766)
-  WrapMiddleware wraps `func(http.Handler) http.Handler` into `echo.MiddlewareFunc`
-  sig: WrapMiddleware(m func(http.Handler)
-  behavior: ACCUMULATE(loop -> result)
+routeMethods (router.go:148-148)
+  type routeMethods
+  methods: find, isHandler, set, updateAllowHeader
 
-concurrentRouter.Route (router_concurrent.go:21-21)
-  sig: concurrentRouter.Route(c *Context)
-  behavior: DELEGATE(r.router.Route -> result); UNWIND(defer)
+routeMethods.isHandler (router.go:301-301)
+  called_by: setHandler
 
-ValueBinder (binder.go:92-92)
-  ValueBinder provides utility methods for binding query or path parameter to various Go built-in types
-  methods: BindError, BindErrors, BindUnmarshaler, BindWithDelimiter, Bool, Bools
+routeMethods.set (router.go:171-171)
+  sig: routeMethods.set(method string, r *routeMethod)
+  behavior: DISPATCH(method)
+  called_by: setHandler
 
-Echo (echo.go:68-68)
-  Echo is the top-level framework instance.
-  methods: AcquireContext, Add, AddRoute, Any, CONNECT, DELETE
+MiddlewareConfigurator (echo.go:121-121)
+  MiddlewareConfigurator defines interface for creating middleware handlers with possibility to return configuration error
 
-Group (group.go:14-14)
-  Group is a set of sub-routes for a specified route.
-  methods: Add, AddRoute, Any, CONNECT, DELETE, File
-  called_by: Group
+routeMethod (router.go:142-142)
+  type routeMethod
 
-Echo.Static (echo.go:533-533)
-  Static registers a new route with path prefix to serve static files from the provided root directory.
-  sig: Echo.Static(pathPrefix, fsRoot string, middleware ...MiddlewareFunc)
+AddRouteError.Error (router.go:434-434)
+  called_by: Add
+
+AddRouteError.Unwrap (router.go:436-436)
+
+DefaultRouter.Route (router.go:791-791)
+  Route looks up a handler registered for method and path.
+  sig: DefaultRouter.Route(c *Context)
+  behavior: GUARD(child -> result); PRECEDENCE(cap -> not_r.useEscapedPathForRouting -> previous); ACCUMULATE(loop -> result)
+
+Echo.RouteNotFound (echo.go:495-495)
+  RouteNotFound registers a special-case route which is executed when no other route is found (i.e.
+  sig: Echo.RouteNotFound(path string, h HandlerFunc, m ...MiddlewareFunc)
   behavior: DELEGATE(e.Add -> result)
-  calls: Add, MustSubFS, StaticDirectoryHandler
+  calls: Add
 
-New (echo.go:333-333)
-  New creates an instance of Echo.
-  calls: NewDefaultFS
-  called_by: NewWithConfig, main
-
-Group.Add (group.go:158-158)
-  Add implements `Echo#Add()` for sub-routes within the Group.
-  sig: Group.Add(method, path string, handler HandlerFunc, middleware ......)
-  calls: AddRoute
-  called_by: Any, CONNECT, DELETE, GET, HEAD, OPTIONS, PATCH, POST
-  raises: panic
+Echo.Router (echo.go:362-362)
+  Router returns the default router.
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 35 with behavior annotations
-drill: middleware/request_logger.go (~1 lines, RequestLoggerWithConfig)
-drill: context.go (~1 lines, Context.InitializeRoute)
-drill: middleware/request_logger.go (~1 lines, RequestLogger)
-drill: router.go (~1 lines, routeMethods.isHandler)
+coverage: 80 symbols in L3, 59 with behavior annotations
+drill: echo.go (~1 lines, Echo.Match)
+drill: router_concurrent.go (~1 lines, concurrentRouter.Route)
+drill: echo.go (~1 lines, Echo.Use)
+drill: echo.go (~1 lines, Echo.Pre)
+drill: echo.go (~1 lines, Echo.GET)
 
 --- END CLUE FILE ---
 
 --- SOURCE SNIPPETS (File 2 Drill-Down) ---
-## RequestLoggerWithConfig  (middleware/request_logger.go L237-237)
+## Echo.Match  (echo.go L510-510)
 ```
-func RequestLoggerWithConfig(config RequestLoggerConfig) echo.MiddlewareFunc {
-```
-
-## Context.InitializeRoute  (context.go L263-263)
-```
-func (c *Context) InitializeRoute(ri *RouteInfo, pathValues *PathValues) {
+func (e *Echo) Match(methods []string, path string, handler HandlerFunc, middleware ...MiddlewareFunc) Routes {
 ```
 
-## RequestLogger  (middleware/request_logger.go L395-395)
+## concurrentRouter.Route  (router_concurrent.go L21-21)
 ```
-func RequestLogger() echo.MiddlewareFunc {
-```
-
-## routeMethods.isHandler  (router.go L301-301)
-```
-func (m *routeMethods) isHandler() bool {
+func (r *concurrentRouter) Route(c *Context) HandlerFunc {
 ```
 
-## Context.Attachment  (context.go L616-616)
+## Echo.Use  (echo.go L431-431)
 ```
-func (c *Context) Attachment(file, name string) error {
-```
-
-## Context.Bind  (context.go L399-399)
-```
-func (c *Context) Bind(i any) error {
+func (e *Echo) Use(middleware ...MiddlewareFunc) {
 ```
 
-## Context.Blob  (context.go L552-552)
+## Echo.Pre  (echo.go L426-426)
 ```
-func (c *Context) Blob(code int, contentType string, b []byte) (err error) {
-```
-
-## Context.Cookie  (context.go L364-364)
-```
-func (c *Context) Cookie(name string) (*http.Cookie, error) {
+func (e *Echo) Pre(middleware ...MiddlewareFunc) {
 ```
 
-## Context.Cookies  (context.go L374-374)
+## Echo.GET  (echo.go L449-449)
 ```
-func (c *Context) Cookies() []*http.Cookie {
-```
-
-## Context.Echo  (context.go L665-665)
-```
-func (c *Context) Echo() *Echo {
+func (e *Echo) GET(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
 ```
 
-## Context.File  (context.go L571-571)
+## NewConcurrentRouter  (router_concurrent.go L9-9)
 ```
-func (c *Context) File(file string) error {
-```
-
-## Context.FileFS  (context.go L580-580)
-```
-func (c *Context) FileFS(file string, filesystem fs.FS) error {
+func NewConcurrentRouter(r Router) Router {
 ```
 
-## Context.FormFile  (context.go L348-348)
+## concurrentRouter.Add  (router_concurrent.go L35-35)
 ```
-func (c *Context) FormFile(name string) (*multipart.FileHeader, error) {
-```
-
-## Context.FormValue  (context.go L319-319)
-```
-func (c *Context) FormValue(name string) string {
+func (r *concurrentRouter) Add(routable Route) (RouteInfo, error) {
 ```
 
-## Context.FormValueOr  (context.go L325-325)
+## concurrentRouter.Remove  (router_concurrent.go L42-42)
 ```
-func (c *Context) FormValueOr(name, defaultValue string) string {
-```
-
-## Context.FormValues  (context.go L334-334)
-```
-func (c *Context) FormValues() (url.Values, error) {
+func (r *concurrentRouter) Remove(method string, path string) error {
 ```
 
-## Context.Get  (context.go L380-380)
+## concurrentRouter.Routes  (router_concurrent.go L28-28)
 ```
-func (c *Context) Get(key string) any {
-```
-
-## Context.HTML  (context.go L435-435)
-```
-func (c *Context) HTML(code int, html string) (err error) {
+func (r *concurrentRouter) Routes() Routes {
 ```
 
-## Context.HTMLBlob  (context.go L440-440)
+## concurrentRouter  (router_concurrent.go L16-16)
 ```
-func (c *Context) HTMLBlob(code int, b []byte) (err error) {
-```
-
-## Context.Inline  (context.go L624-624)
-```
-func (c *Context) Inline(file, name string) error {
+type concurrentRouter struct {
 ```
 
-## Context.IsTLS  (context.go L150-150)
+## Config  (echo.go L237-237)
 ```
-func (c *Context) IsTLS() bool {
-```
-
-## Context.IsWebSocket  (context.go L155-155)
-```
-func (c *Context) IsWebSocket() bool {
+type Config struct {
 ```
 
-## Context.JSON  (context.go L482-482)
+## DefaultHTTPErrorHandler  (echo.go L374-374)
 ```
-func (c *Context) JSON(code int, i any) (err error) {
-```
-
-## Context.JSONBlob  (context.go L492-492)
-```
-func (c *Context) JSONBlob(code int, b []byte) (err error) {
+func DefaultHTTPErrorHandler(exposeError bool) HTTPErrorHandler {
 ```
 
-## Context.JSONP  (context.go L498-498)
+## Echo.AcquireContext  (echo.go L684-684)
 ```
-func (c *Context) JSONP(code int, callback string, i any) (err error) {
-```
-
-## Context.JSONPBlob  (context.go L504-504)
-```
-func (c *Context) JSONPBlob(code int, callback string, b []byte) (err error) {
+func (e *Echo) AcquireContext() *Context {
 ```
 
-## Context.JSONPretty  (context.go L487-487)
+## Echo.Add  (echo.go L642-642)
 ```
-func (c *Context) JSONPretty(code int, i any, indent string) (err error) {
-```
-
-## Context.Logger  (context.go L652-652)
-```
-func (c *Context) Logger() *slog.Logger {
+func (e *Echo) Add(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) RouteInfo {
 ```
 
-## Context.MultipartForm  (context.go L358-358)
+## Echo.AddRoute  (echo.go L617-617)
 ```
-func (c *Context) MultipartForm() (*multipart.Form, error) {
-```
-
-## Context.NoContent  (context.go L636-636)
-```
-func (c *Context) NoContent(code int) error {
+func (e *Echo) AddRoute(route Route) (RouteInfo, error) {
 ```
 
-## Context.Param  (context.go L233-233)
+## Echo.Any  (echo.go L504-504)
 ```
-func (c *Context) Param(name string) string {
-```
-
-## Context.ParamOr  (context.go L245-245)
-```
-func (c *Context) ParamOr(name, defaultValue string) string {
+func (e *Echo) Any(path string, handler HandlerFunc, middleware ...MiddlewareFunc) RouteInfo {
 ```
 
-## Context.Path  (context.go L210-210)
+## Echo.CONNECT  (echo.go L437-437)
 ```
-func (c *Context) Path() string {
-```
-
-## Context.PathValues  (context.go L250-250)
-```
-func (c *Context) PathValues() PathValues {
+func (e *Echo) CONNECT(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
 ```
 
-## Context.QueryParam  (context.go L287-287)
+## Echo.DELETE  (echo.go L443-443)
 ```
-func (c *Context) QueryParam(name string) string {
-```
-
-## Context.QueryParamOr  (context.go L297-297)
-```
-func (c *Context) QueryParamOr(name, defaultValue string) string {
+func (e *Echo) DELETE(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
 ```
 
-## Context.QueryParams  (context.go L306-306)
+## Echo.File  (echo.go L609-609)
 ```
-func (c *Context) QueryParams() url.Values {
-```
-
-## Context.QueryString  (context.go L314-314)
-```
-func (c *Context) QueryString() string {
+func (e *Echo) File(path, file string, middleware ...MiddlewareFunc) RouteInfo {
 ```
 
-## Context.RealIP  (context.go L199-199)
+## Echo.FileFS  (echo.go L591-591)
 ```
-func (c *Context) RealIP() string {
-```
-
-## Context.Redirect  (context.go L642-642)
-```
-func (c *Context) Redirect(code int, url string) error {
+func (e *Echo) FileFS(path, file string, filesystem fs.FS, m ...MiddlewareFunc) RouteInfo {
 ```
 
-## Context.Render  (context.go L414-414)
+## Echo.Group  (echo.go L659-659)
 ```
-func (c *Context) Render(code int, name string, data any) (err error) {
-```
-
-## Context.Request  (context.go L129-129)
-```
-func (c *Context) Request() *http.Request {
+func (e *Echo) Group(prefix string, m ...MiddlewareFunc) (g *Group) {
 ```
 
-## Context.Reset  (context.go L107-107)
+## Echo.HEAD  (echo.go L455-455)
 ```
-func (c *Context) Reset(r *http.Request, w http.ResponseWriter) {
-```
-
-## Context.Response  (context.go L139-139)
-```
-func (c *Context) Response() http.ResponseWriter {
+func (e *Echo) HEAD(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
 ```
 
-## Context.RouteInfo  (context.go L225-225)
+## Echo.Middlewares  (echo.go L678-678)
 ```
-func (c *Context) RouteInfo() RouteInfo {
-```
-
-## Context.Scheme  (context.go L162-162)
-```
-func (c *Context) Scheme() string {
+func (e *Echo) Middlewares() []MiddlewareFunc {
 ```
 
-## Context.Set  (context.go L387-387)
+## Echo.NewContext  (echo.go L357-357)
 ```
-func (c *Context) Set(key string, val any) {
-```
-
-## Context.SetCookie  (context.go L369-369)
-```
-func (c *Context) SetCookie(cookie *http.Cookie) {
+func (e *Echo) NewContext(r *http.Request, w http.ResponseWriter) *Context {
 ```
 
-## Context.SetLogger  (context.go L660-660)
+## Echo.OPTIONS  (echo.go L461-461)
 ```
-func (c *Context) SetLogger(logger *slog.Logger) {
-```
-
-## Context.SetPath  (context.go L215-215)
-```
-func (c *Context) SetPath(p string) {
+func (e *Echo) OPTIONS(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
 ```
 
-## Context.SetPathValues  (context.go L255-255)
+## Echo.PATCH  (echo.go L467-467)
 ```
-func (c *Context) SetPathValues(pathValues PathValues) {
-```
-
-## Context.SetRequest  (context.go L134-134)
-```
-func (c *Context) SetRequest(r *http.Request) {
+func (e *Echo) PATCH(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
 ```
 
-## Context.SetResponse  (context.go L145-145)
+## Echo.POST  (echo.go L473-473)
 ```
-func (c *Context) SetResponse(r http.ResponseWriter) {
-```
-
-## Context.Stream  (context.go L560-560)
-```
-func (c *Context) Stream(code int, contentType string, r io.Reader) (err error) {
+func (e *Echo) POST(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
 ```
 
-## Context.String  (context.go L445-445)
+## Echo.PUT  (echo.go L479-479)
 ```
-func (c *Context) String(code int, s string) (err error) {
-```
-
-## Context.Validate  (context.go L405-405)
-```
-func (c *Context) Validate(i any) error {
+func (e *Echo) PUT(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
 ```
 
-## Context.XML  (context.go L531-531)
+## Echo.PreMiddlewares  (echo.go L670-670)
 ```
-func (c *Context) XML(code int, i any) (err error) {
-```
-
-## Context.XMLBlob  (context.go L541-541)
-```
-func (c *Context) XMLBlob(code int, b []byte) (err error) {
+func (e *Echo) PreMiddlewares() []MiddlewareFunc {
 ```
 
-## Context.XMLPretty  (context.go L536-536)
+## Echo.ReleaseContext  (echo.go L690-690)
 ```
-func (c *Context) XMLPretty(code int, i any, indent string) (err error) {
-```
-
-## Context.contentDisposition  (context.go L630-630)
-```
-func (c *Context) contentDisposition(file, name, dispositionType string) error {
+func (e *Echo) ReleaseContext(c *Context) {
 ```
 
-## Context.json  (context.go L464-464)
+## Echo.RouteNotFound  (echo.go L495-495)
 ```
-func (c *Context) json(code int, i any, indent string) error {
-```
-
-## Context.jsonPBlob  (context.go L449-449)
-```
-func (c *Context) jsonPBlob(code int, callback string, i any) (err error) {
+func (e *Echo) RouteNotFound(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
 ```
 
-## Context.setPathValues  (context.go L269-269)
+## Echo.Router  (echo.go L362-362)
 ```
-func (c *Context) setPathValues(pv *PathValues) {
+func (e *Echo) Router() Router {
 ```
 
-## Context.writeContentType  (context.go L121-121)
+## Echo.ServeHTTP  (echo.go L695-695)
 ```
-func (c *Context) writeContentType(value string) {
+func (e *Echo) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+```
+
+## Echo.Start  (echo.go L744-744)
+```
+func (e *Echo) Start(address string) error {
+```
+
+## Echo.Static  (echo.go L533-533)
+```
+func (e *Echo) Static(pathPrefix, fsRoot string, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Echo.StaticFS  (echo.go L548-548)
+```
+func (e *Echo) StaticFS(pathPrefix string, filesystem fs.FS, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Echo.TRACE  (echo.go L485-485)
+```
+func (e *Echo) TRACE(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Echo.add  (echo.go L621-621)
+```
+func (e *Echo) add(route Route) (RouteInfo, error) {
+```
+
+## Echo.serveHTTP  (echo.go L700-700)
+```
+func (e *Echo) serveHTTP(w http.ResponseWriter, r *http.Request) {
+```
+
+## Echo  (echo.go L68-68)
+```
+type Echo struct {
+```
+
+## JSONSerializer  (echo.go L106-106)
+```
+type JSONSerializer interface {
+```
+
+## MiddlewareConfigurator  (echo.go L121-121)
+```
+type MiddlewareConfigurator interface {
+```
+
+## MustSubFS  (echo.go L850-850)
+```
+func MustSubFS(currentFs fs.FS, fsRoot string) fs.FS {
+```
+
+## New  (echo.go L333-333)
+```
+func New() *Echo {
+```
+
+## NewDefaultFS  (echo.go L804-804)
+```
+func NewDefaultFS(dir string) fs.FS {
+```
+
+## NewWithConfig  (echo.go L294-294)
+```
+func NewWithConfig(config Config) *Echo {
+```
+
+## StaticDirectoryHandler  (echo.go L559-559)
+```
+func StaticDirectoryHandler(fileSystem fs.FS, disablePathUnescaping bool) HandlerFunc {
+```
+
+## StaticFileHandler  (echo.go L599-599)
+```
+func StaticFileHandler(file string, filesystem fs.FS) HandlerFunc {
+```
+
+## Validator  (echo.go L126-126)
+```
+type Validator interface {
+```
+
+## WrapHandler  (echo.go L752-752)
+```
+func WrapHandler(h http.Handler) HandlerFunc {
+```
+
+## WrapMiddleware  (echo.go L766-766)
+```
+func WrapMiddleware(m func(http.Handler) http.Handler) MiddlewareFunc {
+```
+
+## applyMiddleware  (echo.go L785-785)
+```
+func applyMiddleware(h HandlerFunc, middleware ...MiddlewareFunc) HandlerFunc {
+```
+
+## defaultFS.Open  (echo.go L811-811)
+```
+func (fs defaultFS) Open(name string) (fs.File, error) {
+```
+
+## defaultFS  (echo.go L797-797)
+```
+type defaultFS struct {
+```
+
+## hello  (echo.go L20-20)
+```
+	func hello(c *echo.Context) error {
+```
+
+## main  (echo.go L24-24)
+```
+	func main() {
+```
+
+## sanitizeURI  (middleware/slash.go L144-144)
+```
+func sanitizeURI(uri string) string {
+```
+
+## subFS  (echo.go L827-827)
+```
+func subFS(currentFs fs.FS, root string) (fs.FS, error) {
 ```
 --- END SOURCE SNIPPETS ---
 

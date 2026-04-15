@@ -117,15 +117,32 @@ build_connection_pool_key_attributes M src/requests/adapters.py:374    Build the
   ...and 217 more symbols
 
 -- FOCUS
-__init__ (src/requests/exceptions.py:18-25)
-  Initialize RequestException with `request` and `response` objects.
-
 build_response (src/requests/adapters.py:337-372)
   Builds a :class:`Response <requests.Response>` object from a urllib3
   sig: build_response(req, resp)
   behavior: BRANCH(isinstance_bytes -> result, else -> result)
   called_by: HTTPAdapter
   uses: Response (models), CaseInsensitiveDict (structures)
+
+__init__ (src/requests/exceptions.py:18-25)
+  Initialize RequestException with `request` and `response` objects.
+
+Response (src/requests/models.py:642-1041)
+  The :class:`Response <Response>` object, which contains a
+  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
+  calls: close, generate, iter_content, raise_for_status
+  raises: StreamConsumedError, HTTPError, TypeError, RuntimeError
+  uses: ChunkedEncodingError (exceptions), ContentDecodingError (exceptions), ConnectionError (exceptions), RequestsSSLError (exceptions)
+
+ContentDecodingError (src/requests/exceptions.py:124-125)
+  Failed to decode response content.
+  extends: RequestException, BaseHTTPError
+  imports: urllib3.exceptions, compat
+
+handle_401 (src/requests/auth.py:241-283)
+  Takes the given response and tries digest-auth, if needed.
+  sig: handle_401(r)
+  calls: build_digest_header
 
 MockRequest (src/requests/cookies.py:23-100)
   Wraps a `requests.Request` to mimic a `urllib2.Request`.
@@ -162,13 +179,6 @@ copy (src/requests/cookies.py:428-433)
   calls: get_policy, update, RequestsCookieJar
   called_by: __getstate__, update, RequestsCookieJar, _copy_cookie_jar
 
-Response (src/requests/models.py:642-1041)
-  The :class:`Response <Response>` object, which contains a
-  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
-  calls: close, generate, iter_content, raise_for_status
-  raises: StreamConsumedError, HTTPError, TypeError, RuntimeError
-  uses: ChunkedEncodingError (exceptions), ContentDecodingError (exceptions), ConnectionError (exceptions), RequestsSSLError (exceptions)
-
 iter_content (src/requests/models.py:801-857)
   Iterates over the response data.
   sig: iter_content(chunk_size, decode_unicode)
@@ -187,11 +197,6 @@ get_redirect_target (src/requests/sessions.py:108-126)
   Receives a Response.
   sig: get_redirect_target(resp)
   called_by: resolve_redirects, SessionRedirectMixin
-
-ContentDecodingError (src/requests/exceptions.py:124-125)
-  Failed to decode response content.
-  extends: RequestException, BaseHTTPError
-  imports: urllib3.exceptions, compat
 
 FileModeWarning (src/requests/exceptions.py:147-148)
   A file was opened in text mode, but Requests determined its binary length.
@@ -244,11 +249,6 @@ get_netrc_auth (src/requests/utils.py:206-247)
   sig: get_netrc_auth(url, raise_errors)
   behavior: BRANCH(netrc_file -> result, else -> result)
 
-handle_401 (src/requests/auth.py:241-283)
-  Takes the given response and tries digest-auth, if needed.
-  sig: handle_401(r)
-  calls: build_digest_header
-
 is_permanent_redirect (src/requests/models.py:779-784)
   True if this Response one of the permanent versions of redirect.
 
@@ -271,6 +271,12 @@ links (src/requests/models.py:985-999)
 
 text (src/requests/models.py:912-947)
   Content of the response, in unicode.
+
+MockResponse (src/requests/cookies.py:103-121)
+  Wraps a `httplib.HTTPMessage` to mimic a `urllib.addinfourl`.
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: getheaders
+  called_by: extract_cookies_to_jar
 
 RequestsCookieJar (src/requests/cookies.py:176-437)
   Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
@@ -301,118 +307,21 @@ HTTPAdapter (src/requests/adapters.py:144-697)
   raises: OSError, InvalidURL, InvalidProxyURL, ConnectionError
   uses: Response (models), CaseInsensitiveDict (structures), InvalidURL (exceptions), InvalidProxyURL (exceptions)
 
-update (src/requests/cookies.py:358-364)
-  Updates this jar with cookies from another CookieJar or dict-like
-  sig: update(other)
-  behavior: BRANCH(isinstance_cookielib.CookieJ -> result, else -> result)
-  calls: copy, set_cookie
-  called_by: __setstate__, copy, RequestsCookieJar, create_cookie, merge_cookies
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 25 with behavior annotations
-drill: src/requests/sessions.py (~92 lines, request)
-drill: src/requests/sessions.py (~67 lines, __init__)
-drill: src/requests/models.py (~58 lines, iter_content)
-drill: src/requests/models.py (~42 lines, json)
+coverage: 80 symbols in L3, 24 with behavior annotations
+drill: src/requests/adapters.py (~33 lines, build_response)
+drill: src/requests/exceptions.py (~10 lines, __init__)
+drill: src/requests/auth.py (~39 lines, handle_401)
+drill: src/requests/cookies.py (~5 lines, copy)
 
 --- END CLUE FILE ---
 
 --- SOURCE SNIPPETS (File 2 Drill-Down) ---
-## request  (src/requests/sessions.py L502-593)
+## copy  (src/requests/structures.py L76-77)
 ```
-    def request(
-        self,
-        method,
-        url,
-        params=None,
-        data=None,
-        headers=None,
-        cookies=None,
-        files=None,
-        auth=None,
-        timeout=None,
-        allow_redirects=True,
-        proxies=None,
-        hooks=None,
-        stream=None,
-        verify=None,
-        cert=None,
-        json=None,
-    ):
-        """Constructs a :class:`Request <Request>`, prepares it and sends it.
-        Returns :class:`Response <Response>` object.
-
-        :param method: method for the new :class:`Request` object.
-        :param url: URL for the new :class:`Request` object.
-        :param params: (optional) Dictionary or bytes to be sent in the query
-            string for the :class:`Request`.
-        :param data: (optional) Dictionary, list of tuples, bytes, or file-like
-            object to send in the body of the :class:`Request`.
-        :param json: (optional) json to send in the body of the
-            :class:`Request`.
-        :param headers: (optional) Dictionary of HTTP Headers to send with the
-            :class:`Request`.
-        :param cookies: (optional) Dict or CookieJar object to send with the
-            :class:`Request`.
-        :param files: (optional) Dictionary of ``'filename': file-like-objects``
-            for multipart encoding upload.
-        :param auth: (optional) Auth tuple or callable to enable
-            Basic/Digest/Custom HTTP Auth.
-        :param timeout: (optional) How many seconds to wait for the server to send
-            data before giving up, as a float, or a :ref:`(connect timeout,
-            read timeout) <timeouts>` tuple.
-        :type timeout: float or tuple
-        :param allow_redirects: (optional) Set to True by default.
-        :type allow_redirects: bool
-        :param proxies: (optional) Dictionary mapping protocol or protocol and
-            hostname to the URL of the proxy.
-        :param hooks: (optional) Dictionary mapping hook name to one event or
-            list of events, event must be callable.
-        :param stream: (optional) whether to immediately download the response
-            content. Defaults to ``False``.
-        :param verify: (optional) Either a boolean, in which case it controls whether we verify
-            the server's TLS certificate, or a string, in which case it must be a path
-            to a CA bundle to use. Defaults to ``True``. When set to
-            ``False``, requests will accept any TLS certificate presented by
-            the server, and will ignore hostname mismatches and/or expired
-            certificates, which will make your application vulnerable to
-            man-in-the-middle (MitM) attacks. Setting verify to ``False``
-            may be useful during local development or testing.
-        :param cert: (optional) if String, path to ssl client cert file (.pem).
-            If Tuple, ('cert', 'key') pair.
-        :rtype: requests.Response
-        """
-        # Create the Request.
-        req = Request(
-            method=method.upper(),
-            url=url,
-            headers=headers,
-            files=files,
-            data=data or {},
-            json=json,
-            params=params or {},
-            auth=auth,
-            cookies=cookies,
-            hooks=hooks,
-        )
-        prep = self.prepare_request(req)
-
-        proxies = proxies or {}
-
-        settings = self.merge_environment_settings(
-            prep.url, proxies, stream, verify, cert
-        )
-
-        # Send the request.
-        send_kwargs = {
-            "timeout": timeout,
-            "allow_redirects": allow_redirects,
-        }
-        send_kwargs.update(settings)
-        resp = self.send(prep, **send_kwargs)
-
-        return resp
+    def copy(self):
+        return CaseInsensitiveDict(self._store.values())
 ```
 
 ## __init__  (tests/testserver/server.py L139-169)
@@ -450,118 +359,224 @@ drill: src/requests/models.py (~42 lines, json)
             self.ssl_context.load_verify_locations(self.cacert)
 ```
 
-## iter_content  (src/requests/models.py L801-857)
+## build_response  (tests/test_requests.py L2081-2088)
 ```
-    def iter_content(self, chunk_size=1, decode_unicode=False):
-        """Iterates over the response data.  When stream=True is set on the
-        request, this avoids reading the content at once into memory for
-        large responses.  The chunk size is the number of bytes it should
-        read into memory.  This is not necessarily the length of each item
-        returned as decoding can take place.
+        def build_response(*args, **kwargs):
+            resp = org_build_response(*args, **kwargs)
+            if not self._patched_response:
+                resp.raw.headers["content-encoding"] = "gzip"
+                self._patched_response = True
+            return resp
 
-        chunk_size must be of type int or None. A value of None will
-        function differently depending on the value of `stream`.
-        stream=True will read data as it arrives in whatever size the
-        chunks are received. If stream=False, data is returned as
-        a single chunk.
+        adapter.build_response = build_response
+```
 
-        If decode_unicode is True, content will be decoded using the best
-        available encoding based on the response.
+## handle_401  (src/requests/auth.py L241-283)
+```
+    def handle_401(self, r, **kwargs):
+        """
+        Takes the given response and tries digest-auth, if needed.
+
+        :rtype: requests.Response
         """
 
-        def generate():
-            # Special case for urllib3.
-            if hasattr(self.raw, "stream"):
-                try:
-                    yield from self.raw.stream(chunk_size, decode_content=True)
-                except ProtocolError as e:
-                    raise ChunkedEncodingError(e)
-                except DecodeError as e:
-                    raise ContentDecodingError(e)
-                except ReadTimeoutError as e:
-                    raise ConnectionError(e)
-                except SSLError as e:
-                    raise RequestsSSLError(e)
-            else:
-                # Standard file-like object.
-                while True:
-                    chunk = self.raw.read(chunk_size)
-                    if not chunk:
-                        break
-                    yield chunk
+        # If response is not 4xx, do not auth
+        # See https://github.com/psf/requests/issues/3772
+        if not 400 <= r.status_code < 500:
+            self._thread_local.num_401_calls = 1
+            return r
 
-            self._content_consumed = True
+        if self._thread_local.pos is not None:
+            # Rewind the file position indicator of the body to where
+            # it was to resend the request.
+            r.request.body.seek(self._thread_local.pos)
+        s_auth = r.headers.get("www-authenticate", "")
 
-        if self._content_consumed and isinstance(self._content, bool):
-            raise StreamConsumedError()
-        elif chunk_size is not None and not isinstance(chunk_size, int):
-            raise TypeError(
-                f"chunk_size must be an int, it is instead a {type(chunk_size)}."
+        if "digest" in s_auth.lower() and self._thread_local.num_401_calls < 2:
+            self._thread_local.num_401_calls += 1
+            pat = re.compile(r"digest ", flags=re.IGNORECASE)
+            self._thread_local.chal = parse_dict_header(pat.sub("", s_auth, count=1))
+
+            # Consume content and release the original connection
+            # to allow our new request to reuse the same one.
+            r.content
+            r.close()
+            prep = r.request.copy()
+            extract_cookies_to_jar(prep._cookies, r.request, r.raw)
+            prep.prepare_cookies(prep._cookies)
+
+            prep.headers["Authorization"] = self.build_digest_header(
+                prep.method, prep.url
             )
-        # simulate reading small chunks of the content
-        reused_chunks = iter_slices(self._content, chunk_size)
+            _r = r.connection.send(prep, **kwargs)
+            _r.history.append(r)
+            _r.request = prep
 
-        stream_chunks = generate()
+            return _r
 
-        chunks = reused_chunks if self._content_consumed else stream_chunks
-
-        if decode_unicode:
-            chunks = stream_decode_response_unicode(chunks, self)
-
-        return chunks
+        self._thread_local.num_401_calls = 1
+        return r
 ```
 
-## json  (src/requests/models.py L949-982)
+## build_digest_header  (src/requests/auth.py L126-234)
 ```
-    def json(self, **kwargs):
-        r"""Decodes the JSON response body (if any) as a Python object.
-
-        This may return a dictionary, list, etc. depending on what is in the response.
-
-        :param \*\*kwargs: Optional arguments that ``json.loads`` takes.
-        :raises requests.exceptions.JSONDecodeError: If the response body does not
-            contain valid json.
+    def build_digest_header(self, method, url):
+        """
+        :rtype: str
         """
 
-        if not self.encoding and self.content and len(self.content) > 3:
-            # No encoding set. JSON RFC 4627 section 3 states we should expect
-            # UTF-8, -16 or -32. Detect which one to use; If the detection or
-            # decoding fails, fall back to `self.text` (using charset_normalizer to make
-            # a best guess).
-            encoding = guess_json_utf(self.content)
-            if encoding is not None:
-                try:
-                    return complexjson.loads(self.content.decode(encoding), **kwargs)
-                except UnicodeDecodeError:
-                    # Wrong UTF codec detected; usually because it's not UTF-8
-                    # but some other 8-bit codec.  This is an RFC violation,
-                    # and the server didn't bother to tell us what codec *was*
-                    # used.
-                    pass
-                except JSONDecodeError as e:
-                    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+        realm = self._thread_local.chal["realm"]
+        nonce = self._thread_local.chal["nonce"]
+        qop = self._thread_local.chal.get("qop")
+        algorithm = self._thread_local.chal.get("algorithm")
+        opaque = self._thread_local.chal.get("opaque")
+        hash_utf8 = None
 
+        if algorithm is None:
+            _algorithm = "MD5"
+        else:
+            _algorithm = algorithm.upper()
+        # lambdas assume digest modules are imported at the top level
+        if _algorithm == "MD5" or _algorithm == "MD5-SESS":
+
+            def md5_utf8(x):
+                if isinstance(x, str):
+                    x = x.encode("utf-8")
+                return hashlib.md5(x).hexdigest()
+
+            hash_utf8 = md5_utf8
+        elif _algorithm == "SHA":
+
+            def sha_utf8(x):
+                if isinstance(x, str):
+                    x = x.encode("utf-8")
+                return hashlib.sha1(x).hexdigest()
+
+            hash_utf8 = sha_utf8
+        elif _algorithm == "SHA-256":
+
+            def sha256_utf8(x):
+                if isinstance(x, str):
+                    x = x.encode("utf-8")
+                return hashlib.sha256(x).hexdigest()
+
+            hash_utf8 = sha256_utf8
+        elif _algorithm == "SHA-512":
+
+            def sha512_utf8(x):
+                if isinstance(x, str):
+                    x = x.encode("utf-8")
+                return hashlib.sha512(x).hexdigest()
+
+            hash_utf8 = sha512_utf8
+
+        KD = lambda s, d: hash_utf8(f"{s}:{d}")  # noqa:E731
+
+        if hash_utf8 is None:
+            return None
+
+        # XXX not implemented yet
+        entdig = None
+        p_parsed = urlparse(url)
+        #: path is request-uri defined in RFC 2616 which should not be empty
+        path = p_parsed.path or "/"
+        if p_parsed.query:
+            path += f"?{p_parsed.query}"
+
+        A1 = f"{self.username}:{realm}:{self.password}"
+        A2 = f"{method}:{path}"
+
+        HA1 = hash_utf8(A1)
+        HA2 = hash_utf8(A2)
+
+        if nonce == self._thread_local.last_nonce:
+            self._thread_local.nonce_count += 1
+        else:
+            self._thread_local.nonce_count = 1
+        ncvalue = f"{self._thread_local.nonce_count:08x}"
+        s = str(self._thread_local.nonce_count).encode("utf-8")
+        s += nonce.encode("utf-8")
+        s += time.ctime().encode("utf-8")
+        s += os.urandom(8)
+
+        cnonce = hashlib.sha1(s).hexdigest()[:16]
+        if _algorithm == "MD5-SESS":
+            HA1 = hash_utf8(f"{HA1}:{nonce}:{cnonce}")
+
+        if not qop:
+            respdig = KD(HA1, f"{nonce}:{HA2}")
+        elif qop == "auth" or "auth" in qop.split(","):
+            noncebit = f"{nonce}:{ncvalue}:{cnonce}:auth:{HA2}"
+            respdig = KD(HA1, noncebit)
+        else:
+            # XXX handle auth-int.
+            return None
+
+        self._thread_local.last_nonce = nonce
+
+        # XXX should the partial digests be encoded too?
+        base = (
+            f'username="{self.username}", realm="{realm}", nonce="{nonce}", '
+            f'uri="{path}", response="{respdig}"'
+        )
+        if opaque:
+            base += f', opaque="{opaque}"'
+        if algorithm:
+            base += f', algorithm="{algorithm}"'
+        if entdig:
+            base += f', digest="{entdig}"'
+        if qop:
+            base += f', qop="auth", nc={ncvalue}, cnonce="{cnonce}"'
+
+        return f"Digest {base}"
+```
+
+## get_policy  (src/requests/cookies.py L435-437)
+```
+    def get_policy(self):
+        """Return the CookiePolicy instance used."""
+        return self._policy
+```
+
+## update  (src/requests/cookies.py L358-364)
+```
+    def update(self, other):
+        """Updates this jar with cookies from another CookieJar or dict-like"""
+        if isinstance(other, cookielib.CookieJar):
+            for cookie in other:
+                self.set_cookie(copy.copy(cookie))
+        else:
+            super().update(other)
+```
+
+## RequestsCookieJar  (src/requests/cookies.py L176-437)
+```
+class RequestsCookieJar(cookielib.CookieJar, MutableMapping):
+    """Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
+    interface.
+
+    This is the CookieJar we create by default for requests and sessions that
+    don't specify one, since some clients may expect response.cookies and
+    session.cookies to support dict operations.
+
+    Requests does not use the dict interface internally; it's just for
+    compatibility with external client code. All requests code should work
+    out of the box with externally provided instances of ``CookieJar``, e.g.
+    ``LWPCookieJar`` and ``FileCookieJar``.
+
+    Unlike a regular CookieJar, this class is pickleable.
+
+    .. warning:: dictionary operations that are normally O(1) may be O(n).
+    """
+
+    def get(self, name, default=None, domain=None, path=None):
+        """Dict-like get() that also supports optional domain and path args in
+        order to resolve naming collisions from using one cookie jar over
+        multiple domains.
+
+        .. warning:: operation is O(n), not O(1).
+        """
         try:
-            return complexjson.loads(self.text, **kwargs)
-        except JSONDecodeError as e:
-            # Catch JSON-related errors and raise as requests.JSONDecodeError
-            # This aliases json.JSONDecodeError and simplejson.JSONDecodeError
-            raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
-```
-
-## merge_environment_settings  (src/requests/sessions.py L752-781)
-```
-    def merge_environment_settings(self, url, proxies, stream, verify, cert):
-        """
-        Check the environment and merge it with some settings.
-
-        :rtype: dict
-        """
-        # Gather clues from the surrounding environment.
-        if self.trust_env:
-            # Set environment's proxies.
-            no_proxy = proxies.get("no_proxy") if proxies is not None else None
-            env_proxies = get_environ_proxies(url, no_proxy=no_proxy)
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

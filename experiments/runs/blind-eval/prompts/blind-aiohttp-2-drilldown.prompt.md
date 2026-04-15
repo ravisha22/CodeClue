@@ -47,8 +47,8 @@ aiohttp/client_proto.py                         371L  abort, close, closed, conn
 -- SYM
 append                              M aiohttp/multipart.py:948    function append
 append_payload                      M aiohttp/multipart.py:963    Adds a new body part to multipart writer.
-decode                              M aiohttp/helpers.py:139    Create a BasicAuth object from an Authorization...
 encode                              M aiohttp/helpers.py:178    Encode credentials.
+decode                              M aiohttp/helpers.py:139    Create a BasicAuth object from an Authorization...
 prepare                             M aiohttp/web_fileresponse.py:243    async_function prepare
 write                               M aiohttp/http_writer.py:167    Writes chunk of data to a stream.
 pre_freeze                          M aiohttp/web_app.py:212    function pre_freeze
@@ -128,12 +128,40 @@ _write_chunked_payload              M aiohttp/http_writer.py:124    Write a chun
 _cleanup_server (aiohttp/web_runner.py:337-338)
   Run any cleanup steps after the server is shutdown.
 
-_cleanup_server (aiohttp/web_runner.py:452-453)
-
 _cleanup_server (aiohttp/web_runner.py:376-377)
+
+_cleanup_server (aiohttp/web_runner.py:452-453)
 
 shutdown (aiohttp/web_runner.py:302-303)
   Call any shutdown hooks to help server close gracefully.
+
+pre_shutdown (aiohttp/web_server.py:107-109)
+  behavior: ACCUMULATE(loop -> result)
+
+shutdown (aiohttp/web_server.py:111-114)
+  sig: shutdown(timeout)
+  called_by: Server
+
+_on_cleanup (aiohttp/web_app.py:430-441)
+  sig: _on_cleanup(app)
+  behavior: ACCUMULATE(loop -> errors); UNWIND(reversed)
+  calls: CleanupError
+  called_by: cleanup, Application
+  raises: CleanupError
+
+resources (aiohttp/web_urldispatcher.py:1029-1030)
+  behavior: DELEGATE(ResourcesView -> result)
+  calls: ResourcesView
+  called_by: _add_prefix_to_resources, PrefixedSubAppResource
+
+_make_server (aiohttp/web_runner.py:421-430)
+  behavior: DELEGATE(Server -> result)
+  uses: Server (web_server)
+
+cleanup (aiohttp/web_app.py:351-360)
+  Causes on_cleanup signal
+  behavior: BRANCH(on_cleanup.frozen -> result, else -> result)
+  calls: _on_cleanup
 
 Application (aiohttp/web_app.py:71-400)
   imports: asyncio, logging, warnings, aiosignal, frozenlist
@@ -145,13 +173,6 @@ TestServer (examples/token_refresh_middleware.py:121-243)
   imports: asyncio, hashlib, logging, secrets, http
   calls: _process_token_refresh, generate_access_token, verify_bearer_token
   called_by: run_test_server
-
-_on_cleanup (aiohttp/web_app.py:430-441)
-  sig: _on_cleanup(app)
-  behavior: ACCUMULATE(loop -> errors); UNWIND(reversed)
-  calls: CleanupError
-  called_by: cleanup, Application
-  raises: CleanupError
 
 _cleanup_writer (aiohttp/client_reqrep.py:563-566)
   called_by: __del__, _response_eof, close, release, ClientResponse
@@ -172,11 +193,6 @@ ResourcesView (aiohttp/web_urldispatcher.py:934-945)
   imports: asyncio, base64, hashlib, html, inspect
   called_by: resources, UrlDispatcher
 
-resources (aiohttp/web_urldispatcher.py:1029-1030)
-  behavior: DELEGATE(ResourcesView -> result)
-  calls: ResourcesView
-  called_by: _add_prefix_to_resources, PrefixedSubAppResource
-
 cleanup (aiohttp/web_runner.py:305-330)
   behavior: ACCUMULATE(loop -> result)
   calls: stop
@@ -188,23 +204,23 @@ _add_prefix_to_resources (aiohttp/web_urldispatcher.py:717-724)
   calls: index_resource, resources, unindex_resource
   called_by: PrefixedSubAppResource
 
-run_test_server (examples/retry_middleware.py:150-164)
-  Run a simple test server.
-  calls: TestServer
-  called_by: main
-
 run_test_server (examples/combined_middleware.py:238-252)
   Run a test server with various endpoints.
   calls: TestServer
   called_by: main
 
-run_test_server (examples/basic_auth_middleware.py:119-131)
-  Run a simple test server with basic auth endpoints.
+run_test_server (examples/retry_middleware.py:150-164)
+  Run a simple test server.
   calls: TestServer
   called_by: main
 
 run_test_server (examples/logging_middleware.py:87-102)
   Run a simple test server.
+  calls: TestServer
+  called_by: main
+
+run_test_server (examples/basic_auth_middleware.py:119-131)
+  Run a simple test server with basic auth endpoints.
   calls: TestServer
   called_by: main
 
@@ -221,24 +237,9 @@ AiohttpServer (aiohttp/pytest_plugin.py:51-54)
   extends: Protocol
   imports: asyncio, inspect, warnings, pytest, test_utils
 
-AppKey (aiohttp/helpers.py:890-891)
-  Keys for static typing support in Application.
-  imports: asyncio, base64, binascii, enum, inspect
-
-AppRunner (aiohttp/web_runner.py:380-453)
-  Web Application runner
-  imports: asyncio, signal, socket, yarl, http_parser
-  calls: cleanup
-  raises: TypeError
-
 HTTPInternalServerError (aiohttp/web_exceptions.py:463-464)
   extends: HTTPServerError
   attrs: status_code=500
-  imports: warnings, http, multidict, yarl, helpers
-
-NotAppKeyWarning (aiohttp/web_exceptions.py:75-76)
-  Warning when not using AppKey in Application.
-  extends: UserWarning
   imports: warnings, http, multidict, yarl, helpers
 
 Server (aiohttp/web_server.py:30-126)
@@ -264,19 +265,14 @@ ServerTimeoutError (aiohttp/client_exceptions.py:227-228)
   extends: ServerConnectionError, TimeoutError
   imports: asyncio, multidict, typedefs, ssl, client_reqrep
 
-TestServer (examples/retry_middleware.py:91-147)
-  Test server with stateful endpoints for retry testing.
-  imports: asyncio, logging, http, aiohttp
-  called_by: run_test_server
-
 TestServer (examples/basic_auth_middleware.py:59-116)
   Test server for basic auth endpoints.
   imports: asyncio, base64, binascii, logging, aiohttp
   called_by: run_test_server
 
-TestServer (examples/logging_middleware.py:59-84)
-  Test server for logging middleware demo.
-  imports: asyncio, logging, aiohttp
+TestServer (examples/retry_middleware.py:91-147)
+  Test server with stateful endpoints for retry testing.
+  imports: asyncio, logging, http, aiohttp
   called_by: run_test_server
 
 TestServer (examples/combined_middleware.py:159-235)
@@ -284,36 +280,22 @@ TestServer (examples/combined_middleware.py:159-235)
   imports: asyncio, base64, binascii, logging, http
   called_by: run_test_server
 
-WSServerHandshakeError (aiohttp/client_exceptions.py:106-107)
-  websocket server handshake error.
-  extends: ClientResponseError
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
+TestServer (examples/logging_middleware.py:59-84)
+  Test server for logging middleware demo.
+  imports: asyncio, logging, aiohttp
+  called_by: run_test_server
 
 _cleanup (aiohttp/connector.py:380-417)
   Cleanup unused transports.
-
-_create_ssl_context (aiohttp/worker.py:205-220)
-  Creates SSLContext instance for usage in asyncio.create_server.
-  sig: _create_ssl_context(cfg)
-  called_by: _run, GunicornWebWorker
-  raises: RuntimeError
 
 _make_server (aiohttp/web_runner.py:333-334)
   Return a new server for the runner to serve requests.
 
 _make_server (aiohttp/web_runner.py:373-374)
 
-_make_server (aiohttp/web_runner.py:421-430)
-  behavior: DELEGATE(Server -> result)
-  uses: Server (web_server)
-
 _on_startup (aiohttp/web_app.py:420-428)
   sig: _on_startup(app)
   behavior: ACCUMULATE(loop -> exits)
-
-add_app (aiohttp/abc.py:84-85)
-  Add application to the nested apps stack.
-  sig: add_app(app)
 
 aiohttp_raw_server (aiohttp/pytest_plugin.py:325-349)
   Factory to create a RawTestServer instance, given a web handler.
@@ -325,26 +307,7 @@ aiohttp_server (aiohttp/pytest_plugin.py:296-321)
   sig: aiohttp_server(loop)
   uses: TestServer (test_utils)
 
-app (aiohttp/web_request.py:862-866)
-  Application instance.
-
-cleanup (aiohttp/web_app.py:351-360)
-  Causes on_cleanup signal
-  behavior: BRANCH(on_cleanup.frozen -> result, else -> result)
-  calls: _on_cleanup
-
 cleanup_ctx (aiohttp/web_app.py:326-327)
-
-close (aiohttp/payload.py:325-335)
-  Close the payload if it holds any resources.
-
-close (aiohttp/payload.py:681-689)
-  Close the payload if it holds any resources.
-
-iter_chunks (aiohttp/streams.py:84-90)
-  Yield chunks of data as they are received by the server.
-  behavior: DELEGATE(ChunkTupleAsyncStreamIterator -> result)
-  calls: ChunkTupleAsyncStreamIterator
 
 named_resources (aiohttp/web_urldispatcher.py:1035-1036)
   behavior: DELEGATE(MappingProxyType -> result)
@@ -352,173 +315,296 @@ named_resources (aiohttp/web_urldispatcher.py:1035-1036)
 
 on_cleanup (aiohttp/web_app.py:322-323)
 
+on_shutdown (examples/background_tasks.py:29-31)
+  sig: on_shutdown(app)
+  behavior: ACCUMULATE(loop -> result)
+
 on_shutdown (aiohttp/web_app.py:318-319)
+
+on_shutdown (examples/web_ws.py:49-51)
+  sig: on_shutdown(app)
+  behavior: ACCUMULATE(loop -> result)
+
+on_startup (aiohttp/web_app.py:314-315)
+
+server (aiohttp/web_runner.py:269-270)
+
+shutdown (aiohttp/web_app.py:344-349)
+  Causes on_shutdown signal
+
+shutdown (aiohttp/web_runner.py:418-419)
+
+shutdown (aiohttp/web_runner.py:370-371)
+
+startup (aiohttp/web_app.py:337-342)
+  Causes on_startup signal
+
+AppKey (aiohttp/helpers.py:890-891)
+  Keys for static typing support in Application.
+  imports: asyncio, base64, binascii, enum, inspect
+
+AppRunner (aiohttp/web_runner.py:380-453)
+  Web Application runner
+  imports: asyncio, signal, socket, yarl, http_parser
+  calls: cleanup
+  raises: TypeError
+
+NotAppKeyWarning (aiohttp/web_exceptions.py:75-76)
+  Warning when not using AppKey in Application.
+  extends: UserWarning
+  imports: warnings, http, multidict, yarl, helpers
+
+WSServerHandshakeError (aiohttp/client_exceptions.py:106-107)
+  websocket server handshake error.
+  extends: ClientResponseError
+  imports: asyncio, multidict, typedefs, ssl, client_reqrep
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 13 with behavior annotations
-drill: examples/token_refresh_middleware.py (~39 lines, _process_token_refresh)
-drill: aiohttp/connector.py (~35 lines, _cleanup)
-drill: aiohttp/_cookie_helpers.py (~29 lines, preserve_morsel_with_coded_value)
+coverage: 80 symbols in L3, 15 with behavior annotations
+drill: aiohttp/web_runner.py (~2 lines, _cleanup_server)
+drill: aiohttp/web_runner.py (~1 lines, _cleanup_server)
+drill: aiohttp/web_runner.py (~1 lines, _cleanup_server)
+drill: aiohttp/web_runner.py (~2 lines, shutdown)
 
 --- END CLUE FILE ---
 
 --- SOURCE SNIPPETS (File 2 Drill-Down) ---
-## _process_token_refresh  (examples/token_refresh_middleware.py L139-181)
+## _cleanup_server  (aiohttp/web_runner.py L376-377)
 ```
-    async def _process_token_refresh(self, data: dict[str, str]) -> web.Response:
-        """Process the token refresh request."""
-        refresh_token = data.get("refresh_token")
-
-        if not refresh_token:
-            return web.json_response({"error": "refresh_token required"}, status=400)
-
-        # Hash the refresh token to look it up
-        refresh_token_hash = hashlib.sha256(refresh_token.encode()).hexdigest()
-
-        if refresh_token_hash not in self.refresh_tokens_db:
-            return web.json_response({"error": "Invalid refresh token"}, status=401)
-
-        user_data = self.refresh_tokens_db[refresh_token_hash]
-
-        # Generate new access token
-        access_token = self.generate_access_token()
-        expires_in = 300  # 5 minutes for demo
-
-        # Store the access token with expiry
-        token_hash = hashlib.sha256(access_token.encode()).hexdigest()
-        self.tokens_db[token_hash] = {
-            "user_id": user_data["user_id"],
-            "username": user_data["username"],
-            "expires_at": time.time() + expires_in,
-            "issued_at": time.time(),
-        }
-
-        # Clean up expired tokens periodically
-        current_time = time.time()
-        self.tokens_db = {
-            k: v
-            for k, v in self.tokens_db.items()
-            if isinstance(v["expires_at"], float) and v["expires_at"] > current_time
-        }
-
-        return web.json_response(
-            {
-                "access_token": access_token,
-                "token_type": "Bearer",
-                "expires_in": expires_in,
-            }
-        )
+    async def _cleanup_server(self) -> None:
+        pass
 ```
 
-## _cleanup  (aiohttp/connector.py L380-417)
+## shutdown  (tests/test_web_runner.py L310-312)
 ```
-    def _cleanup(self) -> None:
-        """Cleanup unused transports."""
-        if self._cleanup_handle:
-            self._cleanup_handle.cancel()
-            # _cleanup_handle should be unset, otherwise _release() will not
-            # recreate it ever!
-            self._cleanup_handle = None
-
-        now = monotonic()
-        timeout = self._keepalive_timeout
-
-        if self._conns:
-            connections = defaultdict(deque)
-            deadline = now - timeout
-            for key, conns in self._conns.items():
-                alive: deque[tuple[ResponseHandler, float]] = deque()
-                for proto, use_time in conns:
-                    if proto.is_connected() and use_time - deadline >= 0:
-                        alive.append((proto, use_time))
-                        continue
-                    transport = proto.transport
-                    proto.close()
-                    if not self._cleanup_closed_disabled and key.is_ssl:
-                        self._cleanup_closed_transports.append(transport)
-
-                if alive:
-                    connections[key] = alive
-
-            self._conns = connections
-
-        if self._conns:
-            self._cleanup_handle = helpers.weakref_handle(
-                self,
-                "_cleanup",
-                timeout,
-                self._loop,
-                timeout_ceil_threshold=self._timeout_ceil_threshold,
-            )
+    async def shutdown() -> NoReturn:
+        spy()
+        raise web.GracefulExit()
 ```
 
-## preserve_morsel_with_coded_value  (aiohttp/_cookie_helpers.py L85-112)
+## AppRunner  (aiohttp/web_runner.py L380-453)
 ```
-def preserve_morsel_with_coded_value(cookie: Morsel[str]) -> Morsel[str]:
-    """
-    Preserve a Morsel's coded_value exactly as received from the server.
+class AppRunner(BaseRunner[Request]):
+    """Web Application runner"""
 
-    This function ensures that cookie encoding is preserved exactly as sent by
-    the server, which is critical for compatibility with old servers that have
-    strict requirements about cookie formats.
+    __slots__ = ("_app",)
 
-    This addresses the issue described in https://github.com/aio-libs/aiohttp/pull/1453
-    where Python's SimpleCookie would re-encode cookies, breaking authentication
-    with certain servers.
-
-    Args:
-        cookie: A Morsel object from SimpleCookie
-
-    Returns:
-        A Morsel object with preserved coded_value
-
-    """
-    mrsl_val = cast("Morsel[str]", cookie.get(cookie.key, Morsel()))
-    # We use __setstate__ instead of the public set() API because it allows us to
-    # bypass validation and set already validated state. This is more stable than
-    # setting protected attributes directly and unlikely to change since it would
-    # break pickling.
-    mrsl_val.__setstate__(  # type: ignore[attr-defined]
-        {"key": cookie.key, "value": cookie.value, "coded_value": cookie.coded_value}
-    )
-    return mrsl_val
-```
-
-## __aenter__  (aiohttp/test_utils.py L505-507)
-```
-    async def __aenter__(self) -> Self:
-        await self.start_server()
-        return self
-```
-
-## __aexit__  (aiohttp/test_utils.py L509-515)
-```
-    async def __aexit__(
+    def __init__(
         self,
-        exc_type: type[BaseException] | None,
-        exc: BaseException | None,
-        tb: TracebackType | None,
+        app: Application,
+        *,
+        handle_signals: bool = False,
+        access_log_class: type[AbstractAccessLogger] = AccessLogger,
+        **kwargs: Any,
     ) -> None:
-        await self.close()
-```
-
-## __del__  (aiohttp/connector.py L130-143)
-```
-    def __del__(self, _warnings: Any = warnings) -> None:
-        if self._protocol is not None:
-            _warnings.warn(
-                f"Unclosed connection {self!r}", ResourceWarning, source=self
+        if not isinstance(app, Application):
+            raise TypeError(
+                f"The first argument should be web.Application instance, got {app!r}"
             )
-            if self._loop.is_closed():
-                return
+        kwargs["access_log_class"] = access_log_class
 
-            self._connector._release(self._key, self._protocol, should_close=True)
+        if app._handler_args:
+            for k, v in app._handler_args.items():
+                kwargs[k] = v
 
-            context = {"client_connection": self, "message": "Unclosed connection"}
-            if self._source_traceback is not None:
-                context["source_traceback"] = self._source_traceback
-            self._loop.call_exception_handler(context)
+        if not issubclass(kwargs["access_log_class"], AbstractAccessLogger):
+            raise TypeError(
+                "access_log_class must be subclass of "
+                "aiohttp.abc.AbstractAccessLogger, got {}".format(
+                    kwargs["access_log_class"]
+                )
+            )
+
+        super().__init__(handle_signals=handle_signals, **kwargs)
+        self._app = app
+
+    @property
+    def app(self) -> Application:
+        return self._app
+
+    async def shutdown(self) -> None:
+        await self._app.shutdown()
+
+    async def _make_server(self) -> Server[Request]:
+        self._app.on_startup.freeze()
+        await self._app.startup()
+        self._app.freeze()
+
+        return Server(
+            self._app._handle,
+            request_factory=self._make_request,
+            **self._kwargs,
+        )
+
+    def _make_request(
+        self,
+        message: RawRequestMessage,
+        payload: StreamReader,
+        protocol: RequestHandler[Request],
+        writer: AbstractStreamWriter,
+        task: "asyncio.Task[None]",
+        _cls: type[Request] = Request,
+    ) -> Request:
+        loop = asyncio.get_running_loop()
+        return _cls(
+            message,
+            payload,
+            protocol,
+            writer,
+            task,
+            loop,
+            client_max_size=self.app._client_max_size,
+        )
+
+    async def _cleanup_server(self) -> None:
+        await self._app.cleanup()
+```
+
+## BaseRunner  (aiohttp/web_runner.py L252-352)
+```
+class BaseRunner(ABC, Generic[_Request]):
+    __slots__ = ("_handle_signals", "_kwargs", "_server", "_sites", "_shutdown_timeout")
+
+    def __init__(
+        self,
+        *,
+        handle_signals: bool = False,
+        shutdown_timeout: float = 60.0,
+        **kwargs: Any,
+    ) -> None:
+        self._handle_signals = handle_signals
+        self._kwargs = kwargs
+        self._server: Server[_Request] | None = None
+        self._sites: list[BaseSite] = []
+        self._shutdown_timeout = shutdown_timeout
+
+    @property
+    def server(self) -> Server[_Request] | None:
+        return self._server
+
+    @property
+    def addresses(self) -> list[Any]:
+        ret: list[Any] = []
+        for site in self._sites:
+            server = site._server
+            if server is not None:
+                sockets = server.sockets
+                if sockets is not None:
+                    for sock in sockets:
+                        ret.append(sock.getsockname())
+        return ret
+
+    @property
+    def sites(self) -> set[BaseSite]:
+        return set(self._sites)
+
+    async def setup(self) -> None:
+        loop = asyncio.get_event_loop()
+
+        if self._handle_signals:
+            try:
+                loop.add_signal_handler(signal.SIGINT, _raise_graceful_exit)
+                loop.add_signal_handler(signal.SIGTERM, _raise_graceful_exit)
+            except NotImplementedError:
+                # add_signal_handler is not implemented on Windows
+                pass
+
+        self._server = await self._make_server()
+
+    @abstractmethod
+    async def shutdown(self) -> None:
+        """Call any shutdown hooks to help server close gracefully."""
+
+    async def cleanup(self) -> None:
+        # The loop over sites is intentional, an exception on gather()
+        # leaves self._sites in unpredictable state.
+        # The loop guarantees that a site is either deleted on success or
+        # still present on failure
+        for site in list(self._sites):
+            await site.stop()
+
+        if self._server:  # If setup succeeded
+            # Yield to event loop to ensure incoming requests prior to stopping the sites
+            # have all started to be handled before we proceed to close idle connections.
+            await asyncio.sleep(0)
+            self._server.pre_shutdown()
+            await self.shutdown()
+            await self._server.shutdown(self._shutdown_timeout)
+        await self._cleanup_server()
+
+        self._server = None
+        if self._handle_signals:
+            loop = asyncio.get_running_loop()
+            try:
+                loop.remove_signal_handler(signal.SIGINT)
+                loop.remove_signal_handler(signal.SIGTERM)
+            except NotImplementedError:
+                # remove_signal_handler is not implemented on Windows
+                pass
+
+    @abstractmethod
+    async def _make_server(self) -> Server[_Request]:
+        """Return a new server for the runner to serve requests."""
+
+    @abstractmethod
+    async def _cleanup_server(self) -> None:
+        """Run any cleanup steps after the server is shutdown."""
+
+    def _reg_site(self, site: BaseSite) -> None:
+        if site in self._sites:
+            raise RuntimeError(f"Site {site} is already registered in runner {self}")
+        self._sites.append(site)
+
+    def _check_site(self, site: BaseSite) -> None:
+        if site not in self._sites:
+            raise RuntimeError(f"Site {site} is not registered in runner {self}")
+
+    def _unreg_site(self, site: BaseSite) -> None:
+        if site not in self._sites:
+            raise RuntimeError(f"Site {site} is not registered in runner {self}")
+        self._sites.remove(site)
+```
+
+## cleanup  (tests/test_payload.py L49-52)
+```
+def cleanup(
+    cleanup_payload_pending_file_closes: None,
+) -> None:
+    """Ensure all pending file close operations complete during test teardown."""
+```
+
+## ServerRunner  (aiohttp/web_runner.py L355-377)
+```
+class ServerRunner(BaseRunner[BaseRequest]):
+    """Low-level web server runner"""
+
+    __slots__ = ("_web_server",)
+
+    def __init__(
+        self,
+        web_server: Server[BaseRequest],
+        *,
+        handle_signals: bool = False,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(handle_signals=handle_signals, **kwargs)
+        self._web_server = web_server
+
+    async def shutdown(self) -> None:
+        pass
+
+    async def _make_server(self) -> Server[BaseRequest]:
+        return self._web_server
+
+    async def _cleanup_server(self) -> None:
+        pass
+```
+
+## _make_server  (aiohttp/web_runner.py L373-374)
+```
+    async def _make_server(self) -> Server[BaseRequest]:
+        return self._web_server
 ```
 
 ## __init__  (tests/test_worker.py L31-38)
@@ -533,105 +619,54 @@ def preserve_morsel_with_coded_value(cookie: Morsel[str]) -> Morsel[str]:
         self.wsgi = web.Application()
 ```
 
-## _available_connections  (aiohttp/connector.py L528-551)
+## app  (tests/test_web_websocket.py L31-35)
 ```
-    def _available_connections(self, key: "ConnectionKey") -> int:
-        """
-        Return number of available connections.
-
-        The limit, limit_per_host and the connection key are taken into account.
-
-        If it returns less than 1 means that there are no connections
-        available.
-        """
-        # check total available connections
-        # If there are no limits, this will always return 1
-        total_remain = 1
-
-        if self._limit and (total_remain := self._limit - len(self._acquired)) <= 0:
-            return total_remain
-
-        # check limit per host
-        if host_remain := self._limit_per_host:
-            if acquired := self._acquired_per_host.get(key):
-                host_remain -= len(acquired)
-            if total_remain > host_remain:
-                return host_remain
-
-        return total_remain
+def app(loop: asyncio.AbstractEventLoop) -> web.Application:
+    ret: web.Application = mock.create_autospec(web.Application, spec_set=True)
+    ret.on_response_prepare = aiosignal.Signal(ret)  # type: ignore[misc]
+    ret.on_response_prepare.freeze()
+    return ret
 ```
 
-## _cleanup_closed  (aiohttp/connector.py L419-440)
+## addresses  (aiohttp/web_runner.py L273-282)
 ```
-    def _cleanup_closed(self) -> None:
-        """Double confirmation for transport close.
-
-        Some broken ssl servers may leave socket open without proper close.
-        """
-        if self._cleanup_closed_handle:
-            self._cleanup_closed_handle.cancel()
-
-        for transport in self._cleanup_closed_transports:
-            if transport is not None:
-                transport.abort()
-
-        self._cleanup_closed_transports = []
-
-        if not self._cleanup_closed_disabled:
-            self._cleanup_closed_handle = helpers.weakref_handle(
-                self,
-                "_cleanup_closed",
-                self._cleanup_closed_period,
-                self._loop,
-                timeout_ceil_threshold=self._timeout_ceil_threshold,
-            )
+    def addresses(self) -> list[Any]:
+        ret: list[Any] = []
+        for site in self._sites:
+            server = site._server
+            if server is not None:
+                sockets = server.sockets
+                if sockets is not None:
+                    for sock in sockets:
+                        ret.append(sock.getsockname())
+        return ret
 ```
 
-## _close_immediately  (aiohttp/connector.py L1013-1025)
+## server  (aiohttp/web_runner.py L269-270)
 ```
-    def _close_immediately(self, *, abort_ssl: bool = False) -> list[Awaitable[object]]:
-        for fut in chain.from_iterable(self._throttle_dns_futures.values()):
-            fut.cancel()
-
-        waiters = super()._close_immediately(abort_ssl=abort_ssl)
-
-        for t in self._resolve_host_tasks:
-            t.cancel()
-            waiters.append(t)
-
-        return waiters
-
-    @property
+    def server(self) -> Server[_Request] | None:
+        return self._server
 ```
 
-## _create_connection  (tests/test_client_middleware.py L878-882)
+## setup  (aiohttp/web_runner.py L288-299)
 ```
-        async def _create_connection(
-            self, req: ClientRequest, traces: list["Trace"], timeout: "ClientTimeout"
-        ) -> ResponseHandler:
-            self.connection_attempts += 1
-            return await super()._create_connection(req, traces, timeout)
+    async def setup(self) -> None:
+        loop = asyncio.get_event_loop()
+
+        if self._handle_signals:
+            try:
+                loop.add_signal_handler(signal.SIGINT, _raise_graceful_exit)
+                loop.add_signal_handler(signal.SIGTERM, _raise_graceful_exit)
+            except NotImplementedError:
+                # add_signal_handler is not implemented on Windows
+                pass
+
+        self._server = await self._make_server()
 ```
 
-## _get  (aiohttp/connector.py L678-718)
+## stop  (tests/test_run_app.py L1011-1013)
 ```
-    async def _get(
-        self, key: "ConnectionKey", traces: list["Trace"]
-    ) -> Connection | None:
-        """Get next reusable connection for the key or None.
-
-        The connection will be marked as acquired.
-        """
-        if (conns := self._conns.get(key)) is None:
-            return None
-
-        t1 = monotonic()
-        while conns:
-            proto, t0 = conns.popleft()
-            # We will we reuse the connection if its connected and
-            # the keepalive timeout has not been exceeded
-            if proto.is_connected() and t1 - t0 <= self._keepalive_timeout:
-                if not conns:
+    async def stop(self, request: web.Request) -> web.Response:
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

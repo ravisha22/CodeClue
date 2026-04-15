@@ -127,6 +127,16 @@ Session (src/requests/sessions.py:356-818)
   raises: InvalidSchema, ValueError
   uses: InvalidSchema (exceptions), PreparedRequest (models), RequestsCookieJar (cookies), Request (models)
 
+request_url (src/requests/adapters.py:524-554)
+  Obtain the url to use when making the final request.
+  sig: request_url(request, proxies)
+  called_by: HTTPAdapter
+
+session (src/requests/sessions.py:821-833)
+  Returns a :class:`Session` for context-management.
+  behavior: DELEGATE(Session -> result)
+  calls: Session
+
 close (src/requests/sessions.py:796-799)
   Closes all adapters and as such the session
   behavior: ACCUMULATE(loop -> result)
@@ -142,6 +152,69 @@ get_netrc_auth (src/requests/utils.py:206-247)
   Returns the Requests tuple auth for a given url from netrc.
   sig: get_netrc_auth(url, raise_errors)
   behavior: BRANCH(netrc_file -> result, else -> result)
+
+SessionRedirectMixin (src/requests/sessions.py:107-353)
+  imports: adapters, auth, compat, cookies, exceptions
+  calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
+  raises: TooManyRedirects
+
+prepare_url (src/requests/models.py:411-483)
+  Prepares the given HTTP URL.
+  sig: prepare_url(url, params)
+  behavior: BRANCH(isinstance_bytes -> result, else -> result)
+  calls: _get_idna_encoded_host, _encode_params
+  called_by: PreparedRequest
+  raises: MissingSchema, InvalidURL
+  uses: MissingSchema (exceptions), InvalidURL (exceptions)
+
+BaseAdapter (src/requests/adapters.py:114-141)
+  The Base Transport Adapter
+  imports: socket, warnings, urllib3.exceptions, urllib3.poolmanager, urllib3.util
+  raises: NotImplementedError
+
+InvalidProxyURL (src/requests/exceptions.py:116-117)
+  The proxy URL provided is invalid.
+  extends: InvalidURL
+  imports: urllib3.exceptions, compat
+
+InvalidURL (src/requests/exceptions.py:108-109)
+  The URL provided was somehow invalid.
+  extends: RequestException, ValueError
+  imports: urllib3.exceptions, compat
+
+build_response (src/requests/adapters.py:337-372)
+  Builds a :class:`Response <requests.Response>` object from a urllib3
+  sig: build_response(req, resp)
+  behavior: BRANCH(isinstance_bytes -> result, else -> result)
+  called_by: HTTPAdapter
+  uses: Response (models), CaseInsensitiveDict (structures)
+
+get_auth_from_url (src/requests/utils.py:1005-1018)
+  Given a url with authentication components, extract them into a tuple of
+  sig: get_auth_from_url(url)
+
+get_full_url (src/requests/cookies.py:49-67)
+  behavior: GUARD(not_r.headers.get -> pass_through)
+  calls: get
+
+path_url (src/requests/models.py:88-106)
+  Build the path URL to use.
+
+get_connection_with_tls_context (src/requests/adapters.py:424-471)
+  Returns a urllib3 connection for the given request and TLS settings.
+  sig: get_connection_with_tls_context(request, verify, proxies, cert)
+  behavior: BRANCH(proxy -> raise_InvalidProxyURL, else -> result)
+  calls: build_connection_pool_key_attributes, proxy_manager_for
+  called_by: HTTPAdapter
+  raises: InvalidURL, InvalidProxyURL
+  uses: InvalidURL (exceptions), InvalidProxyURL (exceptions)
+
+cert_verify (src/requests/adapters.py:281-335)
+  Verify a SSL certificate.
+  sig: cert_verify(conn, url, verify, cert)
+  behavior: BRANCH(url.lower.startswith_and_verify -> raise_OSError, else -> result)
+  called_by: HTTPAdapter
+  raises: OSError
 
 MockRequest (src/requests/cookies.py:23-100)
   Wraps a `requests.Request` to mimic a `urllib2.Request`.
@@ -162,11 +235,6 @@ update (src/requests/cookies.py:358-364)
   calls: copy, set_cookie
   called_by: __setstate__, copy, RequestsCookieJar, create_cookie, merge_cookies
 
-SessionRedirectMixin (src/requests/sessions.py:107-353)
-  imports: adapters, auth, compat, cookies, exceptions
-  calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
-  raises: TooManyRedirects
-
 raise_for_status (src/requests/models.py:1001-1028)
   Raises :class:`HTTPError`, if one occurred.
   behavior: BRANCH(isinstance_bytes -> result, else -> result)
@@ -174,37 +242,13 @@ raise_for_status (src/requests/models.py:1001-1028)
   raises: HTTPError
   uses: HTTPError (exceptions)
 
-prepare_url (src/requests/models.py:411-483)
-  Prepares the given HTTP URL.
-  sig: prepare_url(url, params)
-  behavior: BRANCH(isinstance_bytes -> result, else -> result)
-  calls: _get_idna_encoded_host, _encode_params
-  called_by: PreparedRequest
-  raises: MissingSchema, InvalidURL
-  uses: MissingSchema (exceptions), InvalidURL (exceptions)
-
-BaseAdapter (src/requests/adapters.py:114-141)
-  The Base Transport Adapter
-  imports: socket, warnings, urllib3.exceptions, urllib3.poolmanager, urllib3.util
-  raises: NotImplementedError
-
 FileModeWarning (src/requests/exceptions.py:147-148)
   A file was opened in text mode, but Requests determined its binary length.
   extends: RequestsWarning, DeprecationWarning
   imports: urllib3.exceptions, compat
 
-InvalidProxyURL (src/requests/exceptions.py:116-117)
-  The proxy URL provided is invalid.
-  extends: InvalidURL
-  imports: urllib3.exceptions, compat
-
 InvalidSchema (src/requests/exceptions.py:104-105)
   The URL scheme provided is either invalid or unsupported.
-  extends: RequestException, ValueError
-  imports: urllib3.exceptions, compat
-
-InvalidURL (src/requests/exceptions.py:108-109)
-  The URL provided was somehow invalid.
   extends: RequestException, ValueError
   imports: urllib3.exceptions, compat
 
@@ -239,13 +283,6 @@ add_header (src/requests/cookies.py:78-82)
   sig: add_header(key, val)
   raises: NotImplementedError
 
-build_response (src/requests/adapters.py:337-372)
-  Builds a :class:`Response <requests.Response>` object from a urllib3
-  sig: build_response(req, resp)
-  behavior: BRANCH(isinstance_bytes -> result, else -> result)
-  called_by: HTTPAdapter
-  uses: Response (models), CaseInsensitiveDict (structures)
-
 default_headers (src/requests/utils.py:887-898)
   :rtype: requests.structures.CaseInsensitiveDict
   behavior: DELEGATE(CaseInsensitiveDict -> result)
@@ -259,14 +296,6 @@ get_adapter (src/requests/sessions.py:783-794)
   called_by: send, Session
   raises: InvalidSchema
   uses: InvalidSchema (exceptions)
-
-get_auth_from_url (src/requests/utils.py:1005-1018)
-  Given a url with authentication components, extract them into a tuple of
-  sig: get_auth_from_url(url)
-
-get_full_url (src/requests/cookies.py:49-67)
-  behavior: GUARD(not_r.headers.get -> pass_through)
-  calls: get
 
 is_permanent_redirect (src/requests/models.py:779-784)
   True if this Response one of the permanent versions of redirect.
@@ -287,43 +316,18 @@ morsel_to_cookie (src/requests/cookies.py:492-518)
 next (src/requests/models.py:787-789)
   Returns a PreparedRequest for the next request in a redirect chain, if there is one.
 
-path_url (src/requests/models.py:88-106)
-  Build the path URL to use.
-
 prepend_scheme_if_needed (src/requests/utils.py:976-1002)
   Given a URL that may or may not have a scheme, prepend the given scheme.
   sig: prepend_scheme_if_needed(url, new_scheme)
-
-request_url (src/requests/adapters.py:524-554)
-  Obtain the url to use when making the final request.
-  sig: request_url(request, proxies)
-  called_by: HTTPAdapter
 
 select_proxy (src/requests/utils.py:825-848)
   Select a proxy for the url, if applicable.
   sig: select_proxy(url, proxies)
   behavior: ACCUMULATE(loop -> result)
 
-session (src/requests/sessions.py:821-833)
-  Returns a :class:`Session` for context-management.
-  behavior: DELEGATE(Session -> result)
-  calls: Session
-
-urldefragauth (src/requests/utils.py:1051-1065)
-  Given a url remove the fragment and the authentication part.
-  sig: urldefragauth(url)
-
-RequestsCookieJar (src/requests/cookies.py:176-437)
-  Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
-  extends: CookieJar, MutableMapping
-  imports: calendar, copy, compat, threading, dummy_threading
-  calls: CookieConflictError, __contains__, _find_no_duplicates, copy, get, get_policy, iteritems, iterkeys
-  called_by: copy, cookiejar_from_dict
-  raises: KeyError, CookieConflictError
-
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 25 with behavior annotations
+coverage: 80 symbols in L3, 24 with behavior annotations
 
 --- CLUE FILE END ---
 

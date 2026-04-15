@@ -199,11 +199,11 @@ NoSuchOption (src/click/exceptions.py:208-239)
   extends: UsageError
   imports: gettext, globals, utils, core
 
-cli (examples/termui/termui.py:9-11)
-  This script showcases different terminal UI helpers in Click.
-
 cli (examples/completion/completion.py:8-9)
   calls: group
+
+cli (examples/termui/termui.py:9-11)
+  This script showcases different terminal UI helpers in Click.
 
 command (src/click/decorators.py:168-255)
   Creates a new :class:`Command` and uses the decorated function as
@@ -258,36 +258,6 @@ Choice (src/click/types.py:233-398)
   calls: _normalized_mapping, get_invalid_choice_message, normalize_choice, fail, convert_type
   uses: BadParameter (exceptions)
 
-fail (src/click/core.py:718-724)
-  Aborts the execution of the program with a specific error
-  sig: fail(message)
-  called_by: Command, resolve_command, Group
-  raises: UsageError
-  uses: UsageError (exceptions)
-
-get_short_help_str (src/click/core.py:1097-1118)
-  Gets short help for the command or makes it by shortening the
-  sig: get_short_help_str(limit)
-  called_by: Command, format_commands, Group
-
-_complete_visible_commands (src/click/core.py:54-70)
-  List all the subcommands of a group that start with the
-  sig: _complete_visible_commands(ctx, incomplete)
-  behavior: ACCUMULATE(loop -> result)
-  called_by: Command, Group
-
-make_context (src/click/core.py:1182-1217)
-  This function when given an info name and arguments will kick
-  sig: make_context(info_name, args, parent)
-  behavior: ACCUMULATE(loop -> result)
-  calls: scope
-  called_by: Command, Group
-
-scope (src/click/core.py:496-531)
-  This helper method can be used with the context object to promote
-  sig: scope(cleanup)
-  called_by: make_context, Command, Group
-
 ShellComplete (src/click/shell_completion.py:200-301)
   Base class for providing shell completion support.
   imports: gettext, core, utils, shlex, shutil
@@ -307,164 +277,137 @@ FuncParamType (src/click/types.py:171-192)
   called_by: convert_type
   uses: BadParameter (exceptions)
 
-format_help (src/click/core.py:1120-1135)
-  Writes the help into the formatter if it exists.
-  sig: format_help(ctx, formatter)
-  calls: format_epilog, format_help_text, format_usage
-  called_by: Command
-
 _join_param_hints (src/click/exceptions.py:19-23)
   sig: _join_param_hints(param_hint)
   behavior: GUARD(param_hint_and_not_isinstance_st -> /_join)
   called_by: BadParameter, MissingParameter
 
-_normalized_mapping (src/click/types.py:270-286)
-  Returns mapping where keys are the original choices and the values are
-  sig: _normalized_mapping(ctx)
-  calls: normalize_choice
-  called_by: get_invalid_choice_message, Choice
+CommandCollection (src/click/core.py:1961-2014)
+  A :class:`Group` that looks up subcommands on other groups.
+  extends: Group
+  imports: enum, errno, inspect, gettext, itertools
+  calls: _check_nested_chain
+
+_is_incomplete_argument (src/click/shell_completion.py:503-525)
+  Determine if the given parameter is an argument that can still
+  sig: _is_incomplete_argument(ctx, param)
+  called_by: _resolve_incomplete
+
+_is_incomplete_option (src/click/shell_completion.py:537-559)
+  Determine if the given parameter is an option that needs a value.
+  sig: _is_incomplete_option(ctx, args, param)
+  behavior: ACCUMULATE(loop -> result); UNWIND(reversed)
+  calls: _start_of_option
+  called_by: _resolve_incomplete
+
+_start_of_option (src/click/shell_completion.py:528-534)
+  Check if the value looks like the start of an option.
+  sig: _start_of_option(ctx, value)
+  called_by: _is_incomplete_option, _resolve_incomplete
+
+add_command (src/click/core.py:1622-1630)
+  Registers another :class:`Command` with this group.
+  sig: add_command(cmd, name)
+  calls: _check_nested_chain
+  called_by: Group
+  raises: TypeError
+
+complete (src/click/shell_completion.py:291-301)
+  Produce the completion data to send back to the shell.
+  calls: get_completions
+  called_by: shell_complete
+
+get_completion_class (src/click/shell_completion.py:456-463)
+  Look up a registered :class:`ShellComplete` subclass by the name
+  sig: get_completion_class(shell)
+  behavior: DELEGATE(_available_shells.get -> result)
+  called_by: shell_complete
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
 coverage: 70 symbols in L3, 17 with behavior annotations
-drill: src/click/core.py (~70 lines, handle_parse_result)
-drill: src/click/shell_completion.py (~51 lines, _resolve_context)
+drill: src/click/utils.py (~31 lines, _expand_args)
+drill: src/click/core.py (~15 lines, _check_nested_chain)
 drill: src/click/types.py (~40 lines, convert_type)
-drill: src/click/core.py (~34 lines, scope)
+drill: src/click/shell_completion.py (~26 lines, shell_complete)
 
 --- END CLUE FILE ---
 
 --- SOURCE SNIPPETS (File 2 Drill-Down) ---
-## handle_parse_result  (src/click/core.py L2543-2607)
+## _check_nested_chain  (src/click/core.py L73-90)
 ```
-    def handle_parse_result(
-        self, ctx: Context, opts: cabc.Mapping[str, t.Any], args: list[str]
-    ) -> tuple[t.Any, list[str]]:
-        """Process the value produced by the parser from user input.
+def _check_nested_chain(
+    base_command: Group, cmd_name: str, cmd: Command, register: bool = False
+) -> None:
+    if not base_command.chain or not isinstance(cmd, Group):
+        return
 
-        Always process the value through the Parameter's :attr:`type`, wherever it
-        comes from.
+    if register:
+        message = (
+            f"It is not possible to add the group {cmd_name!r} to another"
+            f" group {base_command.name!r} that is in chain mode."
+        )
+    else:
+        message = (
+            f"Found the group {cmd_name!r} as subcommand to another group "
+            f" {base_command.name!r} that is in chain mode. This is not supported."
+        )
 
-        If the parameter is deprecated, this method warn the user about it. But only if
-        the value has been explicitly set by the user (and as such, is not coming from
-        a default).
-
-        :meta private:
-        """
-        with augment_usage_errors(ctx, param=self):
-            value, source = self.consume_value(ctx, opts)
-
-            ctx.set_parameter_source(self.name, source)  # type: ignore
-
-            # Display a deprecation warning if necessary.
-            if (
-                self.deprecated
-                and value is not UNSET
-                and source not in (ParameterSource.DEFAULT, ParameterSource.DEFAULT_MAP)
-            ):
-                extra_message = (
-                    f" {self.deprecated}" if isinstance(self.deprecated, str) else ""
-                )
-                message = _(
-                    "DeprecationWarning: The {param_type} {name!r} is deprecated."
-                    "{extra_message}"
-                ).format(
-                    param_type=self.param_type_name,
-                    name=self.human_readable_name,
-                    extra_message=extra_message,
-                )
-                echo(style(message, fg="red"), err=True)
-
-            # Process the value through the parameter's type.
-            try:
-                value = self.process_value(ctx, value)
-            except Exception:
-                if not ctx.resilient_parsing:
-                    raise
-                # In resilient parsing mode, we do not want to fail the command if the
-                # value is incompatible with the parameter type, so we reset the value
-                # to UNSET, which will be interpreted as a missing value.
-                value = UNSET
-
-        # Add parameter's value to the context.
-        if (
-            self.expose_value
-            # We skip adding the value if it was previously set by another parameter
-            # targeting the same variable name. This prevents parameters competing for
-            # the same name to override each other.
-            and (self.name not in ctx.params or ctx.params[self.name] is UNSET)
-        ):
-            # Click is logically enforcing that the name is None if the parameter is
-            # not to be exposed. We still assert it here to please the type checker.
-            assert self.name is not None, (
-                f"{self!r} parameter's name should not be None when exposing value."
-            )
-            ctx.params[self.name] = value
-
-        return value, args
+    raise RuntimeError(message)
 ```
 
-## _resolve_context  (src/click/shell_completion.py L562-620)
+## _expand_args  (src/click/utils.py L578-628)
 ```
-def _resolve_context(
-    cli: Command,
-    ctx_args: cabc.MutableMapping[str, t.Any],
-    prog_name: str,
-    args: list[str],
-) -> Context:
-    """Produce the context hierarchy starting with the command and
-    traversing the complete arguments. This only follows the commands,
-    it doesn't trigger input prompts or callbacks.
+def _expand_args(
+    args: cabc.Iterable[str],
+    *,
+    user: bool = True,
+    env: bool = True,
+    glob_recursive: bool = True,
+) -> list[str]:
+    """Simulate Unix shell expansion with Python functions.
 
-    :param cli: Command being called.
-    :param prog_name: Name of the executable in the shell.
-    :param args: List of complete args before the incomplete value.
+    See :func:`glob.glob`, :func:`os.path.expanduser`, and
+    :func:`os.path.expandvars`.
+
+    This is intended for use on Windows, where the shell does not do any
+    expansion. It may not exactly match what a Unix shell would do.
+
+    :param args: List of command line arguments to expand.
+    :param user: Expand user home directory.
+    :param env: Expand environment variables.
+    :param glob_recursive: ``**`` matches directories recursively.
+
+    .. versionchanged:: 8.1
+        Invalid glob patterns are treated as empty expansions rather
+        than raising an error.
+
+    .. versionadded:: 8.0
+
+    :meta private:
     """
-    ctx_args["resilient_parsing"] = True
-    with cli.make_context(prog_name, args.copy(), **ctx_args) as ctx:
-        args = ctx._protected_args + ctx.args
+    from glob import glob
 
-        while args:
-            command = ctx.command
+    out = []
 
-            if isinstance(command, Group):
-                if not command.chain:
-                    name, cmd, args = command.resolve_command(ctx, args)
+    for arg in args:
+        if user:
+            arg = os.path.expanduser(arg)
 
-                    if cmd is None:
-                        return ctx
+        if env:
+            arg = os.path.expandvars(arg)
 
-                    with cmd.make_context(
-                        name, args, parent=ctx, resilient_parsing=True
-                    ) as sub_ctx:
-                        ctx = sub_ctx
-                        args = ctx._protected_args + ctx.args
-                else:
-                    sub_ctx = ctx
+        try:
+            matches = glob(arg, recursive=glob_recursive)
+        except re.error:
+            matches = []
 
-                    while args:
-                        name, cmd, args = command.resolve_command(ctx, args)
+        if not matches:
+            out.append(arg)
+        else:
+            out.extend(matches)
 
-                        if cmd is None:
-                            return ctx
-
-                        with cmd.make_context(
-                            name,
-                            args,
-                            parent=ctx,
-                            allow_extra_args=True,
-                            allow_interspersed_args=False,
-                            resilient_parsing=True,
-                        ) as sub_sub_ctx:
-                            sub_ctx = sub_sub_ctx
-                            args = sub_ctx.args
-
-                    ctx = sub_ctx
-                    args = [*sub_ctx._protected_args, *sub_ctx.args]
-            else:
-                break
-
-    return ctx
+    return out
 ```
 
 ## convert_type  (src/click/types.py L1112-1169)
@@ -529,44 +472,79 @@ def convert_type(ty: t.Any | None, default: t.Any | None = None) -> ParamType:
     return FuncParamType(ty)
 ```
 
-## scope  (src/click/core.py L496-531)
+## shell_complete  (src/click/types.py L1041-1057)
 ```
-    def scope(self, cleanup: bool = True) -> cabc.Iterator[Context]:
-        """This helper method can be used with the context object to promote
-        it to the current thread local (see :func:`get_current_context`).
-        The default behavior of this is to invoke the cleanup functions which
-        can be disabled by setting `cleanup` to `False`.  The cleanup
-        functions are typically used for things such as closing file handles.
+    def shell_complete(
+        self, ctx: Context, param: Parameter, incomplete: str
+    ) -> list[CompletionItem]:
+        """Return a special completion marker that tells the completion
+        system to use the shell to provide path completions for only
+        directories or any paths.
 
-        If the cleanup is intended the context object can also be directly
-        used as a context manager.
+        :param ctx: Invocation context for this command.
+        :param param: The parameter that is requesting completion.
+        :param incomplete: Value being completed. May be empty.
 
-        Example usage::
-
-            with ctx.scope():
-                assert get_current_context() is ctx
-
-        This is equivalent::
-
-            with ctx:
-                assert get_current_context() is ctx
-
-        .. versionadded:: 5.0
-
-        :param cleanup: controls if the cleanup functions should be run or
-                        not.  The default is to run these functions.  In
-                        some situations the context only wants to be
-                        temporarily pushed in which case this can be disabled.
-                        Nested pushes automatically defer the cleanup.
+        .. versionadded:: 8.0
         """
-        if not cleanup:
-            self._depth += 1
-        try:
-            with self as rv:
-                yield rv
-        finally:
-            if not cleanup:
-                self._depth -= 1
+        from click.shell_completion import CompletionItem
+
+        type = "dir" if self.dir_okay and not self.file_okay else "file"
+        return [CompletionItem(incomplete, type=type)]
+```
+
+## Tuple  (src/click/types.py L1060-1109)
+```
+class Tuple(CompositeParamType):
+    """The default behavior of Click is to apply a type on a value directly.
+    This works well in most cases, except for when `nargs` is set to a fixed
+    count and different types should be used for different items.  In this
+    case the :class:`Tuple` type can be used.  This type can only be used
+    if `nargs` is set to a fixed number.
+
+    For more information see :ref:`tuple-type`.
+
+    This can be selected by using a Python tuple literal as a type.
+
+    :param types: a list of types that should be used for the tuple items.
+    """
+
+    def __init__(self, types: cabc.Sequence[type[t.Any] | ParamType]) -> None:
+        self.types: cabc.Sequence[ParamType] = [convert_type(ty) for ty in types]
+
+    def to_info_dict(self) -> dict[str, t.Any]:
+        info_dict = super().to_info_dict()
+        info_dict["types"] = [t.to_info_dict() for t in self.types]
+        return info_dict
+
+    @property
+    def name(self) -> str:  # type: ignore
+        return f"<{' '.join(ty.name for ty in self.types)}>"
+
+    @property
+    def arity(self) -> int:  # type: ignore
+        return len(self.types)
+
+    def convert(
+        self, value: t.Any, param: Parameter | None, ctx: Context | None
+    ) -> t.Any:
+        len_type = len(self.types)
+        len_value = len(value)
+
+        if len_value != len_type:
+            self.fail(
+                ngettext(
+                    "{len_type} values are required, but {len_value} was given.",
+                    "{len_type} values are required, but {len_value} were given.",
+                    len_value,
+                ).format(len_type=len_type, len_value=len_value),
+                param=param,
+                ctx=ctx,
+            )
+
+        return tuple(
+            ty(x, param, ctx) for ty, x in zip(self.types, value, strict=False)
+        )
 ```
 
 ## FuncParamType  (src/click/types.py L171-192)
@@ -595,23 +573,45 @@ class FuncParamType(ParamType):
             self.fail(value, param, ctx)
 ```
 
-## Tuple  (src/click/types.py L1060-1109)
+## get_completion_class  (src/click/shell_completion.py L456-463)
 ```
-class Tuple(CompositeParamType):
-    """The default behavior of Click is to apply a type on a value directly.
-    This works well in most cases, except for when `nargs` is set to a fixed
-    count and different types should be used for different items.  In this
-    case the :class:`Tuple` type can be used.  This type can only be used
-    if `nargs` is set to a fixed number.
+def get_completion_class(shell: str) -> type[ShellComplete] | None:
+    """Look up a registered :class:`ShellComplete` subclass by the name
+    provided by the completion instruction environment variable. If the
+    name isn't registered, returns ``None``.
 
-    For more information see :ref:`tuple-type`.
+    :param shell: Name the class is registered under.
+    """
+    return _available_shells.get(shell)
+```
 
-    This can be selected by using a Python tuple literal as a type.
+## complete  (tests/test_shell_completion.py L448-449)
+```
+    def complete(ctx, param, incomplete):
+        return ctx.obj["choices"]
+```
 
-    :param types: a list of types that should be used for the tuple items.
+## ParamType  (src/click/types.py L30-160)
+```
+class ParamType:
+    """Represents the type of a parameter. Validates and converts values
+    from the command line or Python into the correct type.
+
+    To implement a custom type, subclass and implement at least the
+    following:
+
+    -   The :attr:`name` class attribute must be set.
+    -   Calling an instance of the type with ``None`` must return
+        ``None``. This is already implemented by default.
+    -   :meth:`convert` must convert string values to the correct type.
+    -   :meth:`convert` must accept values that are already the correct
+        type.
+    -   It must be able to convert a value if the ``ctx`` and ``param``
+        arguments are ``None``. This can occur when converting prompt
+        input.
     """
 
-    def __init__(self, types: cabc.Sequence[type[t.Any] | ParamType]) -> None:
+    is_composite: t.ClassVar[bool] = False
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

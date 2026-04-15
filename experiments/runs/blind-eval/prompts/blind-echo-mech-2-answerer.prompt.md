@@ -10,31 +10,34 @@ Answer the question below using ONLY the information in the clue file.
 Do not use any external knowledge about the framework or library.
 
 --- CLUE FILE START ---
-=CC v2.1 echo@HEAD 90mod 1272sym
+=CC v2.1 echo@HEAD 44mod 565sym
 ? What happens inside Echo's centralized HTTP error path when handlers return ordinary errors, HTTP errors, or errors after the response is already committed?
 
 
 -- TREE
-echotest/  (6 files)
-middleware/  (47 files)
-bind.go  bind_test.go  binder.go  binder_external_test.go  binder_generic.go  binder_generic_test.go  binder_test.go  context.go  context_generic.go  context_generic_test.go  context_test.go  echo.go  echo_test.go  group.go  group_test.go
+echotest/  (2 files)
+middleware/  (24 files)
+bind.go  binder.go  binder_generic.go  context.go  context_generic.go  echo.go  group.go  httperror.go  ip.go  json.go  renderer.go  response.go  route.go  router.go  router_concurrent.go
 
 -- INDEX
 echo.go                                         865L  Config, DefaultHTTPErrorHandler, AcquireContext, Add, AddRoute
 context.go                                      667L  Attachment, Bind, Blob, Cookie, Cookies
 router.go                                      1074L  Error, Unwrap, AddRouteError, Add, Remove
 bind.go                                         472L  BindBody, BindHeaders, BindPathValues, BindQueryParams, BindUnmarshaler
-context_test.go                                1428L  BenchmarkAllocJSON, BenchmarkAllocJSONP, BenchmarkAllocXML, BenchmarkContext_Store, BenchmarkRealIPForHeaderXForwardFor
 group.go                                        178L  Add, AddRoute, Any, CONNECT, DELETE
-bind_test.go                                   1693L  Bar, BenchmarkBindbindDataWithTags, UnmarshalParam, UnmarshalParams, Node
 binder.go                                      1329L  Error, BindingError, FormFieldBinder, NewBindingError, PathValuesBinder
-binder_external_test.go                         134L  ExampleValueBinder_BindError, ExampleValueBinder_BindErrors, ExampleValueBinder_CustomFunc
 binder_generic.go                               571L  TimeOpts, bindValue
-binder_generic_test.go                         1616L  UnmarshalJSON, JSONUnmarshalerType, TestFormValue, TestFormValueOr, TestFormValue_UnsupportedType
-binder_test.go                                 3252L  BenchmarkDefaultBinder_BindInt64_10_fields, BenchmarkDefaultBinder_BindInt64_single, BenchmarkRawFunc_Int64_single, BenchmarkValueBinder_BindInt64_10_fields, BenchmarkValueBinder_BindInt64_single
 context_generic.go                               43L  
-context_generic_test.go                          70L  TestContextGetInvalidCast, TestContextGetNonExistentKey, TestContextGetOK, TestContextGetOrInvalidCast, TestContextGetOrNonExistentKey
-  ...and 76 more modules
+echotest/context.go                             183L  ServeWithHandler, ToContext, ToContextRecorder, ContextConfig, MultipartForm
+echotest/reader.go                               46L  LoadBytes, TrimNewlineEnd, loadBytes
+httperror.go                                    162L  Error, StatusCode, Unwrap, Wrap, HTTPError
+ip.go                                           309L  ExtractIPDirect, ExtractIPFromRealIPHeader, ExtractIPFromXFFHeader, LegacyIPExtractor, TrustIPRange
+json.go                                          29L  Deserialize, Serialize, DefaultJSONSerializer
+middleware/basic_auth.go                        156L  BasicAuth, ToMiddleware, BasicAuthConfig, BasicAuthWithConfig
+middleware/body_dump.go                         201L  BodyDump, ToMiddleware, BodyDumpConfig, BodyDumpWithConfig, Flush
+middleware/body_limit.go                         99L  BodyLimit, ToMiddleware, BodyLimitConfig, BodyLimitWithConfig, Close
+middleware/compress.go                          235L  Gzip, ToMiddleware, GzipConfig, GzipWithConfig, bufferPool
+  ...and 27 more modules
 
 -- SYM
 Echo.add                            M echo.go:621    function Echo.add
@@ -81,19 +84,18 @@ Echo.File                           M echo.go:609    File registers a new route 
 Echo.Use                            M echo.go:431    Use adds middleware to the chain which is run a...
 subFS                               M echo.go:827    function subFS
 New                                 M echo.go:333    New creates an instance of Echo.
-applyMiddleware                     M echo.go:785    function applyMiddleware
-newIPChecker                        M ip.go:183    function newIPChecker
-Response.Unwrap                     M response.go:105    Unwrap returns the original http.ResponseWriter.
 BindPathValues                      M bind.go:42     BindPathValues binds path parameter values to b...
 unmarshalInputToField               M bind.go:352    function unmarshalInputToField
 ValueBinder.bool                    M binder.go:920    function ValueBinder.bool
 ValueBinder.float                   M binder.go:1006   function ValueBinder.float
 Context.FormValue                   M context.go:319    FormValue returns the form field value for the ...
 Context.IsTLS                       M context.go:150    IsTLS returns true if HTTP connection is TLS ot...
+applyMiddleware                     M echo.go:785    function applyMiddleware
 loadBytes                           M echotest/reader.go:36     function loadBytes
 Group.GET                           M group.go:37     GET implements `Echo#GET()` for sub-routes with...
 Group.StaticFS                      M group.go:122    StaticFS implements `Echo#StaticFS()` for sub-r...
 Group                               C group.go:14     Group is a set of sub-routes for a specified ro...
+newIPChecker                        M ip.go:183    function newIPChecker
 BasicAuthWithConfig                 M middleware/basic_auth.go:92     BasicAuthWithConfig returns an BasicAuthWithCon...
 BodyDumpWithConfig                  M middleware/body_dump.go:68     BodyDumpWithConfig returns a BodyDump middlewar...
 bodyDumpResponseWriter.Write        M middleware/body_dump.go:150    function bodyDumpResponseWriter.Write
@@ -115,11 +117,11 @@ RequestIDWithConfig                 M middleware/request_id.go:37     RequestIDW
 RequestLoggerWithConfig             M middleware/request_logger.go:237    RequestLoggerWithConfig returns a RequestLogger...
 RewriteWithConfig                   M middleware/rewrite.go:48     RewriteWithConfig returns a Rewrite middleware ...
 SecureWithConfig                    M middleware/secure.go:96     SecureWithConfig returns a Secure middleware wi...
-  ...and 487 more symbols
+  ...and 488 more symbols
 
 -- FOCUS
-HTTPStatusCoder (httperror.go:39-39)
-  HTTPStatusCoder is interface that errors can implement to produce status code for HTTP response
+httpError.Error (httperror.go:152-152)
+  behavior: DELEGATE(http.StatusText -> result)
 
 MiddlewareConfigurator (echo.go:121-121)
   MiddlewareConfigurator defines interface for creating middleware handlers with possibility to return configuration error
@@ -136,6 +138,28 @@ UnwrapResponse (response.go:120-120)
   behavior: ACCUMULATE(loop -> result); DISPATCH(t)
   calls: Unwrap
 
+httpError (httperror.go:144-144)
+  type httpError
+  methods: Error, StatusCode, Wrap
+
+httpError.StatusCode (httperror.go:148-148)
+
+httpError.Wrap (httperror.go:156-156)
+  sig: httpError.Wrap(err error)
+
+DefaultHTTPErrorHandler (echo.go:374-374)
+  DefaultHTTPErrorHandler creates new default HTTP error handler implementation.
+  sig: DefaultHTTPErrorHandler(exposeError bool)
+  behavior: GUARD(r -> code); PRECEDENCE(r -> errors -> tmp); DISPATCH(m)
+
+isIgnorableOpenFileError (middleware/static_other.go:13-13)
+  We ignore these errors as there could be handler that matches request path.
+  sig: isIgnorableOpenFileError(err error)
+  behavior: GUARD(os -> var); PRECEDENCE(os -> errors)
+
+HTTPStatusCoder (httperror.go:39-39)
+  HTTPStatusCoder is interface that errors can implement to produce status code for HTTP response
+
 Echo.Add (echo.go:642-642)
   Add registers a new route for an HTTP method and path with matching handler in the router with optional route-level midd
   sig: Echo.Add(method, path string, handler HandlerFunc, middleware ......)
@@ -146,10 +170,6 @@ Echo.Add (echo.go:642-642)
 Response (response.go:18-18)
   Response wraps an http.ResponseWriter and implements its interface to be used by an HTTP handler to construct an HTTP re
   methods: After, Before, Flush, Hijack, Unwrap, Write
-
-DefaultRouter (router.go:60-60)
-  DefaultRouter is the registry of all registered routes for an `Echo` instance for request matching and URL path paramete
-  methods: Add, Remove, Route, Routes, insert, storeRouteInfo
 
 Echo.Start (echo.go:744-744)
   Start stars HTTP server on given address with Echo as a handler serving requests.
@@ -171,9 +191,80 @@ Response.Unwrap (response.go:105-105)
   Unwrap returns the original http.ResponseWriter.
   called_by: UnwrapResponse
 
-httpError (httperror.go:144-144)
-  type httpError
-  methods: Error, StatusCode, Wrap
+Context.SetResponse (context.go:145-145)
+  SetResponse sets `*http.ResponseWriter`.
+  sig: Context.SetResponse(r http.ResponseWriter)
+  called_by: json
+
+Echo.Match (echo.go:510-510)
+  Match registers a new route for multiple HTTP methods and path with matching handler in the router with optional route-l
+  sig: Echo.Match(methods []string, path string, handler HandlerFunc, midd...)
+  behavior: ACCUMULATE(loop -> errs)
+  calls: AddRoute
+
+ResolveResponseStatus (httperror.go:66-66)
+  ResolveResponseStatus returns the Response and HTTP status code that should be (or has been) sent for rw, given an optio
+  sig: ResolveResponseStatus(rw http.ResponseWriter, err error)
+  behavior: GUARD(resp -> result); PRECEDENCE(resp)
+
+ValueBinder.BindError (binder.go:186-186)
+  BindError returns first seen bind error and resets/empties binder errors for further calls
+  behavior: GUARD(b -> pass_through)
+
+ValueExtractorError.Error (middleware/extractor.go:42-42)
+  Error returns errors text
+
+WrapHandler (echo.go:752-752)
+  WrapHandler wraps `http.Handler` into `echo.HandlerFunc`.
+  sig: WrapHandler(h http.Handler)
+  behavior: ACCUMULATE(loop -> result)
+
+WrapMiddleware (echo.go:766-766)
+  WrapMiddleware wraps `func(http.Handler) http.Handler` into `echo.MiddlewareFunc`
+  sig: WrapMiddleware(m func(http.Handler)
+  behavior: ACCUMULATE(loop -> result)
+
+Response.Hijack (response.go:92-92)
+  Hijack implements the http.Hijacker interface to allow an HTTP handler to take over the connection.
+  behavior: DELEGATE(http.NewResponseController -> result)
+  called_by: Hijack
+
+bodyDumpResponseWriter.Hijack (middleware/body_dump.go:161-161)
+  behavior: DELEGATE(http.NewResponseController -> result)
+
+gzipResponseWriter.Hijack (middleware/compress.go:201-201)
+  behavior: DELEGATE(http.NewResponseController -> result)
+
+Echo.serveHTTP (echo.go:700-700)
+  serveHTTP implements `http.Handler` interface, which serves HTTP requests.
+  sig: Echo.serveHTTP(w http.ResponseWriter, r *http.Request)
+  behavior: DELEGATE(h1 -> result); UNWIND(defer)
+  calls: applyMiddleware
+
+Echo.ServeHTTP (echo.go:695-695)
+  ServeHTTP implements `http.Handler` interface, which serves HTTP requests.
+  sig: Echo.ServeHTTP(w http.ResponseWriter, r *http.Request)
+
+StaticDirectoryHandler (echo.go:559-559)
+  StaticDirectoryHandler creates handler function to serve files from provided file system When disablePathUnescaping is s
+  sig: StaticDirectoryHandler(fileSystem fs.FS, disablePathUnescaping bool)
+  behavior: PRECEDENCE(not_disablePathUnescaping -> err)
+  called_by: Static, StaticFS
+
+Context.SetPathValues (context.go:255-255)
+  SetPathValues sets path parameters for current request.
+  sig: Context.SetPathValues(pathValues PathValues)
+  behavior: GUARD(pathValues -> raise_panic)
+  raises: panic
+
+Routes.FilterByPath (route.go:159-159)
+  FilterByPath searched for matching route info by path
+  sig: Routes.FilterByPath(path string)
+  behavior: GUARD(r -> errors.New); PRECEDENCE(r -> rr -> len); ACCUMULATE(loop -> result)
+
+DefaultRouter (router.go:60-60)
+  DefaultRouter is the registry of all registered routes for an `Echo` instance for request matching and URL path paramete
+  methods: Add, Remove, Route, Routes, insert, storeRouteInfo
 
 StartConfig (server.go:26-26)
   StartConfig is for creating configured http.Server instance to start serve http(s) requests with given Echo instance
@@ -203,22 +294,6 @@ Context.HTMLBlob (context.go:440-440)
   calls: Blob
   called_by: HTML
 
-Context.SetResponse (context.go:145-145)
-  SetResponse sets `*http.ResponseWriter`.
-  sig: Context.SetResponse(r http.ResponseWriter)
-  called_by: json
-
-DefaultHTTPErrorHandler (echo.go:374-374)
-  DefaultHTTPErrorHandler creates new default HTTP error handler implementation.
-  sig: DefaultHTTPErrorHandler(exposeError bool)
-  behavior: GUARD(r -> code); PRECEDENCE(r -> errors -> tmp); DISPATCH(m)
-
-Echo.Match (echo.go:510-510)
-  Match registers a new route for multiple HTTP methods and path with matching handler in the router with optional route-l
-  sig: Echo.Match(methods []string, path string, handler HandlerFunc, midd...)
-  behavior: ACCUMULATE(loop -> errs)
-  calls: AddRoute
-
 Gzip (middleware/compress.go:59-59)
   Gzip returns a middleware which compresses HTTP response using gzip compression scheme.
   behavior: DELEGATE(GzipWithConfig -> result)
@@ -237,49 +312,6 @@ HTTPError.Wrap (httperror.go:132-132)
   Wrap eturns new HTTPError with given errors wrapped inside
   sig: HTTPError.Wrap(err error)
 
-ResolveResponseStatus (httperror.go:66-66)
-  ResolveResponseStatus returns the Response and HTTP status code that should be (or has been) sent for rw, given an optio
-  sig: ResolveResponseStatus(rw http.ResponseWriter, err error)
-  behavior: GUARD(resp -> result); PRECEDENCE(resp)
-
-ValueBinder.BindError (binder.go:186-186)
-  BindError returns first seen bind error and resets/empties binder errors for further calls
-  behavior: GUARD(b -> pass_through)
-
-ValueExtractorError.Error (middleware/extractor.go:42-42)
-  Error returns errors text
-
-WrapHandler (echo.go:752-752)
-  WrapHandler wraps `http.Handler` into `echo.HandlerFunc`.
-  sig: WrapHandler(h http.Handler)
-  behavior: ACCUMULATE(loop -> result)
-
-WrapMiddleware (echo.go:766-766)
-  WrapMiddleware wraps `func(http.Handler) http.Handler` into `echo.MiddlewareFunc`
-  sig: WrapMiddleware(m func(http.Handler)
-  behavior: ACCUMULATE(loop -> result)
-
-httpError.Error (httperror.go:152-152)
-  behavior: DELEGATE(http.StatusText -> result)
-
-httpError.StatusCode (httperror.go:148-148)
-
-httpError.Wrap (httperror.go:156-156)
-  sig: httpError.Wrap(err error)
-
-isIgnorableOpenFileError (middleware/static_other.go:13-13)
-  We ignore these errors as there could be handler that matches request path.
-  sig: isIgnorableOpenFileError(err error)
-  behavior: GUARD(os -> var); PRECEDENCE(os -> errors)
-
-ValueBinder (binder.go:92-92)
-  ValueBinder provides utility methods for binding query or path parameter to various Go built-in types
-  methods: BindError, BindErrors, BindUnmarshaler, BindWithDelimiter, Bool, Bools
-
-Context (context.go:40-40)
-  Context represents the context of the current HTTP request.
-  methods: Attachment, Bind, Blob, Cookie, Cookies, Echo
-
 Echo (echo.go:68-68)
   Echo is the top-level framework instance.
   methods: AcquireContext, Add, AddRoute, Any, CONNECT, DELETE
@@ -289,40 +321,9 @@ BindingError.Error (binder.go:87-87)
   behavior: DELEGATE(fmt.Sprintf -> result)
   called_by: bool, durations, float, int, uint
 
-Echo.Static (echo.go:533-533)
-  Static registers a new route with path prefix to serve static files from the provided root directory.
-  sig: Echo.Static(pathPrefix, fsRoot string, middleware ...MiddlewareFunc)
-  behavior: DELEGATE(e.Add -> result)
-  calls: Add, MustSubFS, StaticDirectoryHandler
-
-New (echo.go:333-333)
-  New creates an instance of Echo.
-  calls: NewDefaultFS
-  called_by: NewWithConfig, main
-
-Echo.GET (echo.go:449-449)
-  GET registers a new GET route for a path with matching handler in the router with optional route-level middleware.
-  sig: Echo.GET(path string, h HandlerFunc, m ...MiddlewareFunc)
-  behavior: DELEGATE(e.Add -> result)
-  calls: Add
-  called_by: FileFS, main
-
-Echo.serveHTTP (echo.go:700-700)
-  serveHTTP implements `http.Handler` interface, which serves HTTP requests.
-  sig: Echo.serveHTTP(w http.ResponseWriter, r *http.Request)
-  behavior: DELEGATE(h1 -> result); UNWIND(defer)
-  calls: applyMiddleware
-
-Group.Add (group.go:158-158)
-  Add implements `Echo#Add()` for sub-routes within the Group.
-  sig: Group.Add(method, path string, handler HandlerFunc, middleware ......)
-  calls: AddRoute
-  called_by: Any, CONNECT, DELETE, GET, HEAD, OPTIONS, PATCH, POST
-  raises: panic
-
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 43 with behavior annotations
+coverage: 80 symbols in L3, 41 with behavior annotations
 
 --- CLUE FILE END ---
 

@@ -239,18 +239,6 @@ get (src/requests/sessions.py:595-604)
   calls: request
   called_by: merge_environment_settings, send, Session, should_strip_auth, SessionRedirectMixin, merge_hooks
 
-set (src/requests/cookies.py:206-223)
-  Dict-like set() that also supports optional domain and path args in
-  sig: set(name, value)
-  behavior: BRANCH(isinstance_Morsel -> result, else -> result)
-  calls: get, set_cookie, create_cookie, morsel_to_cookie, remove_cookie_by_name
-  called_by: __setitem__, RequestsCookieJar, create_cookie
-
-SessionRedirectMixin (src/requests/sessions.py:107-353)
-  imports: adapters, auth, compat, cookies, exceptions
-  calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
-  raises: TooManyRedirects
-
 extract_cookies_to_jar (src/requests/cookies.py:124-137)
   Extract the cookies from the response into a CookieJar.
   sig: extract_cookies_to_jar(jar, request, response)
@@ -272,10 +260,6 @@ get_origin_req_host (src/requests/cookies.py:46-47)
 is_unverifiable (src/requests/cookies.py:69-70)
   called_by: unverifiable, MockRequest
 
-set_cookie (src/requests/cookies.py:349-356)
-  sig: set_cookie(cookie)
-  called_by: set, update, RequestsCookieJar, _copy_cookie_jar, cookiejar_from_dict, merge_cookies
-
 send (src/requests/sessions.py:675-750)
   Send a given PreparedRequest.
   sig: send(request)
@@ -295,11 +279,33 @@ mount (src/requests/sessions.py:801-810)
   behavior: ACCUMULATE(loop -> result)
   called_by: __init__, Session
 
-cookiejar_from_dict (src/requests/cookies.py:521-539)
-  Returns a CookieJar from a key/value dictionary.
-  sig: cookiejar_from_dict(cookie_dict, cookiejar, overwrite)
-  calls: set_cookie, RequestsCookieJar, create_cookie
-  called_by: merge_cookies
+prepare_request (src/requests/sessions.py:459-500)
+  Constructs a :class:`PreparedRequest <PreparedRequest>` for
+  sig: prepare_request(request)
+  calls: merge_hooks, merge_setting
+  called_by: request, Session
+  uses: PreparedRequest (models), RequestsCookieJar (cookies)
+
+merge_environment_settings (src/requests/sessions.py:752-781)
+  Check the environment and merge it with some settings.
+  sig: merge_environment_settings(url, proxies, stream, verify, cert)
+  calls: get, merge_setting
+  called_by: request, Session
+
+_copy_cookie_jar (src/requests/cookies.py:440-452)
+  sig: _copy_cookie_jar(jar)
+  behavior: GUARD(jar -> none); ACCUMULATE(loop -> result)
+  calls: copy, set_cookie
+
+merge_setting (src/requests/sessions.py:62-89)
+  Determines appropriate setting for a given request, taking into account
+  sig: merge_setting(request_setting, session_setting, dict_class)
+  behavior: ACCUMULATE(loop -> result)
+  called_by: merge_environment_settings, prepare_request, Session, merge_hooks
+
+__getstate__ (src/requests/cookies.py:415-420)
+  Unlike a normal CookieJar, this class is pickleable.
+  calls: copy
 
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)

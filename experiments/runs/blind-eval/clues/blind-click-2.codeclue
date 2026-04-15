@@ -110,6 +110,10 @@ get_best_encoding                   M src/click/_compat.py:48     Returns the de
   ...and 579 more symbols
 
 -- FOCUS
+OptionHelpExtra (src/click/types.py:1205-1209)
+  extends: TypedDict
+  imports: enum, stat, gettext, exceptions, utils
+
 Tuple (src/click/types.py:1060-1109)
   The default behavior of Click is to apply a type on a value directly.
   extends: CompositeParamType
@@ -117,6 +121,17 @@ Tuple (src/click/types.py:1060-1109)
   calls: fail, convert_type
   called_by: convert_type
   uses: BadParameter (exceptions)
+
+Path (src/click/types.py:879-1057)
+  The ``Path`` type is similar to the :class:`File` type, but
+  extends: ParamType
+  imports: enum, stat, gettext, exceptions, utils
+  calls: fail, coerce_path_result
+  uses: BadParameter (exceptions)
+
+command_path (src/click/core.py:642-658)
+  The computed command path.
+  calls: get_params
 
 MissingParameter (src/click/exceptions.py:137-205)
   Raised if click required an option or argument but it was not
@@ -131,13 +146,6 @@ Command (src/click/core.py:873-1485)
   calls: _main_shell_completion, format_epilog, format_help, format_help_text, format_usage, get_help_option, get_help_option_names, get_params
   raises: NoArgsIsHelpError, Abort
   uses: Exit (exceptions), UsageError (exceptions)
-
-Path (src/click/types.py:879-1057)
-  The ``Path`` type is similar to the :class:`File` type, but
-  extends: ParamType
-  imports: enum, stat, gettext, exceptions, utils
-  calls: fail, coerce_path_result
-  uses: BadParameter (exceptions)
 
 option (src/click/decorators.py:352-377)
   Attaches an option to the command.
@@ -156,18 +164,6 @@ open_file (src/click/utils.py:358-404)
   Open a file, with extra behavior to handle ``'-'`` to indicate
   sig: open_file(filename, mode, encoding, errors, lazy...)
   calls: KeepOpenFile, LazyFile
-
-pager (src/click/_termui_impl.py:369-408)
-  Decide what method to use for paging through text.
-  sig: pager(generator, color)
-  calls: _nullpager, _pipepager, _tempfilepager
-  uses: StringIO (io)
-
-cli (examples/repo/repo.py:44-57)
-  Repo is a command line tool that showcases how to build complex
-  sig: cli(ctx, repo_home, config, verbose)
-  behavior: ACCUMULATE(loop -> result)
-  calls: set_config, Repo
 
 BadArgumentUsage (src/click/exceptions.py:259-265)
   Raised if an argument is generally supplied but the use of the argument
@@ -197,14 +193,6 @@ NoSuchOption (src/click/exceptions.py:208-239)
   extends: UsageError
   imports: gettext, globals, utils, core
 
-OptionHelpExtra (src/click/types.py:1205-1209)
-  extends: TypedDict
-  imports: enum, stat, gettext, exceptions, utils
-
-_detect_program_name (src/click/utils.py:523-577)
-  Determine the command used to run the program, for use in help
-  sig: _detect_program_name(path, _main)
-
 _is_incomplete_option (src/click/shell_completion.py:537-559)
   Determine if the given parameter is an option that needs a value.
   sig: _is_incomplete_option(ctx, args, param)
@@ -221,17 +209,51 @@ argument (src/click/decorators.py:324-349)
   Attaches an argument to the command.
   calls: _param_memo
 
-cli (examples/complex/complex/cli.py:56-60)
-  A complex command line interface.
-  sig: cli(ctx, verbose, home)
-
-command_path (src/click/core.py:642-658)
-  The computed command path.
-  calls: get_params
-
 consume_value (src/click/core.py:3256-3318)
   For :class:`Option`, the value can be collected from an interactive prompt
   sig: consume_value(ctx, opts)
+
+File (src/click/types.py:754-872)
+  Declares a parameter to be a file for reading or writing.
+  extends: ParamType
+  attrs: name='filename'
+  imports: enum, stat, gettext, exceptions, utils
+  calls: resolve_lazy_flag, fail, _is_file_like
+  uses: BadParameter (exceptions)
+
+_is_file_like (src/click/types.py:875-876)
+  sig: _is_file_like(value)
+  called_by: File
+
+coerce_path_result (src/click/types.py:955-966)
+  sig: coerce_path_result(value)
+  called_by: Path
+
+split_envvar_value (src/click/types.py:126-134)
+  Given a value from an environment variable this splits it up
+  sig: split_envvar_value(rv)
+  behavior: DELEGATE(boolop.split -> result)
+
+process_value (src/click/core.py:3320-3335)
+  sig: process_value(ctx, value)
+  behavior: GUARD(is_flag_and_not_required -> value)
+
+process_value (src/click/core.py:2416-2480)
+  Process the value of this parameter:
+  sig: process_value(ctx, value)
+  behavior: BRANCH(value_is_UNSET -> result, else -> result)
+  raises: MissingParameter
+  uses: MissingParameter (exceptions)
+
+pager (src/click/_termui_impl.py:369-408)
+  Decide what method to use for paging through text.
+  sig: pager(generator, color)
+  calls: _nullpager, _pipepager, _tempfilepager
+  uses: StringIO (io)
+
+_detect_program_name (src/click/utils.py:523-577)
+  Determine the command used to run the program, for use in help
+  sig: _detect_program_name(path, _main)
 
 make_parser (src/click/core.py:1081-1086)
   Creates the underlying option parser for this command.
@@ -240,15 +262,6 @@ make_parser (src/click/core.py:1081-1086)
   calls: get_params
   called_by: Command
 
-Group (src/click/core.py:1503-1951)
-  A group is a command that nests other commands (or more groups).
-  extends: Command
-  attrs: allow_extra_args=True, allow_interspersed_args=False
-  imports: enum, errno, inspect, gettext, itertools
-  calls: get_short_help_str, make_context, _make_sub_context, fail, scope, add_command, format_commands, _process_result
-  raises: TypeError, NoArgsIsHelpError, RuntimeError
-  uses: UsageError (exceptions)
-
 fail (src/click/types.py:136-143)
   Helper method to fail with an invalid value message.
   sig: fail(message, param, ctx)
@@ -256,26 +269,12 @@ fail (src/click/types.py:136-143)
   raises: BadParameter
   uses: BadParameter (exceptions)
 
-handle_parse_result (src/click/core.py:2543-2607)
-  Process the value produced by the parser from user input.
-  sig: handle_parse_result(ctx, opts, args)
-  calls: set_parameter_source, augment_usage_errors
-  called_by: Command
-
 _OptionParser (src/click/parser.py:220-499)
   The option parser is an internal class that is ultimately used to
   imports: gettext, exceptions, core, warnings, shell_completion
   calls: _Argument, _Option, _get_value_from_state, _match_long_opt, _match_short_opt, _process_args_for_args, _process_args_for_options, _process_opts
   raises: NoSuchOption, BadOptionUsage
   uses: BadOptionUsage (exceptions), NoSuchOption (exceptions)
-
-Parameter (src/click/core.py:2027-2643)
-  A parameter to a command comes in two versions: they are either
-  attrs: param_type_name='parameter'
-  imports: enum, errno, inspect, gettext, itertools
-  calls: set_parameter_source, check_iter, type_cast_value, value_is_missing, _check_iter, augment_usage_errors
-  raises: NotImplementedError, MissingParameter, ValueError, BadParameter
-  uses: BadParameter (exceptions)
 
 type_cast_value (src/click/core.py:2342-2396)
   Convert and validate a value against the parameter's
@@ -293,20 +292,28 @@ Choice (src/click/types.py:233-398)
   calls: _normalized_mapping, get_invalid_choice_message, normalize_choice, fail, convert_type
   uses: BadParameter (exceptions)
 
-augment_usage_errors (src/click/core.py:98-113)
-  Context manager that attaches extra information to exceptions.
-  sig: augment_usage_errors(ctx, param)
-  called_by: Context, handle_parse_result, Parameter
+_Argument (src/click/parser.py:181-209)
+  imports: gettext, exceptions, core, warnings, shell_completion
+  called_by: add_argument, _OptionParser
+  raises: BadArgumentUsage
 
-get_short_help_str (src/click/core.py:1097-1118)
-  Gets short help for the command or makes it by shortening the
-  sig: get_short_help_str(limit)
-  called_by: Command, format_commands, Group
+LazyFile (src/click/utils.py:109-194)
+  A lazy file works like a regular file but it does not fully open
+  imports: types, globals, typing_extensions, glob, exceptions
+  calls: close, close_intelligently, open, format_filename
+  called_by: open_file
+  raises: FileError
+  uses: FileError (exceptions)
+
+_AtomicFile (src/click/_compat.py:452-485)
+  imports: codecs, io, types, weakref, errno
+  calls: close
+  called_by: open_stream
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 10 with behavior annotations
-drill: src/click/core.py (~70 lines, handle_parse_result)
-drill: src/click/core.py (~65 lines, consume_value)
-drill: src/click/shell_completion.py (~51 lines, _resolve_context)
-drill: src/click/utils.py (~51 lines, _detect_program_name)
+coverage: 80 symbols in L3, 15 with behavior annotations
+drill: src/click/core.py (~18 lines, command_path)
+drill: src/click/decorators.py (~24 lines, option)
+drill: src/click/utils.py (~41 lines, open_file)
+drill: src/click/shell_completion.py (~5 lines, _start_of_option)

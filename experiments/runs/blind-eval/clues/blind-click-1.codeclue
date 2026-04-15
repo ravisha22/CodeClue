@@ -188,11 +188,11 @@ NoSuchOption (src/click/exceptions.py:208-239)
   extends: UsageError
   imports: gettext, globals, utils, core
 
-cli (examples/termui/termui.py:9-11)
-  This script showcases different terminal UI helpers in Click.
-
 cli (examples/completion/completion.py:8-9)
   calls: group
+
+cli (examples/termui/termui.py:9-11)
+  This script showcases different terminal UI helpers in Click.
 
 command (src/click/decorators.py:168-255)
   Creates a new :class:`Command` and uses the decorated function as
@@ -247,36 +247,6 @@ Choice (src/click/types.py:233-398)
   calls: _normalized_mapping, get_invalid_choice_message, normalize_choice, fail, convert_type
   uses: BadParameter (exceptions)
 
-fail (src/click/core.py:718-724)
-  Aborts the execution of the program with a specific error
-  sig: fail(message)
-  called_by: Command, resolve_command, Group
-  raises: UsageError
-  uses: UsageError (exceptions)
-
-get_short_help_str (src/click/core.py:1097-1118)
-  Gets short help for the command or makes it by shortening the
-  sig: get_short_help_str(limit)
-  called_by: Command, format_commands, Group
-
-_complete_visible_commands (src/click/core.py:54-70)
-  List all the subcommands of a group that start with the
-  sig: _complete_visible_commands(ctx, incomplete)
-  behavior: ACCUMULATE(loop -> result)
-  called_by: Command, Group
-
-make_context (src/click/core.py:1182-1217)
-  This function when given an info name and arguments will kick
-  sig: make_context(info_name, args, parent)
-  behavior: ACCUMULATE(loop -> result)
-  calls: scope
-  called_by: Command, Group
-
-scope (src/click/core.py:496-531)
-  This helper method can be used with the context object to promote
-  sig: scope(cleanup)
-  called_by: make_context, Command, Group
-
 ShellComplete (src/click/shell_completion.py:200-301)
   Base class for providing shell completion support.
   imports: gettext, core, utils, shlex, shutil
@@ -296,27 +266,56 @@ FuncParamType (src/click/types.py:171-192)
   called_by: convert_type
   uses: BadParameter (exceptions)
 
-format_help (src/click/core.py:1120-1135)
-  Writes the help into the formatter if it exists.
-  sig: format_help(ctx, formatter)
-  calls: format_epilog, format_help_text, format_usage
-  called_by: Command
-
 _join_param_hints (src/click/exceptions.py:19-23)
   sig: _join_param_hints(param_hint)
   behavior: GUARD(param_hint_and_not_isinstance_st -> /_join)
   called_by: BadParameter, MissingParameter
 
-_normalized_mapping (src/click/types.py:270-286)
-  Returns mapping where keys are the original choices and the values are
-  sig: _normalized_mapping(ctx)
-  calls: normalize_choice
-  called_by: get_invalid_choice_message, Choice
+CommandCollection (src/click/core.py:1961-2014)
+  A :class:`Group` that looks up subcommands on other groups.
+  extends: Group
+  imports: enum, errno, inspect, gettext, itertools
+  calls: _check_nested_chain
+
+_is_incomplete_argument (src/click/shell_completion.py:503-525)
+  Determine if the given parameter is an argument that can still
+  sig: _is_incomplete_argument(ctx, param)
+  called_by: _resolve_incomplete
+
+_is_incomplete_option (src/click/shell_completion.py:537-559)
+  Determine if the given parameter is an option that needs a value.
+  sig: _is_incomplete_option(ctx, args, param)
+  behavior: ACCUMULATE(loop -> result); UNWIND(reversed)
+  calls: _start_of_option
+  called_by: _resolve_incomplete
+
+_start_of_option (src/click/shell_completion.py:528-534)
+  Check if the value looks like the start of an option.
+  sig: _start_of_option(ctx, value)
+  called_by: _is_incomplete_option, _resolve_incomplete
+
+add_command (src/click/core.py:1622-1630)
+  Registers another :class:`Command` with this group.
+  sig: add_command(cmd, name)
+  calls: _check_nested_chain
+  called_by: Group
+  raises: TypeError
+
+complete (src/click/shell_completion.py:291-301)
+  Produce the completion data to send back to the shell.
+  calls: get_completions
+  called_by: shell_complete
+
+get_completion_class (src/click/shell_completion.py:456-463)
+  Look up a registered :class:`ShellComplete` subclass by the name
+  sig: get_completion_class(shell)
+  behavior: DELEGATE(_available_shells.get -> result)
+  called_by: shell_complete
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
 coverage: 70 symbols in L3, 17 with behavior annotations
-drill: src/click/core.py (~70 lines, handle_parse_result)
-drill: src/click/shell_completion.py (~51 lines, _resolve_context)
+drill: src/click/utils.py (~31 lines, _expand_args)
+drill: src/click/core.py (~15 lines, _check_nested_chain)
 drill: src/click/types.py (~40 lines, convert_type)
-drill: src/click/core.py (~34 lines, scope)
+drill: src/click/shell_completion.py (~26 lines, shell_complete)

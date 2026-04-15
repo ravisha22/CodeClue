@@ -335,34 +335,9 @@ type hostClientTransport struct {
 type lbClientTransport struct {
 ```
 
-## composeRedirectURL  (client/transport.go L354-354)
-```
-func composeRedirectURL(base string, location []byte, disablePathNormalizing bool) (string, error) {
-```
-
 ## doRedirectsWithClient  (client/transport.go L299-299)
 ```
 func doRedirectsWithClient(req *fasthttp.Request, resp *fasthttp.Response, maxRedirects int, client redirectClient) error {
-```
-
-## extractTLSConfig  (client/transport.go L249-249)
-```
-func extractTLSConfig(clients []fasthttp.BalancingClient) *tls.Config {
-```
-
-## forEachHostClient  (client/transport.go L231-231)
-```
-func forEachHostClient(lb *fasthttp.LBClient, fn func(*fasthttp.HostClient)) {
-```
-
-## hostClientTransport.Client  (client/transport.go L136-136)
-```
-func (h *hostClientTransport) Client() any {
-```
-
-## hostClientTransport.CloseIdleConnections  (client/transport.go L120-120)
-```
-func (h *hostClientTransport) CloseIdleConnections() {
 ```
 
 ## hostClientTransport.Do  (client/transport.go L104-104)
@@ -385,46 +360,6 @@ func (h *hostClientTransport) DoRedirects(req *fasthttp.Request, resp *fasthttp.
 func (h *hostClientTransport) DoTimeout(req *fasthttp.Request, resp *fasthttp.Response, timeout time.Duration) error {
 ```
 
-## hostClientTransport.SetDial  (client/transport.go L132-132)
-```
-func (h *hostClientTransport) SetDial(dial fasthttp.DialFunc) {
-```
-
-## hostClientTransport.SetStreamResponseBody  (client/transport.go L144-144)
-```
-func (h *hostClientTransport) SetStreamResponseBody(enable bool) {
-```
-
-## hostClientTransport.SetTLSConfig  (client/transport.go L128-128)
-```
-func (h *hostClientTransport) SetTLSConfig(config *tls.Config) {
-```
-
-## hostClientTransport.StreamResponseBody  (client/transport.go L140-140)
-```
-func (h *hostClientTransport) StreamResponseBody() bool {
-```
-
-## hostClientTransport.TLSConfig  (client/transport.go L124-124)
-```
-func (h *hostClientTransport) TLSConfig() *tls.Config {
-```
-
-## httpClientTransport  (client/transport.go L26-26)
-```
-type httpClientTransport interface {
-```
-
-## lbClientTransport.Client  (client/transport.go L202-202)
-```
-func (l *lbClientTransport) Client() any {
-```
-
-## lbClientTransport.CloseIdleConnections  (client/transport.go L177-177)
-```
-func (l *lbClientTransport) CloseIdleConnections() {
-```
-
 ## lbClientTransport.Do  (client/transport.go L158-158)
 ```
 func (l *lbClientTransport) Do(req *fasthttp.Request, resp *fasthttp.Response) error {
@@ -445,9 +380,44 @@ func (l *lbClientTransport) DoRedirects(req *fasthttp.Request, resp *fasthttp.Re
 func (l *lbClientTransport) DoTimeout(req *fasthttp.Request, resp *fasthttp.Response, timeout time.Duration) error {
 ```
 
-## lbClientTransport.SetDial  (client/transport.go L196-196)
+## standardClientTransport.Do  (client/transport.go L50-50)
 ```
-func (l *lbClientTransport) SetDial(dial fasthttp.DialFunc) {
+func (s *standardClientTransport) Do(req *fasthttp.Request, resp *fasthttp.Response) error {
+```
+
+## standardClientTransport.DoDeadline  (client/transport.go L58-58)
+```
+func (s *standardClientTransport) DoDeadline(req *fasthttp.Request, resp *fasthttp.Response, deadline time.Time) error {
+```
+
+## standardClientTransport.DoRedirects  (client/transport.go L62-62)
+```
+func (s *standardClientTransport) DoRedirects(req *fasthttp.Request, resp *fasthttp.Response, maxRedirects int) error {
+```
+
+## standardClientTransport.DoTimeout  (client/transport.go L54-54)
+```
+func (s *standardClientTransport) DoTimeout(req *fasthttp.Request, resp *fasthttp.Response, timeout time.Duration) error {
+```
+
+## composeRedirectURL  (client/transport.go L354-354)
+```
+func composeRedirectURL(base string, location []byte, disablePathNormalizing bool) (string, error) {
+```
+
+## hostClientTransport.SetStreamResponseBody  (client/transport.go L144-144)
+```
+func (h *hostClientTransport) SetStreamResponseBody(enable bool) {
+```
+
+## hostClientTransport.StreamResponseBody  (client/transport.go L140-140)
+```
+func (h *hostClientTransport) StreamResponseBody() bool {
+```
+
+## httpClientTransport  (client/transport.go L26-26)
+```
+type httpClientTransport interface {
 ```
 
 ## lbClientTransport.SetStreamResponseBody  (client/transport.go L223-223)
@@ -455,14 +425,74 @@ func (l *lbClientTransport) SetDial(dial fasthttp.DialFunc) {
 func (l *lbClientTransport) SetStreamResponseBody(enable bool) {
 ```
 
-## lbClientTransport.SetTLSConfig  (client/transport.go L190-190)
-```
-func (l *lbClientTransport) SetTLSConfig(config *tls.Config) {
-```
-
 ## lbClientTransport.StreamResponseBody  (client/transport.go L206-206)
 ```
 func (l *lbClientTransport) StreamResponseBody() bool {
+```
+
+## standardClientTransport.SetStreamResponseBody  (client/transport.go L90-90)
+```
+func (s *standardClientTransport) SetStreamResponseBody(enable bool) {
+```
+
+## standardClientTransport.StreamResponseBody  (client/transport.go L86-86)
+```
+func (s *standardClientTransport) StreamResponseBody() bool {
+```
+
+## extractTLSConfig  (client/transport.go L249-249)
+```
+func extractTLSConfig(clients []fasthttp.BalancingClient) *tls.Config {
+```
+
+## forEachHostClient  (client/transport.go L231-231)
+```
+func forEachHostClient(lb *fasthttp.LBClient, fn func(*fasthttp.HostClient)) {
+```
+
+## hostClientTransport.Client  (client/transport.go L136-136)
+```
+func (h *hostClientTransport) Client() any {
+```
+
+## hostClientTransport.CloseIdleConnections  (client/transport.go L120-120)
+```
+func (h *hostClientTransport) CloseIdleConnections() {
+```
+
+## hostClientTransport.SetDial  (client/transport.go L132-132)
+```
+func (h *hostClientTransport) SetDial(dial fasthttp.DialFunc) {
+```
+
+## hostClientTransport.SetTLSConfig  (client/transport.go L128-128)
+```
+func (h *hostClientTransport) SetTLSConfig(config *tls.Config) {
+```
+
+## hostClientTransport.TLSConfig  (client/transport.go L124-124)
+```
+func (h *hostClientTransport) TLSConfig() *tls.Config {
+```
+
+## lbClientTransport.Client  (client/transport.go L202-202)
+```
+func (l *lbClientTransport) Client() any {
+```
+
+## lbClientTransport.CloseIdleConnections  (client/transport.go L177-177)
+```
+func (l *lbClientTransport) CloseIdleConnections() {
+```
+
+## lbClientTransport.SetDial  (client/transport.go L196-196)
+```
+func (l *lbClientTransport) SetDial(dial fasthttp.DialFunc) {
+```
+
+## lbClientTransport.SetTLSConfig  (client/transport.go L190-190)
+```
+func (l *lbClientTransport) SetTLSConfig(config *tls.Config) {
 ```
 
 ## lbClientTransport.TLSConfig  (client/transport.go L183-183)
@@ -500,44 +530,14 @@ func (s *standardClientTransport) Client() any {
 func (s *standardClientTransport) CloseIdleConnections() {
 ```
 
-## standardClientTransport.Do  (client/transport.go L50-50)
-```
-func (s *standardClientTransport) Do(req *fasthttp.Request, resp *fasthttp.Response) error {
-```
-
-## standardClientTransport.DoDeadline  (client/transport.go L58-58)
-```
-func (s *standardClientTransport) DoDeadline(req *fasthttp.Request, resp *fasthttp.Response, deadline time.Time) error {
-```
-
-## standardClientTransport.DoRedirects  (client/transport.go L62-62)
-```
-func (s *standardClientTransport) DoRedirects(req *fasthttp.Request, resp *fasthttp.Response, maxRedirects int) error {
-```
-
-## standardClientTransport.DoTimeout  (client/transport.go L54-54)
-```
-func (s *standardClientTransport) DoTimeout(req *fasthttp.Request, resp *fasthttp.Response, timeout time.Duration) error {
-```
-
 ## standardClientTransport.SetDial  (client/transport.go L78-78)
 ```
 func (s *standardClientTransport) SetDial(dial fasthttp.DialFunc) {
 ```
 
-## standardClientTransport.SetStreamResponseBody  (client/transport.go L90-90)
-```
-func (s *standardClientTransport) SetStreamResponseBody(enable bool) {
-```
-
 ## standardClientTransport.SetTLSConfig  (client/transport.go L74-74)
 ```
 func (s *standardClientTransport) SetTLSConfig(config *tls.Config) {
-```
-
-## standardClientTransport.StreamResponseBody  (client/transport.go L86-86)
-```
-func (s *standardClientTransport) StreamResponseBody() bool {
 ```
 
 ## standardClientTransport.TLSConfig  (client/transport.go L70-70)

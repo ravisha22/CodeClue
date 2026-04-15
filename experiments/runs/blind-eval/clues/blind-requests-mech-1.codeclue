@@ -106,6 +106,12 @@ build_connection_pool_key_attributes M src/requests/adapters.py:374    Build the
   ...and 217 more symbols
 
 -- FOCUS
+merge_environment_settings (src/requests/sessions.py:752-781)
+  Check the environment and merge it with some settings.
+  sig: merge_environment_settings(url, proxies, stream, verify, cert)
+  calls: get, merge_setting
+  called_by: request, Session
+
 Session (src/requests/sessions.py:356-818)
   A Requests session.
   extends: SessionRedirectMixin
@@ -115,17 +121,53 @@ Session (src/requests/sessions.py:356-818)
   raises: InvalidSchema, ValueError
   uses: InvalidSchema (exceptions), PreparedRequest (models), RequestsCookieJar (cookies), Request (models)
 
-merge_environment_settings (src/requests/sessions.py:752-781)
-  Check the environment and merge it with some settings.
-  sig: merge_environment_settings(url, proxies, stream, verify, cert)
-  calls: get, merge_setting
-  called_by: request, Session
+session (src/requests/sessions.py:821-833)
+  Returns a :class:`Session` for context-management.
+  behavior: DELEGATE(Session -> result)
+  calls: Session
 
 merge_hooks (src/requests/sessions.py:92-104)
   Properly merges both requests and session hooks.
   sig: merge_hooks(request_hooks, session_hooks, dict_class)
   calls: get, merge_setting
   called_by: prepare_request, Session
+
+SessionRedirectMixin (src/requests/sessions.py:107-353)
+  imports: adapters, auth, compat, cookies, exceptions
+  calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
+  raises: TooManyRedirects
+
+__call__ (src/requests/auth.py:285-303)
+  sig: __call__(r)
+
+__call__ (src/requests/auth.py:94-96)
+  sig: __call__(r)
+
+__call__ (src/requests/auth.py:102-104)
+  sig: __call__(r)
+
+__call__ (src/requests/auth.py:72-73)
+  sig: __call__(r)
+  raises: NotImplementedError
+
+_implementation (src/requests/help.py:34-63)
+  Return a dict with the Python implementation and version.
+  called_by: info
+
+init_per_thread_state (src/requests/auth.py:116-124)
+  called_by: HTTPDigestAuth
+
+options (src/requests/sessions.py:606-615)
+  Sends a OPTIONS request.
+  sig: options(url)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+options (src/requests/api.py:76-85)
+  Sends an OPTIONS request.
+  sig: options(url)
+  behavior: DELEGATE(request -> result)
+  calls: request
 
 MockRequest (src/requests/cookies.py:23-100)
   Wraps a `requests.Request` to mimic a `urllib2.Request`.
@@ -146,11 +188,6 @@ _find_no_duplicates (src/requests/cookies.py:386-413)
   calls: CookieConflictError
   called_by: __getitem__, get, RequestsCookieJar
   raises: KeyError, CookieConflictError
-
-SessionRedirectMixin (src/requests/sessions.py:107-353)
-  imports: adapters, auth, compat, cookies, exceptions
-  calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
-  raises: TooManyRedirects
 
 close (src/requests/sessions.py:796-799)
   Closes all adapters and as such the session
@@ -181,28 +218,11 @@ UnrewindableBodyError (src/requests/exceptions.py:136-137)
   extends: RequestException
   imports: urllib3.exceptions, compat
 
-__call__ (src/requests/auth.py:102-104)
-  sig: __call__(r)
-
-__call__ (src/requests/auth.py:285-303)
-  sig: __call__(r)
-
-__call__ (src/requests/auth.py:72-73)
-  sig: __call__(r)
-  raises: NotImplementedError
-
-__call__ (src/requests/auth.py:94-96)
-  sig: __call__(r)
-
 _find (src/requests/cookies.py:366-384)
   Requests uses this method internally to get cookie values.
   sig: _find(name, domain, path)
   behavior: ACCUMULATE(loop -> result)
   raises: KeyError
-
-_implementation (src/requests/help.py:34-63)
-  Return a dict with the Python implementation and version.
-  called_by: info
 
 build_response (src/requests/adapters.py:337-372)
   Builds a :class:`Response <requests.Response>` object from a urllib3
@@ -229,29 +249,16 @@ get_netrc_auth (src/requests/utils.py:206-247)
   sig: get_netrc_auth(url, raise_errors)
   behavior: BRANCH(netrc_file -> result, else -> result)
 
-init_per_thread_state (src/requests/auth.py:116-124)
-  called_by: HTTPDigestAuth
-
-options (src/requests/api.py:76-85)
-  Sends an OPTIONS request.
-  sig: options(url)
-  behavior: DELEGATE(request -> result)
-  calls: request
-
-options (src/requests/sessions.py:606-615)
-  Sends a OPTIONS request.
-  sig: options(url)
-  behavior: DELEGATE(request -> result)
-  calls: request
-
-session (src/requests/sessions.py:821-833)
-  Returns a :class:`Session` for context-management.
-  behavior: DELEGATE(Session -> result)
-  calls: Session
-
 set_environ (src/requests/utils.py:731-749)
   Set the environment variable 'env_name' to 'value'
   sig: set_environ(env_name, value)
+  called_by: should_bypass_proxies
+
+proxy_bypass (src/requests/utils.py:114-123)
+  Return True, if the host should be bypassed.
+  sig: proxy_bypass(host)
+  behavior: BRANCH(getproxies_environment -> proxy_bypass_environment, else -> proxy_bypass_registry)
+  calls: proxy_bypass_registry
   called_by: should_bypass_proxies
 
 RequestsCookieJar (src/requests/cookies.py:176-437)
@@ -292,17 +299,6 @@ resolve_redirects (src/requests/sessions.py:160-280)
   raises: TooManyRedirects
   uses: TooManyRedirects (exceptions)
 
-update (src/requests/cookies.py:358-364)
-  Updates this jar with cookies from another CookieJar or dict-like
-  sig: update(other)
-  behavior: BRANCH(isinstance_cookielib.CookieJ -> result, else -> result)
-  calls: copy, set_cookie
-  called_by: __setstate__, copy, RequestsCookieJar, create_cookie, merge_cookies
-
 -- GAPS
-type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 29 with behavior annotations
-drill: src/requests/sessions.py (~92 lines, request)
-drill: src/requests/api.py (~72 lines, request)
-drill: src/requests/sessions.py (~67 lines, __init__)
-drill: src/requests/utils.py (~54 lines, should_bypass_proxies)
+type: RELATIONAL (answerable from L2-L3 structure)
+coverage: 80 symbols in L3, 27 with behavior annotations

@@ -134,6 +134,65 @@ Session (src/requests/sessions.py:356-818)
   raises: InvalidSchema, ValueError
   uses: InvalidSchema (exceptions), PreparedRequest (models), RequestsCookieJar (cookies), Request (models)
 
+build_response (src/requests/adapters.py:337-372)
+  Builds a :class:`Response <requests.Response>` object from a urllib3
+  sig: build_response(req, resp)
+  behavior: BRANCH(isinstance_bytes -> result, else -> result)
+  called_by: HTTPAdapter
+  uses: Response (models), CaseInsensitiveDict (structures)
+
+request (src/requests/api.py:14-59)
+  Constructs and sends a :class:`Request <Request>`.
+  sig: request(method, url)
+  called_by: delete, get, head, options, patch, post, put
+
+delete (src/requests/api.py:148-157)
+  Sends a DELETE request.
+  sig: delete(url)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+get (src/requests/api.py:62-73)
+  Sends a GET request.
+  sig: get(url, params)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+head (src/requests/api.py:88-100)
+  Sends a HEAD request.
+  sig: head(url)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+options (src/requests/api.py:76-85)
+  Sends an OPTIONS request.
+  sig: options(url)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+patch (src/requests/api.py:133-145)
+  Sends a PATCH request.
+  sig: patch(url, data)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+post (src/requests/api.py:103-115)
+  Sends a POST request.
+  sig: post(url, data, json)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+put (src/requests/api.py:118-130)
+  Sends a PUT request.
+  sig: put(url, data)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+session (src/requests/sessions.py:821-833)
+  Returns a :class:`Session` for context-management.
+  behavior: DELEGATE(Session -> result)
+  calls: Session
+
 merge_hooks (src/requests/sessions.py:92-104)
   Properly merges both requests and session hooks.
   sig: merge_hooks(request_hooks, session_hooks, dict_class)
@@ -142,13 +201,6 @@ merge_hooks (src/requests/sessions.py:92-104)
 
 __init__ (src/requests/exceptions.py:18-25)
   Initialize RequestException with `request` and `response` objects.
-
-build_response (src/requests/adapters.py:337-372)
-  Builds a :class:`Response <requests.Response>` object from a urllib3
-  sig: build_response(req, resp)
-  behavior: BRANCH(isinstance_bytes -> result, else -> result)
-  called_by: HTTPAdapter
-  uses: Response (models), CaseInsensitiveDict (structures)
 
 request (src/requests/sessions.py:502-593)
   Constructs a :class:`Request <Request>`, prepares it and sends it.
@@ -165,6 +217,91 @@ PreparedRequest (src/requests/models.py:315-639)
   called_by: copy, Request
   raises: MissingSchema, InvalidURL, UnicodeError, NotImplementedError
   uses: HTTPBasicAuth (auth), InvalidJSONError (exceptions), CaseInsensitiveDict (structures), MissingSchema (exceptions)
+
+SessionRedirectMixin (src/requests/sessions.py:107-353)
+  imports: adapters, auth, compat, cookies, exceptions
+  calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
+  raises: TooManyRedirects
+
+Response (src/requests/models.py:642-1041)
+  The :class:`Response <Response>` object, which contains a
+  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
+  calls: close, generate, iter_content, raise_for_status
+  raises: StreamConsumedError, HTTPError, TypeError, RuntimeError
+  uses: ChunkedEncodingError (exceptions), ContentDecodingError (exceptions), ConnectionError (exceptions), RequestsSSLError (exceptions)
+
+prepare_request (src/requests/sessions.py:459-500)
+  Constructs a :class:`PreparedRequest <PreparedRequest>` for
+  sig: prepare_request(request)
+  calls: merge_hooks, merge_setting
+  called_by: request, Session
+  uses: PreparedRequest (models), RequestsCookieJar (cookies)
+
+Request (src/requests/models.py:232-312)
+  A user-created :class:`Request <Request>` object.
+  extends: RequestHooksMixin
+  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
+  calls: PreparedRequest, register_hook
+
+RequestEncodingMixin (src/requests/models.py:86-205)
+  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
+  raises: ValueError
+
+RequestHooksMixin (src/requests/models.py:208-229)
+  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
+  raises: ValueError
+
+_urllib3_request_context (src/requests/adapters.py:77-111)
+  sig: _urllib3_request_context(request, verify, client_cert, poolmanager)
+  called_by: build_connection_pool_key_attributes, HTTPAdapter
+
+request_url (src/requests/adapters.py:524-554)
+  Obtain the url to use when making the final request.
+  sig: request_url(request, proxies)
+  called_by: HTTPAdapter
+
+get (src/requests/sessions.py:595-604)
+  Sends a GET request.
+  sig: get(url)
+  behavior: DELEGATE(request -> result)
+  calls: request
+  called_by: merge_environment_settings, send, Session, should_strip_auth, SessionRedirectMixin, merge_hooks
+
+delete (src/requests/sessions.py:665-673)
+  Sends a DELETE request.
+  sig: delete(url)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+head (src/requests/sessions.py:617-626)
+  Sends a HEAD request.
+  sig: head(url)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+options (src/requests/sessions.py:606-615)
+  Sends a OPTIONS request.
+  sig: options(url)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+patch (src/requests/sessions.py:653-663)
+  Sends a PATCH request.
+  sig: patch(url, data)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+post (src/requests/sessions.py:628-639)
+  Sends a POST request.
+  sig: post(url, data, json)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+put (src/requests/sessions.py:641-651)
+  Sends a PUT request.
+  sig: put(url, data)
+  behavior: DELEGATE(request -> result)
+  calls: request
 
 extract_cookies_to_jar (src/requests/cookies.py:124-137)
   Extract the cookies from the response into a CookieJar.
@@ -185,123 +322,14 @@ copy (src/requests/cookies.py:428-433)
   calls: get_policy, update, RequestsCookieJar
   called_by: __getstate__, update, RequestsCookieJar, _copy_cookie_jar
 
-get (src/requests/sessions.py:595-604)
-  Sends a GET request.
-  sig: get(url)
-  behavior: DELEGATE(request -> result)
-  calls: request
-  called_by: merge_environment_settings, send, Session, should_strip_auth, SessionRedirectMixin, merge_hooks
-
-SessionRedirectMixin (src/requests/sessions.py:107-353)
-  imports: adapters, auth, compat, cookies, exceptions
-  calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
-  raises: TooManyRedirects
-
 get_cookie_header (src/requests/cookies.py:140-148)
   Produce an appropriate Cookie header string to be sent with `request`, or None.
   sig: get_cookie_header(jar, request)
   calls: get_new_headers, MockRequest, get
 
-send (src/requests/sessions.py:675-750)
-  Send a given PreparedRequest.
-  sig: send(request)
-  behavior: BRANCH(allow_redirects -> result, else -> result)
-  calls: get, get_adapter, resolve_redirects
-  called_by: request, Session, resolve_redirects, SessionRedirectMixin
-  raises: ValueError
-
-close (src/requests/sessions.py:796-799)
-  Closes all adapters and as such the session
-  behavior: ACCUMULATE(loop -> result)
-  called_by: __exit__, Session, resolve_redirects, SessionRedirectMixin
-
-Response (src/requests/models.py:642-1041)
-  The :class:`Response <Response>` object, which contains a
-  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
-  calls: close, generate, iter_content, raise_for_status
-  raises: StreamConsumedError, HTTPError, TypeError, RuntimeError
-  uses: ChunkedEncodingError (exceptions), ContentDecodingError (exceptions), ConnectionError (exceptions), RequestsSSLError (exceptions)
-
-iter_content (src/requests/models.py:801-857)
-  Iterates over the response data.
-  sig: iter_content(chunk_size, decode_unicode)
-  calls: generate
-  called_by: __iter__, content, iter_lines, Response
-  raises: StreamConsumedError, TypeError, ChunkedEncodingError, ContentDecodingError
-  uses: StreamConsumedError (exceptions), ChunkedEncodingError (exceptions), ContentDecodingError (exceptions), ConnectionError (exceptions)
-
-request (src/requests/api.py:14-59)
-  Constructs and sends a :class:`Request <Request>`.
-  sig: request(method, url)
-  called_by: delete, get, head, options, patch, post, put
-
-prepare_request (src/requests/sessions.py:459-500)
-  Constructs a :class:`PreparedRequest <PreparedRequest>` for
-  sig: prepare_request(request)
-  calls: merge_hooks, merge_setting
-  called_by: request, Session
-  uses: PreparedRequest (models), RequestsCookieJar (cookies)
-
-HTTPDigestAuth (src/requests/auth.py:107-314)
-  Attaches HTTP Digest Authentication to the given Request object.
-  extends: AuthBase
-  imports: hashlib, threading, warnings, base64, compat
-  calls: build_digest_header, init_per_thread_state
-
-get_connection_with_tls_context (src/requests/adapters.py:424-471)
-  Returns a urllib3 connection for the given request and TLS settings.
-  sig: get_connection_with_tls_context(request, verify, proxies, cert)
-  behavior: BRANCH(proxy -> raise_InvalidProxyURL, else -> result)
-  calls: build_connection_pool_key_attributes, proxy_manager_for
-  called_by: HTTPAdapter
-  raises: InvalidURL, InvalidProxyURL
-  uses: InvalidURL (exceptions), InvalidProxyURL (exceptions)
-
-merge_setting (src/requests/sessions.py:62-89)
-  Determines appropriate setting for a given request, taking into account
-  sig: merge_setting(request_setting, session_setting, dict_class)
-  behavior: ACCUMULATE(loop -> result)
-  called_by: merge_environment_settings, prepare_request, Session, merge_hooks
-
-prepare_content_length (src/requests/models.py:574-588)
-  Prepare Content-Length header based on request method and body
-  sig: prepare_content_length(body)
-  called_by: prepare_auth, prepare_body, PreparedRequest
-
-get_redirect_target (src/requests/sessions.py:108-126)
-  Receives a Response.
-  sig: get_redirect_target(resp)
-  called_by: resolve_redirects, SessionRedirectMixin
-
-rebuild_method (src/requests/sessions.py:333-353)
-  When being redirected we may want to change the method of the request
-  sig: rebuild_method(prepared_request, response)
-  called_by: resolve_redirects, SessionRedirectMixin
-
-ConnectTimeout (src/requests/exceptions.py:81-85)
-  The request timed out while trying to connect to the remote server.
-  extends: ConnectionError, Timeout
-  imports: urllib3.exceptions, compat
-
-ContentDecodingError (src/requests/exceptions.py:124-125)
-  Failed to decode response content.
-  extends: RequestException, BaseHTTPError
-  imports: urllib3.exceptions, compat
-
-FileModeWarning (src/requests/exceptions.py:147-148)
-  A file was opened in text mode, but Requests determined its binary length.
-  extends: RequestsWarning, DeprecationWarning
-  imports: urllib3.exceptions, compat
-
-HTTPBasicAuth (src/requests/auth.py:76-96)
-  Attaches HTTP Basic Authentication to the given Request object.
-  extends: AuthBase
-  imports: hashlib, threading, warnings, base64, compat
-  calls: _basic_auth_str
-
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 29 with behavior annotations
+coverage: 80 symbols in L3, 28 with behavior annotations
 
 --- CLUE FILE END ---
 

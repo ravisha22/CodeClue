@@ -1,0 +1,318 @@
+# Blind Evaluation Prompt - MRLF v2.1
+# Task: blind-echo-struct-1
+
+You are a senior software engineer. You have been given a codebase
+comprehension artifact (a "clue file") that summarises a repository's
+structure, symbols, and behavior. This is NOT the full source code - it is
+a compressed representation.
+
+Answer the question below using ONLY the information in the clue file.
+Do not use any external knowledge about the framework or library.
+
+--- CLUE FILE START ---
+=CC v2.1 echo@HEAD 44mod 565sym
+? How is Echo's public API split between the core framework package and middleware packages?
+
+
+-- TREE
+echotest/  (2 files)
+middleware/  (24 files)
+bind.go  binder.go  binder_generic.go  context.go  context_generic.go  echo.go  group.go  httperror.go  ip.go  json.go  renderer.go  response.go  route.go  router.go  router_concurrent.go
+
+-- INDEX
+echo.go                                         865L  Config, DefaultHTTPErrorHandler, AcquireContext, Add, AddRoute
+context.go                                      667L  Attachment, Bind, Blob, Cookie, Cookies
+router.go                                      1074L  Error, Unwrap, AddRouteError, Add, Remove
+bind.go                                         472L  BindBody, BindHeaders, BindPathValues, BindQueryParams, BindUnmarshaler
+group.go                                        178L  Add, AddRoute, Any, CONNECT, DELETE
+binder.go                                      1329L  Error, BindingError, FormFieldBinder, NewBindingError, PathValuesBinder
+binder_generic.go                               571L  TimeOpts, bindValue
+context_generic.go                               43L  
+echotest/context.go                             183L  ServeWithHandler, ToContext, ToContextRecorder, ContextConfig, MultipartForm
+echotest/reader.go                               46L  LoadBytes, TrimNewlineEnd, loadBytes
+httperror.go                                    162L  Error, StatusCode, Unwrap, Wrap, HTTPError
+ip.go                                           309L  ExtractIPDirect, ExtractIPFromRealIPHeader, ExtractIPFromXFFHeader, LegacyIPExtractor, TrustIPRange
+json.go                                          29L  Deserialize, Serialize, DefaultJSONSerializer
+middleware/basic_auth.go                        156L  BasicAuth, ToMiddleware, BasicAuthConfig, BasicAuthWithConfig
+middleware/body_dump.go                         201L  BodyDump, ToMiddleware, BodyDumpConfig, BodyDumpWithConfig, Flush
+middleware/body_limit.go                         99L  BodyLimit, ToMiddleware, BodyLimitConfig, BodyLimitWithConfig, Close
+middleware/compress.go                          235L  Gzip, ToMiddleware, GzipConfig, GzipWithConfig, bufferPool
+  ...and 27 more modules
+
+-- SYM
+Echo.add                            M echo.go:621    function Echo.add
+Echo.AddRoute                       M echo.go:617    AddRoute registers a new Route with default hos...
+ValueBinder.intValue                M binder.go:499    function ValueBinder.intValue
+ValueBinder.intsValue               M binder.go:541    function ValueBinder.intsValue
+Group.Add                           M group.go:158    Add implements `Echo#Add()` for sub-routes with...
+Group.AddRoute                      M group.go:172    AddRoute registers a new Routable with Router
+Echo.Add                            M echo.go:642    Add registers a new route for an HTTP method an...
+Context.writeContentType            M context.go:121    function Context.writeContentType
+Context.Get                         M context.go:380    Get retrieves data from the context.
+Context.Set                         M context.go:387    Set saves data in the context.
+ValueBinder.uintValue               M binder.go:727    function ValueBinder.uintValue
+ValueBinder.uintsValue              M binder.go:769    function ValueBinder.uintsValue
+ValueBinder.time                    M binder.go:1095   function ValueBinder.time
+Context.Blob                        M context.go:552    Blob sends a blob response with status code and...
+ValueBinder.floatValue              M binder.go:990    function ValueBinder.floatValue
+ValueBinder.floatsValue             M binder.go:1022   function ValueBinder.floatsValue
+fsFile                              M context.go:584    function fsFile
+BindingError.Error                  M binder.go:87     Error returns error message
+ValueBinder.setError                M binder.go:177    function ValueBinder.setError
+ValueBinder.Time                    M binder.go:1086   Time binds parameter to time.Time variable
+ValueBinder.unixTime                M binder.go:1301   function ValueBinder.unixTime
+Context.File                        M context.go:571    File sends a response with the content of the f...
+ValueBinder.boolValue               M binder.go:905    function ValueBinder.boolValue
+WWWRedirectWithConfig               M middleware/redirect.go:99     WWWRedirectWithConfig returns a WWW redirect mi...
+ValueBinder.duration                M binder.go:1167   function ValueBinder.duration
+Context.Response                    M context.go:139    Response returns `*Response`.
+NewDefaultFS                        M echo.go:804    NewDefaultFS returns a new defaultFS instance w...
+bindData                            M bind.go:139    bindData will bind data ONLY fields in destinat...
+ValueBinder.bindWithDelimiter       M binder.go:411    function ValueBinder.bindWithDelimiter
+ValueBinder.boolsValue              M binder.go:931    function ValueBinder.boolsValue
+ValueBinder.customFunc              M binder.go:215    function ValueBinder.customFunc
+ValueBinder.durationsValue          M binder.go:1198   function ValueBinder.durationsValue
+ValueBinder.times                   M binder.go:1126   function ValueBinder.times
+Context.contentDisposition          M context.go:630    function Context.contentDisposition
+Context.json                        M context.go:464    function Context.json
+Context.xml                         M context.go:517    function Context.xml
+ContextConfig.ToContextRecorder     M echotest/context.go:81     ToContextRecorder converts ContextConfig to ech...
+ProxyWithConfig                     M middleware/proxy.go:300    ProxyWithConfig returns a Proxy middleware or p...
+RequestLoggerConfig.ToMiddleware    M middleware/request_logger.go:246    ToMiddleware converts RequestLoggerConfig into ...
+ValueBinder.int                     M binder.go:515    function ValueBinder.int
+Echo.File                           M echo.go:609    File registers a new route with path to serve a...
+Echo.Use                            M echo.go:431    Use adds middleware to the chain which is run a...
+subFS                               M echo.go:827    function subFS
+New                                 M echo.go:333    New creates an instance of Echo.
+BindPathValues                      M bind.go:42     BindPathValues binds path parameter values to b...
+unmarshalInputToField               M bind.go:352    function unmarshalInputToField
+ValueBinder.bool                    M binder.go:920    function ValueBinder.bool
+ValueBinder.float                   M binder.go:1006   function ValueBinder.float
+Context.FormValue                   M context.go:319    FormValue returns the form field value for the ...
+Context.IsTLS                       M context.go:150    IsTLS returns true if HTTP connection is TLS ot...
+applyMiddleware                     M echo.go:785    function applyMiddleware
+loadBytes                           M echotest/reader.go:36     function loadBytes
+Group.GET                           M group.go:37     GET implements `Echo#GET()` for sub-routes with...
+Group.StaticFS                      M group.go:122    StaticFS implements `Echo#StaticFS()` for sub-r...
+Group                               C group.go:14     Group is a set of sub-routes for a specified ro...
+newIPChecker                        M ip.go:183    function newIPChecker
+BasicAuthWithConfig                 M middleware/basic_auth.go:92     BasicAuthWithConfig returns an BasicAuthWithCon...
+BodyDumpWithConfig                  M middleware/body_dump.go:68     BodyDumpWithConfig returns a BodyDump middlewar...
+bodyDumpResponseWriter.Write        M middleware/body_dump.go:150    function bodyDumpResponseWriter.Write
+BodyLimitWithConfig                 M middleware/body_limit.go:42     BodyLimitWithConfig returns a BodyLimitWithConf...
+GzipWithConfig                      M middleware/compress.go:64     GzipWithConfig returns a middleware which compr...
+gzipResponseWriter.WriteHeader      M middleware/compress.go:147    function gzipResponseWriter.WriteHeader
+ContextTimeoutWithConfig            M middleware/context_timeout.go:33     ContextTimeoutWithConfig returns a Timeout midd...
+CSRFWithConfig                      M middleware/csrf.go:121    CSRFWithConfig returns a CSRF middleware with c...
+DecompressWithConfig                M middleware/decompress.go:60     DecompressWithConfig returns a decompress middl...
+createExtractors                    M middleware/extractor.go:78     function createExtractors
+KeyAuthWithConfig                   M middleware/key_auth.go:133    KeyAuthWithConfig returns an KeyAuth middleware...
+MethodOverrideWithConfig            M middleware/method_override.go:41     MethodOverrideWithConfig returns a Method Overr...
+Proxy                               M middleware/proxy.go:291    Proxy returns a Proxy middleware.
+NewRateLimiterMemoryStoreWithConfig M middleware/rate_limiter.go:203    function NewRateLimiterMemoryStoreWithConfig
+RateLimiterWithConfig               M middleware/rate_limiter.go:104    function RateLimiterWithConfig
+RecoverWithConfig                   M middleware/recover.go:48     RecoverWithConfig returns a Recovery middleware...
+HTTPSRedirectWithConfig             M middleware/redirect.go:57     HTTPSRedirectWithConfig returns a HTTPS redirec...
+RequestIDWithConfig                 M middleware/request_id.go:37     RequestIDWithConfig returns a middleware with g...
+RequestLoggerWithConfig             M middleware/request_logger.go:237    RequestLoggerWithConfig returns a RequestLogger...
+RewriteWithConfig                   M middleware/rewrite.go:48     RewriteWithConfig returns a Rewrite middleware ...
+SecureWithConfig                    M middleware/secure.go:96     SecureWithConfig returns a Secure middleware wi...
+  ...and 488 more symbols
+
+-- FOCUS
+WrapMiddleware (echo.go:766-766)
+  WrapMiddleware wraps `func(http.Handler) http.Handler` into `echo.MiddlewareFunc`
+  sig: WrapMiddleware(m func(http.Handler)
+  behavior: ACCUMULATE(loop -> result)
+
+Echo (echo.go:68-68)
+  Echo is the top-level framework instance.
+  methods: AcquireContext, Add, AddRoute, Any, CONNECT, DELETE
+
+RequestLogger (middleware/request_logger.go:395-395)
+  RequestLogger creates Request Logger middleware with Echo default settings that uses Context.Logger() as logger.
+  calls: RequestLoggerWithConfig
+
+MiddlewareConfigurator (echo.go:121-121)
+  MiddlewareConfigurator defines interface for creating middleware handlers with possibility to return configuration error
+
+applyMiddleware (echo.go:785-785)
+  sig: applyMiddleware(h HandlerFunc, middleware ...MiddlewareFunc)
+  behavior: ACCUMULATE(loop -> result)
+  called_by: serveHTTP
+
+WWWRedirectWithConfig (middleware/redirect.go:99-99)
+  WWWRedirectWithConfig returns a WWW redirect middleware with config or panics on invalid configuration.
+  sig: WWWRedirectWithConfig(config RedirectConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: HTTPSNonWWWRedirect, HTTPSWWWRedirect, NonWWWRedirect, WWWRedirect
+
+NonWWWRedirectWithConfig (middleware/redirect.go:113-113)
+  NonWWWRedirectWithConfig returns a Non-WWW redirect middleware with config or panics on invalid configuration.
+  sig: NonWWWRedirectWithConfig(config RedirectConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: HTTPSNonWWWRedirect, NonWWWRedirect
+
+AddTrailingSlashWithConfig (middleware/slash.go:34-34)
+  AddTrailingSlashWithConfig returns an AddTrailingSlash middleware with config or panics on invalid configuration.
+  sig: AddTrailingSlashWithConfig(config AddTrailingSlashConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: AddTrailingSlash
+
+BasicAuthWithConfig (middleware/basic_auth.go:92-92)
+  BasicAuthWithConfig returns an BasicAuthWithConfig middleware with config.
+  sig: BasicAuthWithConfig(config BasicAuthConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: BasicAuth
+
+BodyDumpWithConfig (middleware/body_dump.go:68-68)
+  BodyDumpWithConfig returns a BodyDump middleware with config.
+  sig: BodyDumpWithConfig(config BodyDumpConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: BodyDump
+
+BodyLimitWithConfig (middleware/body_limit.go:42-42)
+  BodyLimitWithConfig returns a BodyLimitWithConfig middleware.
+  sig: BodyLimitWithConfig(config BodyLimitConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: BodyLimit
+
+CORSWithConfig (middleware/cors.go:140-140)
+  CORSWithConfig returns a CORS middleware with config or panics on invalid configuration.
+  sig: CORSWithConfig(config CORSConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+
+CSRFWithConfig (middleware/csrf.go:121-121)
+  CSRFWithConfig returns a CSRF middleware with config or panics on invalid configuration.
+  sig: CSRFWithConfig(config CSRFConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: CSRF
+
+ContextTimeoutWithConfig (middleware/context_timeout.go:33-33)
+  ContextTimeoutWithConfig returns a Timeout middleware with config.
+  sig: ContextTimeoutWithConfig(config ContextTimeoutConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: ContextTimeout
+
+DecompressWithConfig (middleware/decompress.go:60-60)
+  DecompressWithConfig returns a decompress middleware with config or panics on invalid configuration.
+  sig: DecompressWithConfig(config DecompressConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: Decompress
+
+GzipWithConfig (middleware/compress.go:64-64)
+  GzipWithConfig returns a middleware which compresses HTTP response using gzip compression scheme.
+  sig: GzipWithConfig(config GzipConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: Gzip
+
+HTTPSNonWWWRedirectWithConfig (middleware/redirect.go:85-85)
+  HTTPSNonWWWRedirectWithConfig returns a HTTPS Non-WWW redirect middleware with config or panics on invalid configuration
+  sig: HTTPSNonWWWRedirectWithConfig(config RedirectConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: HTTPSNonWWWRedirect
+
+HTTPSRedirectWithConfig (middleware/redirect.go:57-57)
+  HTTPSRedirectWithConfig returns a HTTPS redirect middleware with config or panics on invalid configuration.
+  sig: HTTPSRedirectWithConfig(config RedirectConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: HTTPSRedirect
+
+HTTPSWWWRedirectWithConfig (middleware/redirect.go:71-71)
+  HTTPSWWWRedirectWithConfig returns a HTTPS WWW redirect middleware with config or panics on invalid configuration.
+  sig: HTTPSWWWRedirectWithConfig(config RedirectConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: HTTPSWWWRedirect
+
+KeyAuthWithConfig (middleware/key_auth.go:133-133)
+  KeyAuthWithConfig returns an KeyAuth middleware or panics if configuration is invalid.
+  sig: KeyAuthWithConfig(config KeyAuthConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: KeyAuth
+
+MethodOverrideWithConfig (middleware/method_override.go:41-41)
+  MethodOverrideWithConfig returns a Method Override middleware with config or panics on invalid configuration.
+  sig: MethodOverrideWithConfig(config MethodOverrideConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: MethodOverride
+
+ProxyWithConfig (middleware/proxy.go:300-300)
+  ProxyWithConfig returns a Proxy middleware or panics if configuration is invalid.
+  sig: ProxyWithConfig(config ProxyConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: Proxy
+
+RecoverWithConfig (middleware/recover.go:48-48)
+  RecoverWithConfig returns a Recovery middleware with config or panics on invalid configuration.
+  sig: RecoverWithConfig(config RecoverConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: Recover
+
+RemoveTrailingSlashWithConfig (middleware/slash.go:98-98)
+  RemoveTrailingSlashWithConfig returns a RemoveTrailingSlash middleware with config or panics on invalid configuration.
+  sig: RemoveTrailingSlashWithConfig(config RemoveTrailingSlashConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: RemoveTrailingSlash
+
+RequestIDWithConfig (middleware/request_id.go:37-37)
+  RequestIDWithConfig returns a middleware with given valid config or panics on invalid configuration.
+  sig: RequestIDWithConfig(config RequestIDConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: RequestID
+
+RewriteWithConfig (middleware/rewrite.go:48-48)
+  RewriteWithConfig returns a Rewrite middleware or panics on invalid configuration.
+  sig: RewriteWithConfig(config RewriteConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: Rewrite
+
+SecureWithConfig (middleware/secure.go:96-96)
+  SecureWithConfig returns a Secure middleware with config or panics on invalid configuration.
+  sig: SecureWithConfig(config SecureConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: Secure
+
+StaticWithConfig (middleware/static.go:151-151)
+  StaticWithConfig returns a Static middleware to serves static content or panics on invalid configuration.
+  sig: StaticWithConfig(config StaticConfig)
+  behavior: DELEGATE(toMiddlewareOrPanic -> result)
+  called_by: Static
+
+New (echo.go:333-333)
+  New creates an instance of Echo.
+  calls: NewDefaultFS
+  called_by: NewWithConfig, main
+
+Echo.GET (echo.go:449-449)
+  GET registers a new GET route for a path with matching handler in the router with optional route-level middleware.
+  sig: Echo.GET(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(e.Add -> result)
+  calls: Add
+  called_by: FileFS, main
+
+Echo.Use (echo.go:431-431)
+  Use adds middleware to the chain which is run after router has found matching route and before route/request handler met
+  sig: Echo.Use(middleware ...MiddlewareFunc)
+  called_by: Group, main
+
+Echo.Start (echo.go:744-744)
+  Start stars HTTP server on given address with Echo as a handler serving requests.
+  sig: Echo.Start(address string)
+  behavior: DELEGATE(sc.Start -> result); UNWIND(defer)
+  called_by: main
+
+Echo.File (echo.go:609-609)
+  File registers a new route with path to serve a static file with optional route-level middleware.
+  sig: Echo.File(path, file string, middleware ...MiddlewareFunc)
+  called_by: StaticFileHandler
+
+-- GAPS
+type: STRUCTURAL (answerable from L0-L2)
+coverage: 80 symbols in L3, 48 with behavior annotations
+
+--- CLUE FILE END ---
+
+QUESTION: How is Echo's public API split between the core framework package and middleware packages?
+
+Provide a detailed answer based solely on the clue file above.
+For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.

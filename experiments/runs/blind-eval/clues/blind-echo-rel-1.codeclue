@@ -1,28 +1,31 @@
-=CC v2.1 echo@HEAD 90mod 1272sym
+=CC v2.1 echo@HEAD 44mod 565sym
 ? What are the main relationships among `Echo`, `Group`, `Context`, and handlers during normal request dispatch?
 
 
 -- TREE
-echotest/  (6 files)
-middleware/  (47 files)
-bind.go  bind_test.go  binder.go  binder_external_test.go  binder_generic.go  binder_generic_test.go  binder_test.go  context.go  context_generic.go  context_generic_test.go  context_test.go  echo.go  echo_test.go  group.go  group_test.go
+echotest/  (2 files)
+middleware/  (24 files)
+bind.go  binder.go  binder_generic.go  context.go  context_generic.go  echo.go  group.go  httperror.go  ip.go  json.go  renderer.go  response.go  route.go  router.go  router_concurrent.go
 
 -- INDEX
 echo.go                                         865L  Config, DefaultHTTPErrorHandler, AcquireContext, Add, AddRoute
 context.go                                      667L  Attachment, Bind, Blob, Cookie, Cookies
 router.go                                      1074L  Error, Unwrap, AddRouteError, Add, Remove
 bind.go                                         472L  BindBody, BindHeaders, BindPathValues, BindQueryParams, BindUnmarshaler
-context_test.go                                1428L  BenchmarkAllocJSON, BenchmarkAllocJSONP, BenchmarkAllocXML, BenchmarkContext_Store, BenchmarkRealIPForHeaderXForwardFor
 group.go                                        178L  Add, AddRoute, Any, CONNECT, DELETE
-bind_test.go                                   1693L  Bar, BenchmarkBindbindDataWithTags, UnmarshalParam, UnmarshalParams, Node
 binder.go                                      1329L  Error, BindingError, FormFieldBinder, NewBindingError, PathValuesBinder
-binder_external_test.go                         134L  ExampleValueBinder_BindError, ExampleValueBinder_BindErrors, ExampleValueBinder_CustomFunc
 binder_generic.go                               571L  TimeOpts, bindValue
-binder_generic_test.go                         1616L  UnmarshalJSON, JSONUnmarshalerType, TestFormValue, TestFormValueOr, TestFormValue_UnsupportedType
-binder_test.go                                 3252L  BenchmarkDefaultBinder_BindInt64_10_fields, BenchmarkDefaultBinder_BindInt64_single, BenchmarkRawFunc_Int64_single, BenchmarkValueBinder_BindInt64_10_fields, BenchmarkValueBinder_BindInt64_single
 context_generic.go                               43L  
-context_generic_test.go                          70L  TestContextGetInvalidCast, TestContextGetNonExistentKey, TestContextGetOK, TestContextGetOrInvalidCast, TestContextGetOrNonExistentKey
-  ...and 76 more modules
+echotest/context.go                             183L  ServeWithHandler, ToContext, ToContextRecorder, ContextConfig, MultipartForm
+echotest/reader.go                               46L  LoadBytes, TrimNewlineEnd, loadBytes
+httperror.go                                    162L  Error, StatusCode, Unwrap, Wrap, HTTPError
+ip.go                                           309L  ExtractIPDirect, ExtractIPFromRealIPHeader, ExtractIPFromXFFHeader, LegacyIPExtractor, TrustIPRange
+json.go                                          29L  Deserialize, Serialize, DefaultJSONSerializer
+middleware/basic_auth.go                        156L  BasicAuth, ToMiddleware, BasicAuthConfig, BasicAuthWithConfig
+middleware/body_dump.go                         201L  BodyDump, ToMiddleware, BodyDumpConfig, BodyDumpWithConfig, Flush
+middleware/body_limit.go                         99L  BodyLimit, ToMiddleware, BodyLimitConfig, BodyLimitWithConfig, Close
+middleware/compress.go                          235L  Gzip, ToMiddleware, GzipConfig, GzipWithConfig, bufferPool
+  ...and 27 more modules
 
 -- SYM
 Echo.add                            M echo.go:621    function Echo.add
@@ -69,19 +72,18 @@ Echo.File                           M echo.go:609    File registers a new route 
 Echo.Use                            M echo.go:431    Use adds middleware to the chain which is run a...
 subFS                               M echo.go:827    function subFS
 New                                 M echo.go:333    New creates an instance of Echo.
-applyMiddleware                     M echo.go:785    function applyMiddleware
-newIPChecker                        M ip.go:183    function newIPChecker
-Response.Unwrap                     M response.go:105    Unwrap returns the original http.ResponseWriter.
 BindPathValues                      M bind.go:42     BindPathValues binds path parameter values to b...
 unmarshalInputToField               M bind.go:352    function unmarshalInputToField
 ValueBinder.bool                    M binder.go:920    function ValueBinder.bool
 ValueBinder.float                   M binder.go:1006   function ValueBinder.float
 Context.FormValue                   M context.go:319    FormValue returns the form field value for the ...
 Context.IsTLS                       M context.go:150    IsTLS returns true if HTTP connection is TLS ot...
+applyMiddleware                     M echo.go:785    function applyMiddleware
 loadBytes                           M echotest/reader.go:36     function loadBytes
 Group.GET                           M group.go:37     GET implements `Echo#GET()` for sub-routes with...
 Group.StaticFS                      M group.go:122    StaticFS implements `Echo#StaticFS()` for sub-r...
 Group                               C group.go:14     Group is a set of sub-routes for a specified ro...
+newIPChecker                        M ip.go:183    function newIPChecker
 BasicAuthWithConfig                 M middleware/basic_auth.go:92     BasicAuthWithConfig returns an BasicAuthWithCon...
 BodyDumpWithConfig                  M middleware/body_dump.go:68     BodyDumpWithConfig returns a BodyDump middlewar...
 bodyDumpResponseWriter.Write        M middleware/body_dump.go:150    function bodyDumpResponseWriter.Write
@@ -103,12 +105,21 @@ RequestIDWithConfig                 M middleware/request_id.go:37     RequestIDW
 RequestLoggerWithConfig             M middleware/request_logger.go:237    RequestLoggerWithConfig returns a RequestLogger...
 RewriteWithConfig                   M middleware/rewrite.go:48     RewriteWithConfig returns a Rewrite middleware ...
 SecureWithConfig                    M middleware/secure.go:96     SecureWithConfig returns a Secure middleware wi...
-  ...and 487 more symbols
+  ...and 488 more symbols
 
 -- FOCUS
 RequestLogger (middleware/request_logger.go:395-395)
   RequestLogger creates Request Logger middleware with Echo default settings that uses Context.Logger() as logger.
   calls: RequestLoggerWithConfig
+
+Echo.AcquireContext (echo.go:684-684)
+  AcquireContext returns an empty `Context` instance from the pool.
+  behavior: DELEGATE(e.contextPool.Get -> result)
+
+Echo.NewContext (echo.go:357-357)
+  NewContext returns a new Context instance.
+  sig: Echo.NewContext(r *http.Request, w http.ResponseWriter)
+  behavior: DELEGATE(newContext -> result)
 
 Context (context.go:40-40)
   Context represents the context of the current HTTP request.
@@ -120,10 +131,6 @@ Group.Add (group.go:158-158)
   calls: AddRoute
   called_by: Any, CONNECT, DELETE, GET, HEAD, OPTIONS, PATCH, POST
   raises: panic
-
-DefaultRouter (router.go:60-60)
-  DefaultRouter is the registry of all registered routes for an `Echo` instance for request matching and URL path paramete
-  methods: Add, Remove, Route, Routes, insert, storeRouteInfo
 
 ContextConfig (echotest/context.go:20-20)
   ContextConfig is configuration for creating echo.Context for testing purposes.
@@ -249,47 +256,32 @@ Group.Use (group.go:22-22)
   Use implements `Echo#Use()` for sub-routes within the Group.
   sig: Group.Use(middleware ...MiddlewareFunc)
 
-NewVirtualHostHandler (vhost.go:10-10)
-  NewVirtualHostHandler creates instance of Echo that routes requests to given virtual hosts when hosts in request does no
-  sig: NewVirtualHostHandler(vhosts map[string]*Echo)
-  behavior: GUARD(vh -> result)
-
-Echo (echo.go:68-68)
-  Echo is the top-level framework instance.
-  methods: AcquireContext, Add, AddRoute, Any, CONNECT, DELETE
-
-Group (group.go:14-14)
-  Group is a set of sub-routes for a specified route.
-  methods: Add, AddRoute, Any, CONNECT, DELETE, File
-  called_by: Group
+NewContext (context.go:64-64)
+  NewContext returns a new Context instance.
+  sig: NewContext(r *http.Request, w http.ResponseWriter, opts ...any)
+  behavior: DELEGATE(newContext -> result); ACCUMULATE(loop -> result); DISPATCH(v)
 
 main (echo.go:24-24)
   calls: GET, Start, Use, New
 
-New (echo.go:333-333)
-  New creates an instance of Echo.
-  calls: NewDefaultFS
-  called_by: NewWithConfig, main
+Context.Echo (context.go:665-665)
+  Echo returns the `Echo` instance.
 
-Echo.Use (echo.go:431-431)
-  Use adds middleware to the chain which is run after router has found matching route and before route/request handler met
-  sig: Echo.Use(middleware ...MiddlewareFunc)
-  called_by: Group, main
+Context.Request (context.go:129-129)
+  Request returns `*http.Request`.
 
-Echo.Start (echo.go:744-744)
-  Start stars HTTP server on given address with Echo as a handler serving requests.
-  sig: Echo.Start(address string)
-  behavior: DELEGATE(sc.Start -> result); UNWIND(defer)
-  called_by: main
+Context.SetRequest (context.go:134-134)
+  SetRequest sets `*http.Request`.
+  sig: Context.SetRequest(r *http.Request)
 
-Context.writeContentType (context.go:121-121)
-  sig: Context.writeContentType(value string)
-  calls: Get, Set
-  called_by: Blob, JSONPBlob, Stream, XMLBlob, json, jsonPBlob, xml
+Echo.Group (echo.go:659-659)
+  Group creates a new router group with prefix and optional group-level middleware.
+  sig: Echo.Group(prefix string, m ...MiddlewareFunc)
+  calls: Use
 
-HTTPError (httperror.go:107-107)
-  HTTPError represents an error that occurred while handling a request.
-  methods: Error, StatusCode, Unwrap, Wrap
+Echo.ReleaseContext (echo.go:690-690)
+  ReleaseContext returns the `Context` instance back to the pool.
+  sig: Echo.ReleaseContext(c *Context)
 
 Context.json (context.go:464-464)
   sig: Context.json(code int, i any, indent string)
@@ -297,20 +289,27 @@ Context.json (context.go:464-464)
   calls: Response, SetResponse, writeContentType
   called_by: JSON, JSONPretty
 
-Context.contentDisposition (context.go:630-630)
-  sig: Context.contentDisposition(file, name, dispositionType string)
-  behavior: DELEGATE(c.File -> result)
-  calls: File, Set
-  called_by: Attachment, Inline
+Context.Bind (context.go:399-399)
+  Bind binds path params, query params and the request body into provided type `i`.
+  sig: Context.Bind(i any)
+  behavior: DELEGATE(c.echo.Binder.Bind -> result)
 
-StartConfig (server.go:26-26)
-  StartConfig is for creating configured http.Server instance to start serve http(s) requests with given Echo instance
-  methods: Start, StartTLS, start
+Context.Cookie (context.go:364-364)
+  Cookie returns the named cookie provided in the request.
+  sig: Context.Cookie(name string)
+  behavior: DELEGATE(c.request.Cookie -> result)
+  called_by: SetCookie
+
+Context.Cookies (context.go:374-374)
+  Cookies returns the HTTP cookies sent with the request.
+  behavior: DELEGATE(c.request.Cookies -> result)
+
+ContextConfig.ServeWithHandler (echotest/context.go:167-167)
+  ServeWithHandler serves ContextConfig with given handler and returns httptest.ResponseRecorder for response checking
+  sig: ContextConfig.ServeWithHandler(t *testing.T, handler echo.HandlerFunc, opts ...any)
+  behavior: ACCUMULATE(loop -> result); DISPATCH(o)
+  calls: ToContextRecorder
 
 -- GAPS
-type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 44 with behavior annotations
-drill: middleware/request_logger.go (~1 lines, RequestLoggerWithConfig)
-drill: context.go (~1 lines, Context.writeContentType)
-drill: context.go (~1 lines, Context.InitializeRoute)
-drill: middleware/request_logger.go (~1 lines, RequestLogger)
+type: RELATIONAL (answerable from L2-L3 structure)
+coverage: 80 symbols in L3, 48 with behavior annotations

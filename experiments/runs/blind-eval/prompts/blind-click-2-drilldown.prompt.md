@@ -121,6 +121,10 @@ get_best_encoding                   M src/click/_compat.py:48     Returns the de
   ...and 579 more symbols
 
 -- FOCUS
+OptionHelpExtra (src/click/types.py:1205-1209)
+  extends: TypedDict
+  imports: enum, stat, gettext, exceptions, utils
+
 Tuple (src/click/types.py:1060-1109)
   The default behavior of Click is to apply a type on a value directly.
   extends: CompositeParamType
@@ -128,6 +132,17 @@ Tuple (src/click/types.py:1060-1109)
   calls: fail, convert_type
   called_by: convert_type
   uses: BadParameter (exceptions)
+
+Path (src/click/types.py:879-1057)
+  The ``Path`` type is similar to the :class:`File` type, but
+  extends: ParamType
+  imports: enum, stat, gettext, exceptions, utils
+  calls: fail, coerce_path_result
+  uses: BadParameter (exceptions)
+
+command_path (src/click/core.py:642-658)
+  The computed command path.
+  calls: get_params
 
 MissingParameter (src/click/exceptions.py:137-205)
   Raised if click required an option or argument but it was not
@@ -142,13 +157,6 @@ Command (src/click/core.py:873-1485)
   calls: _main_shell_completion, format_epilog, format_help, format_help_text, format_usage, get_help_option, get_help_option_names, get_params
   raises: NoArgsIsHelpError, Abort
   uses: Exit (exceptions), UsageError (exceptions)
-
-Path (src/click/types.py:879-1057)
-  The ``Path`` type is similar to the :class:`File` type, but
-  extends: ParamType
-  imports: enum, stat, gettext, exceptions, utils
-  calls: fail, coerce_path_result
-  uses: BadParameter (exceptions)
 
 option (src/click/decorators.py:352-377)
   Attaches an option to the command.
@@ -167,18 +175,6 @@ open_file (src/click/utils.py:358-404)
   Open a file, with extra behavior to handle ``'-'`` to indicate
   sig: open_file(filename, mode, encoding, errors, lazy...)
   calls: KeepOpenFile, LazyFile
-
-pager (src/click/_termui_impl.py:369-408)
-  Decide what method to use for paging through text.
-  sig: pager(generator, color)
-  calls: _nullpager, _pipepager, _tempfilepager
-  uses: StringIO (io)
-
-cli (examples/repo/repo.py:44-57)
-  Repo is a command line tool that showcases how to build complex
-  sig: cli(ctx, repo_home, config, verbose)
-  behavior: ACCUMULATE(loop -> result)
-  calls: set_config, Repo
 
 BadArgumentUsage (src/click/exceptions.py:259-265)
   Raised if an argument is generally supplied but the use of the argument
@@ -208,14 +204,6 @@ NoSuchOption (src/click/exceptions.py:208-239)
   extends: UsageError
   imports: gettext, globals, utils, core
 
-OptionHelpExtra (src/click/types.py:1205-1209)
-  extends: TypedDict
-  imports: enum, stat, gettext, exceptions, utils
-
-_detect_program_name (src/click/utils.py:523-577)
-  Determine the command used to run the program, for use in help
-  sig: _detect_program_name(path, _main)
-
 _is_incomplete_option (src/click/shell_completion.py:537-559)
   Determine if the given parameter is an option that needs a value.
   sig: _is_incomplete_option(ctx, args, param)
@@ -232,17 +220,51 @@ argument (src/click/decorators.py:324-349)
   Attaches an argument to the command.
   calls: _param_memo
 
-cli (examples/complex/complex/cli.py:56-60)
-  A complex command line interface.
-  sig: cli(ctx, verbose, home)
-
-command_path (src/click/core.py:642-658)
-  The computed command path.
-  calls: get_params
-
 consume_value (src/click/core.py:3256-3318)
   For :class:`Option`, the value can be collected from an interactive prompt
   sig: consume_value(ctx, opts)
+
+File (src/click/types.py:754-872)
+  Declares a parameter to be a file for reading or writing.
+  extends: ParamType
+  attrs: name='filename'
+  imports: enum, stat, gettext, exceptions, utils
+  calls: resolve_lazy_flag, fail, _is_file_like
+  uses: BadParameter (exceptions)
+
+_is_file_like (src/click/types.py:875-876)
+  sig: _is_file_like(value)
+  called_by: File
+
+coerce_path_result (src/click/types.py:955-966)
+  sig: coerce_path_result(value)
+  called_by: Path
+
+split_envvar_value (src/click/types.py:126-134)
+  Given a value from an environment variable this splits it up
+  sig: split_envvar_value(rv)
+  behavior: DELEGATE(boolop.split -> result)
+
+process_value (src/click/core.py:3320-3335)
+  sig: process_value(ctx, value)
+  behavior: GUARD(is_flag_and_not_required -> value)
+
+process_value (src/click/core.py:2416-2480)
+  Process the value of this parameter:
+  sig: process_value(ctx, value)
+  behavior: BRANCH(value_is_UNSET -> result, else -> result)
+  raises: MissingParameter
+  uses: MissingParameter (exceptions)
+
+pager (src/click/_termui_impl.py:369-408)
+  Decide what method to use for paging through text.
+  sig: pager(generator, color)
+  calls: _nullpager, _pipepager, _tempfilepager
+  uses: StringIO (io)
+
+_detect_program_name (src/click/utils.py:523-577)
+  Determine the command used to run the program, for use in help
+  sig: _detect_program_name(path, _main)
 
 make_parser (src/click/core.py:1081-1086)
   Creates the underlying option parser for this command.
@@ -251,15 +273,6 @@ make_parser (src/click/core.py:1081-1086)
   calls: get_params
   called_by: Command
 
-Group (src/click/core.py:1503-1951)
-  A group is a command that nests other commands (or more groups).
-  extends: Command
-  attrs: allow_extra_args=True, allow_interspersed_args=False
-  imports: enum, errno, inspect, gettext, itertools
-  calls: get_short_help_str, make_context, _make_sub_context, fail, scope, add_command, format_commands, _process_result
-  raises: TypeError, NoArgsIsHelpError, RuntimeError
-  uses: UsageError (exceptions)
-
 fail (src/click/types.py:136-143)
   Helper method to fail with an invalid value message.
   sig: fail(message, param, ctx)
@@ -267,26 +280,12 @@ fail (src/click/types.py:136-143)
   raises: BadParameter
   uses: BadParameter (exceptions)
 
-handle_parse_result (src/click/core.py:2543-2607)
-  Process the value produced by the parser from user input.
-  sig: handle_parse_result(ctx, opts, args)
-  calls: set_parameter_source, augment_usage_errors
-  called_by: Command
-
 _OptionParser (src/click/parser.py:220-499)
   The option parser is an internal class that is ultimately used to
   imports: gettext, exceptions, core, warnings, shell_completion
   calls: _Argument, _Option, _get_value_from_state, _match_long_opt, _match_short_opt, _process_args_for_args, _process_args_for_options, _process_opts
   raises: NoSuchOption, BadOptionUsage
   uses: BadOptionUsage (exceptions), NoSuchOption (exceptions)
-
-Parameter (src/click/core.py:2027-2643)
-  A parameter to a command comes in two versions: they are either
-  attrs: param_type_name='parameter'
-  imports: enum, errno, inspect, gettext, itertools
-  calls: set_parameter_source, check_iter, type_cast_value, value_is_missing, _check_iter, augment_usage_errors
-  raises: NotImplementedError, MissingParameter, ValueError, BadParameter
-  uses: BadParameter (exceptions)
 
 type_cast_value (src/click/core.py:2342-2396)
   Convert and validate a value against the parameter's
@@ -304,276 +303,297 @@ Choice (src/click/types.py:233-398)
   calls: _normalized_mapping, get_invalid_choice_message, normalize_choice, fail, convert_type
   uses: BadParameter (exceptions)
 
-augment_usage_errors (src/click/core.py:98-113)
-  Context manager that attaches extra information to exceptions.
-  sig: augment_usage_errors(ctx, param)
-  called_by: Context, handle_parse_result, Parameter
+_Argument (src/click/parser.py:181-209)
+  imports: gettext, exceptions, core, warnings, shell_completion
+  called_by: add_argument, _OptionParser
+  raises: BadArgumentUsage
 
-get_short_help_str (src/click/core.py:1097-1118)
-  Gets short help for the command or makes it by shortening the
-  sig: get_short_help_str(limit)
-  called_by: Command, format_commands, Group
+LazyFile (src/click/utils.py:109-194)
+  A lazy file works like a regular file but it does not fully open
+  imports: types, globals, typing_extensions, glob, exceptions
+  calls: close, close_intelligently, open, format_filename
+  called_by: open_file
+  raises: FileError
+  uses: FileError (exceptions)
+
+_AtomicFile (src/click/_compat.py:452-485)
+  imports: codecs, io, types, weakref, errno
+  calls: close
+  called_by: open_stream
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 10 with behavior annotations
-drill: src/click/core.py (~70 lines, handle_parse_result)
-drill: src/click/core.py (~65 lines, consume_value)
-drill: src/click/shell_completion.py (~51 lines, _resolve_context)
-drill: src/click/utils.py (~51 lines, _detect_program_name)
+coverage: 80 symbols in L3, 15 with behavior annotations
+drill: src/click/core.py (~18 lines, command_path)
+drill: src/click/decorators.py (~24 lines, option)
+drill: src/click/utils.py (~41 lines, open_file)
+drill: src/click/shell_completion.py (~5 lines, _start_of_option)
 
 --- END CLUE FILE ---
 
 --- SOURCE SNIPPETS (File 2 Drill-Down) ---
-## handle_parse_result  (src/click/core.py L2543-2607)
+## open_file  (src/click/utils.py L358-404)
 ```
-    def handle_parse_result(
-        self, ctx: Context, opts: cabc.Mapping[str, t.Any], args: list[str]
-    ) -> tuple[t.Any, list[str]]:
-        """Process the value produced by the parser from user input.
+def open_file(
+    filename: str | os.PathLike[str],
+    mode: str = "r",
+    encoding: str | None = None,
+    errors: str | None = "strict",
+    lazy: bool = False,
+    atomic: bool = False,
+) -> t.IO[t.Any]:
+    """Open a file, with extra behavior to handle ``'-'`` to indicate
+    a standard stream, lazy open on write, and atomic write. Similar to
+    the behavior of the :class:`~click.File` param type.
 
-        Always process the value through the Parameter's :attr:`type`, wherever it
-        comes from.
+    If ``'-'`` is given to open ``stdout`` or ``stdin``, the stream is
+    wrapped so that using it in a context manager will not close it.
+    This makes it possible to use the function without accidentally
+    closing a standard stream:
 
-        If the parameter is deprecated, this method warn the user about it. But only if
-        the value has been explicitly set by the user (and as such, is not coming from
-        a default).
+    .. code-block:: python
 
-        :meta private:
-        """
-        with augment_usage_errors(ctx, param=self):
-            value, source = self.consume_value(ctx, opts)
+        with open_file(filename) as f:
+            ...
 
-            ctx.set_parameter_source(self.name, source)  # type: ignore
+    :param filename: The name or Path of the file to open, or ``'-'`` for
+        ``stdin``/``stdout``.
+    :param mode: The mode in which to open the file.
+    :param encoding: The encoding to decode or encode a file opened in
+        text mode.
+    :param errors: The error handling mode.
+    :param lazy: Wait to open the file until it is accessed. For read
+        mode, the file is temporarily opened to raise access errors
+        early, then closed until it is read again.
+    :param atomic: Write to a temporary file and replace the given file
+        on close.
 
-            # Display a deprecation warning if necessary.
-            if (
-                self.deprecated
-                and value is not UNSET
-                and source not in (ParameterSource.DEFAULT, ParameterSource.DEFAULT_MAP)
-            ):
-                extra_message = (
-                    f" {self.deprecated}" if isinstance(self.deprecated, str) else ""
-                )
-                message = _(
-                    "DeprecationWarning: The {param_type} {name!r} is deprecated."
-                    "{extra_message}"
-                ).format(
-                    param_type=self.param_type_name,
-                    name=self.human_readable_name,
-                    extra_message=extra_message,
-                )
-                echo(style(message, fg="red"), err=True)
-
-            # Process the value through the parameter's type.
-            try:
-                value = self.process_value(ctx, value)
-            except Exception:
-                if not ctx.resilient_parsing:
-                    raise
-                # In resilient parsing mode, we do not want to fail the command if the
-                # value is incompatible with the parameter type, so we reset the value
-                # to UNSET, which will be interpreted as a missing value.
-                value = UNSET
-
-        # Add parameter's value to the context.
-        if (
-            self.expose_value
-            # We skip adding the value if it was previously set by another parameter
-            # targeting the same variable name. This prevents parameters competing for
-            # the same name to override each other.
-            and (self.name not in ctx.params or ctx.params[self.name] is UNSET)
-        ):
-            # Click is logically enforcing that the name is None if the parameter is
-            # not to be exposed. We still assert it here to please the type checker.
-            assert self.name is not None, (
-                f"{self!r} parameter's name should not be None when exposing value."
-            )
-            ctx.params[self.name] = value
-
-        return value, args
-```
-
-## consume_value  (src/click/core.py L2297-2340)
-```
-    def consume_value(
-        self, ctx: Context, opts: cabc.Mapping[str, t.Any]
-    ) -> tuple[t.Any, ParameterSource]:
-        """Returns the parameter value produced by the parser.
-
-        If the parser did not produce a value from user input, the value is either
-        sourced from the environment variable, the default map, or the parameter's
-        default value. In that order of precedence.
-
-        If no value is found, an internal sentinel value is returned.
-
-        :meta private:
-        """
-        # Collect from the parse the value passed by the user to the CLI.
-        value = opts.get(self.name, UNSET)  # type: ignore
-        # If the value is set, it means it was sourced from the command line by the
-        # parser, otherwise it left unset by default.
-        source = (
-            ParameterSource.COMMANDLINE
-            if value is not UNSET
-            else ParameterSource.DEFAULT
+    .. versionadded:: 3.0
+    """
+    if lazy:
+        return t.cast(
+            "t.IO[t.Any]", LazyFile(filename, mode, encoding, errors, atomic=atomic)
         )
 
-        if value is UNSET:
-            envvar_value = self.value_from_envvar(ctx)
-            if envvar_value is not None:
-                value = envvar_value
-                source = ParameterSource.ENVIRONMENT
+    f, should_close = open_stream(filename, mode, encoding, errors, atomic=atomic)
 
-        if value is UNSET:
-            default_map_value = ctx.lookup_default(self.name)  # type: ignore[arg-type]
-            if default_map_value is not None or (
-                ctx.default_map is not None and self.name in ctx.default_map
-            ):
-                value = default_map_value
-                source = ParameterSource.DEFAULT_MAP
+    if not should_close:
+        f = t.cast("t.IO[t.Any]", KeepOpenFile(f))
 
-        if value is UNSET:
-            default_value = self.get_default(ctx)
-            if default_value is not UNSET:
-                value = default_value
-                source = ParameterSource.DEFAULT
-
-        return value, source
+    return f
 ```
 
-## _resolve_context  (src/click/shell_completion.py L562-620)
+## _start_of_option  (src/click/shell_completion.py L528-534)
 ```
-def _resolve_context(
-    cli: Command,
-    ctx_args: cabc.MutableMapping[str, t.Any],
-    prog_name: str,
-    args: list[str],
-) -> Context:
-    """Produce the context hierarchy starting with the command and
-    traversing the complete arguments. This only follows the commands,
-    it doesn't trigger input prompts or callbacks.
+def _start_of_option(ctx: Context, value: str) -> bool:
+    """Check if the value looks like the start of an option."""
+    if not value:
+        return False
 
-    :param cli: Command being called.
-    :param prog_name: Name of the executable in the shell.
-    :param args: List of complete args before the incomplete value.
-    """
-    ctx_args["resilient_parsing"] = True
-    with cli.make_context(prog_name, args.copy(), **ctx_args) as ctx:
-        args = ctx._protected_args + ctx.args
-
-        while args:
-            command = ctx.command
-
-            if isinstance(command, Group):
-                if not command.chain:
-                    name, cmd, args = command.resolve_command(ctx, args)
-
-                    if cmd is None:
-                        return ctx
-
-                    with cmd.make_context(
-                        name, args, parent=ctx, resilient_parsing=True
-                    ) as sub_ctx:
-                        ctx = sub_ctx
-                        args = ctx._protected_args + ctx.args
-                else:
-                    sub_ctx = ctx
-
-                    while args:
-                        name, cmd, args = command.resolve_command(ctx, args)
-
-                        if cmd is None:
-                            return ctx
-
-                        with cmd.make_context(
-                            name,
-                            args,
-                            parent=ctx,
-                            allow_extra_args=True,
-                            allow_interspersed_args=False,
-                            resilient_parsing=True,
-                        ) as sub_sub_ctx:
-                            sub_ctx = sub_sub_ctx
-                            args = sub_ctx.args
-
-                    ctx = sub_ctx
-                    args = [*sub_ctx._protected_args, *sub_ctx.args]
-            else:
-                break
-
-    return ctx
+    c = value[0]
+    return c in ctx._opt_prefixes
 ```
 
-## _detect_program_name  (src/click/utils.py L523-577)
+## command_path  (src/click/core.py L642-658)
 ```
-def _detect_program_name(
-    path: str | None = None, _main: ModuleType | None = None
-) -> str:
-    """Determine the command used to run the program, for use in help
-    text. If a file or entry point was executed, the file name is
-    returned. If ``python -m`` was used to execute a module or package,
-    ``python -m name`` is returned.
-
-    This doesn't try to be too precise, the goal is to give a concise
-    name for help text. Files are only shown as their name without the
-    path. ``python`` is only shown for modules, and the full path to
-    ``sys.executable`` is not shown.
-
-    :param path: The Python file being executed. Python puts this in
-        ``sys.argv[0]``, which is used by default.
-    :param _main: The ``__main__`` module. This should only be passed
-        during internal testing.
-
-    .. versionadded:: 8.0
-        Based on command args detection in the Werkzeug reloader.
-
-    :meta private:
-    """
-    if _main is None:
-        _main = sys.modules["__main__"]
-
-    if not path:
-        path = sys.argv[0]
-
-    # The value of __package__ indicates how Python was called. It may
-    # not exist if a setuptools script is installed as an egg. It may be
-    # set incorrectly for entry points created with pip on Windows.
-    # It is set to "" inside a Shiv or PEX zipapp.
-    if getattr(_main, "__package__", None) in {None, ""} or (
-        os.name == "nt"
-        and _main.__package__ == ""
-        and not os.path.exists(path)
-        and os.path.exists(f"{path}.exe")
-    ):
-        # Executed a file, like "python app.py".
-        return os.path.basename(path)
-
-    # Executed a module, like "python -m example".
-    # Rewritten by Python from "-m script" to "/path/to/script.py".
-    # Need to look at main module to determine how it was executed.
-    py_module = t.cast(str, _main.__package__)
-    name = os.path.splitext(os.path.basename(path))[0]
-
-    # A submodule like "example.cli".
-    if name != "__main__":
-        py_module = f"{py_module}.{name}"
-
-    return f"python -m {py_module.lstrip('.')}"
-
-
-```
-
-## set_parameter_source  (src/click/core.py L845-852)
-```
-    def set_parameter_source(self, name: str, source: ParameterSource) -> None:
-        """Set the source of a parameter. This indicates the location
-        from which the value of the parameter was obtained.
-
-        :param name: The name of the parameter.
-        :param source: A member of :class:`~click.core.ParameterSource`.
+    def command_path(self) -> str:
+        """The computed command path.  This is used for the ``usage``
+        information on the help page.  It's automatically created by
+        combining the info names of the chain of contexts to the root.
         """
-        self._parameter_source[name] = source
+        rv = ""
+        if self.info_name is not None:
+            rv = self.info_name
+        if self.parent is not None:
+            parent_command_path = [self.parent.command_path]
+
+            if isinstance(self.parent.command, Command):
+                for param in self.parent.command.get_params(self):
+                    parent_command_path.extend(param.get_usage_pieces(self))
+
+            rv = f"{' '.join(parent_command_path)} {rv}"
+        return rv.lstrip()
+```
+
+## option  (src/click/decorators.py L352-377)
+```
+def option(
+    *param_decls: str, cls: type[Option] | None = None, **attrs: t.Any
+) -> t.Callable[[FC], FC]:
+    """Attaches an option to the command.  All positional arguments are
+    passed as parameter declarations to :class:`Option`; all keyword
+    arguments are forwarded unchanged (except ``cls``).
+    This is equivalent to creating an :class:`Option` instance manually
+    and attaching it to the :attr:`Command.params` list.
+
+    For the default option class, refer to :class:`Option` and
+    :class:`Parameter` for descriptions of parameters.
+
+    :param cls: the option class to instantiate.  This defaults to
+                :class:`Option`.
+    :param param_decls: Passed as positional arguments to the constructor of
+        ``cls``.
+    :param attrs: Passed as keyword arguments to the constructor of ``cls``.
+    """
+    if cls is None:
+        cls = Option
+
+    def decorator(f: FC) -> FC:
+        _param_memo(f, cls(param_decls, **attrs))
+        return f
+
+    return decorator
+```
+
+## LazyFile  (src/click/utils.py L109-194)
+```
+class LazyFile:
+    """A lazy file works like a regular file but it does not fully open
+    the file but it does perform some basic checks early to see if the
+    filename parameter does make sense.  This is useful for safely opening
+    files for writing.
+    """
+
+    def __init__(
+        self,
+        filename: str | os.PathLike[str],
+        mode: str = "r",
+        encoding: str | None = None,
+        errors: str | None = "strict",
+        atomic: bool = False,
+    ):
+        self.name: str = os.fspath(filename)
+        self.mode = mode
+        self.encoding = encoding
+        self.errors = errors
+        self.atomic = atomic
+        self._f: t.IO[t.Any] | None
+        self.should_close: bool
+
+        if self.name == "-":
+            self._f, self.should_close = open_stream(filename, mode, encoding, errors)
+        else:
+            if "r" in mode:
+                # Open and close the file in case we're opening it for
+                # reading so that we can catch at least some errors in
+                # some cases early.
+                open(filename, mode).close()
+            self._f = None
+            self.should_close = True
+
+    def __getattr__(self, name: str) -> t.Any:
+        return getattr(self.open(), name)
+
+    def __repr__(self) -> str:
+        if self._f is not None:
+            return repr(self._f)
+        return f"<unopened file '{format_filename(self.name)}' {self.mode}>"
+
+    def open(self) -> t.IO[t.Any]:
+        """Opens the file if it's not yet open.  This call might fail with
+        a :exc:`FileError`.  Not handling this error will produce an error
+        that Click shows.
+        """
+        if self._f is not None:
+            return self._f
+        try:
+            rv, self.should_close = open_stream(
+                self.name, self.mode, self.encoding, self.errors, atomic=self.atomic
+            )
+        except OSError as e:
+            from .exceptions import FileError
+
+            raise FileError(self.name, hint=e.strerror) from e
+        self._f = rv
+        return rv
+
+    def close(self) -> None:
+        """Closes the underlying file, no matter what."""
+        if self._f is not None:
+            self._f.close()
+
+    def close_intelligently(self) -> None:
+        """This function only closes the file if it was opened by the lazy
+        file wrapper.  For instance this will never close stdin.
+        """
+        if self.should_close:
+            self.close()
+
+    def __enter__(self) -> LazyFile:
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
+        self.close_intelligently()
+
+    def __iter__(self) -> cabc.Iterator[t.AnyStr]:
+        self.open()
+        return iter(self._f)  # type: ignore
+```
+
+## KeepOpenFile  (src/click/utils.py L197-219)
+```
+class KeepOpenFile:
+    def __init__(self, file: t.IO[t.Any]) -> None:
+        self._file: t.IO[t.Any] = file
+
+    def __getattr__(self, name: str) -> t.Any:
+        return getattr(self._file, name)
+
+    def __enter__(self) -> KeepOpenFile:
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
+        pass
+
+    def __repr__(self) -> str:
+        return repr(self._file)
+
+    def __iter__(self) -> cabc.Iterator[t.AnyStr]:
+        return iter(self._file)
+```
+
+## get_params  (src/click/core.py L1002-1025)
+```
+    def get_params(self, ctx: Context) -> list[Parameter]:
+        params = self.params
+        help_option = self.get_help_option(ctx)
+
+        if help_option is not None:
+            params = [*params, help_option]
+
+        if __debug__:
+            import warnings
+
+            opts = [opt for param in params for opt in param.opts]
+            opts_counter = Counter(opts)
+            duplicate_opts = (opt for opt, count in opts_counter.items() if count > 1)
+
+            for duplicate_opt in duplicate_opts:
+                warnings.warn(
+                    (
+                        f"The parameter {duplicate_opt} is used more than once. "
+                        "Remove its duplicate as parameters should be unique."
+                    ),
+                    stacklevel=3,
+                )
+
+        return params
+```
+
+## _param_memo  (src/click/decorators.py L314-321)
+```
+def _param_memo(f: t.Callable[..., t.Any], param: Parameter) -> None:
+... (truncated)
 ```
 --- END SOURCE SNIPPETS ---
 

@@ -9,31 +9,34 @@ Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
 
 --- CLUE FILE (File 1) ---
-=CC v2.1 echo@HEAD 90mod 1272sym
+=CC v2.1 echo@HEAD 44mod 565sym
 ? How does Echo decide which route wins when static segments, parameters, and wildcards overlap?
 
 
 -- TREE
-echotest/  (6 files)
-middleware/  (47 files)
-bind.go  bind_test.go  binder.go  binder_external_test.go  binder_generic.go  binder_generic_test.go  binder_test.go  context.go  context_generic.go  context_generic_test.go  context_test.go  echo.go  echo_test.go  group.go  group_test.go
+echotest/  (2 files)
+middleware/  (24 files)
+bind.go  binder.go  binder_generic.go  context.go  context_generic.go  echo.go  group.go  httperror.go  ip.go  json.go  renderer.go  response.go  route.go  router.go  router_concurrent.go
 
 -- INDEX
 echo.go                                         865L  Config, DefaultHTTPErrorHandler, AcquireContext, Add, AddRoute
 context.go                                      667L  Attachment, Bind, Blob, Cookie, Cookies
 router.go                                      1074L  Error, Unwrap, AddRouteError, Add, Remove
 bind.go                                         472L  BindBody, BindHeaders, BindPathValues, BindQueryParams, BindUnmarshaler
-context_test.go                                1428L  BenchmarkAllocJSON, BenchmarkAllocJSONP, BenchmarkAllocXML, BenchmarkContext_Store, BenchmarkRealIPForHeaderXForwardFor
 group.go                                        178L  Add, AddRoute, Any, CONNECT, DELETE
-bind_test.go                                   1693L  Bar, BenchmarkBindbindDataWithTags, UnmarshalParam, UnmarshalParams, Node
 binder.go                                      1329L  Error, BindingError, FormFieldBinder, NewBindingError, PathValuesBinder
-binder_external_test.go                         134L  ExampleValueBinder_BindError, ExampleValueBinder_BindErrors, ExampleValueBinder_CustomFunc
 binder_generic.go                               571L  TimeOpts, bindValue
-binder_generic_test.go                         1616L  UnmarshalJSON, JSONUnmarshalerType, TestFormValue, TestFormValueOr, TestFormValue_UnsupportedType
-binder_test.go                                 3252L  BenchmarkDefaultBinder_BindInt64_10_fields, BenchmarkDefaultBinder_BindInt64_single, BenchmarkRawFunc_Int64_single, BenchmarkValueBinder_BindInt64_10_fields, BenchmarkValueBinder_BindInt64_single
 context_generic.go                               43L  
-context_generic_test.go                          70L  TestContextGetInvalidCast, TestContextGetNonExistentKey, TestContextGetOK, TestContextGetOrInvalidCast, TestContextGetOrNonExistentKey
-  ...and 76 more modules
+echotest/context.go                             183L  ServeWithHandler, ToContext, ToContextRecorder, ContextConfig, MultipartForm
+echotest/reader.go                               46L  LoadBytes, TrimNewlineEnd, loadBytes
+httperror.go                                    162L  Error, StatusCode, Unwrap, Wrap, HTTPError
+ip.go                                           309L  ExtractIPDirect, ExtractIPFromRealIPHeader, ExtractIPFromXFFHeader, LegacyIPExtractor, TrustIPRange
+json.go                                          29L  Deserialize, Serialize, DefaultJSONSerializer
+middleware/basic_auth.go                        156L  BasicAuth, ToMiddleware, BasicAuthConfig, BasicAuthWithConfig
+middleware/body_dump.go                         201L  BodyDump, ToMiddleware, BodyDumpConfig, BodyDumpWithConfig, Flush
+middleware/body_limit.go                         99L  BodyLimit, ToMiddleware, BodyLimitConfig, BodyLimitWithConfig, Close
+middleware/compress.go                          235L  Gzip, ToMiddleware, GzipConfig, GzipWithConfig, bufferPool
+  ...and 27 more modules
 
 -- SYM
 Echo.add                            M echo.go:621    function Echo.add
@@ -80,19 +83,18 @@ Echo.File                           M echo.go:609    File registers a new route 
 Echo.Use                            M echo.go:431    Use adds middleware to the chain which is run a...
 subFS                               M echo.go:827    function subFS
 New                                 M echo.go:333    New creates an instance of Echo.
-applyMiddleware                     M echo.go:785    function applyMiddleware
-newIPChecker                        M ip.go:183    function newIPChecker
-Response.Unwrap                     M response.go:105    Unwrap returns the original http.ResponseWriter.
 BindPathValues                      M bind.go:42     BindPathValues binds path parameter values to b...
 unmarshalInputToField               M bind.go:352    function unmarshalInputToField
 ValueBinder.bool                    M binder.go:920    function ValueBinder.bool
 ValueBinder.float                   M binder.go:1006   function ValueBinder.float
 Context.FormValue                   M context.go:319    FormValue returns the form field value for the ...
 Context.IsTLS                       M context.go:150    IsTLS returns true if HTTP connection is TLS ot...
+applyMiddleware                     M echo.go:785    function applyMiddleware
 loadBytes                           M echotest/reader.go:36     function loadBytes
 Group.GET                           M group.go:37     GET implements `Echo#GET()` for sub-routes with...
 Group.StaticFS                      M group.go:122    StaticFS implements `Echo#StaticFS()` for sub-r...
 Group                               C group.go:14     Group is a set of sub-routes for a specified ro...
+newIPChecker                        M ip.go:183    function newIPChecker
 BasicAuthWithConfig                 M middleware/basic_auth.go:92     BasicAuthWithConfig returns an BasicAuthWithCon...
 BodyDumpWithConfig                  M middleware/body_dump.go:68     BodyDumpWithConfig returns a BodyDump middlewar...
 bodyDumpResponseWriter.Write        M middleware/body_dump.go:150    function bodyDumpResponseWriter.Write
@@ -114,7 +116,7 @@ RequestIDWithConfig                 M middleware/request_id.go:37     RequestIDW
 RequestLoggerWithConfig             M middleware/request_logger.go:237    RequestLoggerWithConfig returns a RequestLogger...
 RewriteWithConfig                   M middleware/rewrite.go:48     RewriteWithConfig returns a Rewrite middleware ...
 SecureWithConfig                    M middleware/secure.go:96     SecureWithConfig returns a Secure middleware wi...
-  ...and 487 more symbols
+  ...and 488 more symbols
 
 -- FOCUS
 Echo.Static (echo.go:533-533)
@@ -128,6 +130,12 @@ Echo.StaticFS (echo.go:548-548)
   sig: Echo.StaticFS(pathPrefix string, filesystem fs.FS, middleware ...Middl...)
   behavior: DELEGATE(e.Add -> result)
   calls: Add, StaticDirectoryHandler
+
+Group.Static (group.go:112-112)
+  Static implements `Echo#Static()` for sub-routes within the Group.
+  sig: Group.Static(pathPrefix, fsRoot string, middleware ...MiddlewareFunc)
+  behavior: DELEGATE(g.StaticFS -> result)
+  calls: StaticFS
 
 Echo.File (echo.go:609-609)
   File registers a new route with path to serve a static file with optional route-level middleware.
@@ -159,26 +167,67 @@ Group.RouteNotFound (group.go:153-153)
   behavior: DELEGATE(g.Add -> result)
   calls: Add
 
-Group.Static (group.go:112-112)
-  Static implements `Echo#Static()` for sub-routes within the Group.
-  sig: Group.Static(pathPrefix, fsRoot string, middleware ...MiddlewareFunc)
-  behavior: DELEGATE(g.StaticFS -> result)
-  calls: StaticFS
-
 Routes.Reverse (route.go:117-117)
   Reverse reverses route to URL string by replacing path parameters with given params values.
   sig: Routes.Reverse(routeName string, pathValues ...any)
   behavior: GUARD(rr -> wrap_Reverse); ACCUMULATE(loop -> result)
   calls: Reverse
 
+StaticDirectoryHandler (echo.go:559-559)
+  StaticDirectoryHandler creates handler function to serve files from provided file system When disablePathUnescaping is s
+  sig: StaticDirectoryHandler(fileSystem fs.FS, disablePathUnescaping bool)
+  behavior: PRECEDENCE(not_disablePathUnescaping -> err)
+  called_by: Static, StaticFS
+
+Echo.AddRoute (echo.go:617-617)
+  AddRoute registers a new Route with default host Router
+  sig: Echo.AddRoute(route Route)
+  behavior: DELEGATE(e.add -> result)
+  calls: add
+  called_by: Match, add
+
+StaticFileHandler (echo.go:599-599)
+  StaticFileHandler creates handler function to serve file from provided file system.
+  sig: StaticFileHandler(file string, filesystem fs.FS)
+  calls: File
+  called_by: FileFS
+
+Echo.RouteNotFound (echo.go:495-495)
+  RouteNotFound registers a special-case route which is executed when no other route is found (i.e.
+  sig: Echo.RouteNotFound(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(e.Add -> result)
+  calls: Add
+
+Echo.add (echo.go:621-621)
+  sig: Echo.add(route Route)
+  behavior: GUARD(e -> RouteInfo); PRECEDENCE(e -> err)
+  calls: AddRoute
+  called_by: Add, AddRoute
+
+Group.AddRoute (group.go:172-172)
+  AddRoute registers a new Routable with Router
+  sig: Group.AddRoute(route Route)
+  behavior: DELEGATE(g.echo.add -> result)
+  called_by: Add, Match
+
+Routes.FindByMethodPath (route.go:127-127)
+  FindByMethodPath searched for matching route info by method and path
+  sig: Routes.FindByMethodPath(method string, path string)
+  behavior: GUARD(r -> RouteInfo); PRECEDENCE(r -> rr); ACCUMULATE(loop -> result)
+
+Static (middleware/static.go:144-144)
+  Static returns a Static middleware to serves static content from the provided root directory.
+  sig: Static(root string)
+  behavior: DELEGATE(StaticWithConfig -> result)
+  calls: StaticWithConfig
+
+concurrentRouter.Route (router_concurrent.go:21-21)
+  sig: concurrentRouter.Route(c *Context)
+  behavior: DELEGATE(r.router.Route -> result); UNWIND(defer)
+
 Echo (echo.go:68-68)
   Echo is the top-level framework instance.
   methods: AcquireContext, Add, AddRoute, Any, CONNECT, DELETE
-
-Group (group.go:14-14)
-  Group is a set of sub-routes for a specified route.
-  methods: Add, AddRoute, Any, CONNECT, DELETE, File
-  called_by: Group
 
 Echo.Add (echo.go:642-642)
   Add registers a new route for an HTTP method and path with matching handler in the router with optional route-level midd
@@ -199,33 +248,16 @@ Echo.GET (echo.go:449-449)
   calls: Add
   called_by: FileFS, main
 
-Group.Add (group.go:158-158)
-  Add implements `Echo#Add()` for sub-routes within the Group.
-  sig: Group.Add(method, path string, handler HandlerFunc, middleware ......)
-  calls: AddRoute
-  called_by: Any, CONNECT, DELETE, GET, HEAD, OPTIONS, PATCH, POST
-  raises: panic
-
 Echo.Use (echo.go:431-431)
   Use adds middleware to the chain which is run after router has found matching route and before route/request handler met
   sig: Echo.Use(middleware ...MiddlewareFunc)
   called_by: Group, main
-
-DefaultRouter (router.go:60-60)
-  DefaultRouter is the registry of all registered routes for an `Echo` instance for request matching and URL path paramete
-  methods: Add, Remove, Route, Routes, insert, storeRouteInfo
 
 Echo.Start (echo.go:744-744)
   Start stars HTTP server on given address with Echo as a handler serving requests.
   sig: Echo.Start(address string)
   behavior: DELEGATE(sc.Start -> result); UNWIND(defer)
   called_by: main
-
-DefaultRouter.Add (router.go:447-447)
-  Add registers a new route for method and path with matching handler.
-  sig: DefaultRouter.Add(route Route)
-  behavior: GUARD(route -> RouteInfo); PRECEDENCE(route -> not_r.allowOverwritingRoute); ACCUMULATE(loop -> result)
-  calls: Error, AddRouteError, newAddRouteError
 
 Echo.FileFS (echo.go:591-591)
   FileFS registers a new route with path to serve file from the provided file system.
@@ -258,96 +290,179 @@ RouteInfo.Clone (route.go:65-65)
   Clone creates copy of RouteInfo
   called_by: Clone
 
-StartConfig (server.go:26-26)
-  StartConfig is for creating configured http.Server instance to start serve http(s) requests with given Echo instance
-  methods: Start, StartTLS, start
-
 Route (route.go:16-16)
   Route contains information to adding/registering new route with the router.
   methods: ToRouteInfo, WithPrefix
-
-StaticDirectoryHandler (echo.go:559-559)
-  StaticDirectoryHandler creates handler function to serve files from provided file system When disablePathUnescaping is s
-  sig: StaticDirectoryHandler(fileSystem fs.FS, disablePathUnescaping bool)
-  behavior: PRECEDENCE(not_disablePathUnescaping -> err)
-  called_by: Static, StaticFS
-
-ContextConfig (echotest/context.go:20-20)
-  ContextConfig is configuration for creating echo.Context for testing purposes.
-  methods: ServeWithHandler, ToContext, ToContextRecorder
 
 Context.InitializeRoute (context.go:263-263)
   InitializeRoute sets the route related variables of this request to the context.
   sig: Context.InitializeRoute(ri *RouteInfo, pathValues *PathValues)
   calls: PathValues, setPathValues
 
-ContextConfig.ToContextRecorder (echotest/context.go:81-81)
-  ToContextRecorder converts ContextConfig to echo.Context and httptest.ResponseRecorder
-  sig: ContextConfig.ToContextRecorder(t *testing.T)
-  behavior: ACCUMULATE(loop -> conf_RouteInfo_Parameter)
-  called_by: ServeWithHandler, ToContext
+StaticConfig (middleware/static.go:24-24)
+  StaticConfig defines the config for Static middleware.
+  methods: ToMiddleware
 
-Echo.AddRoute (echo.go:617-617)
-  AddRoute registers a new Route with default host Router
-  sig: Echo.AddRoute(route Route)
-  behavior: DELEGATE(e.add -> result)
-  calls: add
-  called_by: Match, add
+routeMethod (router.go:142-142)
+  type routeMethod
 
-Echo.add (echo.go:621-621)
-  sig: Echo.add(route Route)
-  behavior: GUARD(e -> RouteInfo); PRECEDENCE(e -> err)
-  calls: AddRoute
-  called_by: Add, AddRoute
+AddRouteError.Error (router.go:434-434)
+  called_by: Add
 
-Group.AddRoute (group.go:172-172)
-  AddRoute registers a new Routable with Router
-  sig: Group.AddRoute(route Route)
-  behavior: DELEGATE(g.echo.add -> result)
-  called_by: Add, Match
+AddRouteError.Unwrap (router.go:436-436)
 
-Group.GET (group.go:37-37)
-  GET implements `Echo#GET()` for sub-routes within the Group.
-  sig: Group.GET(path string, h HandlerFunc, m ...MiddlewareFunc)
-  behavior: DELEGATE(g.Add -> result)
-  calls: Add
-  called_by: FileFS
+Context.Echo (context.go:665-665)
+  Echo returns the `Echo` instance.
+
+Context.RouteInfo (context.go:225-225)
+  RouteInfo returns current request route information.
+  behavior: GUARD(c -> wrap_Clone)
+
+DefaultRouter.Route (router.go:791-791)
+  Route looks up a handler registered for method and path.
+  sig: DefaultRouter.Route(c *Context)
+  behavior: GUARD(child -> result); PRECEDENCE(cap -> not_r.useEscapedPathForRouting -> previous); ACCUMULATE(loop -> result)
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 47 with behavior annotations
-drill: echo.go (~1 lines, StaticFileHandler)
-drill: context.go (~1 lines, Context.InitializeRoute)
-drill: echo.go (~1 lines, NewWithConfig)
-drill: middleware/request_logger.go (~1 lines, RequestLogger)
-drill: context.go (~1 lines, Context.QueryParams)
+coverage: 80 symbols in L3, 48 with behavior annotations
+drill: echo.go (~1 lines, Echo.Static)
+drill: echo.go (~1 lines, Echo.StaticFS)
+drill: group.go (~1 lines, Group.Static)
+drill: echo.go (~1 lines, Echo.File)
+drill: group.go (~1 lines, Group.StaticFS)
 
 --- END CLUE FILE ---
 
 --- SOURCE SNIPPETS (File 2 Drill-Down) ---
-## StaticFileHandler  (echo.go L599-599)
+## Echo.Static  (echo.go L533-533)
 ```
-func StaticFileHandler(file string, filesystem fs.FS) HandlerFunc {
-```
-
-## Context.InitializeRoute  (context.go L263-263)
-```
-func (c *Context) InitializeRoute(ri *RouteInfo, pathValues *PathValues) {
+func (e *Echo) Static(pathPrefix, fsRoot string, middleware ...MiddlewareFunc) RouteInfo {
 ```
 
-## NewWithConfig  (echo.go L294-294)
+## Echo.StaticFS  (echo.go L548-548)
 ```
-func NewWithConfig(config Config) *Echo {
-```
-
-## RequestLogger  (middleware/request_logger.go L395-395)
-```
-func RequestLogger() echo.MiddlewareFunc {
+func (e *Echo) StaticFS(pathPrefix string, filesystem fs.FS, middleware ...MiddlewareFunc) RouteInfo {
 ```
 
-## Context.QueryParams  (context.go L306-306)
+## Group.Static  (group.go L112-112)
 ```
-func (c *Context) QueryParams() url.Values {
+func (g *Group) Static(pathPrefix, fsRoot string, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Echo.File  (echo.go L609-609)
+```
+func (e *Echo) File(path, file string, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.StaticFS  (group.go L122-122)
+```
+func (g *Group) StaticFS(pathPrefix string, filesystem fs.FS, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## MustSubFS  (echo.go L850-850)
+```
+func MustSubFS(currentFs fs.FS, fsRoot string) fs.FS {
+```
+
+## StaticDirectoryHandler  (echo.go L559-559)
+```
+func StaticDirectoryHandler(fileSystem fs.FS, disablePathUnescaping bool) HandlerFunc {
+```
+
+## Group.Add  (group.go L158-158)
+```
+func (g *Group) Add(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.AddRoute  (group.go L172-172)
+```
+func (g *Group) AddRoute(route Route) (RouteInfo, error) {
+```
+
+## Group.Any  (group.go L72-72)
+```
+func (g *Group) Any(path string, handler HandlerFunc, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.CONNECT  (group.go L27-27)
+```
+func (g *Group) CONNECT(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.DELETE  (group.go L32-32)
+```
+func (g *Group) DELETE(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.File  (group.go L143-143)
+```
+func (g *Group) File(path, file string, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.FileFS  (group.go L135-135)
+```
+func (g *Group) FileFS(path, file string, filesystem fs.FS, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.GET  (group.go L37-37)
+```
+func (g *Group) GET(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.Group  (group.go L103-103)
+```
+func (g *Group) Group(prefix string, middleware ...MiddlewareFunc) (sg *Group) {
+```
+
+## Group.HEAD  (group.go L42-42)
+```
+func (g *Group) HEAD(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.Match  (group.go L77-77)
+```
+func (g *Group) Match(methods []string, path string, handler HandlerFunc, middleware ...MiddlewareFunc) Routes {
+```
+
+## Group.OPTIONS  (group.go L47-47)
+```
+func (g *Group) OPTIONS(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.PATCH  (group.go L52-52)
+```
+func (g *Group) PATCH(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.POST  (group.go L57-57)
+```
+func (g *Group) POST(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.PUT  (group.go L62-62)
+```
+func (g *Group) PUT(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.RouteNotFound  (group.go L153-153)
+```
+func (g *Group) RouteNotFound(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.TRACE  (group.go L67-67)
+```
+func (g *Group) TRACE(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.Use  (group.go L22-22)
+```
+func (g *Group) Use(middleware ...MiddlewareFunc) {
+```
+
+## Group  (group.go L14-14)
+```
+type Group struct {
 ```
 
 ## Config  (echo.go L237-237)
@@ -388,11 +503,6 @@ func (e *Echo) CONNECT(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInf
 ## Echo.DELETE  (echo.go L443-443)
 ```
 func (e *Echo) DELETE(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Echo.File  (echo.go L609-609)
-```
-func (e *Echo) File(path, file string, middleware ...MiddlewareFunc) RouteInfo {
 ```
 
 ## Echo.FileFS  (echo.go L591-591)
@@ -485,16 +595,6 @@ func (e *Echo) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (e *Echo) Start(address string) error {
 ```
 
-## Echo.Static  (echo.go L533-533)
-```
-func (e *Echo) Static(pathPrefix, fsRoot string, middleware ...MiddlewareFunc) RouteInfo {
-```
-
-## Echo.StaticFS  (echo.go L548-548)
-```
-func (e *Echo) StaticFS(pathPrefix string, filesystem fs.FS, middleware ...MiddlewareFunc) RouteInfo {
-```
-
 ## Echo.TRACE  (echo.go L485-485)
 ```
 func (e *Echo) TRACE(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
@@ -518,131 +618,6 @@ func (e *Echo) serveHTTP(w http.ResponseWriter, r *http.Request) {
 ## Echo  (echo.go L68-68)
 ```
 type Echo struct {
-```
-
-## JSONSerializer  (echo.go L106-106)
-```
-type JSONSerializer interface {
-```
-
-## MiddlewareConfigurator  (echo.go L121-121)
-```
-type MiddlewareConfigurator interface {
-```
-
-## MustSubFS  (echo.go L850-850)
-```
-func MustSubFS(currentFs fs.FS, fsRoot string) fs.FS {
-```
-
-## New  (echo.go L333-333)
-```
-func New() *Echo {
-```
-
-## NewDefaultFS  (echo.go L804-804)
-```
-func NewDefaultFS(dir string) fs.FS {
-```
-
-## StaticDirectoryHandler  (echo.go L559-559)
-```
-func StaticDirectoryHandler(fileSystem fs.FS, disablePathUnescaping bool) HandlerFunc {
-```
-
-## Validator  (echo.go L126-126)
-```
-type Validator interface {
-```
-
-## WrapHandler  (echo.go L752-752)
-```
-func WrapHandler(h http.Handler) HandlerFunc {
-```
-
-## WrapMiddleware  (echo.go L766-766)
-```
-func WrapMiddleware(m func(http.Handler) http.Handler) MiddlewareFunc {
-```
-
-## applyMiddleware  (echo.go L785-785)
-```
-func applyMiddleware(h HandlerFunc, middleware ...MiddlewareFunc) HandlerFunc {
-```
-
-## defaultFS.Open  (echo.go L811-811)
-```
-func (fs defaultFS) Open(name string) (fs.File, error) {
-```
-
-## defaultFS  (echo.go L797-797)
-```
-type defaultFS struct {
-```
-
-## hello  (echo.go L20-20)
-```
-	func hello(c *echo.Context) error {
-```
-
-## main  (echo.go L24-24)
-```
-	func main() {
-```
-
-## sanitizeURI  (middleware/slash.go L144-144)
-```
-func sanitizeURI(uri string) string {
-```
-
-## subFS  (echo.go L827-827)
-```
-func subFS(currentFs fs.FS, root string) (fs.FS, error) {
-```
-
-## Context.Attachment  (context.go L616-616)
-```
-func (c *Context) Attachment(file, name string) error {
-```
-
-## Context.Bind  (context.go L399-399)
-```
-func (c *Context) Bind(i any) error {
-```
-
-## Context.Blob  (context.go L552-552)
-```
-func (c *Context) Blob(code int, contentType string, b []byte) (err error) {
-```
-
-## Context.Cookie  (context.go L364-364)
-```
-func (c *Context) Cookie(name string) (*http.Cookie, error) {
-```
-
-## Context.Cookies  (context.go L374-374)
-```
-func (c *Context) Cookies() []*http.Cookie {
-```
-
-## Context.Echo  (context.go L665-665)
-```
-func (c *Context) Echo() *Echo {
-```
-
-## Context.File  (context.go L571-571)
-```
-func (c *Context) File(file string) error {
-```
-
-## Context.FileFS  (context.go L580-580)
-```
-func (c *Context) FileFS(file string, filesystem fs.FS) error {
-```
-
-## Context.FormFile  (context.go L348-348)
-```
-func (c *Context) FormFile(name string) (*multipart.FileHeader, error) {
 ```
 --- END SOURCE SNIPPETS ---
 
