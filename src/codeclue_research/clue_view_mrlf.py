@@ -415,6 +415,55 @@ def _semantic_overlap(purpose: str, question_keywords: set[str]) -> float:
     return len(purpose_words & question_keywords) / max(len(question_keywords), 1)
 
 
+def _symbol_overlap(symbol_name: str, file_path: str, question_keywords: set[str]) -> float:
+    if not question_keywords:
+        return 0.0
+    symbol_words = _split_compound_words(symbol_name)
+    path_words = _split_compound_words(file_path)
+    return len((symbol_words | path_words) & question_keywords) / max(len(question_keywords), 1)
+
+
+def _node_question_relevance(node: Node, question_keywords: set[str]) -> float:
+    if not question_keywords:
+        return 0.0
+    sc = node.semantic_contract or {}
+    score = 0.0
+    score += _semantic_overlap(sc.get("purpose", ""), question_keywords)
+    score += 0.7 * _symbol_overlap(
+        sc.get("symbol_name", node.node_id),
+        node.source_anchor.file_path,
+        question_keywords,
+    )
+    behavior_text = " ".join(sc.get("behavior_patterns", []))
+    if behavior_text:
+        score += 0.4 * _semantic_overlap(behavior_text, question_keywords)
+    return score
+
+
+def _question_content_overlap(
+    nodes: list[Node],
+    question_keywords: set[str],
+    *,
+    behavior_only: bool = False,
+) -> float:
+    if not question_keywords or not nodes:
+        return 0.0
+    content_tokens: set[str] = set()
+    for node in nodes:
+        sc = node.semantic_contract or {}
+        if behavior_only:
+            for item in sc.get("behavior_patterns", []):
+                content_tokens.update(_split_compound_words(item))
+            for key in ("raises", "uses"):
+                for item in sc.get(key, []):
+                    content_tokens.update(_split_compound_words(str(item)))
+        else:
+            content_tokens.update(_split_compound_words(sc.get("symbol_name", "")))
+            content_tokens.update(_split_compound_words(sc.get("purpose", "")))
+            content_tokens.update(_split_compound_words(node.source_anchor.file_path))
+    return len(content_tokens & question_keywords) / max(len(question_keywords), 1)
+
+
 def _betweenness_centrality(
     node_ids: list[str],
     edges: list[tuple[str, str]],
@@ -505,18 +554,25 @@ def _select_focus_nodes(
             contains_children[edge.from_node].add(edge.to_node)
             contains_parents[edge.to_node].add(edge.from_node)
             structural_edges.append((edge.from_node, edge.to_node))
-        elif edge.edge_type == "calls":
+        elif edge.edge_type in {"calls", "inherits"}:
             call_neighbors[edge.from_node].add(edge.to_node)
             call_neighbors[edge.to_node].add(edge.from_node)
             structural_edges.append((edge.from_node, edge.to_node))
 
     semantic_scores: dict[str, float] = {}
+    lexical_scores: dict[str, float] = {}
     class_anchors: list[str] = []
     function_anchors: list[str] = []
     for node in symbol_nodes:
         sc = node.semantic_contract or {}
         overlap = _semantic_overlap(sc.get("purpose", ""), keywords)
+        lexical_overlap = _symbol_overlap(
+            sc.get("symbol_name", node.node_id),
+            node.source_anchor.file_path,
+            keywords,
+        )
         semantic_scores[node.node_id] = overlap
+        lexical_scores[node.node_id] = lexical_overlap
         if overlap > 0:
             if node.node_type == "class":
                 class_anchors.append(node.node_id)
@@ -524,6 +580,13 @@ def _select_focus_nodes(
                 function_anchors.append(node.node_id)
 
     anchors = class_anchors + function_anchors
+    if not anchors:
+        lexical_anchors = [
+            node.node_id
+            for node in symbol_nodes
+            if lexical_scores.get(node.node_id, 0.0) > 0
+        ]
+        anchors = lexical_anchors[:soft_cap]
     if not anchors:
         return _fallback_nodes()
 
@@ -545,6 +608,7 @@ def _select_focus_nodes(
 
     frontier = set(anchors)
     visited = set(anchors)
+    proximity: dict[str, int] = {anchor: 0 for anchor in anchors}
     for _ in range(2):
         next_frontier: set[str] = set()
         for current in frontier:
@@ -559,6 +623,7 @@ def _select_focus_nodes(
                 candidates.add(neighbor)
                 next_frontier.add(neighbor)
                 visited.add(neighbor)
+                proximity[neighbor] = proximity.get(current, 0) + 1
         frontier = next_frontier
         if not frontier:
             break
@@ -569,8 +634,10 @@ def _select_focus_nodes(
     ranked_ids = sorted(
         candidate_ids,
         key=lambda nid: (
-            -semantic_scores.get(nid, 0.0),
+            -_node_question_relevance(node_by_id[nid], keywords),
+            proximity.get(nid, 99),
             -centrality.get(nid, 0.0),
+            -lexical_scores.get(nid, 0.0),
             type_priority.get(node_by_id[nid].node_type, 2),
             node_by_id[nid].semantic_contract.get("symbol_name", node_by_id[nid].node_id),
         ),
@@ -736,35 +803,72 @@ def _render_l3(
 # GAPS — missing information + drill hints
 # ---------------------------------------------------------------------------
 
-def _classify_question_type(question: str) -> str:
+def _classify_question_type(
+    question: str,
+    focus_nodes: list[Node],
+    l2_symbols: list[Node],
+) -> str:
     """Classify question as STRUCTURAL, RELATIONAL, or MECHANISTIC.
 
-    Based on question phrasing, not repo content. Language-agnostic.
+    Uses both question phrasing and repository content coverage. Questions that
+    can be grounded in L0-L2 symbol metadata should stay STRUCTURAL/RELATIONAL;
+    only questions that require body-level behavior should be marked
+    MECHANISTIC.
     """
     q = question.lower()
-    # Mechanistic: asks HOW something works internally
-    mechanistic_signals = [
-        "how does", "how is", "what happens when", "what does .* actually do",
-        "internally", "under the hood", "precedence", "order of",
-        "step by step", "what logic", "how are .* handled",
-        "error handling", "cleanup", "teardown", "fallback",
-        "dispatch", "resolve", "convert", "transform",
-    ]
-    for signal in mechanistic_signals:
-        if re.search(signal, q):
-            return "MECHANISTIC"
+    keywords = _extract_question_keywords(question)
 
-    # Relational: asks about relationships between components
     relational_signals = [
-        "relationship", "calls", "depends on", "inherits",
-        "connected", "hierarchy", "which .* call", "who calls",
-        "interact", "communicate", "flow between",
+        "relationship",
+        "calls",
+        "depends on",
+        "inherits",
+        "extends",
+        "implements",
+        "connected",
+        "hierarchy",
+        "which .* call",
+        "who calls",
+        "interact",
+        "communicate",
+        "flow between",
+        "used by",
     ]
     for signal in relational_signals:
         if re.search(signal, q):
             return "RELATIONAL"
 
-    # Default: structural
+    structural_score = _question_content_overlap(l2_symbols, keywords)
+    behavior_score = _question_content_overlap(focus_nodes, keywords, behavior_only=True)
+
+    mechanistic_signals = [
+        "how does",
+        "what happens when",
+        "what does .* actually do",
+        "internally",
+        "under the hood",
+        "precedence",
+        "order of",
+        "step by step",
+        "what logic",
+        "error handling",
+        "cleanup",
+        "teardown",
+        "fallback",
+    ]
+    if any(re.search(signal, q) for signal in mechanistic_signals):
+        if (
+            " work" in q
+            or "internally" in q
+            or "what happens when" in q
+            or behavior_score > 0
+            or structural_score == 0
+        ):
+            return "MECHANISTIC"
+
+    if behavior_score > structural_score + 0.05:
+        return "MECHANISTIC"
+
     return "STRUCTURAL"
 
 
@@ -782,7 +886,8 @@ def _render_gaps(
     2. Coverage report (how many task-relevant symbols have behavioral annotations)
     3. Costed drill targets (file:lines + estimated size for informed drill-down)
     """
-    question_type = _classify_question_type(question)
+    question_keywords = _extract_question_keywords(question)
+    question_type = _classify_question_type(question, focus_nodes, l2_symbols)
 
     # Count coverage
     total_focus = len(focus_nodes)
@@ -824,8 +929,9 @@ def _render_gaps(
             sc = n.semantic_contract or {}
             has_behavior = bool(sc.get("behavior_patterns"))
             byte_span = n.source_anchor.byte_end - n.source_anchor.byte_start
-            # Priority: unannotated first, then large bodies, then any
-            return (has_behavior, -byte_span)
+            relevance = _node_question_relevance(n, question_keywords)
+            call_count = len(sc.get("calls", [])) + len(sc.get("called_by", []))
+            return (-relevance, has_behavior, -call_count, -byte_span)
 
         drill_candidates = sorted(func_focus, key=_drill_priority)
 

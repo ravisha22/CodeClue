@@ -167,12 +167,46 @@ def _parse_focus_callees(clue: str) -> dict[str, list[str]]:
     return callees
 
 
+def _extract_question_keywords(question: str) -> set[str]:
+    stop_words = {
+        "the", "a", "an", "is", "are", "was", "were", "be", "been", "being",
+        "have", "has", "had", "do", "does", "did", "will", "would", "could",
+        "should", "may", "might", "can", "shall", "of", "in", "to", "for",
+        "with", "on", "at", "from", "by", "about", "as", "into", "through",
+        "during", "before", "after", "above", "below", "between", "out",
+        "up", "down", "and", "but", "or", "nor", "not", "so", "yet",
+        "what", "which", "who", "whom", "this", "that", "these", "those",
+        "how", "when", "where", "why", "all", "each", "every", "both",
+        "few", "more", "most", "other", "some", "such", "no", "only",
+        "same", "than", "too", "very", "just", "if", "it", "its",
+    }
+    return set(re.findall(r"[a-zA-Z_]\w{2,}", question.lower())) - stop_words
+
+
+def _split_compound_words(text: str) -> set[str]:
+    parts = re.sub(r"[^a-zA-Z]", " ", text)
+    parts = re.sub(r"([a-z])([A-Z])", r"\1 \2", parts)
+    return set(re.findall(r"[a-z]{3,}", parts.lower()))
+
+
+def _record_relevance(rec: dict, question_keywords: set[str]) -> float:
+    if not question_keywords:
+        return 0.0
+    content = " ".join(
+        str(rec.get(key, ""))
+        for key in ("symbol", "file", "source")
+    )
+    tokens = _split_compound_words(content)
+    return len(tokens & question_keywords) / max(len(question_keywords), 1)
+
+
 def _select_drill_snippets(
     drill_targets: list[dict],
     detail_records: list[dict],
     repo_path: Path,
     budget: int = DRILLDOWN_TOKEN_BUDGET,
     clue_text: str = "",
+    question: str = "",
 ) -> str:
     """Select and format source snippets for drill-down, within token budget.
 
@@ -199,6 +233,7 @@ def _select_drill_snippets(
     selected: list[str] = []
     used_symbols: set[str] = set()
     tokens_used = 0
+    question_keywords = _extract_question_keywords(question)
 
     def _try_add(sym: str, target: dict | None = None) -> bool:
         nonlocal tokens_used
@@ -218,8 +253,19 @@ def _select_drill_snippets(
         tokens_used += _token_count(snippet)
         return True
 
-    # Phase 1: drill targets from GAPS (ranked by priority in v2.1.1)
-    for target in drill_targets:
+    target_order = sorted(
+        drill_targets,
+        key=lambda target: (
+            -_record_relevance(
+                by_symbol.get(target["symbol"], {"symbol": target["symbol"], "file": target["file"]}),
+                question_keywords,
+            ),
+            target.get("est_lines", 0),
+        ),
+    )
+
+    # Phase 1: drill targets from GAPS (ranked by semantic relevance)
+    for target in target_order:
         _try_add(target["symbol"], target)
         if tokens_used >= budget:
             break
@@ -232,6 +278,9 @@ def _select_drill_snippets(
             for callee in focus_callees.get(sym, []):
                 if callee not in callee_set and callee not in used_symbols:
                     callee_set.append(callee)
+        callee_set.sort(
+            key=lambda sym: -_record_relevance(by_symbol.get(sym, {"symbol": sym}), question_keywords)
+        )
         for callee in callee_set:
             _try_add(callee)
             if tokens_used >= budget:
@@ -241,7 +290,11 @@ def _select_drill_snippets(
     if tokens_used < budget:
         target_files = {t["file"] for t in drill_targets}
         for fp in target_files:
-            for rec in by_file.get(fp, []):
+            file_records = sorted(
+                by_file.get(fp, []),
+                key=lambda rec: -_record_relevance(rec, question_keywords),
+            )
+            for rec in file_records:
                 sym = rec.get("symbol", "")
                 _try_add(sym)
                 if tokens_used >= budget:
@@ -391,6 +444,7 @@ def main():
                 snippets = _select_drill_snippets(
                     drill_targets, detail_records, repo_path,
                     clue_text=clue,
+                    question=question,
                 )
                 snippet_tokens = _token_count(snippets)
                 clue_tokens = _token_count(clue)

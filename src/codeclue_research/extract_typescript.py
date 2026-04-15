@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 from pathlib import Path
 
 from .models import Edge, Node, SourceAnchor
@@ -66,7 +67,22 @@ def _clean_ts_expr(expr: str) -> str:
 def _ts_ref_summary(expr: str, *, source: bool = False) -> str:
     cleaned = _clean_ts_expr(expr)
     tokens = re.findall(r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*", cleaned)
-    tokens = [token for token in tokens if token not in {"if", "return", "else", "true", "false", "null", "undefined", "new", "await"}]
+    tokens = [
+        token
+        for token in tokens
+        if token
+        not in {
+            "if",
+            "return",
+            "else",
+            "true",
+            "false",
+            "null",
+            "undefined",
+            "new",
+            "await",
+        }
+    ]
     if not tokens:
         if "{}" in expr or "[]" in expr:
             return "empty"
@@ -92,7 +108,7 @@ def _summarize_ts_condition(expr: str) -> str:
     if cleaned.startswith("instanceof "):
         return _ts_ref_summary(cleaned.removeprefix("instanceof "), source=True)
     if "instanceof" in cleaned:
-        left, right = cleaned.split("instanceof", 1)
+        _, right = cleaned.split("instanceof", 1)
         return f"isinstance_{_ts_ref_summary(right, source=True)}"[:28]
     return _ts_ref_summary(cleaned, source=True)
 
@@ -168,24 +184,350 @@ def _extract_ts_behavior_patterns(body: str) -> list[str]:
     return list(dict.fromkeys(patterns))[:3]
 
 
+@dataclass
+class _TSDecl:
+    node_id: str
+    node_type: str
+    symbol_type: str
+    symbol_name: str
+    short_name: str
+    start_line: int
+    end_line: int
+    start_col: int
+    end_col: int
+    body: str
+    params: str = ""
+    class_name: str = ""
+    bases: list[str] | None = None
+
+
+CLASS_RE = re.compile(
+    r"^\s*(?:export\s+)?(?:default\s+)?(?:abstract\s+)?class\s+([A-Za-z_][A-Za-z0-9_]*)"
+    r"(?:\s*<[^>{]+>)?(?:\s+extends\s+([A-Za-z_][A-Za-z0-9_\.]*))?"
+)
+INTERFACE_RE = re.compile(
+    r"^\s*(?:export\s+)?interface\s+([A-Za-z_][A-Za-z0-9_]*)"
+    r"(?:\s*<[^>{]+>)?(?:\s+extends\s+([A-Za-z0-9_\.,\s]+))?"
+)
+FUNCTION_RE = re.compile(
+    r"^\s*(?:export\s+)?(?:default\s+)?(?:(async)\s+)?function\s+([A-Za-z_][A-Za-z0-9_]*)"
+    r"(?:\s*<[^>{]+>)?\s*\(([^)]*)\)"
+)
+ARROW_RE = re.compile(
+    r"^\s*(?:export\s+)?(?:const|let|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?:(async)\s*)?"
+    r"(?:<[^>{]+>\s*)?\(([^)]*)\)\s*(?::[^=]+)?=>"
+)
+METHOD_RE = re.compile(
+    r"^\s*(?:(?:public|private|protected|static|readonly|override|abstract|get|set)\s+)*"
+    r"(?:(async)\s+)?(constructor|[A-Za-z_][A-Za-z0-9_]*)"
+    r"(?:\s*<[^>{]+>)?\s*\(([^)]*)\)\s*(?::\s*[^=;{]+)?\s*([;{])"
+)
+
+
+def _find_block_end(lines: list[str], start_idx: int) -> int:
+    brace_depth = 0
+    started = False
+    for idx in range(start_idx, len(lines)):
+        line = lines[idx]
+        open_count = line.count("{")
+        close_count = line.count("}")
+        if open_count:
+            started = True
+        if started:
+            brace_depth += open_count - close_count
+            if brace_depth <= 0:
+                return idx
+    return start_idx
+
+
+def _split_bases(raw: str) -> list[str]:
+    if not raw:
+        return []
+    bases: list[str] = []
+    for item in raw.split(","):
+        candidate = item.strip().split(".")[-1]
+        candidate = candidate.split("<", 1)[0].strip()
+        if re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", candidate):
+            bases.append(candidate)
+    return list(dict.fromkeys(bases))
+
+
+def _signature_from_params(params: str) -> str:
+    compact = " ".join(params.split())
+    if not compact:
+        return "()"
+    if len(compact) > 60:
+        compact = compact[:57] + "..."
+    return f"({compact})"
+
+
+def _resolve_decl_span(
+    text: str,
+    lines: list[str],
+    start_line: int,
+    name_start: int,
+    end_line: int,
+) -> tuple[int, int]:
+    start, _ = _byte_span(text, start_line, name_start, name_start)
+    end_line_text = lines[end_line - 1] if 0 < end_line <= len(lines) else ""
+    _, end = _byte_span(text, end_line, 0, len(end_line_text))
+    return start, max(start, end)
+
+
+def _register_node(
+    *,
+    nodes: list[Node],
+    edges: list[Edge],
+    decls: list[_TSDecl],
+    symbol_ids_by_name: dict[str, list[str]],
+    text: str,
+    lines: list[str],
+    rel_path: str,
+    module_id: str,
+    symbol_name: str,
+    short_name: str,
+    node_type: str,
+    symbol_type: str,
+    start_line: int,
+    end_line: int,
+    start_col: int,
+    end_col: int,
+    body: str,
+    params: str = "",
+    class_name: str = "",
+    bases: list[str] | None = None,
+) -> str:
+    node_id = f"symbol:{rel_path}:{symbol_name}:{start_line}"
+    start, end = _resolve_decl_span(text, lines, start_line, start_col, end_line)
+    snippet = text.encode("utf-8")[start:end].decode("utf-8", errors="ignore")
+    behavior_patterns = _extract_ts_behavior_patterns(body) if body and node_type != "class" else []
+    semantic_contract = {
+        "purpose": f"{symbol_type} {symbol_name}",
+        "language": "typescript",
+        "symbol_name": symbol_name,
+        "symbol_type": symbol_type,
+        "signature": _signature_from_params(params) if node_type != "class" else "",
+        "behavior_patterns": behavior_patterns,
+        "tier": 1,
+        "calls": [],
+        "called_by": [],
+        "complexity_indicators": {
+            "decorator_depth": 0,
+            "generic_type_param_count": 0,
+        },
+    }
+    if bases:
+        semantic_contract["bases"] = list(bases)
+    nodes.append(
+        Node(
+            node_id=node_id,
+            node_type=node_type,
+            source_anchor=SourceAnchor(
+                file_path=rel_path,
+                byte_start=max(0, start),
+                byte_end=max(start, end),
+                ast_path=f"{symbol_type}:{symbol_name}",
+                content_hash=_hash_text(snippet or symbol_name),
+            ),
+            semantic_contract=semantic_contract,
+            confidence=0.86,
+        )
+    )
+    edges.append(
+        Edge(
+            edge_id=f"contains:{module_id}:{node_id}",
+            edge_type="contains",
+            from_node=module_id,
+            to_node=node_id,
+            evidence={"rel": "regex_containment", "line": start_line},
+        )
+    )
+    decls.append(
+        _TSDecl(
+            node_id=node_id,
+            node_type=node_type,
+            symbol_type=symbol_type,
+            symbol_name=symbol_name,
+            short_name=short_name,
+            start_line=start_line,
+            end_line=end_line,
+            start_col=start_col,
+            end_col=end_col,
+            body=body,
+            params=params,
+            class_name=class_name,
+            bases=list(bases or []),
+        )
+    )
+    symbol_ids_by_name.setdefault(symbol_name, []).append(node_id)
+    if short_name != symbol_name:
+        symbol_ids_by_name.setdefault(short_name, []).append(node_id)
+    return node_id
+
+
+def _extract_class_members(
+    *,
+    text: str,
+    lines: list[str],
+    rel_path: str,
+    module_id: str,
+    class_name: str,
+    class_node_id: str,
+    class_start_idx: int,
+    class_end_idx: int,
+    nodes: list[Node],
+    edges: list[Edge],
+    decls: list[_TSDecl],
+    symbol_ids_by_name: dict[str, list[str]],
+) -> None:
+    idx = class_start_idx + 1
+    while idx < class_end_idx:
+        line = lines[idx]
+        stripped = re.sub(r"//.*", "", line).strip()
+        if not stripped:
+            idx += 1
+            continue
+        match = METHOD_RE.match(line)
+        if not match:
+            idx += 1
+            continue
+        async_flag, raw_name, params, terminator = match.groups()
+        if raw_name in {"if", "for", "while", "switch", "catch", "return"}:
+            idx += 1
+            continue
+        method_name = raw_name
+        symbol_name = f"{class_name}.{method_name}"
+        node_type = "async_function" if async_flag else "function"
+        symbol_type = "async_method" if async_flag else "method"
+        start_line = idx + 1
+        end_line = start_line
+        body = ""
+        if terminator == "{":
+            end_idx = _find_block_end(lines, idx)
+            end_line = end_idx + 1
+            body = _extract_ts_block(lines, idx)
+            idx = end_idx + 1
+        else:
+            idx += 1
+        method_node_id = _register_node(
+            nodes=nodes,
+            edges=edges,
+            decls=decls,
+            symbol_ids_by_name=symbol_ids_by_name,
+            text=text,
+            lines=lines,
+            rel_path=rel_path,
+            module_id=module_id,
+            symbol_name=symbol_name,
+            short_name=method_name,
+            node_type=node_type,
+            symbol_type=symbol_type,
+            start_line=start_line,
+            end_line=end_line,
+            start_col=match.start(2),
+            end_col=match.end(2),
+            body=body,
+            params=params,
+            class_name=class_name,
+        )
+        edges.append(
+            Edge(
+                edge_id=f"contains:{class_node_id}:{method_node_id}",
+                edge_type="contains",
+                from_node=class_node_id,
+                to_node=method_node_id,
+                evidence={"rel": "method_of", "line": start_line},
+            )
+        )
+
+
+def _extract_local_types(body: str, params: str) -> dict[str, str]:
+    local_types: dict[str, str] = {}
+    for name, type_name in re.findall(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*:\s*([A-Za-z_][A-Za-z0-9_\.]*)", params):
+        local_types[name] = type_name.split(".")[-1]
+    for var_name, type_name in re.findall(
+        r"\b(?:const|let|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*new\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(",
+        body,
+    ):
+        local_types[var_name] = type_name
+    return local_types
+
+
+def _unique_ids(items: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for item in items:
+        if item not in seen:
+            seen.add(item)
+            result.append(item)
+    return result
+
+
+def _resolve_ts_call_targets(
+    ref: str,
+    *,
+    current_class: str,
+    local_types: dict[str, str],
+    bases_by_class: dict[str, list[str]],
+    symbol_ids_by_name: dict[str, list[str]],
+    class_ids_by_name: dict[str, str],
+) -> list[str]:
+    if not ref:
+        return []
+    if "." not in ref:
+        return _unique_ids(symbol_ids_by_name.get(ref, []))
+
+    owner, member = ref.rsplit(".", 1)
+    candidates: list[str] = []
+    if owner == "this" and current_class:
+        candidates.extend(symbol_ids_by_name.get(f"{current_class}.{member}", []))
+        for base in bases_by_class.get(current_class, []):
+            candidates.extend(symbol_ids_by_name.get(f"{base}.{member}", []))
+        return _unique_ids(candidates or symbol_ids_by_name.get(member, []))
+
+    if owner == "super" and current_class:
+        for base in bases_by_class.get(current_class, []):
+            candidates.extend(symbol_ids_by_name.get(f"{base}.{member}", []))
+        return _unique_ids(candidates or symbol_ids_by_name.get(member, []))
+
+    resolved_type = local_types.get(owner, owner)
+    if resolved_type in class_ids_by_name:
+        candidates.extend(symbol_ids_by_name.get(f"{resolved_type}.{member}", []))
+    candidates.extend(symbol_ids_by_name.get(member, []))
+    return _unique_ids(candidates)
+
+
+def _iter_ts_calls(body: str) -> list[tuple[int, str, str]]:
+    results: list[tuple[int, str, str]] = []
+    for line_no, line in enumerate(body.splitlines(), start=0):
+        if not line.strip():
+            continue
+        for match in re.finditer(r"\bnew\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(", line):
+            results.append((line_no, "new", match.group(1)))
+        for match in re.finditer(
+            r"(?<!function\s)(?<!class\s)(?<!interface\s)\b([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\s*\(",
+            line,
+        ):
+            ref = match.group(1)
+            if ref in {"if", "for", "while", "switch", "catch", "return", "new"}:
+                continue
+            results.append((line_no, "call", ref))
+    return results
+
+
 def extract_typescript_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
     nodes: list[Node] = []
     edges: list[Edge] = []
 
-    class_re = re.compile(r"(?:export\s+)?class\s+([A-Za-z_][A-Za-z0-9_]*)")
-    func_re = re.compile(
-        r"(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_][A-Za-z0-9_]*)\s*\("
-    )
-    arrow_re = re.compile(
-        r"(?:export\s+)?const\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?:async\s*)?\("
-    )
-    call_re = re.compile(r"([A-Za-z_][A-Za-z0-9_]*)\s*\(")
-
     for file_path in _iter_ts_files(repo_root):
-        text = file_path.read_text(encoding="utf-8")
+        try:
+            text = file_path.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
         rel_path = file_path.relative_to(repo_root).as_posix()
         module_id = f"module:{rel_path}"
         lines = text.splitlines()
+
         nodes.append(
             Node(
                 node_id=module_id,
@@ -214,79 +556,172 @@ def extract_typescript_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Ed
             )
         )
 
-        symbols: dict[str, str] = {}
-        for line_no, line in enumerate(lines, start=1):
-            for matcher, symbol_type in (
-                (class_re, "class"),
-                (func_re, "function"),
-                (arrow_re, "function"),
-            ):
-                m = matcher.search(line)
-                if not m:
-                    continue
-                name = m.group(1)
-                col_start = m.start(1)
-                col_end = m.end(1)
-                start, end = _byte_span(text, line_no, col_start, col_end)
-                node_id = f"symbol:{rel_path}:{name}:{line_no}"
-                symbols[name] = node_id
-                behavior_patterns: list[str] = []
-                if symbol_type == "function":
-                    behavior_patterns = _extract_ts_behavior_patterns(_extract_ts_block(lines, line_no - 1))
-                nodes.append(
-                    Node(
-                        node_id=node_id,
-                        node_type=symbol_type,
-                        source_anchor=SourceAnchor(
-                            file_path=rel_path,
-                            byte_start=max(0, start),
-                            byte_end=max(start, end),
-                            ast_path=f"{symbol_type}:{name}",
-                            content_hash=_hash_text(line.strip()),
-                        ),
-                        semantic_contract={
-                            "purpose": f"{symbol_type} {name}",
-                            "language": "typescript",
-                            "symbol_name": name,
-                            "symbol_type": symbol_type,
-                            "behavior_patterns": behavior_patterns,
-                            "tier": 1,
-                            "calls": [],
-                            "called_by": [],
-                            "complexity_indicators": {
-                                "decorator_depth": 0,
-                                "generic_type_param_count": 0,
-                            },
-                        },
-                        confidence=0.86,
-                    )
+        decls: list[_TSDecl] = []
+        symbol_ids_by_name: dict[str, list[str]] = {}
+        class_ids_by_name: dict[str, str] = {}
+        bases_by_class: dict[str, list[str]] = {}
+
+        idx = 0
+        while idx < len(lines):
+            line = lines[idx]
+
+            class_match = CLASS_RE.match(line)
+            interface_match = INTERFACE_RE.match(line)
+            func_match = FUNCTION_RE.match(line)
+            arrow_match = ARROW_RE.match(line)
+
+            if class_match or interface_match:
+                match = class_match or interface_match
+                assert match is not None
+                class_name = match.group(1)
+                bases = _split_bases(match.group(2) or "")
+                end_idx = _find_block_end(lines, idx)
+                class_node_id = _register_node(
+                    nodes=nodes,
+                    edges=edges,
+                    decls=decls,
+                    symbol_ids_by_name=symbol_ids_by_name,
+                    text=text,
+                    lines=lines,
+                    rel_path=rel_path,
+                    module_id=module_id,
+                    symbol_name=class_name,
+                    short_name=class_name,
+                    node_type="class",
+                    symbol_type="interface" if interface_match else "class",
+                    start_line=idx + 1,
+                    end_line=end_idx + 1,
+                    start_col=match.start(1),
+                    end_col=match.end(1),
+                    body=_extract_ts_block(lines, idx),
+                    bases=bases,
                 )
+                class_ids_by_name[class_name] = class_node_id
+                if bases:
+                    bases_by_class[class_name] = bases
+                _extract_class_members(
+                    text=text,
+                    lines=lines,
+                    rel_path=rel_path,
+                    module_id=module_id,
+                    class_name=class_name,
+                    class_node_id=class_node_id,
+                    class_start_idx=idx,
+                    class_end_idx=end_idx,
+                    nodes=nodes,
+                    edges=edges,
+                    decls=decls,
+                    symbol_ids_by_name=symbol_ids_by_name,
+                )
+                idx = end_idx + 1
+                continue
+
+            if func_match:
+                async_flag, func_name, params = func_match.groups()
+                end_idx = _find_block_end(lines, idx)
+                _register_node(
+                    nodes=nodes,
+                    edges=edges,
+                    decls=decls,
+                    symbol_ids_by_name=symbol_ids_by_name,
+                    text=text,
+                    lines=lines,
+                    rel_path=rel_path,
+                    module_id=module_id,
+                    symbol_name=func_name,
+                    short_name=func_name,
+                    node_type="async_function" if async_flag else "function",
+                    symbol_type="async_function" if async_flag else "function",
+                    start_line=idx + 1,
+                    end_line=end_idx + 1,
+                    start_col=func_match.start(2),
+                    end_col=func_match.end(2),
+                    body=_extract_ts_block(lines, idx),
+                    params=params,
+                )
+                idx = end_idx + 1
+                continue
+
+            if arrow_match:
+                func_name, async_flag, params = arrow_match.groups()
+                end_idx = _find_block_end(lines, idx)
+                _register_node(
+                    nodes=nodes,
+                    edges=edges,
+                    decls=decls,
+                    symbol_ids_by_name=symbol_ids_by_name,
+                    text=text,
+                    lines=lines,
+                    rel_path=rel_path,
+                    module_id=module_id,
+                    symbol_name=func_name,
+                    short_name=func_name,
+                    node_type="async_function" if async_flag else "function",
+                    symbol_type="async_function" if async_flag else "function",
+                    start_line=idx + 1,
+                    end_line=end_idx + 1,
+                    start_col=arrow_match.start(1),
+                    end_col=arrow_match.end(1),
+                    body=_extract_ts_block(lines, idx),
+                    params=params,
+                )
+                idx = end_idx + 1
+                continue
+
+            idx += 1
+
+        for class_name, bases in bases_by_class.items():
+            class_id = class_ids_by_name.get(class_name)
+            if not class_id:
+                continue
+            for base in bases:
+                base_ids = symbol_ids_by_name.get(base, [])
+                if len(base_ids) != 1:
+                    continue
                 edges.append(
                     Edge(
-                        edge_id=f"contains:{module_id}:{node_id}",
-                        edge_type="contains",
-                        from_node=module_id,
-                        to_node=node_id,
-                        evidence={"rel": "regex_containment", "line": line_no},
+                        edge_id=f"inherits:{class_id}:{base_ids[0]}",
+                        edge_type="inherits",
+                        from_node=class_id,
+                        to_node=base_ids[0],
+                        evidence={"rel": "extends"},
                     )
                 )
 
-        for line_no, line in enumerate(lines, start=1):
-            calls = [m.group(1) for m in call_re.finditer(line)]
-            if not calls:
+        for decl in decls:
+            if not decl.body:
                 continue
-            for callee_name in calls:
-                callee_id = symbols.get(callee_name)
-                if not callee_id:
-                    continue
-                edges.append(
-                    Edge(
-                        edge_id=f"calls:{module_id}:{callee_id}:{line_no}",
-                        edge_type="calls",
-                        from_node=module_id,
-                        to_node=callee_id,
-                        evidence={"rel": "regex_call", "line": line_no},
+            local_types = _extract_local_types(decl.body, decl.params)
+            seen_edges: set[tuple[str, str, int]] = set()
+            for rel_line, kind, ref in _iter_ts_calls(decl.body):
+                line_no = decl.start_line + rel_line
+                candidate_ids: list[str] = []
+                if kind == "new":
+                    candidate_ids = symbol_ids_by_name.get(ref, [])
+                else:
+                    candidate_ids = _resolve_ts_call_targets(
+                        ref,
+                        current_class=decl.class_name,
+                        local_types=local_types,
+                        bases_by_class=bases_by_class,
+                        symbol_ids_by_name=symbol_ids_by_name,
+                        class_ids_by_name=class_ids_by_name,
                     )
-                )
+                for callee_id in candidate_ids:
+                    if callee_id == decl.node_id:
+                        continue
+                    edge_key = (decl.node_id, callee_id, line_no)
+                    if edge_key in seen_edges:
+                        continue
+                    seen_edges.add(edge_key)
+                    edges.append(
+                        Edge(
+                            edge_id=f"calls:{decl.node_id}:{callee_id}:{line_no}",
+                            edge_type="calls",
+                            from_node=decl.node_id,
+                            to_node=callee_id,
+                            evidence={"rel": "regex_call", "line": line_no},
+                        )
+                    )
 
     return nodes, edges

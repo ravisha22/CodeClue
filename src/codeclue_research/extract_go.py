@@ -33,6 +33,8 @@ def _iter_go_files(repo_root: Path) -> list[Path]:
     for path in repo_root.rglob("*.go"):
         if any(part.startswith(".") for part in path.parts):
             continue
+        if path.name.endswith("_test.go"):
+            continue
         files.append(path)
     return sorted(files)
 

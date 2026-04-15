@@ -485,27 +485,25 @@ class TestTypeScriptCallEdges:
             (c, t) for c, t in self.call_edges
             if not c.endswith(".ts") and "module" not in c
         ]
-        # Currently expected to FAIL — TS extractor uses module_id for all calls
-        # This documents the known gap
-        if not non_module_callers:
-            pytest.skip(
-                "KNOWN GAP: TS extractor assigns all call edges to module, "
-                "not to the calling function. All caller info is lost."
-            )
+        assert non_module_callers, (
+            f"MISSED: expected precise TypeScript caller nodes. Edges: {self.call_edges}"
+        )
 
     def test_pattern_06_class_method_extraction(self):
         """Verify that class methods (getUser, findById etc.) are extracted as symbols."""
         symbol_names = [n.semantic_contract.get("symbol_name", "")
-                       for n in self.nodes if n.node_type in ("function", "class")]
-        # Check if methods inside classes are found:
-        # The TS extractor uses regex for `function` keyword and `const =` arrow
-        # Class methods (getUser, findById) don't use the function keyword
-        has_methods = any("getUser" in name for name in symbol_names)
-        if not has_methods:
-            pytest.skip(
-                "KNOWN GAP: TS extractor does not extract class methods "
-                "(only top-level function/const arrow patterns)"
-            )
+                       for n in self.nodes if n.node_type in ("function", "async_function", "class")]
+        assert any("UserService.getUser" == name for name in symbol_names)
+        assert any("UserService.findById" == name for name in symbol_names)
+
+    def test_pattern_07_extends_relationship_extracted(self):
+        admin_nodes = [
+            n for n in self.nodes
+            if n.semantic_contract.get("symbol_name", "") == "AdminService"
+        ]
+        assert admin_nodes, "AdminService node not found"
+        bases = admin_nodes[0].semantic_contract.get("bases", [])
+        assert "UserService" in bases, f"MISSED: extends relationship. bases={bases}"
 
     def test_summary_report(self):
         """Print a summary of all patterns."""
@@ -533,3 +531,12 @@ class TestTypeScriptCallEdges:
         print(f"\n  Result: {captured}/{len(patterns)} patterns captured (precise caller)")
         print(f"  All edges: {self.call_edges}")
         print(f"  All symbols: {[n.semantic_contract.get('symbol_name') for n in self.nodes if n.node_type != 'module']}")
+
+
+def test_go_extractor_skips_test_files(tmp_path: Path):
+    _write_fixture(tmp_path, "app.go", "package main\n\nfunc Start() {}\n")
+    _write_fixture(tmp_path, "app_test.go", "package main\n\nfunc TestStart(t *testing.T) {}\n")
+    nodes, _ = extract_go_nodes_edges(tmp_path)
+    file_paths = {n.source_anchor.file_path for n in nodes}
+    assert "app.go" in file_paths
+    assert "app_test.go" not in file_paths

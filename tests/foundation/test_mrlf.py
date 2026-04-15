@@ -321,6 +321,14 @@ class TestL3:
         focus = _select_focus_nodes(graph, "")
         assert len(focus) > 0
 
+    def test_symbol_name_fallback_anchors_undocumented_symbol(self):
+        graph = _make_large_graph(n_modules=6, symbols_per_module=8)
+        target = next(n for n in graph.nodes if n.semantic_contract.get("symbol_name") == "func007")
+        target.semantic_contract["purpose"] = "function helper"
+        focus = _select_focus_nodes(graph, "What does func007 do?")
+        focus_names = {n.semantic_contract.get("symbol_name", "") for n in focus}
+        assert "func007" in focus_names
+
     def test_budget_enforced(self):
         graph = _make_large_graph()
         result = _render_l3(graph, "What does func000 do?", budget=100)
@@ -357,6 +365,38 @@ class TestGaps:
         result = _render_gaps(graph, "How does Config.from_file work?", focus, l2)
         # v2.1: GAPS classifies question type — "how does" → MECHANISTIC
         assert "mechanistic" in result.lower() or "coverage" in result.lower()
+
+    def test_relational_question_overrides_how_prefix(self):
+        graph = _make_small_graph()
+        focus = _select_focus_nodes(graph, "How is Flask connected to Config?")
+        l2 = [n for n in graph.nodes if n.node_type != "module"]
+        result = _render_gaps(graph, "How is Flask connected to Config?", focus, l2)
+        assert "relational" in result.lower()
+
+    def test_drill_targets_rank_relevant_symbols_first(self):
+        graph = _make_small_graph()
+        route_node = _make_node(
+            "sym:app:route_match",
+            "function",
+            "src/app.py",
+            symbol_name="route_match",
+            purpose="Match routes to handlers",
+        )
+        route_node.source_anchor.byte_end = 120
+        logger_node = _make_node(
+            "sym:app:logger",
+            "function",
+            "src/app.py",
+            symbol_name="RequestLoggerWithConfig",
+            purpose="Request logging helper",
+        )
+        logger_node.source_anchor.byte_end = 400
+        focus = [logger_node, route_node]
+        l2 = [route_node, logger_node]
+        result = _render_gaps(graph, "How does route matching work?", focus, l2)
+        drills = [line for line in result.splitlines() if line.startswith("drill:")]
+        assert drills
+        assert "route_match" in drills[0]
 
     def test_max_5_bullets(self):
         graph = _make_small_graph()
