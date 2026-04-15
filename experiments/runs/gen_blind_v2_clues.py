@@ -26,7 +26,7 @@ PROMPT_DIR.mkdir(exist_ok=True)
 
 LANG_MAP = {"requests": "python", "echo": "go", "zod": "typescript"}
 
-DRILLDOWN_TOKEN_BUDGET = 2000
+DRILLDOWN_TOKEN_BUDGET = 3000
 
 # Import drill-down helpers from the existing script
 sys.path.insert(0, str(REPO_ROOT / "experiments" / "runs"))

@@ -1,9 +1,18 @@
 from __future__ import annotations
 
 import re
+import time
 from pathlib import Path
 
 from .models import Edge, Node, SourceAnchor
+
+GO_BEHAVIOR_PROGRESS_EVERY = 10
+GO_BEHAVIOR_FILE_BUDGET_SECONDS = 5.0
+GO_BEHAVIOR_FILE_SIZE_LIMIT_BYTES = 64_000
+GO_BEHAVIOR_BODY_SIZE_LIMIT_CHARS = 12_000
+
+_GO_CALL_CANDIDATE_RE = re.compile(r"(?:\.|\b)([A-Za-z_][A-Za-z0-9_]*)\s*\(")
+_GO_PANIC_RE = re.compile(r"panic\s*\(")
 
 
 def _hash_text(text: str) -> str:
@@ -30,8 +39,11 @@ def _byte_span(text: str, line: int, col_start: int, col_end: int) -> tuple[int,
 
 def _iter_go_files(repo_root: Path) -> list[Path]:
     files: list[Path] = []
+    skip_dirs = {"testdata", "example", "examples", "doc", "docs", "bench", "benchmark"}
     for path in repo_root.rglob("*.go"):
         if any(part.startswith(".") for part in path.parts):
+            continue
+        if any(part.lower() in skip_dirs for part in path.parts):
             continue
         if path.name.endswith("_test.go"):
             continue
@@ -125,52 +137,168 @@ def _extract_go_return_expr(block: str) -> str:
     return match.group(1).strip() if match else ""
 
 
+def _strip_go_line_comment(line: str) -> str:
+    return line.split("//", 1)[0].rstrip()
+
+
+def _iter_go_body_lines(body: str) -> list[tuple[int, str, int]]:
+    entries: list[tuple[int, str, int]] = []
+    depth = 0
+    in_body = False
+    for idx, raw_line in enumerate(body.splitlines()):
+        clean_line = _strip_go_line_comment(raw_line)
+        line_depth = depth
+        open_count = clean_line.count("{")
+        close_count = clean_line.count("}")
+        if open_count:
+            in_body = True
+        if in_body and line_depth >= 1:
+            stripped = clean_line.strip()
+            if stripped:
+                entries.append((idx, stripped, line_depth))
+        depth += open_count - close_count
+    return entries
+
+
+def _parse_go_if_condition(line: str) -> str:
+    stripped = line.strip()
+    for prefix in ("if ", "} else if ", "else if "):
+        if stripped.startswith(prefix):
+            return stripped[len(prefix):].split("{", 1)[0].strip()
+    return ""
+
+
+def _collect_go_block_lines(lines: list[str], start_idx: int) -> tuple[list[str], int]:
+    block_lines: list[str] = []
+    depth = 0
+    started = False
+    end_idx = start_idx
+    for idx in range(start_idx, len(lines)):
+        clean_line = _strip_go_line_comment(lines[idx])
+        open_count = clean_line.count("{")
+        close_count = clean_line.count("}")
+        if open_count:
+            started = True
+        if started:
+            stripped = clean_line.strip()
+            if stripped:
+                block_lines.append(stripped)
+        depth += open_count - close_count
+        end_idx = idx
+        if started and depth <= 0:
+            break
+    return block_lines, end_idx
+
+
+def _first_go_terminal_action(lines: list[str]) -> str:
+    for line in lines:
+        stripped = _strip_go_line_comment(line).strip()
+        if stripped.startswith("return") or stripped.startswith("panic"):
+            return stripped
+    return ""
+
+
+def _find_next_go_terminal_action(lines: list[str], start_idx: int) -> str:
+    for idx in range(start_idx, len(lines)):
+        stripped = _strip_go_line_comment(lines[idx]).strip()
+        if stripped.startswith("return") or stripped.startswith("panic"):
+            return stripped
+    return ""
+
+
+def _find_go_accumulate_target(lines: list[str], start_idx: int) -> str:
+    block_lines, _ = _collect_go_block_lines(lines, start_idx)
+    for line in block_lines[1:]:
+        for pattern in (
+            r"([A-Za-z_][A-Za-z0-9_\.]*)\s*\+=",
+            r"([A-Za-z_][A-Za-z0-9_\.]*)\s*=\s*append\(",
+            r"([A-Za-z_][A-Za-z0-9_\.]*)\.(?:append|write|add|store)\(",
+        ):
+            match = re.search(pattern, line)
+            if match:
+                return match.group(1).replace(".", "_")[:24]
+    return "result"
+
+
 def _extract_go_behavior_patterns(body: str) -> list[str]:
     patterns: list[str] = []
     if not body:
         return patterns
 
-    guard_match = re.search(r"(?ms)^\s*.*?\{\s*if\s+(.+?)\s*\{\s*([^{}]*(?:return\b.*|panic\b.*))\s*\}(?!\s*else\b)", body)
-    if guard_match:
-        guard_condition = _summarize_go_condition(guard_match.group(1))
-        guard_action = _summarize_go_action(guard_match.group(2), guard_match.group(1))
-        patterns.append(f"GUARD({guard_condition} -> {guard_action})")
+    raw_lines = body.splitlines()
+    body_lines = _iter_go_body_lines(body)
+    if not body_lines:
+        return patterns
 
-    chain_matches = re.findall(r"(?m)^\s*(?:if|else\s+if)\s+(.+?)\s*\{", body)
-    if len(chain_matches) >= 2 and len(re.findall(r"(?m)^\s*return\b", body)) >= 2:
-        sources = [_summarize_go_condition(cond) for cond in chain_matches[:3]]
-        if re.search(r"(?m)^\s*else\s*\{", body):
+    top_level_conditions: list[str] = []
+    top_level_return_count = 0
+    has_else_branch = False
+    first_branch: tuple[int, str] | None = None
+    delegate_callee = ""
+    switch_expr = ""
+    loop_idx: int | None = None
+    has_defer = False
+
+    for idx, stripped, depth in body_lines:
+        if stripped.startswith("return"):
+            top_level_return_count += 1
+            if not delegate_callee:
+                match = re.match(r"return\s+([A-Za-z_][A-Za-z0-9_\.]*)\s*\(", stripped)
+                if match:
+                    delegate_callee = match.group(1)
+        elif stripped.startswith("panic"):
+            top_level_return_count += 1
+
+        if depth != 1:
+            continue
+
+        cond = _parse_go_if_condition(stripped)
+        if cond:
+            top_level_conditions.append(cond)
+            if first_branch is None and stripped.startswith("if "):
+                first_branch = (idx, cond)
+        if stripped.startswith("else ") or stripped.startswith("} else"):
+            has_else_branch = True
+        if not switch_expr and stripped.startswith("switch "):
+            switch_expr = stripped[7:].split("{", 1)[0].strip()
+        if loop_idx is None and (stripped == "for" or stripped.startswith("for ") or stripped.startswith("for{")):
+            loop_idx = idx
+        if stripped.startswith("defer"):
+            has_defer = True
+
+    if first_branch:
+        branch_idx, branch_cond = first_branch
+        block_lines, end_idx = _collect_go_block_lines(raw_lines, branch_idx)
+        true_action_expr = _first_go_terminal_action(block_lines[1:])
+        false_action_expr = _find_next_go_terminal_action(raw_lines, end_idx + 1)
+        has_branch_else = has_else_branch and bool(false_action_expr)
+        if true_action_expr and not has_branch_else:
+            guard_condition = _summarize_go_condition(branch_cond)
+            guard_action = _summarize_go_action(true_action_expr, branch_cond)
+            patterns.append(f"GUARD({guard_condition} -> {guard_action})")
+        if true_action_expr and has_branch_else:
+            cond = _summarize_go_condition(branch_cond)
+            true_action = _summarize_go_action(true_action_expr, branch_cond)
+            false_action = _summarize_go_action(false_action_expr, branch_cond)
+            patterns.append(f"BRANCH({cond} -> {true_action}, else -> {false_action})")
+
+    if len(top_level_conditions) >= 2 and top_level_return_count >= 2:
+        sources = [_summarize_go_condition(cond) for cond in top_level_conditions[:3]]
+        if has_else_branch:
             sources.append("default")
         patterns.append(f"PRECEDENCE({' -> '.join(dict.fromkeys(sources))})")
 
-    branch_match = re.search(
-        r"(?ms)^\s*.*?\{\s*if\s+(.+?)\s*\{\s*([^{}]*(?:return\b.*|panic\b.*))\s*\}\s*else\s*\{\s*([^{}]*(?:return\b.*|panic\b.*))\s*\}",
-        body,
-    )
-    if branch_match:
-        cond = _summarize_go_condition(branch_match.group(1))
-        true_action = _summarize_go_action(branch_match.group(2), branch_match.group(1))
-        false_action = _summarize_go_action(branch_match.group(3), branch_match.group(1))
-        patterns.append(f"BRANCH({cond} -> {true_action}, else -> {false_action})")
+    if delegate_callee and top_level_return_count == 1:
+        patterns.append(f"DELEGATE({delegate_callee} -> result)")
 
-    delegate_match = re.search(r"(?m)^\s*return\s+([A-Za-z_][A-Za-z0-9_\.]*)\s*\(", body)
-    if delegate_match and len(re.findall(r"(?m)^\s*return\b", body)) == 1:
-        patterns.append(f"DELEGATE({delegate_match.group(1)} -> result)")
+    if loop_idx is not None:
+        patterns.append(f"ACCUMULATE(loop -> {_find_go_accumulate_target(raw_lines, loop_idx)})")
 
-    if re.search(r"(?m)^\s*for\b", body):
-        acc_match = re.search(
-            r"(?ms)^\s*for\b.*?\{\s*(?:([A-Za-z_][A-Za-z0-9_\.]*)\s*\+=|([A-Za-z_][A-Za-z0-9_\.]*)\s*=\s*append\(|([A-Za-z_][A-Za-z0-9_\.]*)\.(?:append|write|add|store)\()",
-            body,
-        )
-        target = next((group for group in acc_match.groups() if group), "result") if acc_match else "result"
-        patterns.append(f"ACCUMULATE(loop -> {target.replace('.', '_')[:24]})")
-
-    if re.search(r"(?m)^\s*defer\b", body):
+    if has_defer:
         patterns.append("UNWIND(defer)")
 
-    switch_match = re.search(r"(?m)^\s*switch\s+(.+?)\s*\{", body)
-    if switch_match:
-        patterns.append(f"DISPATCH({_go_ref_summary(switch_match.group(1), source=True)})")
+    if switch_expr:
+        patterns.append(f"DISPATCH({_go_ref_summary(switch_expr, source=True)})")
 
     return list(dict.fromkeys(patterns))[:3]
 
@@ -179,16 +307,23 @@ def extract_go_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
     nodes: list[Node] = []
     edges: list[Edge] = []
 
+    repo_start = time.perf_counter()
     type_re = re.compile(r"type\s+([A-Za-z_][A-Za-z0-9_]*)\s+(?:struct|interface)")
     func_re = re.compile(r"func\s+(?:\((\w+)\s+\*?(\w+)\)\s*)?([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)")
-    # Go doc comment: consecutive // lines immediately before a declaration
-    comment_re = re.compile(r"^//\s?(.*)")
+    go_files = _iter_go_files(repo_root)
 
-    for file_path in _iter_go_files(repo_root):
+    for file_index, file_path in enumerate(go_files, start=1):
+        file_start = time.perf_counter()
         text = file_path.read_text(encoding="utf-8")
         rel_path = file_path.relative_to(repo_root).as_posix()
         module_id = f"module:{rel_path}"
         lines_list = text.splitlines()
+        behavior_budget_enabled = file_path.stat().st_size <= GO_BEHAVIOR_FILE_SIZE_LIMIT_BYTES
+        if not behavior_budget_enabled:
+            print(
+                f"[extract_go] skipping behavior patterns for {rel_path} "
+                f"(size>{GO_BEHAVIOR_FILE_SIZE_LIMIT_BYTES} bytes)"
+            )
 
         nodes.append(
             Node(
@@ -220,7 +355,6 @@ def extract_go_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
 
         # First pass: collect all symbols with doc comments
         symbols: dict[str, str] = {}  # name -> node_id
-        func_bodies: dict[str, tuple[int, int]] = {}  # node_id -> (start_line, approx_end_line)
 
         for line_no_0, line in enumerate(lines_list):
             line_no = line_no_0 + 1
@@ -277,7 +411,6 @@ def extract_go_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
             # Check for function declaration
             m = func_re.search(line)
             if m:
-                receiver_var = m.group(1)  # e.g., "c" in func (c *Context)
                 receiver_type = m.group(2)  # e.g., "Context"
                 func_name = m.group(3)
                 params = m.group(4).strip()
@@ -296,7 +429,29 @@ def extract_go_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
                 if len(sig) > 60:
                     sig = sig[:57] + "...)"
                 body_text = _extract_go_function_body(lines_list, line_no_0)
-                behavior_patterns = _extract_go_behavior_patterns(body_text)
+                behavior_patterns: list[str] = []
+                if behavior_budget_enabled:
+                    if len(body_text) <= GO_BEHAVIOR_BODY_SIZE_LIMIT_CHARS:
+                        behavior_start = time.perf_counter()
+                        behavior_patterns = _extract_go_behavior_patterns(body_text)
+                        behavior_elapsed = time.perf_counter() - behavior_start
+                        if behavior_elapsed > 1.0:
+                            print(
+                                f"[extract_go] slow behavior scan {rel_path}:{name} "
+                                f"{behavior_elapsed:.2f}s"
+                            )
+                    else:
+                        print(
+                            f"[extract_go] skipping large behavior body {rel_path}:{name} "
+                            f"({len(body_text)} chars)"
+                        )
+                    file_elapsed = time.perf_counter() - file_start
+                    if file_elapsed > GO_BEHAVIOR_FILE_BUDGET_SECONDS:
+                        behavior_budget_enabled = False
+                        print(
+                            f"[extract_go] disabling behavior patterns for {rel_path} "
+                            f"after {file_elapsed:.2f}s at {name}"
+                        )
                 col_start = m.start(3)
                 col_end = m.end(3)
                 start, end = _byte_span(text, line_no, col_start, col_end)
@@ -338,8 +493,6 @@ def extract_go_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
                         evidence={"rel": "regex_containment", "line": line_no},
                     )
                 )
-                # Track function body for call edge extraction
-                func_bodies[node_id] = (line_no, line_no + 50)  # approximate
 
                 # If it's a method, add containment edge from struct
                 if receiver_type and receiver_type in symbols:
@@ -357,6 +510,7 @@ def extract_go_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
         # Second pass: extract call edges + panic detection
         node_by_id = {n.node_id: n for n in nodes}
         current_func_id: str | None = None
+        current_func_depth = 0
         func_panics: dict[str, list[str]] = {}  # func_id -> list of panic messages
         for line_no_0, line in enumerate(lines_list):
             line_no = line_no_0 + 1
@@ -367,39 +521,47 @@ def extract_go_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
                 func_name = m.group(3)
                 name = f"{receiver_type}.{func_name}" if receiver_type else func_name
                 current_func_id = symbols.get(name)
-                continue
-            if current_func_id and line.strip() == "}":
-                current_func_id = None
+                current_func_depth = line.count("{") - line.count("}")
                 continue
             if not current_func_id:
                 continue
 
             # Detect panic calls
-            panic_match = re.search(r'panic\s*\(', line)
-            if panic_match and current_func_id:
+            if _GO_PANIC_RE.search(line):
                 func_panics.setdefault(current_func_id, []).append("panic")
 
-            # Look for calls to known symbols
-            for sym_name, sym_id in symbols.items():
+            for sym_name in dict.fromkeys(_GO_CALL_CANDIDATE_RE.findall(line)):
+                sym_id = symbols.get(sym_name)
+                if not sym_id:
+                    continue
                 if sym_id == current_func_id:
                     continue
-                if f"{sym_name}(" in line or f".{sym_name}(" in line:
-                    edge_id = f"calls:{current_func_id}:{sym_id}:{line_no}"
-                    edges.append(
-                        Edge(
-                            edge_id=edge_id,
-                            edge_type="calls",
-                            from_node=current_func_id,
-                            to_node=sym_id,
-                            evidence={"rel": "regex_call", "line": line_no},
-                        )
+                edge_id = f"calls:{current_func_id}:{sym_id}:{line_no}"
+                edges.append(
+                    Edge(
+                        edge_id=edge_id,
+                        edge_type="calls",
+                        from_node=current_func_id,
+                        to_node=sym_id,
+                        evidence={"rel": "regex_call", "line": line_no},
                     )
+                )
+            current_func_depth += line.count("{") - line.count("}")
+            if current_func_depth <= 0:
+                current_func_id = None
+                current_func_depth = 0
 
         # Update nodes with panic information
         for func_id, panics in func_panics.items():
             node = node_by_id.get(func_id)
             if node:
                 node.semantic_contract["raises"] = list(dict.fromkeys(panics))[:3]
+
+        if len(go_files) >= GO_BEHAVIOR_PROGRESS_EVERY and file_index % GO_BEHAVIOR_PROGRESS_EVERY == 0:
+            print(
+                f"[extract_go] processed {file_index}/{len(go_files)} files "
+                f"in {time.perf_counter() - repo_start:.1f}s"
+            )
 
     return nodes, edges
 

@@ -335,6 +335,37 @@ class TestL3:
         words = _word_count(result)
         assert words < 150  # generous margin
 
+    def test_semantic_anchor_beats_lexical_neighbor(self):
+        graph = CanonicalClueGraph(
+            metadata={"schema_version": "2.0"},
+            repository={"name": "focus-rank", "root_path": "."},
+            nodes=[
+                _make_node("module:src/http.py", "module", "src/http.py", symbol_name="src/http.py"),
+                _make_node(
+                    "sym:http:RequestHandler",
+                    "function",
+                    "src/http.py",
+                    symbol_name="RequestHandler",
+                    purpose="Handle HTTP request parsing and dispatch",
+                ),
+                _make_node(
+                    "sym:http:RequestLogger",
+                    "function",
+                    "src/http.py",
+                    symbol_name="RequestLogger",
+                    purpose="Request logging helper",
+                ),
+            ],
+            edges=[
+                _make_edge("contains", "module:src/http.py", "sym:http:RequestHandler"),
+                _make_edge("contains", "module:src/http.py", "sym:http:RequestLogger"),
+                _make_edge("calls", "sym:http:RequestLogger", "sym:http:RequestHandler"),
+            ],
+        )
+        focus = _select_focus_nodes(graph, "How is HTTP request parsing handled?")
+        focus_names = [n.semantic_contract.get("symbol_name", "") for n in focus]
+        assert focus_names.index("RequestHandler") < focus_names.index("RequestLogger")
+
 
 # ---------------------------------------------------------------------------
 # GAPS tests
@@ -397,6 +428,46 @@ class TestGaps:
         drills = [line for line in result.splitlines() if line.startswith("drill:")]
         assert drills
         assert "route_match" in drills[0]
+
+    def test_drill_targets_prefer_call_chain_before_large_irrelevant_body(self):
+        matcher = _make_node(
+            "sym:app:match_route",
+            "function",
+            "src/app.py",
+            symbol_name="match_route",
+            purpose="Match request routes to handlers",
+        )
+        matcher.source_anchor.byte_end = 120
+        next_step = _make_node(
+            "sym:app:resolve_route",
+            "function",
+            "src/app.py",
+            symbol_name="resolve_route",
+            purpose="Resolve matching route details",
+        )
+        next_step.source_anchor.byte_end = 150
+        noisy = _make_node(
+            "sym:app:request_audit",
+            "function",
+            "src/audit.py",
+            symbol_name="request_audit",
+            purpose="Request audit logging helper",
+        )
+        noisy.source_anchor.byte_end = 800
+        graph = CanonicalClueGraph(
+            metadata={"schema_version": "2.0"},
+            repository={"name": "drill-rank", "root_path": "."},
+            nodes=[matcher, next_step, noisy],
+            edges=[_make_edge("calls", "sym:app:match_route", "sym:app:resolve_route")],
+        )
+        focus = [matcher, next_step, noisy]
+        result = _render_gaps(graph, "How does route matching work?", focus, focus)
+        drills = [line for line in result.splitlines() if line.startswith("drill:")]
+        assert drills[:2]
+        top_two = "\n".join(drills[:2])
+        assert "match_route" in top_two
+        assert "resolve_route" in top_two
+        assert "request_audit" not in top_two
 
     def test_max_5_bullets(self):
         graph = _make_small_graph()

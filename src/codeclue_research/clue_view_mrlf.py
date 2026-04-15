@@ -437,7 +437,33 @@ def _node_question_relevance(node: Node, question_keywords: set[str]) -> float:
     behavior_text = " ".join(sc.get("behavior_patterns", []))
     if behavior_text:
         score += 0.4 * _semantic_overlap(behavior_text, question_keywords)
+    uses_text = " ".join(str(item) for item in sc.get("uses", []))
+    if uses_text:
+        score += 0.2 * _semantic_overlap(uses_text, question_keywords)
+    if sc.get("bases") and {
+        "inheritance", "inherit", "extends", "extension", "relationship", "relationships", "hierarchy",
+    } & question_keywords:
+        score += 0.6 + 0.2 * _semantic_overlap(" ".join(sc.get("bases", [])), question_keywords)
     return score
+
+
+def _drill_question_overlap(node: Node, question_keywords: set[str]) -> float:
+    """Question overlap used for drill targeting.
+
+    Prioritises docstring/purpose overlap, with symbol/path overlap as a smaller
+    supplement when the purpose text is sparse.
+    """
+    if not question_keywords:
+        return 0.0
+    sc = node.semantic_contract or {}
+    return (
+        1.0 * _semantic_overlap(sc.get("purpose", ""), question_keywords)
+        + 0.35 * _symbol_overlap(
+            sc.get("symbol_name", node.node_id),
+            node.source_anchor.file_path,
+            question_keywords,
+        )
+    )
 
 
 def _question_content_overlap(
@@ -579,7 +605,10 @@ def _select_focus_nodes(
             else:
                 function_anchors.append(node.node_id)
 
-    anchors = class_anchors + function_anchors
+    semantic_anchors = class_anchors + function_anchors
+    anchors = list(semantic_anchors)
+    lexical_fallback = False
+    lexical_supplements: list[str] = []
     if not anchors:
         lexical_anchors = [
             node.node_id
@@ -587,10 +616,31 @@ def _select_focus_nodes(
             if lexical_scores.get(node.node_id, 0.0) > 0
         ]
         anchors = lexical_anchors[:soft_cap]
+        lexical_fallback = bool(anchors)
+    else:
+        lexical_supplements = [
+            node.node_id
+            for node in sorted(
+                symbol_nodes,
+                key=lambda node: (
+                    -lexical_scores.get(node.node_id, 0.0),
+                    0 if node.node_type == "class" else 1,
+                    node.semantic_contract.get("symbol_name", node.node_id),
+                ),
+            )
+            if lexical_scores.get(node.node_id, 0.0) > 0 and node.node_id not in semantic_anchors
+        ][: max(6, min(16, soft_cap // 4))]
     if not anchors:
         return _fallback_nodes()
 
     candidates: set[str] = set(anchors)
+    anchor_tier: dict[str, int] = {
+        anchor: 1 if lexical_fallback else 0
+        for anchor in anchors
+    }
+    for lexical_id in lexical_supplements:
+        candidates.add(lexical_id)
+        anchor_tier[lexical_id] = min(anchor_tier.get(lexical_id, 1), 1)
     for anchor in list(anchors):
         anchor_node = node_by_id.get(anchor)
         if not anchor_node:
@@ -600,11 +650,13 @@ def _select_focus_nodes(
                 child = node_by_id.get(child_id)
                 if child and child.node_type in ("function", "async_function"):
                     candidates.add(child_id)
+                    anchor_tier[child_id] = min(anchor_tier.get(child_id, 2), anchor_tier[anchor] + 1)
         elif anchor_node.node_type in ("function", "async_function"):
             for parent_id in contains_parents.get(anchor, set()):
                 parent = node_by_id.get(parent_id)
                 if parent and parent.node_type == "class":
                     candidates.add(parent_id)
+                    anchor_tier[parent_id] = min(anchor_tier.get(parent_id, 2), anchor_tier[anchor] + 1)
 
     frontier = set(anchors)
     visited = set(anchors)
@@ -624,24 +676,64 @@ def _select_focus_nodes(
                 next_frontier.add(neighbor)
                 visited.add(neighbor)
                 proximity[neighbor] = proximity.get(current, 0) + 1
+                anchor_tier[neighbor] = min(
+                    anchor_tier.get(neighbor, 3),
+                    anchor_tier.get(current, 1 if lexical_fallback else 0) + 1,
+                )
         frontier = next_frontier
         if not frontier:
             break
 
     candidate_ids = [nid for nid in candidates if nid in node_by_id]
     centrality = _betweenness_centrality(candidate_ids, structural_edges)
+    anchor_support: dict[str, float] = defaultdict(float)
+    semantic_anchor_set = set(semantic_anchors)
+    for anchor in semantic_anchor_set or set(anchors):
+        for neighbor in call_neighbors.get(anchor, set()):
+            if neighbor in candidates:
+                anchor_support[neighbor] += 1.0
+        for parent_id in contains_parents.get(anchor, set()):
+            if parent_id in candidates:
+                anchor_support[parent_id] += 0.75
+        for child_id in contains_children.get(anchor, set()):
+            if child_id in candidates:
+                anchor_support[child_id] += 0.75
     type_priority = {"class": 0, "function": 1, "async_function": 1, "method": 1}
-    ranked_ids = sorted(
-        candidate_ids,
-        key=lambda nid: (
-            -_node_question_relevance(node_by_id[nid], keywords),
-            proximity.get(nid, 99),
-            -centrality.get(nid, 0.0),
-            -lexical_scores.get(nid, 0.0),
-            type_priority.get(node_by_id[nid].node_type, 2),
-            node_by_id[nid].semantic_contract.get("symbol_name", node_by_id[nid].node_id),
-        ),
-    )
+    relational_focus = bool({
+        "inheritance", "inherit", "extends", "extension", "relationship", "relationships", "hierarchy",
+    } & keywords)
+    if semantic_anchors:
+        ranked_ids = sorted(
+            candidate_ids,
+            key=lambda nid: (
+                0 if semantic_scores.get(nid, 0.0) > 0 else 1,
+                0 if relational_focus and (node_by_id[nid].semantic_contract or {}).get("bases") else 1,
+                anchor_tier.get(nid, 3),
+                -semantic_scores.get(nid, 0.0),
+                -_node_question_relevance(node_by_id[nid], keywords),
+                -anchor_support.get(nid, 0.0),
+                proximity.get(nid, 99),
+                -centrality.get(nid, 0.0),
+                -lexical_scores.get(nid, 0.0),
+                type_priority.get(node_by_id[nid].node_type, 2),
+                node_by_id[nid].semantic_contract.get("symbol_name", node_by_id[nid].node_id),
+            ),
+        )
+    else:
+        ranked_ids = sorted(
+            candidate_ids,
+            key=lambda nid: (
+                0 if relational_focus and (node_by_id[nid].semantic_contract or {}).get("bases") else 1,
+                anchor_tier.get(nid, 3),
+                -_node_question_relevance(node_by_id[nid], keywords),
+                proximity.get(nid, 99),
+                -anchor_support.get(nid, 0.0),
+                -centrality.get(nid, 0.0),
+                -lexical_scores.get(nid, 0.0),
+                type_priority.get(node_by_id[nid].node_type, 2),
+                node_by_id[nid].semantic_contract.get("symbol_name", node_by_id[nid].node_id),
+            ),
+        )
     return [node_by_id[nid] for nid in ranked_ids[:soft_cap]]
 
 
@@ -924,14 +1016,25 @@ def _render_gaps(
                 "function", "method", "async_function", "async_method", None
             )
         ]
+        focus_ids = {node.node_id for node in focus_nodes}
+        focus_relevance = {
+            node.node_id: _drill_question_overlap(node, question_keywords)
+            for node in focus_nodes
+        }
 
         def _drill_priority(n: Node) -> tuple:
-            sc = n.semantic_contract or {}
-            has_behavior = bool(sc.get("behavior_patterns"))
             byte_span = n.source_anchor.byte_end - n.source_anchor.byte_start
-            relevance = _node_question_relevance(n, question_keywords)
-            call_count = len(sc.get("calls", [])) + len(sc.get("called_by", []))
-            return (-relevance, has_behavior, -call_count, -byte_span)
+            relevance = _drill_question_overlap(n, question_keywords)
+            sym_id = n.node_id
+            chain_support = 0.0
+            for edge in graph.edges:
+                if edge.edge_type != "calls":
+                    continue
+                if edge.from_node == sym_id and edge.to_node in focus_ids:
+                    chain_support += max(0.25, focus_relevance.get(edge.to_node, 0.0))
+                elif edge.to_node == sym_id and edge.from_node in focus_ids:
+                    chain_support += max(0.25, focus_relevance.get(edge.from_node, 0.0))
+            return (-relevance, -chain_support, -byte_span)
 
         drill_candidates = sorted(func_focus, key=_drill_priority)
 

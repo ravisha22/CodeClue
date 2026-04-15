@@ -6,7 +6,7 @@ For each blind-eval task:
   3. For MECHANISTIC questions, select high-value File 2 records and source snippets
   4. Write a combined prompt (clue + source drill-down) for evaluation
 
-Budget: max 2000 tokens of drill-down content (keeps total under ~6K).
+Budget: max 3000 tokens of drill-down content (keeps total under ~7.5K).
 Prioritisation: FOCUS symbols lacking behavioral annotations (highest info gap).
 
 Usage:
@@ -46,7 +46,7 @@ LANG_MAP = {
     "typeorm": "typescript",
 }
 
-DRILLDOWN_TOKEN_BUDGET = 2000
+DRILLDOWN_TOKEN_BUDGET = 3000
 
 DRILLDOWN_PROMPT_TEMPLATE = """\
 # Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down

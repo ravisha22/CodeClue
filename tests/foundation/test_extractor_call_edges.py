@@ -13,12 +13,13 @@ from __future__ import annotations
 
 import tempfile
 import textwrap
+import time
 from pathlib import Path
 
 import pytest
 
 from codeclue_research.extractor import extract_python_nodes_edges
-from codeclue_research.extract_go import extract_go_nodes_edges
+from codeclue_research.extract_go import _extract_go_behavior_patterns, extract_go_nodes_edges
 from codeclue_research.extract_typescript import extract_typescript_nodes_edges
 
 
@@ -536,7 +537,97 @@ class TestTypeScriptCallEdges:
 def test_go_extractor_skips_test_files(tmp_path: Path):
     _write_fixture(tmp_path, "app.go", "package main\n\nfunc Start() {}\n")
     _write_fixture(tmp_path, "app_test.go", "package main\n\nfunc TestStart(t *testing.T) {}\n")
+    _write_fixture(tmp_path, "docs/guide.go", "package main\n\nfunc Guide() {}\n")
+    _write_fixture(tmp_path, "examples/demo.go", "package main\n\nfunc Demo() {}\n")
     nodes, _ = extract_go_nodes_edges(tmp_path)
     file_paths = {n.source_anchor.file_path for n in nodes}
     assert "app.go" in file_paths
     assert "app_test.go" not in file_paths
+    assert "docs/guide.go" not in file_paths
+    assert "examples/demo.go" not in file_paths
+
+
+def test_go_extractor_keeps_scope_after_nested_block(tmp_path: Path):
+    _write_fixture(
+        tmp_path,
+        "main.go",
+        """\
+        package main
+
+        type Server struct{}
+
+        func (s *Server) validate(port int) {
+            if port < 0 {
+                panic("invalid")
+            }
+            s.afterCheck()
+        }
+
+        func (s *Server) afterCheck() {}
+        """,
+    )
+    nodes, edges = extract_go_nodes_edges(tmp_path)
+    call_edges = _get_call_edges(nodes, edges)
+    assert _has_call(call_edges, "Server.validate", "afterCheck")
+
+
+def test_go_behavior_pattern_extraction_is_linearish_on_large_body():
+    branches = []
+    for idx in range(250):
+        prefix = "if" if idx == 0 else "else if"
+        branches.append(f"    {prefix} cond{idx} {{")
+        branches.append(f"        return handle{idx}()")
+        branches.append("    }")
+    body = "func Example() {\n" + "\n".join(branches) + "\n    return fallback()\n}\n"
+    start = time.perf_counter()
+    patterns = _extract_go_behavior_patterns(body)
+    elapsed = time.perf_counter() - start
+    assert elapsed < 1.0, f"behavior extraction too slow: {elapsed:.3f}s"
+    assert isinstance(patterns, list)
+
+
+def test_ts_extractor_supports_dollar_prefixed_type_symbols(tmp_path: Path):
+    _write_fixture(
+        tmp_path,
+        "schema.ts",
+        """\
+        export interface $ZodType {
+            _zod: { def: string };
+        }
+
+        export interface $ZodString extends $ZodType {
+            parse(data: unknown): unknown;
+        }
+
+        export type $ZodAlias = $ZodString;
+        """,
+    )
+    nodes, _ = extract_typescript_nodes_edges(tmp_path)
+    symbol_map = {
+        n.semantic_contract.get("symbol_name", ""): n
+        for n in nodes
+        if n.node_type != "module"
+    }
+    assert "$ZodType" in symbol_map
+    assert "$ZodString" in symbol_map
+    assert "$ZodAlias" in symbol_map
+    assert "$ZodType" in symbol_map["$ZodString"].semantic_contract.get("bases", [])
+
+
+def test_ts_extractor_captures_property_access_uses(tmp_path: Path):
+    _write_fixture(
+        tmp_path,
+        "access.ts",
+        """\
+        export function parseSchema(obj: { _zod: { def: unknown } }) {
+            return obj._zod.def;
+        }
+        """,
+    )
+    nodes, _ = extract_typescript_nodes_edges(tmp_path)
+    parse_node = next(
+        n for n in nodes
+        if n.semantic_contract.get("symbol_name", "") == "parseSchema"
+    )
+    uses = parse_node.semantic_contract.get("uses", [])
+    assert "obj._zod.def" in uses

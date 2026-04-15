@@ -7,7 +7,36 @@ Mode B: LLM judge — structured rubric, requires API call.
 from __future__ import annotations
 
 import re
+from pathlib import Path
 from typing import Any
+
+_STANDARD_SCORING_RUBRIC = """\
+### Fact Labels
+- **COVERED**: Response describes the specific mechanism or behavior from the gold fact and includes supporting evidence. Exact wording is not required, but the core behavior must be identified, not just the function or class name.
+- **PARTIAL**: Response identifies the right function/class or hints at the behavior, but misses important mechanism detail. Upgrade PARTIAL to COVERED when more than 50% of the mechanism is captured.
+- **MISS**: Response does not contain the information, gives the wrong behavior, or explicitly says it cannot determine the answer.
+
+### Grounding Rules
+- Judge only what is present in the answer.
+- Do not award credit for external framework knowledge.
+- Prefer mechanism-level evidence over symbol-name mentions.
+- When in doubt between PARTIAL and MISS, use PARTIAL only if the answer points to the correct code element and some correct behavior.
+"""
+
+
+def load_standard_scoring_rubric() -> str:
+    """Load the repository-wide scoring rubric used by evaluation prompts."""
+    rubric_path = (
+        Path(__file__).resolve().parents[2]
+        / "experiments"
+        / "runs"
+        / "blind-eval"
+        / "STANDARD-SCORING-RUBRIC.md"
+    )
+    try:
+        return rubric_path.read_text(encoding="utf-8").strip()
+    except OSError:
+        return _STANDARD_SCORING_RUBRIC.strip()
 
 
 def _normalize(text: str) -> str:
@@ -150,7 +179,7 @@ def build_judge_prompt(
     consumer_answer: str,
     clue_artifact: dict[str, Any] | None = None,
 ) -> str:
-    """Build a structured judge prompt for LLM-based scoring.
+    """Build a structured judge prompt for fact-level LLM scoring.
 
     Args:
         question: The task question.
@@ -161,6 +190,7 @@ def build_judge_prompt(
     Returns:
         Formatted judge prompt string.
     """
+    rubric = load_standard_scoring_rubric()
     prompt = f"""You are an independent judge scoring a code comprehension answer.
 
 ## Task Question
@@ -172,24 +202,23 @@ def build_judge_prompt(
 ## Consumer's Answer
 {consumer_answer}
 
-## Scoring Rubric (score each 0.0 to 1.0)
-
-1. **Accuracy** [weight: 0.4]: Are the factual claims correct? Does the answer correctly identify the right code elements and their behavior?
-
-2. **Completeness** [weight: 0.3]: Does the answer cover all the key elements in the gold standard? Are important aspects missing?
-
-3. **Groundedness** [weight: 0.2]: Are claims traceable to the clue content provided? Does the answer avoid unsupported speculation?
-
-4. **Specificity** [weight: 0.1]: Does the answer cite specific symbols, files, or code elements rather than giving vague generalities?
+## Standard Scoring Rubric
+{rubric}
 
 ## Required Output Format (JSON only)
 {{
-  "accuracy": <float 0-1>,
-  "completeness": <float 0-1>,
-  "groundedness": <float 0-1>,
-  "specificity": <float 0-1>,
-  "overall": <weighted average>,
-  "sufficient": <true if overall >= 0.60>,
+  "fact_verdicts": [
+    {{
+      "fact": "<gold fact>",
+      "label": "COVERED" | "PARTIAL" | "MISS",
+      "justification": "<cite the answer text that supports the label>"
+    }}
+  ],
+  "covered": <int>,
+  "partial": <int>,
+  "missed": <int>,
+  "score": <covered / total_facts as float>,
+  "sufficient": <true if score >= 0.60>,
   "reasoning": "<one sentence justification>"
 }}
 """
@@ -210,27 +239,26 @@ def parse_judge_response(response_text: str) -> dict[str, Any]:
     if json_match:
         try:
             result = json.loads(json_match.group())
-            # Compute overall if not present
-            if "overall" not in result:
-                result["overall"] = (
-                    result.get("accuracy", 0) * 0.4
-                    + result.get("completeness", 0) * 0.3
-                    + result.get("groundedness", 0) * 0.2
-                    + result.get("specificity", 0) * 0.1
-                )
+            verdicts = result.get("fact_verdicts", [])
+            if verdicts and "score" not in result:
+                covered = sum(1 for verdict in verdicts if verdict.get("label") == "COVERED")
+                result["covered"] = covered
+                result["partial"] = sum(1 for verdict in verdicts if verdict.get("label") == "PARTIAL")
+                result["missed"] = sum(1 for verdict in verdicts if verdict.get("label") == "MISS")
+                result["score"] = covered / len(verdicts)
             result["mode"] = "llm_judge"
-            result.setdefault("sufficient", result.get("overall", 0) >= 0.60)
+            result.setdefault("sufficient", result.get("score", result.get("overall", 0)) >= 0.60)
             return result
         except (json.JSONDecodeError, TypeError):
             pass
 
     return {
         "mode": "llm_judge",
-        "accuracy": 0.0,
-        "completeness": 0.0,
-        "groundedness": 0.0,
-        "specificity": 0.0,
-        "overall": 0.0,
+        "fact_verdicts": [],
+        "covered": 0,
+        "partial": 0,
+        "missed": 0,
+        "score": 0.0,
         "sufficient": False,
         "reasoning": "Failed to parse judge response",
         "parse_error": True,

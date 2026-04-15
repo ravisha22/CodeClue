@@ -1,15 +1,21 @@
-"""Generate fiber struct/rel prompts from existing clue data."""
+"""Generate question-conditioned fiber structural/relational clues and prompts."""
+
+from __future__ import annotations
+
 import json
-import re
+import sys
 from pathlib import Path
 
-base_clue = Path("experiments/runs/blind-eval/clues/blind-fiber-1.codeclue").read_text(encoding="utf-8")
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT / "src"))
 
-with open("experiments/runs/blind-eval/structural-relational-gold-tasks.json") as f:
-    tasks = json.load(f)
+from codeclue_research.clue_view_mrlf import render_mrlf
+from codeclue_research.extractor import extract_graph
 
-PROMPT_DIR = Path("experiments/runs/blind-eval/prompts")
-CLUE_DIR = Path("experiments/runs/blind-eval/clues")
+TASKS_PATH = REPO_ROOT / "experiments" / "runs" / "blind-eval" / "structural-relational-gold-tasks.json"
+CLUE_DIR = REPO_ROOT / "experiments" / "runs" / "blind-eval" / "clues"
+PROMPT_DIR = REPO_ROOT / "experiments" / "runs" / "blind-eval" / "prompts"
+FIBER_ROOT = REPO_ROOT / "experiments" / "external-repos" / "fiber"
 
 PROMPT_HEADER = (
     "# Blind Evaluation Prompt - MRLF v2.1 (Structural/Relational)\n"
@@ -26,21 +32,30 @@ PROMPT_HEADER = (
     "For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.\n"
 )
 
-for t in tasks:
-    if t["repo"] != "fiber":
-        continue
 
-    tid = t["task_id"]
-    question = t["question"]
+def main() -> None:
+    tasks = json.loads(TASKS_PATH.read_text(encoding="utf-8"))
+    fiber_tasks = [task for task in tasks if task.get("repo") == "fiber"]
 
-    clue = re.sub(r"^\? .+$", f"? {question}", base_clue, count=1, flags=re.MULTILINE)
+    print("Extracting fiber graph...")
+    graph = extract_graph(FIBER_ROOT, language="go")
+    print(f"  {len(graph.nodes)} nodes, {len(graph.edges)} edges")
 
-    clue_path = CLUE_DIR / f"{tid}.codeclue"
-    clue_path.write_text(clue, encoding="utf-8")
+    for task in fiber_tasks:
+        task_id = task["task_id"]
+        question = task["question"]
+        clue = render_mrlf(graph, question, repo_root=FIBER_ROOT)
 
-    prompt = PROMPT_HEADER.format(task_id=tid, clue=clue, question=question)
-    prompt_path = PROMPT_DIR / f"{tid}-answerer.prompt.md"
-    prompt_path.write_text(prompt, encoding="utf-8")
-    print(f"{tid}: generated ({len(clue)} chars clue, {len(prompt)} chars prompt)")
+        clue_path = CLUE_DIR / f"{task_id}.codeclue"
+        prompt_path = PROMPT_DIR / f"{task_id}-answerer.prompt.md"
+        clue_path.write_text(clue, encoding="utf-8")
 
-print("Done.")
+        prompt = PROMPT_HEADER.format(task_id=task_id, clue=clue, question=question)
+        prompt_path.write_text(prompt, encoding="utf-8")
+        print(f"  {task_id}: generated ({len(clue)} chars clue)")
+
+    print("Done.")
+
+
+if __name__ == "__main__":
+    main()
