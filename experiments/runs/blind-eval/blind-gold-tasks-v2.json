@@ -1,0 +1,380 @@
+[
+  {
+    "task_id": "blind-requests-struct-1",
+    "repo": "requests",
+    "repo_path": "experiments/external-repos/requests",
+    "question": "Which public modules in Requests own the top-level request API, session orchestration, and the request/response model types?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "The high-level helper functions `requests.request`, `get`, `post`, `put`, `patch`, `delete`, and `head` are documented as living in the `requests.api` module."
+      },
+      {
+        "statement": "`Session` and its orchestration methods such as `request`, `send`, `prepare_request`, `resolve_redirects`, and adapter mounting are documented under `requests.sessions`."
+      },
+      {
+        "statement": "`Request`, `PreparedRequest`, and `Response` are all documented under `requests.models` rather than being split across separate public modules."
+      },
+      {
+        "statement": "Transport abstractions (`BaseAdapter`, `HTTPAdapter`) and the exception hierarchy are exposed from dedicated modules `requests.adapters` and `requests.exceptions`."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-requests-struct-2",
+    "repo": "requests",
+    "repo_path": "experiments/external-repos/requests",
+    "question": "How do the Requests API docs divide the library into public layers, and which kinds of objects appear in each layer?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "The public API docs are organized into a main interface layer, an exceptions layer, a session layer, lower-level classes, and lower-lower-level classes."
+      },
+      {
+        "statement": "The main interface layer consists of convenience request functions that all return a `Response` object instead of exposing transport internals directly."
+      },
+      {
+        "statement": "The session layer centers on `requests.Session`, including persistent defaults, cookie state, adapter registration, and redirect-related helpers."
+      },
+      {
+        "statement": "The lower-level layers separate `Request` and `Response` from the more transport-ready `PreparedRequest` and adapter abstractions that sit closer to the send path."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-requests-rel-1",
+    "repo": "requests",
+    "repo_path": "experiments/external-repos/requests",
+    "question": "What is the relationship between `Request`, `PreparedRequest`, `Session`, and `Response` in Requests' send pipeline?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "A user-created `Request` is not sent directly; it is converted into a `PreparedRequest` before transport begins."
+      },
+      {
+        "statement": "`Session.prepare_request()` prepares a `Request` while merging in session-level state such as cookies and other defaults."
+      },
+      {
+        "statement": "`Session.send()` accepts a `PreparedRequest` and returns a `Response` rather than taking a raw `Request`."
+      },
+      {
+        "statement": "Each `Response` keeps a reference to the exact `PreparedRequest` that produced it through the `response.request` attribute."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-requests-rel-2",
+    "repo": "requests",
+    "repo_path": "experiments/external-repos/requests",
+    "question": "How do `Session` and transport adapters relate to one another when Requests selects a transport for a URL?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "`Session.mount()` registers a transport adapter against a URL prefix instead of binding adapters to individual methods or one-off calls."
+      },
+      {
+        "statement": "Mounted adapters are sorted in descending prefix length, so adapter selection prefers the most specific registered prefix."
+      },
+      {
+        "statement": "`Session.get_adapter(url)` returns a `BaseAdapter` implementation for the target URL that will handle the actual send."
+      },
+      {
+        "statement": "The built-in `HTTPAdapter` is the general-purpose bridge between `PreparedRequest`/`Response` objects and urllib3 connection pools and responses."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-requests-mech-1",
+    "repo": "requests",
+    "repo_path": "experiments/external-repos/requests",
+    "question": "When session defaults, per-call options, and environment-derived settings all interact in Requests, what precedence rules does the implementation follow?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "Method-level dictionaries passed to a session request are merged with session-level dictionaries, with method-level values overriding session values."
+      },
+      {
+        "statement": "A method-level dictionary entry set to `None` suppresses the corresponding session-level key instead of preserving it."
+      },
+      {
+        "statement": "Using `Request.prepare()` by itself skips session state such as cookies, while `Session.prepare_request()` applies that session state during preparation."
+      },
+      {
+        "statement": "The prepared-request flow does not automatically consult environment settings like `REQUESTS_CA_BUNDLE`; callers must explicitly merge them with `Session.merge_environment_settings()` before `send()`."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-requests-mech-2",
+    "repo": "requests",
+    "repo_path": "experiments/external-repos/requests",
+    "question": "How does Requests handle streaming and decoding edge cases on `Response` objects?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "If a request is made with `stream=False`, response bytes are downloaded immediately instead of being deferred until the body is accessed."
+      },
+      {
+        "statement": "`Response.iter_content(None)` behaves differently by mode: with `stream=True` it yields chunks as they arrive, and with `stream=False` it returns the body as a single chunk."
+      },
+      {
+        "statement": "`Response.text` determines decoding from HTTP headers first and only falls back to charset detection when `encoding` is unset."
+      },
+      {
+        "statement": "`Response.json()` raises `requests.exceptions.JSONDecodeError` when the body cannot be decoded as JSON rather than quietly returning `None`."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-echo-struct-1",
+    "repo": "echo",
+    "repo_path": "experiments/external-repos/echo",
+    "question": "How is Echo's public API split between the core framework package and middleware packages?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "The core framework is published from `github.com/labstack/echo/v5` and defines `Echo`, `Context`, routing, binding, response helpers, and server startup APIs."
+      },
+      {
+        "statement": "Built-in middleware lives in a separate `github.com/labstack/echo/v5/middleware` package rather than inside the root package API surface."
+      },
+      {
+        "statement": "The middleware package follows a paired constructor pattern in which many middlewares expose both a simple constructor and a `WithConfig` variant plus a config type."
+      },
+      {
+        "statement": "Middleware maintained by the Echo team but not shipped in the core package is documented as living in separate repositories such as `echo-jwt`, `echo-contrib`, `echo-opentelemetry`, and `echo-prometheus`."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-echo-struct-2",
+    "repo": "echo",
+    "repo_path": "experiments/external-repos/echo",
+    "question": "Which public types and subcomponents make up Echo's routing and request-handling surface?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "The root package exposes `Echo` as the application type, `Context` as the per-request type, and `DefaultRouter` as the default router implementation."
+      },
+      {
+        "statement": "Route registration is method-specific on `Echo` (`GET`, `POST`, `PATCH`, and others), and each registration returns a `RouteInfo` value."
+      },
+      {
+        "statement": "Grouped subrouters are created through `Echo.Group(prefix, ...)`, returning a `*Group` that can register additional routes and middleware."
+      },
+      {
+        "statement": "Binding, JSON serialization, and validation are surfaced through separate interfaces and defaults such as `Binder`, `DefaultBinder`, and `DefaultJSONSerializer` alongside the core router types."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-echo-rel-1",
+    "repo": "echo",
+    "repo_path": "experiments/external-repos/echo",
+    "question": "What are the main relationships among `Echo`, `Group`, `Context`, and handlers during normal request dispatch?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "`Echo` owns route and middleware registration, while handlers operate on `*echo.Context` instead of raw `http.Request` and `http.ResponseWriter` values."
+      },
+      {
+        "statement": "A `Group` is created from an `Echo` instance and acts as a prefixed sub-router that still contributes routes into the same application-level routing system."
+      },
+      {
+        "statement": "Group middleware is inherited from parent groups, so nested groups compose middleware stacks rather than replacing them."
+      },
+      {
+        "statement": "Handlers and middleware share the same context object, which exposes request data, parameter lookup, binding helpers, validation hooks, and response-writing helpers."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-echo-rel-2",
+    "repo": "echo",
+    "repo_path": "experiments/external-repos/echo",
+    "question": "How does Echo relate its router, route match types, and middleware ordering?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "`Echo` exposes both `Pre(...)` and regular middleware registration, indicating two distinct middleware stages ahead of route handlers."
+      },
+      {
+        "statement": "The default router is documented as a radix-tree router that resolves overlapping routes by match type priority rather than by registration order."
+      },
+      {
+        "statement": "`Any` and `Match` are convenience APIs on `Echo` that let one declaration register handlers for all methods or a selected set of methods."
+      },
+      {
+        "statement": "Route-level middleware passed to a specific `GET` or `POST` call is added on top of any root- or group-level middleware already inherited for that route."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-echo-mech-1",
+    "repo": "echo",
+    "repo_path": "experiments/external-repos/echo",
+    "question": "How does Echo decide which route wins when static segments, parameters, and wildcards overlap?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "Echo matches static paths before parameterized paths and parameterized paths before match-any wildcards."
+      },
+      {
+        "statement": "Because match priority is structural, overlapping routes can be written in any registration order without changing which route wins."
+      },
+      {
+        "statement": "A wildcard route like `/users/*` consumes zero or more remaining characters from that point in the path."
+      },
+      {
+        "statement": "If a route pattern contains more than one match-any segment, only the first effective `*` matters because it captures the rest of the request path."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-echo-mech-2",
+    "repo": "echo",
+    "repo_path": "experiments/external-repos/echo",
+    "question": "What happens inside Echo's centralized HTTP error path when handlers return ordinary errors, HTTP errors, or errors after the response is already committed?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "Echo's default HTTP error handler emits JSON error responses instead of HTML pages by default."
+      },
+      {
+        "statement": "A plain `error` is treated as a `500 Internal Server Error`, while an `*HTTPError` uses its embedded status code and message."
+      },
+      {
+        "statement": "In debug mode, the default handling of a plain `error` exposes the original error message instead of a generic 500 message."
+      },
+      {
+        "statement": "Custom error handlers are expected to check whether the response has already been committed and return immediately if bytes were already sent."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-zod-struct-1",
+    "repo": "zod",
+    "repo_path": "experiments/external-repos/zod",
+    "question": "How is Zod 4 split across the `zod`, `zod/mini`, and `zod/v4/core` packages?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "`zod` is the full developer-facing package with the familiar method-based schema API."
+      },
+      {
+        "statement": "`zod/mini` is a separate package with the same validation semantics but a more functional, tree-shakable API surface."
+      },
+      {
+        "statement": "`zod/v4/core` is the low-level substrate consumed by both `zod` and `zod/mini`, and the docs explicitly position it as an extension layer rather than the usual application entry point."
+      },
+      {
+        "statement": "The English locale is loaded automatically by `zod` but not by `zod/mini`, making localization behavior part of the package split."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-zod-struct-2",
+    "repo": "zod",
+    "repo_path": "experiments/external-repos/zod",
+    "question": "How are schema types, checks, and errors organized in Zod's documented internal architecture?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "The base schema class in core is `$ZodType`, and first-party schema subclasses are grouped under the documented union `z.$ZodTypes`."
+      },
+      {
+        "statement": "Schema internals are concentrated under a single `_zod` property whose `def` field describes the schema in a JSON-serializable form."
+      },
+      {
+        "statement": "Post-parse refinements are modeled separately as `$ZodCheck` subclasses, with first-party checks grouped under `z.$ZodChecks`."
+      },
+      {
+        "statement": "Errors are organized around `$ZodError` and issue objects, with the regular `zod` package layering a `ZodError` convenience subclass on top."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-zod-rel-1",
+    "repo": "zod",
+    "repo_path": "experiments/external-repos/zod",
+    "question": "What inheritance and extension relationships connect Zod's core, full, and mini schema/error types?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "All core schema classes extend `$ZodType`, which carries separate input and output type parameters."
+      },
+      {
+        "statement": "`ZodMiniType` in `zod/mini` extends `z.core.$ZodType` and then preserves only a relatively small set of instance methods compared with full Zod."
+      },
+      {
+        "statement": "The `ZodError` exposed by the `zod` package is a subclass of the core `$ZodError` rather than a separate error model."
+      },
+      {
+        "statement": "Some string-format classes participate in both the schema and refinement hierarchies by implementing both `$ZodType` and `$ZodCheck` behavior."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-zod-rel-2",
+    "repo": "zod",
+    "repo_path": "experiments/external-repos/zod",
+    "question": "How do parsing APIs, schema-level checks, and error maps relate to one another in Zod's validation pipeline?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "A schema first parses input into its core type and then runs its accumulated checks or refinements from the schema definition."
+      },
+      {
+        "statement": "`.parse()` and `.safeParse()` use the same validation pipeline but differ in how they surface failure: throwing `ZodError` versus returning a discriminated-union result object."
+      },
+      {
+        "statement": "Async refinements or transforms force callers onto the async parsing variants, so `parseAsync()` and `safeParseAsync()` are the async counterparts of the same validation flow."
+      },
+      {
+        "statement": "Error maps sit on top of generated validation issues rather than replacing validation itself, and they are applied according to a documented precedence chain."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-zod-mech-1",
+    "repo": "zod",
+    "repo_path": "experiments/external-repos/zod",
+    "question": "What exact unknown-key and object-composition behaviors does Zod apply when parsing object schemas?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "A plain `z.object()` strips unrecognized keys from the parsed output by default."
+      },
+      {
+        "statement": "`z.strictObject()` changes that behavior by turning unknown keys into validation errors instead of silently stripping them."
+      },
+      {
+        "statement": "`z.looseObject()` changes the edge case in the opposite direction by allowing unknown keys to pass through untouched."
+      },
+      {
+        "statement": "Applying `.catchall()` changes unknown-key handling again by validating otherwise unrecognized keys against the catchall schema."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-zod-mech-2",
+    "repo": "zod",
+    "repo_path": "experiments/external-repos/zod",
+    "question": "How does Zod decide which error message to emit when multiple customization layers are available?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "A schema-level custom error message has the highest precedence in Zod's documented error-resolution chain."
+      },
+      {
+        "statement": "A per-parse error map passed to `.parse()` ranks below schema-level messages but above global configuration."
+      },
+      {
+        "statement": "Global error customization set through `z.config()` ranks below per-parse customization and above locale defaults."
+      },
+      {
+        "statement": "Returning `undefined` from an error map does not finalize the message; it yields control to the next lower-precedence error source."
+      }
+    ]
+  }
+]
