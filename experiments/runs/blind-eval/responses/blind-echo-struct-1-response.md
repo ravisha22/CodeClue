@@ -1,0 +1,26 @@
+# Response: blind-echo-struct-1
+Date: 2026-04-15
+
+## Answer
+Echo's public API appears split into a **core framework surface** in the main package files and an **opt-in middleware surface** under `middleware/`.
+
+### Core framework package
+- The core package exposes the top-level `Echo` type as the main framework instance, with route registration and server lifecycle methods such as `Add`, `GET`, `Use`, `Start`, and `File`. (Echo, `echo.go:68-68`; Echo.GET, `echo.go:449-449`; Echo.Use, `echo.go:431-431`; Echo.Start, `echo.go:744-744`; Echo.File, `echo.go:609-609`)
+- Routing is also part of the core surface: `DefaultRouter` is the route registry for an `Echo` instance, and `Group` is the sub-routing abstraction. (DefaultRouter, `router.go:60-60`; Group, `group.go:14-14`; Group.Add, `group.go:158-158`; Group.GET, `group.go:37-37`)
+- Per-request handling is in the core package via `Context`-related APIs in `context.go`, including request/response helpers such as `Blob`, `Response`, `Get`, `Set`, and JSON/XML helpers. (Context.Blob, `context.go:552-552`; Context.Response, `context.go:139-139`; Context.Get, `context.go:380-380`; Context.Set, `context.go:387-387`; Context.json, `context.go:464-464`; Context.xml, `context.go:517-517`)
+- The core package also exposes adapter/helper APIs around middleware and startup, including `WrapMiddleware`, `StartConfig`, and `MiddlewareConfigurator`. (WrapMiddleware, `echo.go:766-766`; StartConfig, `server.go:26-26`; MiddlewareConfigurator, `echo.go:121-121`)
+- Testing helpers are separated again into `echotest`, where `ContextConfig` can create test contexts/recorders. (ContextConfig, `echotest/context.go:20-20`; ContextConfig.ToContextRecorder, `echotest/context.go:81-81`; ContextConfig.ToContext source snippet, `echotest/context.go L75-75`)
+
+### Middleware packages
+- The `middleware/` subtree is a separate API area containing many feature-specific middleware modules (`47 files` in the tree listing). (TREE, `middleware/  (47 files)`)
+- Middleware functionality is exposed mostly as constructor functions such as `BasicAuthWithConfig`, `BodyDumpWithConfig`, `GzipWithConfig`, `Proxy`, `RecoverWithConfig`, `RequestIDWithConfig`, `RequestLoggerWithConfig`, `RewriteWithConfig`, and `SecureWithConfig`. (BasicAuthWithConfig, `middleware/basic_auth.go:92-92`; BodyDumpWithConfig, `middleware/body_dump.go:68-68`; GzipWithConfig, `middleware/compress.go:64-64`; Proxy, `middleware/proxy.go:291-291`; RecoverWithConfig, `middleware/recover.go:48-48`; RequestIDWithConfig, `middleware/request_id.go:37-37`; RequestLoggerWithConfig, `middleware/request_logger.go:237-237`; RewriteWithConfig, `middleware/rewrite.go:48-48`; SecureWithConfig, `middleware/secure.go:96-96`)
+- Many middleware modules also expose matching config types with `ToMiddleware` methods, suggesting a consistent config-driven pattern: `CORSConfig`, `CSRFConfig`, `BasicAuthConfig`, `BodyDumpConfig`, `GzipConfig`, `ProxyConfig`, `RedirectConfig`, `RequestLoggerConfig`, `StaticConfig`, etc. (CORSConfig, `middleware/cors.go:17-17`; CSRFConfig, `middleware/csrf.go:26-26`; BasicAuthConfig, `middleware/basic_auth.go:21-21`; GzipConfig, `middleware/compress.go:25-25`; ProxyConfig, `middleware/proxy.go:28-28`; RedirectConfig, `middleware/redirect.go:15-15`; RequestLoggerConfig, `middleware/request_logger.go:124-124`; StaticConfig, `middleware/static.go:24-24`)
+- `RequestLogger` shows the pattern clearly: the simple public helper delegates to `RequestLoggerWithConfig`, and `RequestLoggerWithConfig` calls `ToMiddleware`. (RequestLogger, `middleware/request_logger.go:395-395`; RequestLoggerWithConfig, `middleware/request_logger.go:237-237`; RequestLoggerConfig.ToMiddleware, `middleware/request_logger.go:246-246`)
+- Some middleware are explicitly described as running before routing, not just around matched handlers; for example, `AddTrailingSlash` is a root-level middleware that runs before the router. (AddTrailingSlash, `middleware/slash.go:29-29`)
+
+### Overall split
+- So, based on the provided material, the core package owns the fundamental web framework abstractions (`Echo`, `Group`, router, startup, adapters, and request/response helpers in `context.go`), while `middleware/` provides pluggable cross-cutting behaviors built as middleware constructors plus config types. (Echo, `echo.go:68-68`; Group, `group.go:14-14`; DefaultRouter, `router.go:60-60`; WrapMiddleware, `echo.go:766-766`; StartConfig, `server.go:26-26`; Context.Blob, `context.go:552-552`; RequestLoggerWithConfig, `middleware/request_logger.go:237-237`; RedirectConfig, `middleware/redirect.go:15-15`)
+
+## What I cannot determine
+- I cannot determine the **complete** public API surface, because the clue file only lists selected symbols (`...and 487 more symbols`) rather than an exhaustive exported-symbol list. (SYM summary, line 117)
+- I cannot determine exact field layouts or implementation details for the drill-down types shown here, such as `ContextConfig`, `RequestLoggerConfig`, and `RequestLoggerValues`, because the snippets shown are declarations only. (ContextConfig source snippet, `echotest/context.go L20-20`; RequestLoggerConfig source snippet, `middleware/request_logger.go L124-124`; RequestLoggerValues source snippet, `middleware/request_logger.go L189-189`)
