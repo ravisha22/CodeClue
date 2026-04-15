@@ -804,21 +804,37 @@ def _render_gaps(
     # Line 2: coverage
     lines.append(f"coverage: {total_focus} symbols in L3, {with_behavior} with behavior annotations")
 
-    # Line 3+: drill targets for uncovered or under-annotated focus nodes
-    # Pick top focus nodes that lack behavioral annotations as drill candidates
-    drill_candidates = [
-        n for n in focus_nodes
-        if not (n.semantic_contract or {}).get("behavior_patterns")
-    ]
+    # Line 3+: drill targets for mechanistic questions.
+    # v2.1.1: For MECHANISTIC questions, ALL function-level FOCUS nodes are
+    # drill candidates, not just unannotated ones. Behavioral annotations
+    # capture control-flow *structure* but not *content* (specific conditions,
+    # precedence values, constructor wiring). Ranked by:
+    #   1. Unannotated functions (highest info gap)
+    #   2. Annotated functions with large bodies (shallow annotation risk)
+    #   3. Annotated functions with callees also in FOCUS (call-chain depth)
+    if question_type == "MECHANISTIC":
+        func_focus = [
+            n for n in focus_nodes
+            if (n.semantic_contract or {}).get("symbol_type") in (
+                "function", "method", "async_function", "async_method", None
+            )
+        ]
 
-    if question_type == "MECHANISTIC" and drill_candidates:
-        # Show top 2-3 drill targets with estimated line counts
-        for node in drill_candidates[:3]:
+        def _drill_priority(n: Node) -> tuple:
+            sc = n.semantic_contract or {}
+            has_behavior = bool(sc.get("behavior_patterns"))
+            byte_span = n.source_anchor.byte_end - n.source_anchor.byte_start
+            # Priority: unannotated first, then large bodies, then any
+            return (has_behavior, -byte_span)
+
+        drill_candidates = sorted(func_focus, key=_drill_priority)
+
+        for node in drill_candidates[:5]:  # increased from 3 to 5
             sc = node.semantic_contract or {}
             sym_name = sc.get("symbol_name", node.node_id)
             fp = node.source_anchor.file_path
             byte_span = node.source_anchor.byte_end - node.source_anchor.byte_start
-            est_lines = max(1, byte_span // 40)  # rough estimate: 40 bytes/line
+            est_lines = max(1, byte_span // 40)
             lines.append(f"drill: {fp} (~{est_lines} lines, {sym_name})")
 
     # Trim if over budget

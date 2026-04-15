@@ -113,18 +113,18 @@ get_best_encoding                   M src/click/_compat.py:48     Returns the de
 _expand_args (src/click/utils.py:578-628)
   Simulate Unix shell expansion with Python functions.
   sig: _expand_args(args)
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> out)
 
 _check_nested_chain (src/click/core.py:73-90)
   sig: _check_nested_chain(base_command, cmd_name, cmd, register)
-  behavior: GUARD(chain_base_command_isinstance); BRANCH(register)
+  behavior: GUARD(not_base_command.chain_or_not_is -> none); BRANCH(register -> result, else -> result)
   called_by: CommandCollection, add_command, Group
   raises: RuntimeError
 
 _resolve_incomplete (src/click/shell_completion.py:623-667)
   Find the Click object that will handle the completion of the
   sig: _resolve_incomplete(ctx, args, incomplete)
-  behavior: ACCUMULATE(loop); BRANCH(incomplete)
+  behavior: ACCUMULATE(loop -> result)
   calls: _is_incomplete_argument, _is_incomplete_option, _start_of_option
   called_by: get_completions, ShellComplete
 
@@ -208,11 +208,11 @@ get_current_context (src/click/globals.py:20-41)
 list_commands (src/click/core.py:1784-1786)
   Returns a list of subcommand names in the order they should appear.
   sig: list_commands(ctx)
-  behavior: DELEGATE(sorted)
+  behavior: DELEGATE(sorted -> result)
 
 make_formatter (src/click/core.py:561-573)
   Creates the :class:`~click.HelpFormatter` for the help and
-  behavior: DELEGATE(formatter_class)
+  behavior: DELEGATE(formatter_class -> result)
   called_by: Command
 
 Command (src/click/core.py:873-1485)
@@ -257,19 +257,18 @@ fail (src/click/core.py:718-724)
 get_short_help_str (src/click/core.py:1097-1118)
   Gets short help for the command or makes it by shortening the
   sig: get_short_help_str(limit)
-  behavior: BRANCH(short_help_self)
   called_by: Command, format_commands, Group
 
 _complete_visible_commands (src/click/core.py:54-70)
   List all the subcommands of a group that start with the
   sig: _complete_visible_commands(ctx, incomplete)
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> result)
   called_by: Command, Group
 
 make_context (src/click/core.py:1182-1217)
   This function when given an info name and arguments will kick
   sig: make_context(info_name, args, parent)
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> result)
   calls: scope
   called_by: Command, Group
 
@@ -305,7 +304,7 @@ format_help (src/click/core.py:1120-1135)
 
 _join_param_hints (src/click/exceptions.py:19-23)
   sig: _join_param_hints(param_hint)
-  behavior: GUARD(param_hint_isinstance_str)
+  behavior: GUARD(param_hint_and_not_isinstance_st -> /_join)
   called_by: BadParameter, MissingParameter
 
 _normalized_mapping (src/click/types.py:270-286)
@@ -317,6 +316,7 @@ _normalized_mapping (src/click/types.py:270-286)
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
 coverage: 70 symbols in L3, 17 with behavior annotations
-drill: src/click/shell_completion.py (~26 lines, shell_complete)
+drill: src/click/core.py (~70 lines, handle_parse_result)
+drill: src/click/shell_completion.py (~51 lines, _resolve_context)
 drill: src/click/types.py (~40 lines, convert_type)
-drill: src/click/types.py (~45 lines, Tuple)
+drill: src/click/core.py (~34 lines, scope)

@@ -177,7 +177,7 @@ pager (src/click/_termui_impl.py:369-408)
 cli (examples/repo/repo.py:44-57)
   Repo is a command line tool that showcases how to build complex
   sig: cli(ctx, repo_home, config, verbose)
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> result)
   calls: set_config, Repo
 
 BadArgumentUsage (src/click/exceptions.py:259-265)
@@ -219,7 +219,7 @@ _detect_program_name (src/click/utils.py:523-577)
 _is_incomplete_option (src/click/shell_completion.py:537-559)
   Determine if the given parameter is an option that needs a value.
   sig: _is_incomplete_option(ctx, args, param)
-  behavior: ACCUMULATE(loop); UNWIND(reversed)
+  behavior: ACCUMULATE(loop -> result); UNWIND(reversed)
   calls: _start_of_option
   called_by: _resolve_incomplete
 
@@ -243,12 +243,11 @@ command_path (src/click/core.py:642-658)
 consume_value (src/click/core.py:3256-3318)
   For :class:`Option`, the value can be collected from an interactive prompt
   sig: consume_value(ctx, opts)
-  behavior: BRANCH(value_FLAG_NEEDS_VALUE)
 
 make_parser (src/click/core.py:1081-1086)
   Creates the underlying option parser for this command.
   sig: make_parser(ctx)
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> result)
   calls: get_params
   called_by: Command
 
@@ -292,7 +291,6 @@ Parameter (src/click/core.py:2027-2643)
 type_cast_value (src/click/core.py:2342-2396)
   Convert and validate a value against the parameter's
   sig: type_cast_value(ctx, value)
-  behavior: BRANCH(is_composite_nargs_type)
   calls: check_iter, _check_iter
   called_by: Context, Parameter
   raises: BadParameter
@@ -314,246 +312,268 @@ augment_usage_errors (src/click/core.py:98-113)
 get_short_help_str (src/click/core.py:1097-1118)
   Gets short help for the command or makes it by shortening the
   sig: get_short_help_str(limit)
-  behavior: BRANCH(short_help_self)
   called_by: Command, format_commands, Group
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 13 with behavior annotations
-drill: src/click/types.py (~45 lines, Tuple)
-drill: src/click/exceptions.py (~61 lines, MissingParameter)
-drill: src/click/core.py (~606 lines, Command)
+coverage: 80 symbols in L3, 10 with behavior annotations
+drill: src/click/core.py (~70 lines, handle_parse_result)
+drill: src/click/core.py (~65 lines, consume_value)
+drill: src/click/shell_completion.py (~51 lines, _resolve_context)
+drill: src/click/utils.py (~51 lines, _detect_program_name)
 
 --- END CLUE FILE ---
 
 --- SOURCE SNIPPETS (File 2 Drill-Down) ---
-## Tuple  (src/click/types.py L1060-1109)
+## handle_parse_result  (src/click/core.py L2543-2607)
 ```
-class Tuple(CompositeParamType):
-    """The default behavior of Click is to apply a type on a value directly.
-    This works well in most cases, except for when `nargs` is set to a fixed
-    count and different types should be used for different items.  In this
-    case the :class:`Tuple` type can be used.  This type can only be used
-    if `nargs` is set to a fixed number.
+    def handle_parse_result(
+        self, ctx: Context, opts: cabc.Mapping[str, t.Any], args: list[str]
+    ) -> tuple[t.Any, list[str]]:
+        """Process the value produced by the parser from user input.
 
-    For more information see :ref:`tuple-type`.
+        Always process the value through the Parameter's :attr:`type`, wherever it
+        comes from.
 
-    This can be selected by using a Python tuple literal as a type.
+        If the parameter is deprecated, this method warn the user about it. But only if
+        the value has been explicitly set by the user (and as such, is not coming from
+        a default).
 
-    :param types: a list of types that should be used for the tuple items.
-    """
+        :meta private:
+        """
+        with augment_usage_errors(ctx, param=self):
+            value, source = self.consume_value(ctx, opts)
 
-    def __init__(self, types: cabc.Sequence[type[t.Any] | ParamType]) -> None:
-        self.types: cabc.Sequence[ParamType] = [convert_type(ty) for ty in types]
+            ctx.set_parameter_source(self.name, source)  # type: ignore
 
-    def to_info_dict(self) -> dict[str, t.Any]:
-        info_dict = super().to_info_dict()
-        info_dict["types"] = [t.to_info_dict() for t in self.types]
-        return info_dict
+            # Display a deprecation warning if necessary.
+            if (
+                self.deprecated
+                and value is not UNSET
+                and source not in (ParameterSource.DEFAULT, ParameterSource.DEFAULT_MAP)
+            ):
+                extra_message = (
+                    f" {self.deprecated}" if isinstance(self.deprecated, str) else ""
+                )
+                message = _(
+                    "DeprecationWarning: The {param_type} {name!r} is deprecated."
+                    "{extra_message}"
+                ).format(
+                    param_type=self.param_type_name,
+                    name=self.human_readable_name,
+                    extra_message=extra_message,
+                )
+                echo(style(message, fg="red"), err=True)
 
-    @property
-    def name(self) -> str:  # type: ignore
-        return f"<{' '.join(ty.name for ty in self.types)}>"
+            # Process the value through the parameter's type.
+            try:
+                value = self.process_value(ctx, value)
+            except Exception:
+                if not ctx.resilient_parsing:
+                    raise
+                # In resilient parsing mode, we do not want to fail the command if the
+                # value is incompatible with the parameter type, so we reset the value
+                # to UNSET, which will be interpreted as a missing value.
+                value = UNSET
 
-    @property
-    def arity(self) -> int:  # type: ignore
-        return len(self.types)
-
-    def convert(
-        self, value: t.Any, param: Parameter | None, ctx: Context | None
-    ) -> t.Any:
-        len_type = len(self.types)
-        len_value = len(value)
-
-        if len_value != len_type:
-            self.fail(
-                ngettext(
-                    "{len_type} values are required, but {len_value} was given.",
-                    "{len_type} values are required, but {len_value} were given.",
-                    len_value,
-                ).format(len_type=len_type, len_value=len_value),
-                param=param,
-                ctx=ctx,
+        # Add parameter's value to the context.
+        if (
+            self.expose_value
+            # We skip adding the value if it was previously set by another parameter
+            # targeting the same variable name. This prevents parameters competing for
+            # the same name to override each other.
+            and (self.name not in ctx.params or ctx.params[self.name] is UNSET)
+        ):
+            # Click is logically enforcing that the name is None if the parameter is
+            # not to be exposed. We still assert it here to please the type checker.
+            assert self.name is not None, (
+                f"{self!r} parameter's name should not be None when exposing value."
             )
+            ctx.params[self.name] = value
 
-        return tuple(
-            ty(x, param, ctx) for ty, x in zip(self.types, value, strict=False)
+        return value, args
+```
+
+## consume_value  (src/click/core.py L2297-2340)
+```
+    def consume_value(
+        self, ctx: Context, opts: cabc.Mapping[str, t.Any]
+    ) -> tuple[t.Any, ParameterSource]:
+        """Returns the parameter value produced by the parser.
+
+        If the parser did not produce a value from user input, the value is either
+        sourced from the environment variable, the default map, or the parameter's
+        default value. In that order of precedence.
+
+        If no value is found, an internal sentinel value is returned.
+
+        :meta private:
+        """
+        # Collect from the parse the value passed by the user to the CLI.
+        value = opts.get(self.name, UNSET)  # type: ignore
+        # If the value is set, it means it was sourced from the command line by the
+        # parser, otherwise it left unset by default.
+        source = (
+            ParameterSource.COMMANDLINE
+            if value is not UNSET
+            else ParameterSource.DEFAULT
         )
+
+        if value is UNSET:
+            envvar_value = self.value_from_envvar(ctx)
+            if envvar_value is not None:
+                value = envvar_value
+                source = ParameterSource.ENVIRONMENT
+
+        if value is UNSET:
+            default_map_value = ctx.lookup_default(self.name)  # type: ignore[arg-type]
+            if default_map_value is not None or (
+                ctx.default_map is not None and self.name in ctx.default_map
+            ):
+                value = default_map_value
+                source = ParameterSource.DEFAULT_MAP
+
+        if value is UNSET:
+            default_value = self.get_default(ctx)
+            if default_value is not UNSET:
+                value = default_value
+                source = ParameterSource.DEFAULT
+
+        return value, source
 ```
 
-## MissingParameter  (src/click/exceptions.py L137-205)
+## _resolve_context  (src/click/shell_completion.py L562-620)
 ```
-class MissingParameter(BadParameter):
-    """Raised if click required an option or argument but it was not
-    provided when invoking the script.
+def _resolve_context(
+    cli: Command,
+    ctx_args: cabc.MutableMapping[str, t.Any],
+    prog_name: str,
+    args: list[str],
+) -> Context:
+    """Produce the context hierarchy starting with the command and
+    traversing the complete arguments. This only follows the commands,
+    it doesn't trigger input prompts or callbacks.
 
-    .. versionadded:: 4.0
-
-    :param param_type: a string that indicates the type of the parameter.
-                       The default is to inherit the parameter type from
-                       the given `param`.  Valid values are ``'parameter'``,
-                       ``'option'`` or ``'argument'``.
+    :param cli: Command being called.
+    :param prog_name: Name of the executable in the shell.
+    :param args: List of complete args before the incomplete value.
     """
+    ctx_args["resilient_parsing"] = True
+    with cli.make_context(prog_name, args.copy(), **ctx_args) as ctx:
+        args = ctx._protected_args + ctx.args
 
-    def __init__(
-        self,
-        message: str | None = None,
-        ctx: Context | None = None,
-        param: Parameter | None = None,
-        param_hint: cabc.Sequence[str] | str | None = None,
-        param_type: str | None = None,
-    ) -> None:
-        super().__init__(message or "", ctx, param, param_hint)
-        self.param_type = param_type
+        while args:
+            command = ctx.command
 
-    def format_message(self) -> str:
-        if self.param_hint is not None:
-            param_hint: cabc.Sequence[str] | str | None = self.param_hint
-        elif self.param is not None:
-            param_hint = self.param.get_error_hint(self.ctx)  # type: ignore
-        else:
-            param_hint = None
+            if isinstance(command, Group):
+                if not command.chain:
+                    name, cmd, args = command.resolve_command(ctx, args)
 
-        param_hint = _join_param_hints(param_hint)
-        param_hint = f" {param_hint}" if param_hint else ""
+                    if cmd is None:
+                        return ctx
 
-        param_type = self.param_type
-        if param_type is None and self.param is not None:
-            param_type = self.param.param_type_name
-
-        msg = self.message
-        if self.param is not None:
-            msg_extra = self.param.type.get_missing_message(
-                param=self.param, ctx=self.ctx
-            )
-            if msg_extra:
-                if msg:
-                    msg += f". {msg_extra}"
+                    with cmd.make_context(
+                        name, args, parent=ctx, resilient_parsing=True
+                    ) as sub_ctx:
+                        ctx = sub_ctx
+                        args = ctx._protected_args + ctx.args
                 else:
-                    msg = msg_extra
+                    sub_ctx = ctx
 
-        msg = f" {msg}" if msg else ""
+                    while args:
+                        name, cmd, args = command.resolve_command(ctx, args)
 
-        # Translate param_type for known types.
-        if param_type == "argument":
-            missing = _("Missing argument")
-        elif param_type == "option":
-            missing = _("Missing option")
-        elif param_type == "parameter":
-            missing = _("Missing parameter")
-        else:
-            missing = _("Missing {param_type}").format(param_type=param_type)
+                        if cmd is None:
+                            return ctx
 
-        return f"{missing}{param_hint}.{msg}"
+                        with cmd.make_context(
+                            name,
+                            args,
+                            parent=ctx,
+                            allow_extra_args=True,
+                            allow_interspersed_args=False,
+                            resilient_parsing=True,
+                        ) as sub_sub_ctx:
+                            sub_ctx = sub_sub_ctx
+                            args = sub_ctx.args
 
-    def __str__(self) -> str:
-        if not self.message:
-            param_name = self.param.name if self.param else None
-            return _("Missing parameter: {param_name}").format(param_name=param_name)
-        else:
-            return self.message
+                    ctx = sub_ctx
+                    args = [*sub_ctx._protected_args, *sub_ctx.args]
+            else:
+                break
+
+    return ctx
 ```
 
-## Command  (src/click/core.py L873-1485)
+## _detect_program_name  (src/click/utils.py L523-577)
 ```
-class Command:
-    """Commands are the basic building block of command line interfaces in
-    Click.  A basic command handles command line parsing and might dispatch
-    more parsing to commands nested below it.
+def _detect_program_name(
+    path: str | None = None, _main: ModuleType | None = None
+) -> str:
+    """Determine the command used to run the program, for use in help
+    text. If a file or entry point was executed, the file name is
+    returned. If ``python -m`` was used to execute a module or package,
+    ``python -m name`` is returned.
 
-    :param name: the name of the command to use unless a group overrides it.
-    :param context_settings: an optional dictionary with defaults that are
-                             passed to the context object.
-    :param callback: the callback to invoke.  This is optional.
-    :param params: the parameters to register with this command.  This can
-                   be either :class:`Option` or :class:`Argument` objects.
-    :param help: the help string to use for this command.
-    :param epilog: like the help string but it's printed at the end of the
-                   help page after everything else.
-    :param short_help: the short help to use for this command.  This is
-                       shown on the command listing of the parent command.
-    :param add_help_option: by default each command registers a ``--help``
-                            option.  This can be disabled by this parameter.
-    :param no_args_is_help: this controls what happens if no arguments are
-                            provided.  This option is disabled by default.
-                            If enabled this will add ``--help`` as argument
-                            if no arguments are passed
-    :param hidden: hide this command from help outputs.
-    :param deprecated: If ``True`` or non-empty string, issues a message
-                        indicating that the command is deprecated and highlights
-                        its deprecation in --help. The message can be customized
-                        by using a string as the value.
+    This doesn't try to be too precise, the goal is to give a concise
+    name for help text. Files are only shown as their name without the
+    path. ``python`` is only shown for modules, and the full path to
+    ``sys.executable`` is not shown.
 
-    .. versionchanged:: 8.2
-        This is the base class for all commands, not ``BaseCommand``.
-        ``deprecated`` can be set to a string as well to customize the
-        deprecation message.
+    :param path: The Python file being executed. Python puts this in
+        ``sys.argv[0]``, which is used by default.
+    :param _main: The ``__main__`` module. This should only be passed
+        during internal testing.
 
-    .. versionchanged:: 8.1
-        ``help``, ``epilog``, and ``short_help`` are stored unprocessed,
-        all formatting is done when outputting help text, not at init,
-        and is done even if not using the ``@command`` decorator.
+    .. versionadded:: 8.0
+        Based on command args detection in the Werkzeug reloader.
 
-    .. versionchanged:: 8.0
-        Added a ``repr`` showing the command name.
-
-    .. versionchanged:: 7.1
-        Added the ``no_args_is_help`` parameter.
-
-    .. versionchanged:: 2.0
-        Added the ``context_settings`` parameter.
+    :meta private:
     """
+    if _main is None:
+        _main = sys.modules["__main__"]
 
-    #: The context class to create with :meth:`make_context`.
-    #:
-    #: .. versionadded:: 8.0
-    context_class: type[Context] = Context
+    if not path:
+        path = sys.argv[0]
 
-    #: the default for the :attr:`Context.allow_extra_args` flag.
-    allow_extra_args = False
+    # The value of __package__ indicates how Python was called. It may
+    # not exist if a setuptools script is installed as an egg. It may be
+    # set incorrectly for entry points created with pip on Windows.
+    # It is set to "" inside a Shiv or PEX zipapp.
+    if getattr(_main, "__package__", None) in {None, ""} or (
+        os.name == "nt"
+        and _main.__package__ == ""
+        and not os.path.exists(path)
+        and os.path.exists(f"{path}.exe")
+    ):
+        # Executed a file, like "python app.py".
+        return os.path.basename(path)
 
-    #: the default for the :attr:`Context.allow_interspersed_args` flag.
-    allow_interspersed_args = True
+    # Executed a module, like "python -m example".
+    # Rewritten by Python from "-m script" to "/path/to/script.py".
+    # Need to look at main module to determine how it was executed.
+    py_module = t.cast(str, _main.__package__)
+    name = os.path.splitext(os.path.basename(path))[0]
 
-    #: the default for the :attr:`Context.ignore_unknown_options` flag.
-    ignore_unknown_options = False
+    # A submodule like "example.cli".
+    if name != "__main__":
+        py_module = f"{py_module}.{name}"
 
-    def __init__(
-        self,
-        name: str | None,
-        context_settings: cabc.MutableMapping[str, t.Any] | None = None,
-        callback: t.Callable[..., t.Any] | None = None,
-        params: list[Parameter] | None = None,
-        help: str | None = None,
-        epilog: str | None = None,
-        short_help: str | None = None,
-        options_metavar: str | None = "[OPTIONS]",
-        add_help_option: bool = True,
-        no_args_is_help: bool = False,
-        hidden: bool = False,
-        deprecated: bool | str = False,
-    ) -> None:
-        #: the name the command thinks it has.  Upon registering a command
-        #: on a :class:`Group` the group will default the command name
-        #: with this information.  You should instead use the
-        #: :class:`Context`\'s :attr:`~Context.info_name` attribute.
-        self.name = name
+    return f"python -m {py_module.lstrip('.')}"
 
-        if context_settings is None:
-            context_settings = {}
 
-        #: an optional dictionary with defaults passed to the context.
-        self.context_settings: cabc.MutableMapping[str, t.Any] = context_settings
+```
 
-        #: the callback to execute when the command fires.  This might be
-        #: `None` in which case nothing happens.
-        self.callback = callback
-        #: the list of parameters for this command in the order they
-        #: should show up in the help page and execute.  Eager parameters
-        #: will automatically be handled before non eager ones.
-        self.params: list[Parameter] = params or []
-        self.help = help
-... (truncated)
+## set_parameter_source  (src/click/core.py L845-852)
+```
+    def set_parameter_source(self, name: str, source: ParameterSource) -> None:
+        """Set the source of a parameter. This indicates the location
+        from which the value of the parameter was obtained.
+
+        :param name: The name of the parameter.
+        :param source: A member of :class:`~click.core.ParameterSource`.
+        """
+        self._parameter_source[name] = source
 ```
 --- END SOURCE SNIPPETS ---
 

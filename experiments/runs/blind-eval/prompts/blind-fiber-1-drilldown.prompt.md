@@ -326,6 +326,73 @@ func IsFromCache(c fiber.Ctx) bool {
 func (r *Registering) All(handler any, handlers ...any) Register {
 ```
 
+## Register  (register.go L8-9)
+```
+type Register interface {
+	All(handler any, handlers ...any) Register
+```
+
+## Registering.Add  (register.go L111-111)
+```
+func (r *Registering) Add(methods []string, handler any, handlers ...any) Register {
+```
+
+## Registering.Connect  (register.go L87-87)
+```
+func (r *Registering) Connect(handler any, handlers ...any) Register {
+```
+
+## Registering.Delete  (register.go L81-81)
+```
+func (r *Registering) Delete(handler any, handlers ...any) Register {
+```
+
+## Registering.Get  (register.go L58-58)
+```
+func (r *Registering) Get(handler any, handlers ...any) Register {
+```
+
+## Registering.Head  (register.go L64-64)
+```
+func (r *Registering) Head(handler any, handlers ...any) Register {
+```
+
+## Registering.Options  (register.go L93-93)
+```
+func (r *Registering) Options(handler any, handlers ...any) Register {
+```
+
+## Registering.Patch  (register.go L105-105)
+```
+func (r *Registering) Patch(handler any, handlers ...any) Register {
+```
+
+## Registering.Post  (register.go L70-70)
+```
+func (r *Registering) Post(handler any, handlers ...any) Register {
+```
+
+## Registering.Put  (register.go L76-76)
+```
+func (r *Registering) Put(handler any, handlers ...any) Register {
+```
+
+## Registering.RouteChain  (register.go L119-119)
+```
+func (r *Registering) RouteChain(path string) Register {
+```
+
+## Registering.Trace  (register.go L99-99)
+```
+func (r *Registering) Trace(handler any, handlers ...any) Register {
+```
+
+## Registering  (register.go L29-30)
+```
+type Registering struct {
+	app   *App
+```
+
 ## Group.Add  (group.go L167-167)
 ```
 func (grp *Group) Add(methods []string, path string, handler any, handlers ...any) Router {
@@ -411,76 +478,9 @@ func (grp *Group) Trace(path string, handler any, handlers ...any) Router {
 func (grp *Group) Use(args ...any) Router {
 ```
 
-## Register  (register.go L8-9)
+## New  (middleware/timeout/timeout.go L21-21)
 ```
-type Register interface {
-	All(handler any, handlers ...any) Register
-```
-
-## Registering.Add  (register.go L111-111)
-```
-func (r *Registering) Add(methods []string, handler any, handlers ...any) Register {
-```
-
-## Registering.Connect  (register.go L87-87)
-```
-func (r *Registering) Connect(handler any, handlers ...any) Register {
-```
-
-## Registering.Delete  (register.go L81-81)
-```
-func (r *Registering) Delete(handler any, handlers ...any) Register {
-```
-
-## Registering.Get  (register.go L58-58)
-```
-func (r *Registering) Get(handler any, handlers ...any) Register {
-```
-
-## Registering.Head  (register.go L64-64)
-```
-func (r *Registering) Head(handler any, handlers ...any) Register {
-```
-
-## Registering.Options  (register.go L93-93)
-```
-func (r *Registering) Options(handler any, handlers ...any) Register {
-```
-
-## Registering.Patch  (register.go L105-105)
-```
-func (r *Registering) Patch(handler any, handlers ...any) Register {
-```
-
-## Registering.Post  (register.go L70-70)
-```
-func (r *Registering) Post(handler any, handlers ...any) Register {
-```
-
-## Registering.Put  (register.go L76-76)
-```
-func (r *Registering) Put(handler any, handlers ...any) Register {
-```
-
-## Registering.RouteChain  (register.go L119-119)
-```
-func (r *Registering) RouteChain(path string) Register {
-```
-
-## Registering.Trace  (register.go L99-99)
-```
-func (r *Registering) Trace(handler any, handlers ...any) Register {
-```
-
-## Registering  (register.go L29-30)
-```
-type Registering struct {
-	app   *App
-```
-
-## New  (middleware/idempotency/idempotency.go L45-45)
-```
-func New(config ...Config) fiber.Handler {
+func New(h fiber.Handler, config ...Config) fiber.Handler {
 ```
 
 ## WasPutToCache  (middleware/idempotency/idempotency.go L35-35)

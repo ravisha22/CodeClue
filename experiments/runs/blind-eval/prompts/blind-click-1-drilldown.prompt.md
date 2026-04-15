@@ -124,18 +124,18 @@ get_best_encoding                   M src/click/_compat.py:48     Returns the de
 _expand_args (src/click/utils.py:578-628)
   Simulate Unix shell expansion with Python functions.
   sig: _expand_args(args)
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> out)
 
 _check_nested_chain (src/click/core.py:73-90)
   sig: _check_nested_chain(base_command, cmd_name, cmd, register)
-  behavior: GUARD(chain_base_command_isinstance); BRANCH(register)
+  behavior: GUARD(not_base_command.chain_or_not_is -> none); BRANCH(register -> result, else -> result)
   called_by: CommandCollection, add_command, Group
   raises: RuntimeError
 
 _resolve_incomplete (src/click/shell_completion.py:623-667)
   Find the Click object that will handle the completion of the
   sig: _resolve_incomplete(ctx, args, incomplete)
-  behavior: ACCUMULATE(loop); BRANCH(incomplete)
+  behavior: ACCUMULATE(loop -> result)
   calls: _is_incomplete_argument, _is_incomplete_option, _start_of_option
   called_by: get_completions, ShellComplete
 
@@ -219,11 +219,11 @@ get_current_context (src/click/globals.py:20-41)
 list_commands (src/click/core.py:1784-1786)
   Returns a list of subcommand names in the order they should appear.
   sig: list_commands(ctx)
-  behavior: DELEGATE(sorted)
+  behavior: DELEGATE(sorted -> result)
 
 make_formatter (src/click/core.py:561-573)
   Creates the :class:`~click.HelpFormatter` for the help and
-  behavior: DELEGATE(formatter_class)
+  behavior: DELEGATE(formatter_class -> result)
   called_by: Command
 
 Command (src/click/core.py:873-1485)
@@ -268,19 +268,18 @@ fail (src/click/core.py:718-724)
 get_short_help_str (src/click/core.py:1097-1118)
   Gets short help for the command or makes it by shortening the
   sig: get_short_help_str(limit)
-  behavior: BRANCH(short_help_self)
   called_by: Command, format_commands, Group
 
 _complete_visible_commands (src/click/core.py:54-70)
   List all the subcommands of a group that start with the
   sig: _complete_visible_commands(ctx, incomplete)
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> result)
   called_by: Command, Group
 
 make_context (src/click/core.py:1182-1217)
   This function when given an info name and arguments will kick
   sig: make_context(info_name, args, parent)
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> result)
   calls: scope
   called_by: Command, Group
 
@@ -316,7 +315,7 @@ format_help (src/click/core.py:1120-1135)
 
 _join_param_hints (src/click/exceptions.py:19-23)
   sig: _join_param_hints(param_hint)
-  behavior: GUARD(param_hint_isinstance_str)
+  behavior: GUARD(param_hint_and_not_isinstance_st -> /_join)
   called_by: BadParameter, MissingParameter
 
 _normalized_mapping (src/click/types.py:270-286)
@@ -328,32 +327,144 @@ _normalized_mapping (src/click/types.py:270-286)
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
 coverage: 70 symbols in L3, 17 with behavior annotations
-drill: src/click/shell_completion.py (~26 lines, shell_complete)
+drill: src/click/core.py (~70 lines, handle_parse_result)
+drill: src/click/shell_completion.py (~51 lines, _resolve_context)
 drill: src/click/types.py (~40 lines, convert_type)
-drill: src/click/types.py (~45 lines, Tuple)
+drill: src/click/core.py (~34 lines, scope)
 
 --- END CLUE FILE ---
 
 --- SOURCE SNIPPETS (File 2 Drill-Down) ---
-## shell_complete  (src/click/types.py L1041-1057)
+## handle_parse_result  (src/click/core.py L2543-2607)
 ```
-    def shell_complete(
-        self, ctx: Context, param: Parameter, incomplete: str
-    ) -> list[CompletionItem]:
-        """Return a special completion marker that tells the completion
-        system to use the shell to provide path completions for only
-        directories or any paths.
+    def handle_parse_result(
+        self, ctx: Context, opts: cabc.Mapping[str, t.Any], args: list[str]
+    ) -> tuple[t.Any, list[str]]:
+        """Process the value produced by the parser from user input.
 
-        :param ctx: Invocation context for this command.
-        :param param: The parameter that is requesting completion.
-        :param incomplete: Value being completed. May be empty.
+        Always process the value through the Parameter's :attr:`type`, wherever it
+        comes from.
 
-        .. versionadded:: 8.0
+        If the parameter is deprecated, this method warn the user about it. But only if
+        the value has been explicitly set by the user (and as such, is not coming from
+        a default).
+
+        :meta private:
         """
-        from click.shell_completion import CompletionItem
+        with augment_usage_errors(ctx, param=self):
+            value, source = self.consume_value(ctx, opts)
 
-        type = "dir" if self.dir_okay and not self.file_okay else "file"
-        return [CompletionItem(incomplete, type=type)]
+            ctx.set_parameter_source(self.name, source)  # type: ignore
+
+            # Display a deprecation warning if necessary.
+            if (
+                self.deprecated
+                and value is not UNSET
+                and source not in (ParameterSource.DEFAULT, ParameterSource.DEFAULT_MAP)
+            ):
+                extra_message = (
+                    f" {self.deprecated}" if isinstance(self.deprecated, str) else ""
+                )
+                message = _(
+                    "DeprecationWarning: The {param_type} {name!r} is deprecated."
+                    "{extra_message}"
+                ).format(
+                    param_type=self.param_type_name,
+                    name=self.human_readable_name,
+                    extra_message=extra_message,
+                )
+                echo(style(message, fg="red"), err=True)
+
+            # Process the value through the parameter's type.
+            try:
+                value = self.process_value(ctx, value)
+            except Exception:
+                if not ctx.resilient_parsing:
+                    raise
+                # In resilient parsing mode, we do not want to fail the command if the
+                # value is incompatible with the parameter type, so we reset the value
+                # to UNSET, which will be interpreted as a missing value.
+                value = UNSET
+
+        # Add parameter's value to the context.
+        if (
+            self.expose_value
+            # We skip adding the value if it was previously set by another parameter
+            # targeting the same variable name. This prevents parameters competing for
+            # the same name to override each other.
+            and (self.name not in ctx.params or ctx.params[self.name] is UNSET)
+        ):
+            # Click is logically enforcing that the name is None if the parameter is
+            # not to be exposed. We still assert it here to please the type checker.
+            assert self.name is not None, (
+                f"{self!r} parameter's name should not be None when exposing value."
+            )
+            ctx.params[self.name] = value
+
+        return value, args
+```
+
+## _resolve_context  (src/click/shell_completion.py L562-620)
+```
+def _resolve_context(
+    cli: Command,
+    ctx_args: cabc.MutableMapping[str, t.Any],
+    prog_name: str,
+    args: list[str],
+) -> Context:
+    """Produce the context hierarchy starting with the command and
+    traversing the complete arguments. This only follows the commands,
+    it doesn't trigger input prompts or callbacks.
+
+    :param cli: Command being called.
+    :param prog_name: Name of the executable in the shell.
+    :param args: List of complete args before the incomplete value.
+    """
+    ctx_args["resilient_parsing"] = True
+    with cli.make_context(prog_name, args.copy(), **ctx_args) as ctx:
+        args = ctx._protected_args + ctx.args
+
+        while args:
+            command = ctx.command
+
+            if isinstance(command, Group):
+                if not command.chain:
+                    name, cmd, args = command.resolve_command(ctx, args)
+
+                    if cmd is None:
+                        return ctx
+
+                    with cmd.make_context(
+                        name, args, parent=ctx, resilient_parsing=True
+                    ) as sub_ctx:
+                        ctx = sub_ctx
+                        args = ctx._protected_args + ctx.args
+                else:
+                    sub_ctx = ctx
+
+                    while args:
+                        name, cmd, args = command.resolve_command(ctx, args)
+
+                        if cmd is None:
+                            return ctx
+
+                        with cmd.make_context(
+                            name,
+                            args,
+                            parent=ctx,
+                            allow_extra_args=True,
+                            allow_interspersed_args=False,
+                            resilient_parsing=True,
+                        ) as sub_sub_ctx:
+                            sub_ctx = sub_sub_ctx
+                            args = sub_ctx.args
+
+                    ctx = sub_ctx
+                    args = [*sub_ctx._protected_args, *sub_ctx.args]
+            else:
+                break
+
+    return ctx
 ```
 
 ## convert_type  (src/click/types.py L1112-1169)
@@ -418,6 +529,72 @@ def convert_type(ty: t.Any | None, default: t.Any | None = None) -> ParamType:
     return FuncParamType(ty)
 ```
 
+## scope  (src/click/core.py L496-531)
+```
+    def scope(self, cleanup: bool = True) -> cabc.Iterator[Context]:
+        """This helper method can be used with the context object to promote
+        it to the current thread local (see :func:`get_current_context`).
+        The default behavior of this is to invoke the cleanup functions which
+        can be disabled by setting `cleanup` to `False`.  The cleanup
+        functions are typically used for things such as closing file handles.
+
+        If the cleanup is intended the context object can also be directly
+        used as a context manager.
+
+        Example usage::
+
+            with ctx.scope():
+                assert get_current_context() is ctx
+
+        This is equivalent::
+
+            with ctx:
+                assert get_current_context() is ctx
+
+        .. versionadded:: 5.0
+
+        :param cleanup: controls if the cleanup functions should be run or
+                        not.  The default is to run these functions.  In
+                        some situations the context only wants to be
+                        temporarily pushed in which case this can be disabled.
+                        Nested pushes automatically defer the cleanup.
+        """
+        if not cleanup:
+            self._depth += 1
+        try:
+            with self as rv:
+                yield rv
+        finally:
+            if not cleanup:
+                self._depth -= 1
+```
+
+## FuncParamType  (src/click/types.py L171-192)
+```
+class FuncParamType(ParamType):
+    def __init__(self, func: t.Callable[[t.Any], t.Any]) -> None:
+        self.name: str = func.__name__
+        self.func = func
+
+    def to_info_dict(self) -> dict[str, t.Any]:
+        info_dict = super().to_info_dict()
+        info_dict["func"] = self.func
+        return info_dict
+
+    def convert(
+        self, value: t.Any, param: Parameter | None, ctx: Context | None
+    ) -> t.Any:
+        try:
+            return self.func(value)
+        except ValueError:
+            try:
+                value = str(value)
+            except UnicodeError:
+                value = value.decode("utf-8", "replace")
+
+            self.fail(value, param, ctx)
+```
+
 ## Tuple  (src/click/types.py L1060-1109)
 ```
 class Tuple(CompositeParamType):
@@ -435,180 +612,6 @@ class Tuple(CompositeParamType):
     """
 
     def __init__(self, types: cabc.Sequence[type[t.Any] | ParamType]) -> None:
-        self.types: cabc.Sequence[ParamType] = [convert_type(ty) for ty in types]
-
-    def to_info_dict(self) -> dict[str, t.Any]:
-        info_dict = super().to_info_dict()
-        info_dict["types"] = [t.to_info_dict() for t in self.types]
-        return info_dict
-
-    @property
-    def name(self) -> str:  # type: ignore
-        return f"<{' '.join(ty.name for ty in self.types)}>"
-
-    @property
-    def arity(self) -> int:  # type: ignore
-        return len(self.types)
-
-    def convert(
-        self, value: t.Any, param: Parameter | None, ctx: Context | None
-    ) -> t.Any:
-        len_type = len(self.types)
-        len_value = len(value)
-
-        if len_value != len_type:
-            self.fail(
-                ngettext(
-                    "{len_type} values are required, but {len_value} was given.",
-                    "{len_type} values are required, but {len_value} were given.",
-                    len_value,
-                ).format(len_type=len_type, len_value=len_value),
-                param=param,
-                ctx=ctx,
-            )
-
-        return tuple(
-            ty(x, param, ctx) for ty, x in zip(self.types, value, strict=False)
-        )
-```
-
-## __repr__  (src/click/types.py L726-727)
-```
-    def __repr__(self) -> str:
-        return "BOOL"
-```
-
-## convert  (src/click/types.py L712-724)
-```
-    def convert(
-        self, value: t.Any, param: Parameter | None, ctx: Context | None
-    ) -> bool:
-        normalized = self.str_to_bool(value)
-        if normalized is None:
-            self.fail(
-                _(
-                    "{value!r} is not a valid boolean. Recognized values: {states}"
-                ).format(value=value, states=", ".join(sorted(self.bool_states))),
-                param,
-                ctx,
-            )
-        return normalized
-```
-
-## str_to_bool  (src/click/types.py L698-710)
-```
-    def str_to_bool(value: str | bool) -> bool | None:
-        """Convert a string to a boolean value.
-
-        If the value is already a boolean, it is returned as-is. If the value is a
-        string, it is stripped of whitespaces and lower-cased, then checked against
-        the known boolean states pre-defined in the `BoolParamType.bool_states` mapping
-        above.
-
-        Returns `None` if the value does not match any known boolean state.
-        """
-        if isinstance(value, bool):
-            return value
-        return BoolParamType.bool_states.get(value.strip().lower())
-```
-
-## BoolParamType  (src/click/types.py L661-727)
-```
-class BoolParamType(ParamType):
-    name = "boolean"
-
-    bool_states: dict[str, bool] = {
-        "1": True,
-        "0": False,
-        "yes": True,
-        "no": False,
-        "true": True,
-        "false": False,
-        "on": True,
-        "off": False,
-        "t": True,
-        "f": False,
-        "y": True,
-        "n": False,
-        # Absence of value is considered False.
-        "": False,
-    }
-    """A mapping of string values to boolean states.
-
-    Mapping is inspired by :py:attr:`configparser.ConfigParser.BOOLEAN_STATES`
-    and extends it.
-
-    .. caution::
-        String values are lower-cased, as the ``str_to_bool`` comparison function
-        below is case-insensitive.
-
-    .. warning::
-        The mapping is not exhaustive, and does not cover all possible boolean strings
-        representations. It will remains as it is to avoid endless bikeshedding.
-
-        Future work my be considered to make this mapping user-configurable from public
-        API.
-    """
-
-    @staticmethod
-    def str_to_bool(value: str | bool) -> bool | None:
-        """Convert a string to a boolean value.
-
-        If the value is already a boolean, it is returned as-is. If the value is a
-        string, it is stripped of whitespaces and lower-cased, then checked against
-        the known boolean states pre-defined in the `BoolParamType.bool_states` mapping
-        above.
-
-        Returns `None` if the value does not match any known boolean state.
-        """
-        if isinstance(value, bool):
-            return value
-        return BoolParamType.bool_states.get(value.strip().lower())
-
-    def convert(
-        self, value: t.Any, param: Parameter | None, ctx: Context | None
-    ) -> bool:
-        normalized = self.str_to_bool(value)
-        if normalized is None:
-            self.fail(
-                _(
-                    "{value!r} is not a valid boolean. Recognized values: {states}"
-                ).format(value=value, states=", ".join(sorted(self.bool_states))),
-                param,
-                ctx,
-            )
-        return normalized
-
-    def __repr__(self) -> str:
-        return "BOOL"
-```
-
-## __init__  (src/click/types.py L258-262)
-```
-    def __init__(
-        self, choices: cabc.Iterable[ParamTypeValue], case_sensitive: bool = True
-    ) -> None:
-        self.choices: cabc.Sequence[ParamTypeValue] = tuple(choices)
-        self.case_sensitive = case_sensitive
-```
-
-## _normalized_mapping  (src/click/types.py L270-286)
-```
-    def _normalized_mapping(
-        self, ctx: Context | None = None
-    ) -> cabc.Mapping[ParamTypeValue, str]:
-        """
-        Returns mapping where keys are the original choices and the values are
-        the normalized values that are accepted via the command line.
-
-        This is a simple wrapper around :meth:`normalize_choice`, use that
-        instead which is supported.
-        """
-        return {
-            choice: self.normalize_choice(
-                choice=choice,
-                ctx=ctx,
-            )
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

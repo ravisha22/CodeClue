@@ -150,20 +150,39 @@ def _load_detail_store(detail_path: Path) -> list[dict]:
     return records
 
 
+def _parse_focus_callees(clue: str) -> dict[str, list[str]]:
+    """Extract calls: lists from FOCUS entries in the clue.
+
+    Returns: {symbol_name: [callee1, callee2, ...]}
+    """
+    callees: dict[str, list[str]] = {}
+    current_sym = None
+    for line in clue.splitlines():
+        # FOCUS entry header: "symbol_name (file:line-line)"
+        if line and not line.startswith(" ") and "(" in line and not line.startswith("--"):
+            current_sym = line.split("(")[0].strip()
+        elif current_sym and line.strip().startswith("calls:"):
+            calls_text = line.strip()[len("calls:"):].strip()
+            callees[current_sym] = [c.strip() for c in calls_text.split(",") if c.strip()]
+    return callees
+
+
 def _select_drill_snippets(
     drill_targets: list[dict],
     detail_records: list[dict],
     repo_path: Path,
     budget: int = DRILLDOWN_TOKEN_BUDGET,
+    clue_text: str = "",
 ) -> str:
     """Select and format source snippets for drill-down, within token budget.
 
-    Prioritisation:
-      1. Symbols named in drill targets (GAPS-identified, lack behavioral annotations)
-      2. If budget remains, other detail records matching the same files
+    v2.1.1 prioritisation:
+      1. Symbols named in drill targets (GAPS-identified, ranked by body size)
+      2. Callees of drill-target symbols found in FOCUS (call-chain depth)
+      3. If budget remains, other detail records from the same files
 
-    For each selected symbol, prefer the actual source from the detail store record,
-    falling back to reading the file from disk using the record's line range.
+    For each selected symbol, prefer the actual source from the detail store
+    record, falling back to reading the file from disk using the line range.
     """
     # Build lookup: symbol -> detail record
     by_symbol: dict[str, dict] = {}
@@ -174,54 +193,57 @@ def _select_drill_snippets(
         fp = rec.get("file", "")
         by_file.setdefault(fp, []).append(rec)
 
+    # Parse call chains from FOCUS for Phase 2
+    focus_callees = _parse_focus_callees(clue_text) if clue_text else {}
+
     selected: list[str] = []
     used_symbols: set[str] = set()
     tokens_used = 0
 
-    # Phase 1: drill targets from GAPS (highest priority — these lack behavior annotations)
-    for target in drill_targets:
-        sym = target["symbol"]
+    def _try_add(sym: str, target: dict | None = None) -> bool:
+        nonlocal tokens_used
         if sym in used_symbols:
-            continue
-
+            return False
         rec = by_symbol.get(sym)
         snippet = _format_snippet(rec, target, repo_path)
         if not snippet:
-            continue
-
+            return False
         snippet_tokens = _token_count(snippet)
         if tokens_used + snippet_tokens > budget:
-            # Try truncating the snippet to fit
             snippet = _truncate_to_budget(snippet, budget - tokens_used)
             if not snippet:
-                continue
-
+                return False
         selected.append(snippet)
         used_symbols.add(sym)
         tokens_used += _token_count(snippet)
+        return True
 
+    # Phase 1: drill targets from GAPS (ranked by priority in v2.1.1)
+    for target in drill_targets:
+        _try_add(target["symbol"], target)
         if tokens_used >= budget:
             break
 
-    # Phase 2: if budget remains, grab other symbols from the same files as drill targets
+    # Phase 2: callees of drill-target symbols (call-chain bodies)
+    if tokens_used < budget:
+        drill_syms = [t["symbol"] for t in drill_targets]
+        callee_set: list[str] = []
+        for sym in drill_syms:
+            for callee in focus_callees.get(sym, []):
+                if callee not in callee_set and callee not in used_symbols:
+                    callee_set.append(callee)
+        for callee in callee_set:
+            _try_add(callee)
+            if tokens_used >= budget:
+                break
+
+    # Phase 3: other symbols from the same files as drill targets
     if tokens_used < budget:
         target_files = {t["file"] for t in drill_targets}
         for fp in target_files:
             for rec in by_file.get(fp, []):
                 sym = rec.get("symbol", "")
-                if sym in used_symbols:
-                    continue
-                snippet = _format_snippet(rec, None, repo_path)
-                if not snippet:
-                    continue
-                snippet_tokens = _token_count(snippet)
-                if tokens_used + snippet_tokens > budget:
-                    snippet = _truncate_to_budget(snippet, budget - tokens_used)
-                    if not snippet:
-                        continue
-                selected.append(snippet)
-                used_symbols.add(sym)
-                tokens_used += _token_count(snippet)
+                _try_add(sym)
                 if tokens_used >= budget:
                     break
             if tokens_used >= budget:
@@ -368,6 +390,7 @@ def main():
                 stats["mechanistic"] += 1
                 snippets = _select_drill_snippets(
                     drill_targets, detail_records, repo_path,
+                    clue_text=clue,
                 )
                 snippet_tokens = _token_count(snippets)
                 clue_tokens = _token_count(clue)

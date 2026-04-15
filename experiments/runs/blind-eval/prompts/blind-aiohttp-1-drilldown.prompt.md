@@ -218,17 +218,17 @@ read (aiohttp/web_request.py:624-643)
   raises: HTTPRequestEntityTooLarge
   uses: HTTPRequestEntityTooLarge (web_exceptions)
 
-multipart (aiohttp/web_request.py:673-680)
-  Return async iterator to process BODY as multipart.
-  behavior: DELEGATE(MultipartReader -> result)
-  called_by: post, BaseRequest
-  uses: MultipartReader (multipart)
-
 _gen_form_data (aiohttp/formdata.py:128-161)
   Encode a list of fields using the multipart/form-data MIME format
   behavior: ACCUMULATE(loop -> result)
   called_by: __call__, FormData
   raises: TypeError
+
+multipart (aiohttp/web_request.py:673-680)
+  Return async iterator to process BODY as multipart.
+  behavior: DELEGATE(MultipartReader -> result)
+  called_by: post, BaseRequest
+  uses: MultipartReader (multipart)
 
 BodyPartReaderPayload (aiohttp/multipart.py:603-636)
   extends: Payload
@@ -315,10 +315,6 @@ handle_json_data (examples/logging_middleware.py:78-84)
 handler (aiohttp/abc.py:55-56)
   Execute matched request handler
 
-json (aiohttp/_websocket/models.py:55-59)
-  Return parsed JSON data.
-  behavior: DELEGATE(loads -> result)
-
 json (aiohttp/_websocket/models.py:70-72)
   Return parsed JSON data.
   behavior: DELEGATE(loads -> result)
@@ -329,16 +325,46 @@ json (aiohttp/web_request.py:654-671)
   raises: HTTPBadRequest
   uses: HTTPBadRequest (web_exceptions)
 
+json (aiohttp/_websocket/models.py:55-59)
+  Return parsed JSON data.
+  behavior: DELEGATE(loads -> result)
+
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
 coverage: 80 symbols in L3, 25 with behavior annotations
+drill: aiohttp/client_reqrep.py (~72 lines, _write_bytes)
+drill: aiohttp/_websocket/writer.py (~71 lines, send_frame)
 drill: aiohttp/client_reqrep.py (~65 lines, update_body)
-drill: aiohttp/multipart.py (~9 lines, json)
-drill: aiohttp/multipart.py (~338 lines, BodyPartReader)
+drill: aiohttp/http_writer.py (~43 lines, write)
 
 --- END CLUE FILE ---
 
 --- SOURCE SNIPPETS (File 2 Drill-Down) ---
+## _write_bytes  (aiohttp/client_reqrep.py L920-927)
+```
+    async def _write_bytes(
+        self,
+        writer: AbstractStreamWriter,
+        conn: "Connection",
+        content_length: int | None,
+    ) -> None:
+        # Base class never has a body, this will never be run.
+        assert False
+```
+
+## send_frame  (aiohttp/web_ws.py L452-460)
+```
+    async def send_frame(
+        self, message: bytes, opcode: WSMsgType, compress: int | None = None
+    ) -> None:
+        """Send a frame over the websocket."""
+        if self._writer is None:
+            raise RuntimeError("Call .prepare() first")
+        await self._writer.send_frame(message, opcode, compress)
+
+    async def send_str(self, data: str, compress: int | None = None) -> None:
+```
+
 ## update_body  (aiohttp/client_reqrep.py L1199-1259)
 ```
     async def update_body(self, body: Any) -> None:
@@ -404,184 +430,173 @@ drill: aiohttp/multipart.py (~338 lines, BodyPartReader)
         self._update_body(body)
 ```
 
-## json  (aiohttp/web_request.py L654-671)
+## write  (tests/test_payload.py L1027-1030)
 ```
-    async def json(
+        async def write(self, writer: AbstractStreamWriter) -> None:
+            """Write implementation is a no-op."""
+
+    # Create instance with specific encoding
+```
+
+## _update_body  (aiohttp/client_reqrep.py L1182-1197)
+```
+    def _update_body(self, body: Any) -> None:
+        """Update request body after its already been set."""
+        # Remove existing Content-Length header since body is changing
+        if hdrs.CONTENT_LENGTH in self.headers:
+            del self.headers[hdrs.CONTENT_LENGTH]
+
+        # Remove existing Transfer-Encoding header to avoid conflicts
+        if self.chunked and hdrs.TRANSFER_ENCODING in self.headers:
+            del self.headers[hdrs.TRANSFER_ENCODING]
+
+        # Now update the body using the existing method
+        self._update_body_from_data(body)
+
+        # Update transfer encoding headers if needed (same logic as __init__)
+        if body is not None or self.method not in self.GET_METHODS:
+            self._update_transfer_encoding()
+```
+
+## close  (tests/test_web_functional.py L2071-2074)
+```
+        async def close(self) -> None:
+            assert False
+
+        async def resolve(
+```
+
+## HttpVersion  (aiohttp/http_writer.py L39-41)
+```
+class HttpVersion(NamedTuple):
+    major: int
+    minor: int
+```
+
+## __init__  (tests/test_worker.py L31-38)
+```
+    def __init__(self) -> None:
+        self.servers: dict[object, object] = {}
+        self.exit_code = 0
+        self._notify_waiter: asyncio.Future[bool] | None = None
+        self.cfg = mock.Mock()
+        self.cfg.graceful_timeout = 100
+        self.pid = "pid"
+        self.wsgi = web.Application()
+```
+
+## _send_headers_with_payload  (aiohttp/http_writer.py L131-165)
+```
+    def _send_headers_with_payload(
         self,
-        *,
-        loads: JSONDecoder = DEFAULT_JSON_DECODER,
-        content_type: str | None = "application/json",
-    ) -> Any:
-        """Return BODY as JSON."""
-        body = await self.text()
-        if content_type:
-            if not is_expected_content_type(self.content_type, content_type):
-                raise HTTPBadRequest(
-                    text=(
-                        "Attempt to decode JSON with "
-                        "unexpected mimetype: %s" % self.content_type
-                    )
-                )
-
-        return loads(body)
-```
-
-## BodyPartReader  (aiohttp/multipart.py L257-599)
-```
-class BodyPartReader:
-    """Multipart reader for single body part."""
-
-    chunk_size = 8192
-
-    def __init__(
-        self,
-        boundary: bytes,
-        headers: "CIMultiDictProxy[str]",
-        content: StreamReader,
-        *,
-        subtype: str = "mixed",
-        default_charset: str | None = None,
-        max_decompress_size: int = DEFAULT_MAX_DECOMPRESS_SIZE,
+        chunk: Union[bytes, bytearray, "memoryview[int]", "memoryview[bytes]"],
+        is_eof: bool,
     ) -> None:
-        self.headers = headers
-        self._boundary = boundary
-        self._boundary_len = len(boundary) + 2  # Boundary + \r\n
-        self._content = content
-        self._default_charset = default_charset
-        self._at_eof = False
-        self._is_form_data = subtype == "form-data"
-        # https://datatracker.ietf.org/doc/html/rfc7578#section-4.8
-        length = None if self._is_form_data else self.headers.get(CONTENT_LENGTH, None)
-        self._length = int(length) if length is not None else None
-        self._read_bytes = 0
-        self._unread: deque[bytes] = deque()
-        self._prev_chunk: bytes | None = None
-        self._content_eof = 0
-        self._cache: dict[str, Any] = {}
-        self._max_decompress_size = max_decompress_size
+        """Send buffered headers with payload, coalescing into single write."""
+        # Mark headers as written
+        self._headers_written = True
+        headers_buf = self._headers_buf
+        self._headers_buf = None
 
-    def __aiter__(self) -> Self:
-        return self
+        if TYPE_CHECKING:
+            # Safe because callers (write() and write_eof()) only invoke this method
+            # after checking that self._headers_buf is truthy
+            assert headers_buf is not None
 
-    async def __anext__(self) -> bytes:
-        part = await self.next()
-        if part is None:
-            raise StopAsyncIteration
-        return part
+        if not self.chunked:
+            # Non-chunked: coalesce headers with body
+            if chunk:
+                self._writelines((headers_buf, chunk))
+            else:
+                self._write(headers_buf)
+            return
 
-    async def next(self) -> bytes | None:
-        item = await self.read()
-        if not item:
-            return None
-        return item
-
-    async def read(self, *, decode: bool = False) -> bytes:
-        """Reads body part data.
-
-        decode: Decodes data following by encoding
-                method from Content-Encoding header. If it missed
-                data remains untouched
-        """
-        if self._at_eof:
-            return b""
-        data = bytearray()
-        while not self._at_eof:
-            data.extend(await self.read_chunk(self.chunk_size))
-        # https://github.com/python/mypy/issues/17537
-        if decode:  # type: ignore[unreachable]
-            decoded_data = bytearray()
-            async for d in self.decode_iter(data):
-                decoded_data.extend(d)
-            return decoded_data
-        return data
-
-    async def read_chunk(self, size: int = chunk_size) -> bytes:
-        """Reads body part content chunk of the specified size.
-
-        size: chunk size
-        """
-        if self._at_eof:
-            return b""
-        if self._length:
-            chunk = await self._read_chunk_from_length(size)
+        # Coalesce headers with chunked data
+        if chunk:
+            chunk_len_pre = f"{len(chunk):x}\r\n".encode("ascii")
+            if is_eof:
+                self._writelines((headers_buf, chunk_len_pre, chunk, b"\r\n0\r\n\r\n"))
+            else:
+                self._writelines((headers_buf, chunk_len_pre, chunk, b"\r\n"))
+        elif is_eof:
+            self._writelines((headers_buf, b"0\r\n\r\n"))
         else:
-            chunk = await self._read_chunk_from_stream(size)
+            self._write(headers_buf)
+```
 
-        # For the case of base64 data, we must read a fragment of size with a
-        # remainder of 0 by dividing by 4 for string without symbols \n or \r
-        encoding = self.headers.get(CONTENT_TRANSFER_ENCODING)
-        if encoding and encoding.lower() == "base64":
-            stripped_chunk = b"".join(chunk.split())
-            remainder = len(stripped_chunk) % 4
+## _write  (aiohttp/http_writer.py L94-103)
+```
+    def _write(
+        self, chunk: Union[bytes, bytearray, "memoryview[int]", "memoryview[bytes]"]
+    ) -> None:
+        size = len(chunk)
+        self.buffer_size += size
+        self.output_size += size
+        transport = self._protocol.transport
+        if transport is None or transport.is_closing():
+            raise ClientConnectionResetError("Cannot write to closing transport")
+        transport.write(chunk)
+```
 
-            while remainder != 0 and not self.at_eof():
-                over_chunk_size = 4 - remainder
-                over_chunk = b""
+## _write_chunked_payload  (aiohttp/http_writer.py L124-129)
+```
+    def _write_chunked_payload(
+        self, chunk: Union[bytes, bytearray, "memoryview[int]", "memoryview[bytes]"]
+    ) -> None:
+        """Write a chunk with proper chunked encoding."""
+        chunk_len_pre = f"{len(chunk):x}\r\n".encode("ascii")
+        self._writelines((chunk_len_pre, chunk, b"\r\n"))
+```
 
-                if self._prev_chunk:
-                    over_chunk = self._prev_chunk[:over_chunk_size]
-                    self._prev_chunk = self._prev_chunk[len(over_chunk) :]
-
-                if len(over_chunk) != over_chunk_size:
-                    over_chunk += await self._content.read(4 - len(over_chunk))
-
-                if not over_chunk:
-                    self._at_eof = True
-
-                stripped_chunk += b"".join(over_chunk.split())
-                chunk += over_chunk
-                remainder = len(stripped_chunk) % 4
-
-        self._read_bytes += len(chunk)
-        if self._read_bytes == self._length:
-            self._at_eof = True
-        if self._at_eof and await self._content.readline() != b"\r\n":
-            raise ValueError("Reader did not read all the data or it is malformed")
-        return chunk
-
-    async def _read_chunk_from_length(self, size: int) -> bytes:
-        # Reads body part content chunk of the specified size.
-        # The body part must has Content-Length header with proper value.
-        assert self._length is not None, "Content-Length required for chunked read"
-        chunk_size = min(size, self._length - self._read_bytes)
-        chunk = await self._content.read(chunk_size)
-        if self._content.at_eof():
-            self._at_eof = True
-        return chunk
-
-    async def _read_chunk_from_stream(self, size: int) -> bytes:
-        # Reads content chunk of body part with unknown length.
-        # The Content-Length header for body part is not necessary.
-        assert (
-            size >= self._boundary_len
-        ), "Chunk size must be greater or equal than boundary length + 2"
-        first_chunk = self._prev_chunk is None
-        if first_chunk:
-            # We need to re-add the CRLF that got removed from headers parsing.
-            self._prev_chunk = b"\r\n" + await self._content.read(size)
-
-        chunk = b""
-        # content.read() may return less than size, so we need to loop to ensure
-        # we have enough data to detect the boundary.
-        while len(chunk) < self._boundary_len:
-            chunk += await self._content.read(size)
-            self._content_eof += int(self._content.at_eof())
-            if self._content_eof > 2:
-                raise ValueError("Reading after EOF")
-            if self._content_eof:
-                break
-        if len(chunk) > size:
-            self._content.unread_data(chunk[size:])
-            chunk = chunk[:size]
-
-        assert self._prev_chunk is not None
-        window = self._prev_chunk + chunk
-        sub = b"\r\n" + self._boundary
-        if first_chunk:
-            idx = window.find(sub)
+## _writelines  (aiohttp/http_writer.py L105-122)
+```
+    def _writelines(
+        self,
+        chunks: Iterable[
+            Union[bytes, bytearray, "memoryview[int]", "memoryview[bytes]"]
+        ],
+    ) -> None:
+        size = 0
+        for chunk in chunks:
+            size += len(chunk)
+        self.buffer_size += size
+        self.output_size += size
+        transport = self._protocol.transport
+        if transport is None or transport.is_closing():
+            raise ClientConnectionResetError("Cannot write to closing transport")
+        if SKIP_WRITELINES or size < MIN_PAYLOAD_FOR_WRITELINES:
+            transport.write(b"".join(chunks))
         else:
-            idx = window.find(sub, max(0, len(self._prev_chunk) - len(sub)))
-        if idx >= 0:
+            transport.writelines(chunks)
+```
+
+## drain  (tests/test_payload.py L183-185)
+```
+    async def drain(self) -> None:
+        """Drain implementation - no-op for tests."""
+
+```
+
+## enable_chunking  (tests/test_payload.py L191-193)
+```
+    def enable_chunking(self) -> None:
+        """Enable chunking - no-op for tests."""
+
+```
+
+## enable_compression  (tests/test_payload.py L186-190)
+```
+    def enable_compression(
+        self, encoding: str = "deflate", strategy: int | None = None
+    ) -> None:
+        """Enable compression - no-op for tests."""
+
+```
+
+## protocol  (tests/test_websocket_writer.py L18-20)
+```
+def protocol() -> mock.Mock:
+    ret = mock.create_autospec(BaseProtocol, spec_set=True, instance=True)
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

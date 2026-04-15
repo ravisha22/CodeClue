@@ -166,7 +166,7 @@ pager (src/click/_termui_impl.py:369-408)
 cli (examples/repo/repo.py:44-57)
   Repo is a command line tool that showcases how to build complex
   sig: cli(ctx, repo_home, config, verbose)
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> result)
   calls: set_config, Repo
 
 BadArgumentUsage (src/click/exceptions.py:259-265)
@@ -208,7 +208,7 @@ _detect_program_name (src/click/utils.py:523-577)
 _is_incomplete_option (src/click/shell_completion.py:537-559)
   Determine if the given parameter is an option that needs a value.
   sig: _is_incomplete_option(ctx, args, param)
-  behavior: ACCUMULATE(loop); UNWIND(reversed)
+  behavior: ACCUMULATE(loop -> result); UNWIND(reversed)
   calls: _start_of_option
   called_by: _resolve_incomplete
 
@@ -232,12 +232,11 @@ command_path (src/click/core.py:642-658)
 consume_value (src/click/core.py:3256-3318)
   For :class:`Option`, the value can be collected from an interactive prompt
   sig: consume_value(ctx, opts)
-  behavior: BRANCH(value_FLAG_NEEDS_VALUE)
 
 make_parser (src/click/core.py:1081-1086)
   Creates the underlying option parser for this command.
   sig: make_parser(ctx)
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> result)
   calls: get_params
   called_by: Command
 
@@ -281,7 +280,6 @@ Parameter (src/click/core.py:2027-2643)
 type_cast_value (src/click/core.py:2342-2396)
   Convert and validate a value against the parameter's
   sig: type_cast_value(ctx, value)
-  behavior: BRANCH(is_composite_nargs_type)
   calls: check_iter, _check_iter
   called_by: Context, Parameter
   raises: BadParameter
@@ -303,12 +301,12 @@ augment_usage_errors (src/click/core.py:98-113)
 get_short_help_str (src/click/core.py:1097-1118)
   Gets short help for the command or makes it by shortening the
   sig: get_short_help_str(limit)
-  behavior: BRANCH(short_help_self)
   called_by: Command, format_commands, Group
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 13 with behavior annotations
-drill: src/click/types.py (~45 lines, Tuple)
-drill: src/click/exceptions.py (~61 lines, MissingParameter)
-drill: src/click/core.py (~606 lines, Command)
+coverage: 80 symbols in L3, 10 with behavior annotations
+drill: src/click/core.py (~70 lines, handle_parse_result)
+drill: src/click/core.py (~65 lines, consume_value)
+drill: src/click/shell_completion.py (~51 lines, _resolve_context)
+drill: src/click/utils.py (~51 lines, _detect_program_name)

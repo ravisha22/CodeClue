@@ -36,8 +36,8 @@ aiohttp/client_proto.py                         371L  abort, close, closed, conn
 -- SYM
 append                              M aiohttp/multipart.py:948    function append
 append_payload                      M aiohttp/multipart.py:963    Adds a new body part to multipart writer.
-encode                              M aiohttp/helpers.py:178    Encode credentials.
 decode                              M aiohttp/helpers.py:139    Create a BasicAuth object from an Authorization...
+encode                              M aiohttp/helpers.py:178    Encode credentials.
 prepare                             M aiohttp/web_fileresponse.py:243    async_function prepare
 write                               M aiohttp/http_writer.py:167    Writes chunk of data to a stream.
 pre_freeze                          M aiohttp/web_app.py:212    function pre_freeze
@@ -304,21 +304,24 @@ handle_json_data (examples/logging_middleware.py:78-84)
 handler (aiohttp/abc.py:55-56)
   Execute matched request handler
 
-json (aiohttp/_websocket/models.py:55-59)
-  Return parsed JSON data.
-  behavior: DELEGATE(loads -> result)
-
-json (aiohttp/_websocket/models.py:81-85)
-  Return parsed JSON data.
-  behavior: DELEGATE(loads -> result)
-
 json (aiohttp/_websocket/models.py:70-72)
+  Return parsed JSON data.
+  behavior: DELEGATE(loads -> result)
+
+json (aiohttp/web_request.py:654-671)
+  Return BODY as JSON.
+  calls: text
+  raises: HTTPBadRequest
+  uses: HTTPBadRequest (web_exceptions)
+
+json (aiohttp/_websocket/models.py:55-59)
   Return parsed JSON data.
   behavior: DELEGATE(loads -> result)
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
 coverage: 80 symbols in L3, 25 with behavior annotations
+drill: aiohttp/client_reqrep.py (~72 lines, _write_bytes)
+drill: aiohttp/_websocket/writer.py (~71 lines, send_frame)
 drill: aiohttp/client_reqrep.py (~65 lines, update_body)
-drill: aiohttp/multipart.py (~9 lines, json)
-drill: aiohttp/multipart.py (~338 lines, BodyPartReader)
+drill: aiohttp/http_writer.py (~43 lines, write)
