@@ -1,4 +1,4 @@
-=CC v2.1 zod@HEAD 390mod 1321sym
+=CC v2.1 zod@HEAD 390mod 2677sym
 ? What inheritance and extension relationships connect Zod's core, full, and mini schema/error types?
 
 
@@ -9,7 +9,7 @@ scripts/  (4 files)
 play.ts  vitest.config.ts
 
 -- INDEX
-packages/zod/src/v3/types.ts                   5138L  constructor, Class, path, ParseInputLazyPath, RefinementCtx
+packages/zod/src/v3/types.ts                   5138L  AnyZodObject, AnyZodObject, AnyZodTuple, AnyZodTuple, ArrayCardinality
 packages/bench/array.ts                          20L  
 packages/bench/benchUtil.ts                      69L  formatNumber, makeData, makeSchema, randomPick, randomString
 packages/bench/boolean.ts                        16L  
@@ -34,8 +34,7 @@ packages/bench/object-moltar-jitless.ts          89L
 packages/bench/object-moltar.ts                  81L  
 packages/bench/object-safe.ts                    13L  
 packages/bench/object-safeasync.ts               13L  
-packages/bench/object-setup.ts                   35L  
-  ...and 364 more modules
+  ...and 365 more modules
 
 -- SYM
 ZodString._addCheck                 M packages/zod/src/v3/types.ts:1050   method ZodString._addCheck
@@ -44,260 +43,241 @@ ZodBigInt._addCheck                 M packages/zod/src/v3/types.ts:1749   method
 ZodDate._addCheck                   M packages/zod/src/v3/types.ts:1943   method ZodDate._addCheck
 ZodType._parse                      M packages/zod/src/v3/types.ts:170    method ZodType._parse
 ZodString                           C packages/zod/src/v3/types.ts:731    class ZodString
-Class.constructor                   M packages/zod/src/v3/types.ts:5036   method Class.constructor
 ZodType.constructor                 M packages/zod/src/v3/types.ts:411    method ZodType.constructor
+Class.constructor                   M packages/zod/src/v3/types.ts:5036   method Class.constructor
 ZodType._getOrReturnCtx             M packages/zod/src/v3/types.ts:176    method ZodType._getOrReturnCtx
+$ZodAsyncError.constructor          M packages/zod/src/v4/core/core.ts:99     method $ZodAsyncError.constructor
+$ZodEncodeError.constructor         M packages/zod/src/v4/core/core.ts:105    method $ZodEncodeError.constructor
 ZodNumber                           C packages/zod/src/v3/types.ts:1369   class ZodNumber
 ZodBigInt                           C packages/zod/src/v3/types.ts:1635   class ZodBigInt
+ZodString._parse                    M packages/zod/src/v3/types.ts:732    method ZodString._parse
 ZodBigInt.setLimit                  M packages/zod/src/v3/types.ts:1734   method ZodBigInt.setLimit
 ZodNumber.setLimit                  M packages/zod/src/v3/types.ts:1482   method ZodNumber.setLimit
-ZodString._parse                    M packages/zod/src/v3/types.ts:732    method ZodString._parse
 ZodNumber._parse                    M packages/zod/src/v3/types.ts:1370   method ZodNumber._parse
 ZodEffects._parse                   M packages/zod/src/v3/types.ts:4322   method ZodEffects._parse
 ZodBigInt._parse                    M packages/zod/src/v3/types.ts:1636   method ZodBigInt._parse
 ZodIntersection._parse              M packages/zod/src/v3/types.ts:3292   method ZodIntersection._parse
+ZodFunction._parse                  M packages/zod/src/v3/types.ts:3822   method ZodFunction._parse
 ZodArray._parse                     M packages/zod/src/v3/types.ts:2241   method ZodArray._parse
 ZodDate._parse                      M packages/zod/src/v3/types.ts:1878   method ZodDate._parse
-ZodFunction._parse                  M packages/zod/src/v3/types.ts:3822   method ZodFunction._parse
 ZodPipeline._parse                  M packages/zod/src/v3/types.ts:4782   method ZodPipeline._parse
 ZodUnion._parse                     M packages/zod/src/v3/types.ts:2947   method ZodUnion._parse
-ZodBoolean._parse                   M packages/zod/src/v3/types.ts:1834   method ZodBoolean._parse
 ZodEnum._parse                      M packages/zod/src/v3/types.ts:4082   method ZodEnum._parse
 ZodNaN._parse                       M packages/zod/src/v3/types.ts:4702   method ZodNaN._parse
+ZodSymbol._parse                    M packages/zod/src/v3/types.ts:2010   method ZodSymbol._parse
+ZodBoolean._parse                   M packages/zod/src/v3/types.ts:1834   method ZodBoolean._parse
 ZodNull._parse                      M packages/zod/src/v3/types.ts:2080   method ZodNull._parse
 ZodPromise._parse                   M packages/zod/src/v3/types.ts:4244   method ZodPromise._parse
-ZodSymbol._parse                    M packages/zod/src/v3/types.ts:2010   method ZodSymbol._parse
 ZodUndefined._parse                 M packages/zod/src/v3/types.ts:2045   method ZodUndefined._parse
 ZodVoid._parse                      M packages/zod/src/v3/types.ts:2193   method ZodVoid._parse
 ZodLiteral._parse                   M packages/zod/src/v3/types.ts:4007   method ZodLiteral._parse
-ZodMap._parse                       M packages/zod/src/v3/types.ts:3603   method ZodMap._parse
 ZodNativeEnum._parse                M packages/zod/src/v3/types.ts:4179   method ZodNativeEnum._parse
 ZodNever._parse                     M packages/zod/src/v3/types.ts:2164   method ZodNever._parse
 ZodRecord._parse                    M packages/zod/src/v3/types.ts:3514   method ZodRecord._parse
+ZodMap._parse                       M packages/zod/src/v3/types.ts:3603   method ZodMap._parse
 ZodSet._parse                       M packages/zod/src/v3/types.ts:3691   method ZodSet._parse
 ZodTuple._parse                     M packages/zod/src/v3/types.ts:3399   method ZodTuple._parse
+ZodDefault._parse                   M packages/zod/src/v3/types.ts:4569   method ZodDefault._parse
 ZodBranded._parse                   M packages/zod/src/v3/types.ts:4748   method ZodBranded._parse
 ZodCatch._parse                     M packages/zod/src/v3/types.ts:4619   method ZodCatch._parse
-ZodDefault._parse                   M packages/zod/src/v3/types.ts:4569   method ZodDefault._parse
 ZodLazy._parse                      M packages/zod/src/v3/types.ts:3979   method ZodLazy._parse
 ZodNullable._parse                  M packages/zod/src/v3/types.ts:4530   method ZodNullable._parse
 ZodOptional._parse                  M packages/zod/src/v3/types.ts:4490   method ZodOptional._parse
+ZodUnknown._parse                   M packages/zod/src/v3/types.ts:2140   method ZodUnknown._parse
 ZodAny._parse                       M packages/zod/src/v3/types.ts:2115   method ZodAny._parse
 ZodReadonly._parse                  M packages/zod/src/v3/types.ts:4877   method ZodReadonly._parse
-ZodUnknown._parse                   M packages/zod/src/v3/types.ts:2140   method ZodUnknown._parse
-ZodNullable.unwrap                  M packages/zod/src/v3/types.ts:4538   method ZodNullable.unwrap
 ZodBranded.unwrap                   M packages/zod/src/v3/types.ts:4758   method ZodBranded.unwrap
+ZodNullable.unwrap                  M packages/zod/src/v3/types.ts:4538   method ZodNullable.unwrap
 ZodOptional.unwrap                  M packages/zod/src/v3/types.ts:4498   method ZodOptional.unwrap
-ZodPromise.unwrap                   M packages/zod/src/v3/types.ts:4240   method ZodPromise.unwrap
 ZodReadonly.unwrap                  M packages/zod/src/v3/types.ts:4896   method ZodReadonly.unwrap
-ZodType._parseSync                  M packages/zod/src/v3/types.ts:210    method ZodType._parseSync
+ZodPromise.unwrap                   M packages/zod/src/v3/types.ts:4240   method ZodPromise.unwrap
 ZodBigInt.maxValue                  M packages/zod/src/v3/types.ts:1810   method ZodBigInt.maxValue
 ZodBigInt.minValue                  M packages/zod/src/v3/types.ts:1800   method ZodBigInt.minValue
 ZodNumber.maxValue                  M packages/zod/src/v3/types.ts:1587   method ZodNumber.maxValue
-ZodNumber.minValue                  M packages/zod/src/v3/types.ts:1577   method ZodNumber.minValue
-  ...and 1103 more symbols
+  ...and 2442 more symbols
 
 -- FOCUS
-ZodMap.keySchema (packages/zod/src/v3/types.ts:3597-3600)
-  method ZodMap.keySchema
-  calls: keySchema
-  called_by: ZodDiscriminatedUnion, ZodMap, ZodObject, keySchema, ZodRecord
+$ZodError (packages/zod/src/v4/core/errors.ts:214-217)
+  interface $ZodError
+  extends: Error
+  uses: Symbol.for, zod.error
 
-ZodMap.valueSchema (packages/zod/src/v3/types.ts:3600-3603)
-  method ZodMap.valueSchema
-  calls: valueSchema
-  called_by: ZodDiscriminatedUnion, ZodMap, ZodObject, valueSchema, ZodRecord
-
-ZodRecord.keySchema (packages/zod/src/v3/types.ts:3508-3511)
-  method ZodRecord.keySchema
-  calls: keySchema
-  called_by: ZodDiscriminatedUnion, keySchema, ZodMap, ZodObject, ZodRecord
-
-ZodRecord.valueSchema (packages/zod/src/v3/types.ts:3511-3514)
-  method ZodRecord.valueSchema
-  calls: valueSchema
-  called_by: ZodDiscriminatedUnion, valueSchema, ZodMap, ZodObject, ZodRecord
-
-ZodLazy.schema (packages/zod/src/v3/types.ts:3975-3979)
-  method ZodLazy.schema
-  behavior: DELEGATE(this._def.getter -> result)
-  called_by: ZodDiscriminatedUnion, ZodLazy, ZodObject
-
-ZodInvalidIntersectionTypesIssue (packages/zod/src/v3/ZodError.ts:132-134)
+ZodInvalidIntersectionTypesIssue (packages/zod/src/v3/ZodError.ts:131-134)
   interface ZodInvalidIntersectionTypesIssue
   extends: ZodIssueBase
+  uses: ZodIssueCode.invalid_intersection_types
 
-ZodType.setError (packages/zod/src/v3/types.ts:362-362)
-  method ZodType.setError
-  called_by: ZodType
-
-ZodType.setError (packages/zod/src/v3/types.ts:354-354)
-  method ZodType.setError
-  called_by: ZodType
-
-Types (packages/zod/src/v4/core/standard-schema.ts:141-141)
-  interface Types
-  extends: Types
-
-Types (packages/zod/src/v4/core/standard-schema.ts:86-86)
-  interface Types
-  extends: Types
-
-Types (packages/zod/src/v4/core/standard-schema.ts:19-24)
-  interface Types
-
-_ZodMiniType (packages/zod/src/v4/mini/schemas.ts:40-41)
-  interface _ZodMiniType
-
-_ZodMiniString (packages/zod/src/v4/mini/schemas.ts:81-85)
-  interface _ZodMiniString
-
-ZodMiniLazy (packages/zod/src/v4/mini/schemas.ts:1684-1686)
-  interface ZodMiniLazy
-  extends: _ZodMiniType
-  called_by: _lazy
-
-ZodMiniEnum (packages/zod/src/v4/mini/schemas.ts:1245-1248)
-  interface ZodMiniEnum
-  extends: _ZodMiniType
-  called_by: _enum, nativeEnum
-
-ZodError (packages/zod/src/v3/ZodError.ts:194-316)
-  extends: Error
-  methods: assert, constructor, errors, flatten, formErrors, format
-  calls: assert, constructor, errors, flatten, formErrors, format, isEmpty, message
-
-ZodMiniPromise (packages/zod/src/v4/mini/schemas.ts:1708-1710)
-  interface ZodMiniPromise
-  extends: _ZodMiniType
-  called_by: promise
-
-ZodMiniSet (packages/zod/src/v4/mini/schemas.ts:1227-1229)
-  interface ZodMiniSet
-  extends: _ZodMiniType
-  called_by: set
-
-ZodMiniSuccess (packages/zod/src/v4/mini/schemas.ts:1510-1512)
-  interface ZodMiniSuccess
-  extends: _ZodMiniType
-  called_by: success
-
-ZodMiniType (packages/zod/src/v4/mini/schemas.ts:7-38)
-  interface ZodMiniType
-  methods: clone, parse, parseAsync, safeParse
-  calls: clone, parse, parseAsync, safeParse, check
+$ZodRealError (packages/zod/src/v4/core/errors.ts:248-248)
+  interface $ZodRealError
+  extends: $ZodError
 
 ZodError (packages/zod/src/v4/classic/errors.ts:9-23)
   interface ZodError
+  extends: $ZodError
   methods: addIssue, addIssues, flatten, format
   calls: addIssue, addIssues, flatten, format
+  uses: z.treeifyError, core.$ZodFormattedError, core.$ZodIssue, core.$ZodFlattenedError
 
-ZodMiniFunction (packages/zod/src/v4/mini/schemas.ts:1853-1870)
+ZodMiniISODate (packages/zod/src/v4/mini/iso.ts:19-23)
+  interface ZodMiniISODate
+  extends: ZodMiniStringFormat
+  uses: schemas.ZodMiniStringFormat, core.$ZodISODateInternals
+
+ZodMiniISODateTime (packages/zod/src/v4/mini/iso.ts:3-7)
+  interface ZodMiniISODateTime
+  extends: ZodMiniStringFormat
+  uses: schemas.ZodMiniStringFormat, core.$ZodISODateTimeInternals
+
+ZodMiniISODuration (packages/zod/src/v4/mini/iso.ts:51-55)
+  interface ZodMiniISODuration
+  extends: ZodMiniStringFormat
+  uses: schemas.ZodMiniStringFormat, core.$ZodISODurationInternals
+
+ZodMiniISOTime (packages/zod/src/v4/mini/iso.ts:35-39)
+  interface ZodMiniISOTime
+  extends: ZodMiniStringFormat
+  uses: schemas.ZodMiniStringFormat, core.$ZodISOTimeInternals
+
+$ZodAsyncError (packages/zod/src/v4/core/core.ts:97-102)
+  extends: Error
+  methods: constructor
+  calls: constructor
+  uses: this.name
+
+$ZodEncodeError (packages/zod/src/v4/core/core.ts:103-109)
+  extends: Error
+  methods: constructor
+  calls: constructor
+  uses: this.name
+
+$ZodError (packages/zod/src/v4/core/errors.ts:218-227)
+  interface $ZodError
+  extends: Error
+
+ZodMiniDiscriminatedUnion (packages/zod/src/v4/mini/schemas.ts:1047-1054)
+  interface ZodMiniDiscriminatedUnion
+  extends: ZodMiniUnion
+  called_by: discriminatedUnion
+  uses: core.$ZodDiscriminatedUnionInternals
+
+ZodMiniCodec (packages/zod/src/v4/mini/schemas.ts:1594-1601)
+  interface ZodMiniCodec
+  extends: ZodMiniPipe, $ZodCodec
+  uses: core.$ZodCodec, core.$ZodCodecInternals, core.$ZodCodecDef
+
+ZodMiniCustomStringFormat (packages/zod/src/v4/mini/schemas.ts:469-475)
+  interface ZodMiniCustomStringFormat
+  extends: ZodMiniStringFormat, $ZodCustomStringFormat
+  uses: core.$ZodCustomStringFormat, core.$ZodCustomStringFormatInternals
+
+_ZodMiniNumber (packages/zod/src/v4/mini/schemas.ts:517-523)
+  interface _ZodMiniNumber
+  extends: _ZodMiniType, $ZodNumber
+  uses: core.$ZodNumber
+
+_ZodMiniString (packages/zod/src/v4/mini/schemas.ts:80-85)
+  interface _ZodMiniString
+  extends: _ZodMiniType, $ZodString
+  uses: core.$ZodString
+
+ZodMiniType (packages/zod/src/v4/mini/schemas.ts:6-38)
+  interface ZodMiniType
+  extends: $ZodType
+  methods: clone, parse, parseAsync, safeParse
+  calls: clone, parse, parseAsync, safeParse, check
+  uses: core.$ZodType, core.CheckFn, core.output, core.$ZodCheck
+
+ZodMiniFunction (packages/zod/src/v4/mini/schemas.ts:1851-1870)
   interface ZodMiniFunction
+  extends: $ZodFunctionInternals, $ZodFunction
   methods: input, input, output
   calls: input
+  uses: core.$ZodFunction, core.$ZodFunctionDef, core.$InferInnerFunctionType, core.$InferOuterFunctionType
 
-ZodMiniAny (packages/zod/src/v4/mini/schemas.ts:701-703)
-  interface ZodMiniAny
-  extends: _ZodMiniType
+ZodMiniUnion (packages/zod/src/v4/mini/schemas.ts:997-1002)
+  interface ZodMiniUnion
+  extends: $ZodUnionInternals
+  called_by: union
+  uses: core.$ZodUnionInternals
 
-ZodMiniArray (packages/zod/src/v4/mini/schemas.ts:785-789)
+ZodMiniPipe (packages/zod/src/v4/mini/schemas.ts:1569-1574)
+  interface ZodMiniPipe
+  extends: $ZodPipeInternals
+  uses: core.$ZodPipeInternals
+
+ZodMiniStringFormat (packages/zod/src/v4/mini/schemas.ts:103-109)
+  interface ZodMiniStringFormat
+  extends: $ZodStringFormatInternals, $ZodStringFormat
+  uses: core.$ZodStringFormat, core.$ZodStringFormatInternals
+
+ZodMiniRecord (packages/zod/src/v4/mini/schemas.ts:1143-1150)
+  interface ZodMiniRecord
+  extends: $ZodRecordInternals
+  called_by: looseRecord, partialRecord, record
+  uses: core.$ZodRecordInternals
+
+ZodMiniEnum (packages/zod/src/v4/mini/schemas.ts:1243-1248)
+  interface ZodMiniEnum
+  extends: $ZodEnumInternals
+  called_by: _enum, nativeEnum
+  uses: util.EnumLike, core.$ZodEnumInternals
+
+ZodMiniObject (packages/zod/src/v4/mini/schemas.ts:814-823)
+  interface ZodMiniObject
+  extends: $ZodObjectInternals, $ZodObject
+  called_by: looseObject, strictObject
+  uses: core.$ZodObject
+
+ZodMiniArray (packages/zod/src/v4/mini/schemas.ts:783-789)
   interface ZodMiniArray
+  extends: $ZodArrayInternals, $ZodArray
   called_by: array
+  uses: core.$ZodArray, core.$ZodArrayInternals
 
-ZodMiniBase64 (packages/zod/src/v4/mini/schemas.ts:408-410)
-  interface ZodMiniBase64
-  extends: _ZodMiniString
-
-ZodMiniBase64URL (packages/zod/src/v4/mini/schemas.ts:424-426)
-  interface ZodMiniBase64URL
-  extends: _ZodMiniString
-
-ZodMiniBigInt (packages/zod/src/v4/mini/schemas.ts:603-605)
+ZodMiniBigInt (packages/zod/src/v4/mini/schemas.ts:601-605)
   interface ZodMiniBigInt
-  extends: _ZodMiniType
+  extends: $ZodBigIntInternals, $ZodBigInt
+  uses: core.$ZodBigIntInternals, core.$ZodBigInt
 
-ZodMiniBigIntFormat (packages/zod/src/v4/mini/schemas.ts:622-624)
-  interface ZodMiniBigIntFormat
-  extends: _ZodMiniType
-
-ZodMiniBoolean (packages/zod/src/v4/mini/schemas.ts:586-588)
+ZodMiniBoolean (packages/zod/src/v4/mini/schemas.ts:584-588)
   interface ZodMiniBoolean
-  extends: _ZodMiniType
+  extends: $ZodBooleanInternals
+  uses: core.$ZodBooleanInternals
 
-ZodMiniCIDRv4 (packages/zod/src/v4/mini/schemas.ts:360-362)
-  interface ZodMiniCIDRv4
-  extends: _ZodMiniString
-
-ZodMiniCIDRv6 (packages/zod/src/v4/mini/schemas.ts:377-379)
-  interface ZodMiniCIDRv6
-  extends: _ZodMiniString
-
-ZodMiniCUID (packages/zod/src/v4/mini/schemas.ts:244-246)
-  interface ZodMiniCUID
-  extends: _ZodMiniString
-
-ZodMiniCUID2 (packages/zod/src/v4/mini/schemas.ts:261-263)
-  interface ZodMiniCUID2
-  extends: _ZodMiniString
-
-ZodMiniCatch (packages/zod/src/v4/mini/schemas.ts:1530-1532)
+ZodMiniCatch (packages/zod/src/v4/mini/schemas.ts:1528-1532)
   interface ZodMiniCatch
-  extends: _ZodMiniType
+  extends: $ZodCatchInternals
+  called_by: _catch
+  uses: core.$ZodType, core.$ZodCatchInternals
 
-ZodMiniCodec (packages/zod/src/v4/mini/schemas.ts:1596-1601)
-  interface ZodMiniCodec
-
-ZodMiniCustom (packages/zod/src/v4/mini/schemas.ts:1728-1730)
+ZodMiniCustom (packages/zod/src/v4/mini/schemas.ts:1726-1730)
   interface ZodMiniCustom
-  extends: _ZodMiniType
+  extends: $ZodCustomInternals
+  uses: core.$ZodCustomInternals
 
-ZodMiniCustomStringFormat (packages/zod/src/v4/mini/schemas.ts:471-475)
-  interface ZodMiniCustomStringFormat
-
-ZodMiniDate (packages/zod/src/v4/mini/schemas.ts:767-769)
+ZodMiniDate (packages/zod/src/v4/mini/schemas.ts:765-769)
   interface ZodMiniDate
-  extends: _ZodMiniType
+  extends: $ZodDateInternals
+  uses: core.$ZodDateInternals
 
-ZodMiniDefault (packages/zod/src/v4/mini/schemas.ts:1433-1435)
+ZodMiniDefault (packages/zod/src/v4/mini/schemas.ts:1431-1435)
   interface ZodMiniDefault
-  extends: _ZodMiniType
+  extends: $ZodDefaultInternals
+  called_by: _default
+  uses: core.$ZodType, core.$ZodDefaultInternals
 
-ZodMiniDiscriminatedUnion (packages/zod/src/v4/mini/schemas.ts:1049-1054)
-  interface ZodMiniDiscriminatedUnion
-
-ZodMiniE164 (packages/zod/src/v4/mini/schemas.ts:440-442)
-  interface ZodMiniE164
-  extends: _ZodMiniString
-
-ZodMiniEmail (packages/zod/src/v4/mini/schemas.ts:119-119)
-  interface ZodMiniEmail
-  extends: _ZodMiniString
-
-ZodMiniEmoji (packages/zod/src/v4/mini/schemas.ts:210-212)
-  interface ZodMiniEmoji
-  extends: _ZodMiniString
-
-ZodMiniExactOptional (packages/zod/src/v4/mini/schemas.ts:1384-1388)
+ZodMiniExactOptional (packages/zod/src/v4/mini/schemas.ts:1382-1388)
   interface ZodMiniExactOptional
+  extends: $ZodExactOptionalInternals, $ZodExactOptional
   called_by: exactOptional
+  uses: core.$ZodExactOptional, core.$ZodExactOptionalInternals
 
-ZodMiniFile (packages/zod/src/v4/mini/schemas.ts:1323-1325)
-  interface ZodMiniFile
-  extends: _ZodMiniType
-
-ZodMiniGUID (packages/zod/src/v4/mini/schemas.ts:134-136)
-  interface ZodMiniGUID
-  extends: _ZodMiniString
-
-ZodMiniIPv4 (packages/zod/src/v4/mini/schemas.ts:326-328)
-  interface ZodMiniIPv4
-  extends: _ZodMiniString
-
-ZodMiniIPv6 (packages/zod/src/v4/mini/schemas.ts:343-345)
-  interface ZodMiniIPv6
-  extends: _ZodMiniString
+ZodMiniIntersection (packages/zod/src/v4/mini/schemas.ts:1079-1084)
+  interface ZodMiniIntersection
+  extends: $ZodIntersectionInternals
+  called_by: intersection
+  uses: core.$ZodIntersectionInternals
 
 -- GAPS
 type: RELATIONAL (answerable from L2-L3 structure)
-coverage: 80 symbols in L3, 1 with behavior annotations
+coverage: 80 symbols in L3, 0 with behavior annotations

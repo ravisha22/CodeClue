@@ -9,114 +9,116 @@ bind.go  binder.go  binder_generic.go  context.go  context_generic.go  echo.go  
 
 -- INDEX
 echo.go                                         865L  Config, DefaultHTTPErrorHandler, AcquireContext, Add, AddRoute
-context.go                                      667L  Attachment, Bind, Blob, Cookie, Cookies
 router.go                                      1074L  Error, Unwrap, AddRouteError, Add, Remove
 bind.go                                         472L  BindBody, BindHeaders, BindPathValues, BindQueryParams, BindUnmarshaler
+middleware/static.go                            371L  Static, ToMiddleware, StaticConfig, StaticWithConfig, format
+server.go                                       202L  Start, StartTLS, start, StartConfig, filepathOrContent
+context.go                                      667L  Attachment, Bind, Blob, Cookie, Cookies
+middleware/compress.go                          235L  Gzip, ToMiddleware, GzipConfig, GzipWithConfig, bufferPool
+middleware/proxy.go                             441L  NewRandomBalancer, NewRoundRobinBalancer, Proxy, ProxyBalancer, ToMiddleware
+middleware/slash.go                             151L  AddTrailingSlash, ToMiddleware, AddTrailingSlashConfig, AddTrailingSlashWithConfig, RemoveTrailingSlash
 group.go                                        178L  Add, AddRoute, Any, CONNECT, DELETE
+middleware/csrf.go                              307L  CSRF, ToMiddleware, checkSecFetchSiteRequest, CSRFConfig, CSRFWithConfig
 binder.go                                      1329L  Error, BindingError, FormFieldBinder, NewBindingError, PathValuesBinder
 binder_generic.go                               571L  TimeOpts, bindValue
 context_generic.go                               43L  
 echotest/context.go                             183L  ServeWithHandler, ToContext, ToContextRecorder, ContextConfig, MultipartForm
 echotest/reader.go                               46L  LoadBytes, TrimNewlineEnd, loadBytes
 httperror.go                                    162L  Error, StatusCode, Unwrap, Wrap, HTTPError
-ip.go                                           309L  ExtractIPDirect, ExtractIPFromRealIPHeader, ExtractIPFromXFFHeader, LegacyIPExtractor, TrustIPRange
-json.go                                          29L  Deserialize, Serialize, DefaultJSONSerializer
-middleware/basic_auth.go                        156L  BasicAuth, ToMiddleware, BasicAuthConfig, BasicAuthWithConfig
-middleware/body_dump.go                         201L  BodyDump, ToMiddleware, BodyDumpConfig, BodyDumpWithConfig, Flush
-middleware/body_limit.go                         99L  BodyLimit, ToMiddleware, BodyLimitConfig, BodyLimitWithConfig, Close
-middleware/compress.go                          235L  Gzip, ToMiddleware, GzipConfig, GzipWithConfig, bufferPool
   ...and 27 more modules
 
 -- SYM
+ValueBinder.setError                M binder.go:177    function ValueBinder.setError
+Echo.Add                            M echo.go:642    Add registers a new route for an HTTP method an...
 Echo.add                            M echo.go:621    function Echo.add
-Echo.AddRoute                       M echo.go:617    AddRoute registers a new Route with default hos...
-ValueBinder.intValue                M binder.go:499    function ValueBinder.intValue
-ValueBinder.intsValue               M binder.go:541    function ValueBinder.intsValue
 Group.Add                           M group.go:158    Add implements `Echo#Add()` for sub-routes with...
 Group.AddRoute                      M group.go:172    AddRoute registers a new Routable with Router
-Echo.Add                            M echo.go:642    Add registers a new route for an HTTP method an...
 Context.writeContentType            M context.go:121    function Context.writeContentType
-Context.Get                         M context.go:380    Get retrieves data from the context.
-Context.Set                         M context.go:387    Set saves data in the context.
 ValueBinder.uintValue               M binder.go:727    function ValueBinder.uintValue
+Context.Get                         M context.go:380    Get retrieves data from the context.
+ValueBinder.uint                    M binder.go:743    function ValueBinder.uint
+ValueBinder.int                     M binder.go:515    function ValueBinder.int
+ValueBinder.intValue                M binder.go:499    function ValueBinder.intValue
+ValueBinder.intsValue               M binder.go:541    function ValueBinder.intsValue
 ValueBinder.uintsValue              M binder.go:769    function ValueBinder.uintsValue
-ValueBinder.time                    M binder.go:1095   function ValueBinder.time
+Context.Set                         M context.go:387    Set saves data in the context.
+ValueBinder.unixTime                M binder.go:1301   function ValueBinder.unixTime
 Context.Blob                        M context.go:552    Blob sends a blob response with status code and...
+ValueBinder.float                   M binder.go:1006   function ValueBinder.float
+ValueBinder.ints                    M binder.go:556    function ValueBinder.ints
+ValueBinder.uints                   M binder.go:784    function ValueBinder.uints
+bindData                            M bind.go:139    bindData will bind data ONLY fields in destinat...
 ValueBinder.floatValue              M binder.go:990    function ValueBinder.floatValue
 ValueBinder.floatsValue             M binder.go:1022   function ValueBinder.floatsValue
-fsFile                              M context.go:584    function fsFile
-BindingError.Error                  M binder.go:87     Error returns error message
-ValueBinder.setError                M binder.go:177    function ValueBinder.setError
-ValueBinder.Time                    M binder.go:1086   Time binds parameter to time.Time variable
-ValueBinder.unixTime                M binder.go:1301   function ValueBinder.unixTime
-Context.File                        M context.go:571    File sends a response with the content of the f...
-ValueBinder.boolValue               M binder.go:905    function ValueBinder.boolValue
-WWWRedirectWithConfig               M middleware/redirect.go:99     WWWRedirectWithConfig returns a WWW redirect mi...
-ValueBinder.duration                M binder.go:1167   function ValueBinder.duration
+ValueBinder.bool                    M binder.go:920    function ValueBinder.bool
 Context.Response                    M context.go:139    Response returns `*Response`.
-NewDefaultFS                        M echo.go:804    NewDefaultFS returns a new defaultFS instance w...
-bindData                            M bind.go:139    bindData will bind data ONLY fields in destinat...
+fsFile                              M context.go:584    function fsFile
+Response.WriteHeader                M response.go:49     WriteHeader sends an HTTP response header with ...
+ValueBinder.floats                  M binder.go:1037   function ValueBinder.floats
+gzipResponseWriter.WriteHeader      M middleware/compress.go:147    function gzipResponseWriter.WriteHeader
+gracefulShutdown                    M server.go:183    function gracefulShutdown
 ValueBinder.bindWithDelimiter       M binder.go:411    function ValueBinder.bindWithDelimiter
+ValueBinder.boolValue               M binder.go:905    function ValueBinder.boolValue
 ValueBinder.boolsValue              M binder.go:931    function ValueBinder.boolsValue
 ValueBinder.customFunc              M binder.go:215    function ValueBinder.customFunc
+ValueBinder.duration                M binder.go:1167   function ValueBinder.duration
 ValueBinder.durationsValue          M binder.go:1198   function ValueBinder.durationsValue
+ValueBinder.time                    M binder.go:1095   function ValueBinder.time
 ValueBinder.times                   M binder.go:1126   function ValueBinder.times
+Context.HTMLBlob                    M context.go:440    HTMLBlob sends an HTTP blob response with statu...
 Context.contentDisposition          M context.go:630    function Context.contentDisposition
 Context.json                        M context.go:464    function Context.json
+Context.setPathValues               M context.go:269    function Context.setPathValues
 Context.xml                         M context.go:517    function Context.xml
+Echo.ServeHTTP                      M echo.go:695    ServeHTTP implements `http.Handler` interface, ...
 ContextConfig.ToContextRecorder     M echotest/context.go:81     ToContextRecorder converts ContextConfig to ech...
-ProxyWithConfig                     M middleware/proxy.go:300    ProxyWithConfig returns a Proxy middleware or p...
+sanitizeURI                         M middleware/slash.go:144    function sanitizeURI
+Context.SetRequest                  M context.go:134    SetRequest sets `*http.Request`.
+RateLimiterMemoryStore.cleanupStaleVisitors M middleware/rate_limiter.go:256    function RateLimiterMemoryStore.cleanupStaleVis...
 RequestLoggerConfig.ToMiddleware    M middleware/request_logger.go:246    ToMiddleware converts RequestLoggerConfig into ...
-ValueBinder.int                     M binder.go:515    function ValueBinder.int
-Echo.File                           M echo.go:609    File registers a new route with path to serve a...
+Context.Request                     M context.go:129    Request returns `*http.Request`.
+routeMethods.updateAllowHeader      M router.go:251    function routeMethods.updateAllowHeader
+ValueBinder.bools                   M binder.go:946    function ValueBinder.bools
+ValueBinder.durations               M binder.go:1213   function ValueBinder.durations
+setWithProperType                   M bind.go:292    function setWithProperType
+node.findStaticChild                M router.go:709    function node.findStaticChild
 Echo.Use                            M echo.go:431    Use adds middleware to the chain which is run a...
+Context.File                        M context.go:571    File sends a response with the content of the f...
+Context.SetResponse                 M context.go:145    SetResponse sets `*http.ResponseWriter`.
+StartConfig.start                   M server.go:100    start starts handler with HTTP(s) server.
 subFS                               M echo.go:827    function subFS
+format                              M middleware/static.go:341    format formats bytes integer to human readable ...
 New                                 M echo.go:333    New creates an instance of Echo.
-BindPathValues                      M bind.go:42     BindPathValues binds path parameter values to b...
+node.setHandler                     M router.go:731    function node.setHandler
 unmarshalInputToField               M bind.go:352    function unmarshalInputToField
-ValueBinder.bool                    M binder.go:920    function ValueBinder.bool
-ValueBinder.float                   M binder.go:1006   function ValueBinder.float
-Context.FormValue                   M context.go:319    FormValue returns the form field value for the ...
-Context.IsTLS                       M context.go:150    IsTLS returns true if HTTP connection is TLS ot...
+DefaultHTTPErrorHandler             M echo.go:374    DefaultHTTPErrorHandler creates new default HTT...
+NewDefaultFS                        M echo.go:804    NewDefaultFS returns a new defaultFS instance w...
 applyMiddleware                     M echo.go:785    function applyMiddleware
+Response.Unwrap                     M response.go:105    Unwrap returns the original http.ResponseWriter.
+Context.FormValue                   M context.go:319    FormValue returns the form field value for the ...
+Context.QueryParam                  M context.go:287    QueryParam returns the query param for the prov...
+Context.String                      M context.go:445    String sends a string response with status code.
+Context.jsonPBlob                   M context.go:449    function Context.jsonPBlob
+newContext                          M context.go:75     function newContext
+Echo.AddRoute                       M echo.go:617    AddRoute registers a new Route with default hos...
 loadBytes                           M echotest/reader.go:36     function loadBytes
 Group.GET                           M group.go:37     GET implements `Echo#GET()` for sub-routes with...
 Group.StaticFS                      M group.go:122    StaticFS implements `Echo#StaticFS()` for sub-r...
 Group                               C group.go:14     Group is a set of sub-routes for a specified ro...
-newIPChecker                        M ip.go:183    function newIPChecker
+StatusCode                          M httperror.go:45     StatusCode returns status code from error if it...
 BasicAuthWithConfig                 M middleware/basic_auth.go:92     BasicAuthWithConfig returns an BasicAuthWithCon...
 BodyDumpWithConfig                  M middleware/body_dump.go:68     BodyDumpWithConfig returns a BodyDump middlewar...
 bodyDumpResponseWriter.Write        M middleware/body_dump.go:150    function bodyDumpResponseWriter.Write
 BodyLimitWithConfig                 M middleware/body_limit.go:42     BodyLimitWithConfig returns a BodyLimitWithConf...
-GzipWithConfig                      M middleware/compress.go:64     GzipWithConfig returns a middleware which compr...
-gzipResponseWriter.WriteHeader      M middleware/compress.go:147    function gzipResponseWriter.WriteHeader
-ContextTimeoutWithConfig            M middleware/context_timeout.go:33     ContextTimeoutWithConfig returns a Timeout midd...
-CSRFWithConfig                      M middleware/csrf.go:121    CSRFWithConfig returns a CSRF middleware with c...
-DecompressWithConfig                M middleware/decompress.go:60     DecompressWithConfig returns a decompress middl...
-createExtractors                    M middleware/extractor.go:78     function createExtractors
-KeyAuthWithConfig                   M middleware/key_auth.go:133    KeyAuthWithConfig returns an KeyAuth middleware...
-MethodOverrideWithConfig            M middleware/method_override.go:41     MethodOverrideWithConfig returns a Method Overr...
-Proxy                               M middleware/proxy.go:291    Proxy returns a Proxy middleware.
-NewRateLimiterMemoryStoreWithConfig M middleware/rate_limiter.go:203    function NewRateLimiterMemoryStoreWithConfig
-RateLimiterWithConfig               M middleware/rate_limiter.go:104    function RateLimiterWithConfig
-RecoverWithConfig                   M middleware/recover.go:48     RecoverWithConfig returns a Recovery middleware...
-HTTPSRedirectWithConfig             M middleware/redirect.go:57     HTTPSRedirectWithConfig returns a HTTPS redirec...
-RequestIDWithConfig                 M middleware/request_id.go:37     RequestIDWithConfig returns a middleware with g...
-RequestLoggerWithConfig             M middleware/request_logger.go:237    RequestLoggerWithConfig returns a RequestLogger...
-RewriteWithConfig                   M middleware/rewrite.go:48     RewriteWithConfig returns a Rewrite middleware ...
-SecureWithConfig                    M middleware/secure.go:96     SecureWithConfig returns a Secure middleware wi...
-  ...and 488 more symbols
+  ...and 483 more symbols
 
 -- FOCUS
 Echo.Match (echo.go:510-510)
   Match registers a new route for multiple HTTP methods and path with matching handler in the router with optional route-l
   sig: Echo.Match(methods []string, path string, handler HandlerFunc, midd...)
-  behavior: ACCUMULATE(loop -> errs)
+  behavior: GUARD(len -> raise_panic); ACCUMULATE(loop -> errs)
   calls: AddRoute
-
-concurrentRouter.Route (router_concurrent.go:21-21)
-  sig: concurrentRouter.Route(c *Context)
-  behavior: DELEGATE(r.router.Route -> result); UNWIND(defer)
+  raises: panic
 
 Echo.GET (echo.go:449-449)
   GET registers a new GET route for a path with matching handler in the router with optional route-level middleware.
@@ -166,36 +168,40 @@ Echo.PUT (echo.go:479-479)
   behavior: DELEGATE(e.Add -> result)
   calls: Add
 
-Echo.Pre (echo.go:426-426)
-  Pre adds middleware to the chain which is run before router tries to find matching route.
-  sig: Echo.Pre(middleware ...MiddlewareFunc)
-
 Echo.TRACE (echo.go:485-485)
   TRACE registers a new TRACE route for a path with matching handler in the router with optional route-level middleware.
   sig: Echo.TRACE(path string, h HandlerFunc, m ...MiddlewareFunc)
   behavior: DELEGATE(e.Add -> result)
   calls: Add
 
-AddRouteError (router.go:428-428)
-  AddRouteError is error returned by Router.Add containing information what actual route adding failed.
-  methods: Error, Unwrap
-  called_by: Add
+Echo.Pre (echo.go:426-426)
+  Pre adds middleware to the chain which is run before router tries to find matching route.
+  sig: Echo.Pre(middleware ...MiddlewareFunc)
+
+concurrentRouter.Route (router_concurrent.go:21-21)
+  sig: concurrentRouter.Route(c *Context)
+  behavior: DELEGATE(r.router.Route -> result); UNWIND(defer)
 
 Echo.AddRoute (echo.go:617-617)
   AddRoute registers a new Route with default host Router
   sig: Echo.AddRoute(route Route)
   behavior: DELEGATE(e.add -> result)
   calls: add
-  called_by: Match, add
+  called_by: Match
 
 DefaultRouter.storeRouteInfo (router.go:538-538)
   sig: DefaultRouter.storeRouteInfo(ri RouteInfo)
-  behavior: GUARD(ri -> result); ACCUMULATE(loop -> result)
+  behavior: ACCUMULATE(loop -> result)
+  called_by: Add
+
+AddRouteError (router.go:428-428)
+  AddRouteError is error returned by Router.Add containing information what actual route adding failed.
+  methods: Error, Unwrap
 
 WrapMiddleware (echo.go:766-766)
   WrapMiddleware wraps `func(http.Handler) http.Handler` into `echo.MiddlewareFunc`
   sig: WrapMiddleware(m func(http.Handler)
-  behavior: ACCUMULATE(loop -> result)
+  calls: ServeHTTP
 
 Group.AddRoute (group.go:172-172)
   AddRoute registers a new Routable with Router
@@ -206,32 +212,24 @@ Group.AddRoute (group.go:172-172)
 Echo.Add (echo.go:642-642)
   Add registers a new route for an HTTP method and path with matching handler in the router with optional route-level midd
   sig: Echo.Add(method, path string, handler HandlerFunc, middleware ......)
+  behavior: GUARD(err -> raise_panic)
   calls: add
-  called_by: Any, CONNECT, DELETE, GET, HEAD, OPTIONS, PATCH, POST
+  called_by: Any, CONNECT, DELETE, File, GET, HEAD, OPTIONS, PATCH
   raises: panic
 
 DefaultRouter (router.go:60-60)
   DefaultRouter is the registry of all registered routes for an `Echo` instance for request matching and URL path paramete
   methods: Add, Remove, Route, Routes, insert, storeRouteInfo
 
-Echo.File (echo.go:609-609)
-  File registers a new route with path to serve a static file with optional route-level middleware.
-  sig: Echo.File(path, file string, middleware ...MiddlewareFunc)
-  called_by: StaticFileHandler
-
-Route (route.go:16-16)
-  Route contains information to adding/registering new route with the router.
-  methods: ToRouteInfo, WithPrefix
-
-AddTrailingSlash (middleware/slash.go:29-29)
-  AddTrailingSlash returns a root level (before router) middleware which adds a trailing slash to the request `URL#Path`.
-  behavior: DELEGATE(AddTrailingSlashWithConfig -> result)
-  calls: AddTrailingSlashWithConfig
-
 Echo.CONNECT (echo.go:437-437)
   CONNECT registers a new CONNECT route for a path with matching handler in the router with optional route-level middlewar
   sig: Echo.CONNECT(path string, h HandlerFunc, m ...MiddlewareFunc)
   behavior: DELEGATE(e.Add -> result)
+  calls: Add
+
+Echo.File (echo.go:609-609)
+  File registers a new route with path to serve a static file with optional route-level middleware.
+  sig: Echo.File(path, file string, middleware ...MiddlewareFunc)
   calls: Add
 
 Echo.Group (echo.go:659-659)
@@ -248,14 +246,24 @@ Echo.OPTIONS (echo.go:461-461)
 Group.Match (group.go:77-77)
   Match implements `Echo#Match()` for sub-routes within the Group.
   sig: Group.Match(methods []string, path string, handler HandlerFunc, midd...)
-  behavior: ACCUMULATE(loop -> errs)
+  behavior: GUARD(len -> raise_panic); ACCUMULATE(loop -> errs)
   calls: AddRoute
+  raises: panic
 
 Group.RouteNotFound (group.go:153-153)
   RouteNotFound implements `Echo#RouteNotFound()` for sub-routes within the Group.
   sig: Group.RouteNotFound(path string, h HandlerFunc, m ...MiddlewareFunc)
   behavior: DELEGATE(g.Add -> result)
   calls: Add
+
+Route (route.go:16-16)
+  Route contains information to adding/registering new route with the router.
+  methods: ToRouteInfo, WithPrefix
+
+AddTrailingSlash (middleware/slash.go:29-29)
+  AddTrailingSlash returns a root level (before router) middleware which adds a trailing slash to the request `URL#Path`.
+  behavior: DELEGATE(AddTrailingSlashWithConfig -> result)
+  calls: AddTrailingSlashWithConfig
 
 RemoveTrailingSlash (middleware/slash.go:93-93)
   RemoveTrailingSlash returns a root level (before router) middleware which removes a trailing slash from the request URI.
@@ -270,29 +278,22 @@ routeMethods (router.go:148-148)
   type routeMethods
   methods: find, isHandler, set, updateAllowHeader
 
-routeMethods.isHandler (router.go:301-301)
-  called_by: setHandler
-
-routeMethods.set (router.go:171-171)
-  sig: routeMethods.set(method string, r *routeMethod)
-  behavior: DISPATCH(method)
-  called_by: setHandler
-
-MiddlewareConfigurator (echo.go:121-121)
-  MiddlewareConfigurator defines interface for creating middleware handlers with possibility to return configuration error
-
-routeMethod (router.go:142-142)
-  type routeMethod
-
-AddRouteError.Error (router.go:434-434)
-  called_by: Add
-
-AddRouteError.Unwrap (router.go:436-436)
+routeMethods.find (router.go:213-213)
+  sig: routeMethods.find(method string, fallbackToAny bool)
+  behavior: GUARD(r -> pass_through); DISPATCH(method)
+  called_by: Remove, Route
 
 DefaultRouter.Route (router.go:791-791)
   Route looks up a handler registered for method and path.
   sig: DefaultRouter.Route(c *Context)
-  behavior: GUARD(child -> result); PRECEDENCE(cap -> not_r.useEscapedPathForRouting -> previous); ACCUMULATE(loop -> result)
+  behavior: PRECEDENCE(cap -> not_r.useEscapedPathForRouting -> currentNode); ACCUMULATE(loop -> searchIndex)
+  calls: findStaticChild, node, find
+
+routeMethods.set (router.go:171-171)
+  sig: routeMethods.set(method string, r *routeMethod)
+  behavior: DISPATCH(method)
+  calls: updateAllowHeader
+  called_by: setHandler
 
 Echo.RouteNotFound (echo.go:495-495)
   RouteNotFound registers a special-case route which is executed when no other route is found (i.e.
@@ -300,14 +301,15 @@ Echo.RouteNotFound (echo.go:495-495)
   behavior: DELEGATE(e.Add -> result)
   calls: Add
 
-Echo.Router (echo.go:362-362)
-  Router returns the default router.
+routeMethods.updateAllowHeader (router.go:251-251)
+  behavior: ACCUMULATE(loop -> result)
+  called_by: set
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 59 with behavior annotations
+coverage: 80 symbols in L3, 60 with behavior annotations
 drill: echo.go (~1 lines, Echo.Match)
-drill: router_concurrent.go (~1 lines, concurrentRouter.Route)
-drill: echo.go (~1 lines, Echo.Use)
-drill: echo.go (~1 lines, Echo.Pre)
 drill: echo.go (~1 lines, Echo.GET)
+drill: echo.go (~1 lines, Echo.DELETE)
+drill: echo.go (~1 lines, Echo.PATCH)
+drill: echo.go (~1 lines, Echo.TRACE)

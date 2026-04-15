@@ -36,8 +36,8 @@ aiohttp/client_proto.py                         371L  abort, close, closed, conn
 -- SYM
 append                              M aiohttp/multipart.py:948    function append
 append_payload                      M aiohttp/multipart.py:963    Adds a new body part to multipart writer.
-encode                              M aiohttp/helpers.py:178    Encode credentials.
 decode                              M aiohttp/helpers.py:139    Create a BasicAuth object from an Authorization...
+encode                              M aiohttp/helpers.py:178    Encode credentials.
 prepare                             M aiohttp/web_fileresponse.py:243    async_function prepare
 write                               M aiohttp/http_writer.py:167    Writes chunk of data to a stream.
 pre_freeze                          M aiohttp/web_app.py:212    function pre_freeze
@@ -132,11 +132,22 @@ read (aiohttp/multipart.py:304-322)
   calls: decode_iter, read_chunk
   called_by: _read_chunk_from_length, _read_chunk_from_stream, form, json, read_chunk, text, BodyPartReader
 
+update_body (aiohttp/client_reqrep.py:1199-1259)
+  Update request body and close previous payload if needed.
+  sig: update_body(body)
+  calls: _update_body, close
+
 BodyPartReaderPayload (aiohttp/multipart.py:603-636)
   extends: Payload
   imports: base64, binascii, uuid, warnings, types
   calls: decode_iter, read_chunk
   raises: TypeError
+
+multipart (aiohttp/web_request.py:673-680)
+  Return async iterator to process BODY as multipart.
+  behavior: DELEGATE(MultipartReader -> result)
+  called_by: post, BaseRequest
+  uses: MultipartReader (multipart)
 
 append_payload (aiohttp/multipart.py:963-999)
   Adds a new body part to multipart writer.
@@ -146,20 +157,15 @@ append_payload (aiohttp/multipart.py:963-999)
   called_by: append, append_form, append_json, MultipartWriter
   raises: RuntimeError
 
-multipart (aiohttp/web_request.py:673-680)
-  Return async iterator to process BODY as multipart.
-  behavior: DELEGATE(MultipartReader -> result)
-  called_by: post, BaseRequest
-  uses: MultipartReader (multipart)
-
 url (aiohttp/web_request.py:423-427)
   The full URL of the request.
   behavior: DELEGATE(URL.build.join -> result)
 
-update_body (aiohttp/client_reqrep.py:1199-1259)
-  Update request body and close previous payload if needed.
-  sig: update_body(body)
-  calls: _update_body, close
+json (aiohttp/web_request.py:654-671)
+  Return BODY as JSON.
+  calls: text
+  raises: HTTPBadRequest
+  uses: HTTPBadRequest (web_exceptions)
 
 BodyPartReader (aiohttp/multipart.py:257-599)
   Multipart reader for single body part.
@@ -168,15 +174,6 @@ BodyPartReader (aiohttp/multipart.py:257-599)
   calls: _apply_content_transfer_decoding, _decode_content, _decode_content_async, _decode_content_transfer, _needs_content_decoding, _read_chunk_from_length, _read_chunk_from_stream, decode_iter
   raises: RuntimeError, StopAsyncIteration, ValueError
   uses: ZLibDecompressor (compression_utils), CIMultiDict (multidict)
-
-JsonBytesPayload (aiohttp/payload.py:943-963)
-  JSON payload for encoders that return bytes directly.
-  extends: BytesPayload
-  imports: asyncio, enum, io, mimetypes, warnings
-
-JsonPayload (aiohttp/payload.py:924-940)
-  extends: BytesPayload
-  imports: asyncio, enum, io, mimetypes, warnings
 
 MultipartPayloadWriter (aiohttp/multipart.py:1149-1204)
   imports: base64, binascii, uuid, warnings, types
@@ -189,6 +186,15 @@ _load_json_data (aiohttp/cookiejar.py:164-195)
   called_by: load, CookieJar
   uses: Morsel (http.cookies)
 
+JsonBytesPayload (aiohttp/payload.py:943-963)
+  JSON payload for encoders that return bytes directly.
+  extends: BytesPayload
+  imports: asyncio, enum, io, mimetypes, warnings
+
+JsonPayload (aiohttp/payload.py:924-940)
+  extends: BytesPayload
+  imports: asyncio, enum, io, mimetypes, warnings
+
 body_exists (aiohttp/web_request.py:612-614)
   Return True if request has HTTP BODY, False otherwise.
 
@@ -199,27 +205,6 @@ handle_json_data (examples/logging_middleware.py:78-84)
   Endpoint that echoes JSON data.
   sig: handle_json_data(request)
 
-json (aiohttp/web_request.py:654-671)
-  Return BODY as JSON.
-  calls: text
-  raises: HTTPBadRequest
-  uses: HTTPBadRequest (web_exceptions)
-
-MultipartReader (aiohttp/multipart.py:639-854)
-  Multipart body reader.
-  imports: base64, binascii, uuid, warnings, types
-  calls: read_chunk, readline, _get_boundary, _get_part_reader, _maybe_release_last_part, _read_boundary, _read_headers, _read_until_first_boundary
-  raises: ValueError, StopAsyncIteration, BadHttpMessage, RuntimeError
-  uses: HeadersParser (http), BadHttpMessage (http_exceptions), CIMultiDict (multidict)
-
-MultipartWriter (aiohttp/multipart.py:860-1146)
-  Multipart body writer.
-  extends: Payload
-  imports: base64, binascii, uuid, warnings, types
-  calls: enable_compression, enable_encoding, write_eof, MultipartPayloadWriter, append, append_payload, close
-  raises: ValueError, RuntimeError, TypeError
-  uses: ZLibCompressor (compression_utils), CIMultiDict (multidict)
-
 read_chunk (aiohttp/multipart.py:324-366)
   Reads body part content chunk of the specified size.
   sig: read_chunk(size)
@@ -227,6 +212,13 @@ read_chunk (aiohttp/multipart.py:324-366)
   calls: _read_chunk_from_length, _read_chunk_from_stream, read, readline
   called_by: read, BodyPartReader, BodyPartReaderPayload, MultipartReader
   raises: ValueError
+
+MultipartReader (aiohttp/multipart.py:639-854)
+  Multipart body reader.
+  imports: base64, binascii, uuid, warnings, types
+  calls: read_chunk, readline, _get_boundary, _get_part_reader, _maybe_release_last_part, _read_boundary, _read_headers, _read_until_first_boundary
+  raises: ValueError, StopAsyncIteration, BadHttpMessage, RuntimeError
+  uses: HeadersParser (http), BadHttpMessage (http_exceptions), CIMultiDict (multidict)
 
 readline (aiohttp/multipart.py:423-450)
   Reads body part by line by line.
@@ -240,11 +232,13 @@ _update_body (aiohttp/client_reqrep.py:1182-1197)
   calls: _update_body_from_data, _update_transfer_encoding
   called_by: update_body, ClientRequest
 
-strip_auth_from_url (aiohttp/helpers.py:184-190)
-  Remove user and password from URL if present and return BasicAuth object.
-  sig: strip_auth_from_url(url)
-  calls: BasicAuth
-  called_by: proxies_from_env
+MultipartWriter (aiohttp/multipart.py:860-1146)
+  Multipart body writer.
+  extends: Payload
+  imports: base64, binascii, uuid, warnings, types
+  calls: enable_compression, enable_encoding, write_eof, MultipartPayloadWriter, append, append_payload, close
+  raises: ValueError, RuntimeError, TypeError
+  uses: ZLibCompressor (compression_utils), CIMultiDict (multidict)
 
 read (aiohttp/web_request.py:624-643)
   Read request body if present.
@@ -274,6 +268,12 @@ LookupError (aiohttp/payload.py:50-51)
   imports: asyncio, enum, io, mimetypes, warnings
   called_by: get, PayloadRegistry
 
+strip_auth_from_url (aiohttp/helpers.py:184-190)
+  Remove user and password from URL if present and return BasicAuth object.
+  sig: strip_auth_from_url(url)
+  calls: BasicAuth
+  called_by: proxies_from_env
+
 _read (aiohttp/payload.py:779-798)
   Read a chunk of data from the text file-like object.
   sig: _read(remaining_content_len)
@@ -296,7 +296,7 @@ decode (aiohttp/multipart.py:1052-1065)
 handler (aiohttp/abc.py:55-56)
   Execute matched request handler
 
-json (aiohttp/_websocket/models.py:81-85)
+json (aiohttp/_websocket/models.py:70-72)
   Return parsed JSON data.
   behavior: DELEGATE(loads -> result)
 
@@ -304,7 +304,7 @@ json (aiohttp/_websocket/models.py:55-59)
   Return parsed JSON data.
   behavior: DELEGATE(loads -> result)
 
-json (aiohttp/_websocket/models.py:70-72)
+json (aiohttp/_websocket/models.py:81-85)
   Return parsed JSON data.
   behavior: DELEGATE(loads -> result)
 
@@ -322,8 +322,8 @@ next (aiohttp/multipart.py:240-247)
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 34 with behavior annotations
+coverage: 80 symbols in L3, 35 with behavior annotations
 drill: aiohttp/client_reqrep.py (~41 lines, _update_body_from_data)
 drill: aiohttp/multipart.py (~9 lines, json)
 drill: aiohttp/multipart.py (~17 lines, read)
-drill: aiohttp/multipart.py (~44 lines, append_payload)
+drill: aiohttp/client_reqrep.py (~65 lines, update_body)

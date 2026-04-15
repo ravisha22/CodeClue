@@ -121,19 +121,6 @@ _check_nested_chain (src/click/core.py:73-90)
   called_by: CommandCollection, add_command, Group
   raises: RuntimeError
 
-_resolve_incomplete (src/click/shell_completion.py:623-667)
-  Find the Click object that will handle the completion of the
-  sig: _resolve_incomplete(ctx, args, incomplete)
-  behavior: ACCUMULATE(loop -> result)
-  calls: _is_incomplete_argument, _is_incomplete_option, _start_of_option
-  called_by: get_completions, ShellComplete
-
-shell_complete (src/click/shell_completion.py:19-54)
-  Perform shell completion for the given CLI program.
-  sig: shell_complete(cli, ctx_args, prog_name, complete_var, instruction)
-  calls: complete, get_completion_class
-  called_by: get_completions, ShellComplete
-
 convert_type (src/click/types.py:1112-1169)
   Find the most appropriate :class:`ParamType` for the given Python
   sig: convert_type(ty, default)
@@ -148,6 +135,19 @@ Tuple (src/click/types.py:1060-1109)
   calls: fail, convert_type
   called_by: convert_type
   uses: BadParameter (exceptions)
+
+_resolve_incomplete (src/click/shell_completion.py:623-667)
+  Find the Click object that will handle the completion of the
+  sig: _resolve_incomplete(ctx, args, incomplete)
+  behavior: ACCUMULATE(loop -> result)
+  calls: _is_incomplete_argument, _is_incomplete_option, _start_of_option
+  called_by: get_completions, ShellComplete
+
+shell_complete (src/click/shell_completion.py:19-54)
+  Perform shell completion for the given CLI program.
+  sig: shell_complete(cli, ctx_args, prog_name, complete_var, instruction)
+  calls: complete, get_completion_class
+  called_by: get_completions, ShellComplete
 
 Abort (src/click/exceptions.py:294-295)
   An internal signalling exception that signals Click to abort.
@@ -188,11 +188,11 @@ NoSuchOption (src/click/exceptions.py:208-239)
   extends: UsageError
   imports: gettext, globals, utils, core
 
-cli (examples/completion/completion.py:8-9)
-  calls: group
-
 cli (examples/termui/termui.py:9-11)
   This script showcases different terminal UI helpers in Click.
+
+cli (examples/completion/completion.py:8-9)
+  calls: group
 
 command (src/click/decorators.py:168-255)
   Creates a new :class:`Command` and uses the decorated function as
@@ -214,6 +214,18 @@ make_formatter (src/click/core.py:561-573)
   Creates the :class:`~click.HelpFormatter` for the help and
   behavior: DELEGATE(formatter_class -> result)
   called_by: Command
+
+ShellComplete (src/click/shell_completion.py:200-301)
+  Base class for providing shell completion support.
+  imports: gettext, core, utils, shlex, shutil
+  calls: get_completions, source_vars, _resolve_context, _resolve_incomplete, shell_complete
+  raises: NotImplementedError
+
+get_completions (src/click/shell_completion.py:271-281)
+  Determine the context and last complete command or parameter
+  sig: get_completions(args, incomplete)
+  calls: _resolve_context, _resolve_incomplete, shell_complete
+  called_by: complete, ShellComplete
 
 Command (src/click/core.py:873-1485)
   Commands are the basic building block of command line interfaces in
@@ -246,18 +258,6 @@ Choice (src/click/types.py:233-398)
   imports: enum, stat, gettext, exceptions, utils
   calls: _normalized_mapping, get_invalid_choice_message, normalize_choice, fail, convert_type
   uses: BadParameter (exceptions)
-
-ShellComplete (src/click/shell_completion.py:200-301)
-  Base class for providing shell completion support.
-  imports: gettext, core, utils, shlex, shutil
-  calls: get_completions, source_vars, _resolve_context, _resolve_incomplete, shell_complete
-  raises: NotImplementedError
-
-get_completions (src/click/shell_completion.py:271-281)
-  Determine the context and last complete command or parameter
-  sig: get_completions(args, incomplete)
-  calls: _resolve_context, _resolve_incomplete, shell_complete
-  called_by: complete, ShellComplete
 
 FuncParamType (src/click/types.py:171-192)
   extends: ParamType
@@ -314,8 +314,8 @@ get_completion_class (src/click/shell_completion.py:456-463)
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 70 symbols in L3, 17 with behavior annotations
+coverage: 80 symbols in L3, 17 with behavior annotations
 drill: src/click/utils.py (~31 lines, _expand_args)
 drill: src/click/core.py (~15 lines, _check_nested_chain)
+drill: src/click/shell_completion.py (~49 lines, _resolve_incomplete)
 drill: src/click/types.py (~40 lines, convert_type)
-drill: src/click/shell_completion.py (~26 lines, shell_complete)

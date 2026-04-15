@@ -115,16 +115,6 @@ Session (src/requests/sessions.py:356-818)
   raises: InvalidSchema, ValueError
   uses: InvalidSchema (exceptions), PreparedRequest (models), RequestsCookieJar (cookies), Request (models)
 
-request_url (src/requests/adapters.py:524-554)
-  Obtain the url to use when making the final request.
-  sig: request_url(request, proxies)
-  called_by: HTTPAdapter
-
-session (src/requests/sessions.py:821-833)
-  Returns a :class:`Session` for context-management.
-  behavior: DELEGATE(Session -> result)
-  calls: Session
-
 close (src/requests/sessions.py:796-799)
   Closes all adapters and as such the session
   behavior: ACCUMULATE(loop -> result)
@@ -141,10 +131,15 @@ get_netrc_auth (src/requests/utils.py:206-247)
   sig: get_netrc_auth(url, raise_errors)
   behavior: BRANCH(netrc_file -> result, else -> result)
 
-SessionRedirectMixin (src/requests/sessions.py:107-353)
-  imports: adapters, auth, compat, cookies, exceptions
-  calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
-  raises: TooManyRedirects
+request_url (src/requests/adapters.py:524-554)
+  Obtain the url to use when making the final request.
+  sig: request_url(request, proxies)
+  called_by: HTTPAdapter
+
+session (src/requests/sessions.py:821-833)
+  Returns a :class:`Session` for context-management.
+  behavior: DELEGATE(Session -> result)
+  calls: Session
 
 prepare_url (src/requests/models.py:411-483)
   Prepares the given HTTP URL.
@@ -154,6 +149,11 @@ prepare_url (src/requests/models.py:411-483)
   called_by: PreparedRequest
   raises: MissingSchema, InvalidURL
   uses: MissingSchema (exceptions), InvalidURL (exceptions)
+
+SessionRedirectMixin (src/requests/sessions.py:107-353)
+  imports: adapters, auth, compat, cookies, exceptions
+  calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
+  raises: TooManyRedirects
 
 BaseAdapter (src/requests/adapters.py:114-141)
   The Base Transport Adapter
@@ -188,29 +188,6 @@ get_full_url (src/requests/cookies.py:49-67)
 path_url (src/requests/models.py:88-106)
   Build the path URL to use.
 
-get_connection_with_tls_context (src/requests/adapters.py:424-471)
-  Returns a urllib3 connection for the given request and TLS settings.
-  sig: get_connection_with_tls_context(request, verify, proxies, cert)
-  behavior: BRANCH(proxy -> raise_InvalidProxyURL, else -> result)
-  calls: build_connection_pool_key_attributes, proxy_manager_for
-  called_by: HTTPAdapter
-  raises: InvalidURL, InvalidProxyURL
-  uses: InvalidURL (exceptions), InvalidProxyURL (exceptions)
-
-cert_verify (src/requests/adapters.py:281-335)
-  Verify a SSL certificate.
-  sig: cert_verify(conn, url, verify, cert)
-  behavior: BRANCH(url.lower.startswith_and_verify -> raise_OSError, else -> result)
-  called_by: HTTPAdapter
-  raises: OSError
-
-MockRequest (src/requests/cookies.py:23-100)
-  Wraps a `requests.Request` to mimic a `urllib2.Request`.
-  imports: calendar, copy, compat, threading, dummy_threading
-  calls: get_host, get_origin_req_host, is_unverifiable, get
-  called_by: extract_cookies_to_jar, get_cookie_header
-  raises: NotImplementedError
-
 copy (src/requests/cookies.py:428-433)
   Return a copy of this RequestsCookieJar.
   calls: get_policy, update, RequestsCookieJar
@@ -222,6 +199,21 @@ update (src/requests/cookies.py:358-364)
   behavior: BRANCH(isinstance_cookielib.CookieJ -> result, else -> result)
   calls: copy, set_cookie
   called_by: __setstate__, copy, RequestsCookieJar, create_cookie, merge_cookies
+
+get_adapter (src/requests/sessions.py:783-794)
+  Returns the appropriate connection adapter for the given URL.
+  sig: get_adapter(url)
+  behavior: ACCUMULATE(loop -> result)
+  called_by: send, Session
+  raises: InvalidSchema
+  uses: InvalidSchema (exceptions)
+
+MockRequest (src/requests/cookies.py:23-100)
+  Wraps a `requests.Request` to mimic a `urllib2.Request`.
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: get_host, get_origin_req_host, is_unverifiable, get
+  called_by: extract_cookies_to_jar, get_cookie_header
+  raises: NotImplementedError
 
 raise_for_status (src/requests/models.py:1001-1028)
   Raises :class:`HTTPError`, if one occurred.
@@ -277,14 +269,6 @@ default_headers (src/requests/utils.py:887-898)
   calls: default_user_agent
   uses: CaseInsensitiveDict (structures)
 
-get_adapter (src/requests/sessions.py:783-794)
-  Returns the appropriate connection adapter for the given URL.
-  sig: get_adapter(url)
-  behavior: ACCUMULATE(loop -> result)
-  called_by: send, Session
-  raises: InvalidSchema
-  uses: InvalidSchema (exceptions)
-
 is_permanent_redirect (src/requests/models.py:779-784)
   True if this Response one of the permanent versions of redirect.
 
@@ -313,6 +297,19 @@ select_proxy (src/requests/utils.py:825-848)
   sig: select_proxy(url, proxies)
   behavior: ACCUMULATE(loop -> result)
 
+urldefragauth (src/requests/utils.py:1051-1065)
+  Given a url remove the fragment and the authentication part.
+  sig: urldefragauth(url)
+
+get_connection_with_tls_context (src/requests/adapters.py:424-471)
+  Returns a urllib3 connection for the given request and TLS settings.
+  sig: get_connection_with_tls_context(request, verify, proxies, cert)
+  behavior: BRANCH(proxy -> raise_InvalidProxyURL, else -> result)
+  calls: build_connection_pool_key_attributes, proxy_manager_for
+  called_by: HTTPAdapter
+  raises: InvalidURL, InvalidProxyURL
+  uses: InvalidURL (exceptions), InvalidProxyURL (exceptions)
+
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 24 with behavior annotations
+coverage: 80 symbols in L3, 28 with behavior annotations
