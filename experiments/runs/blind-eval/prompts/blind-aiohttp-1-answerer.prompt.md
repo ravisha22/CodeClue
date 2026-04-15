@@ -51,8 +51,8 @@ aiohttp/client_proto.py                         371L  abort, close, closed, conn
 -- SYM
 append                              M aiohttp/multipart.py:948    function append
 append_payload                      M aiohttp/multipart.py:963    Adds a new body part to multipart writer.
-decode                              M aiohttp/helpers.py:139    Create a BasicAuth object from an Authorization...
 encode                              M aiohttp/helpers.py:178    Encode credentials.
+decode                              M aiohttp/helpers.py:139    Create a BasicAuth object from an Authorization...
 prepare                             M aiohttp/web_fileresponse.py:243    async_function prepare
 write                               M aiohttp/http_writer.py:167    Writes chunk of data to a stream.
 pre_freeze                          M aiohttp/web_app.py:212    function pre_freeze
@@ -131,7 +131,7 @@ _write_chunked_payload              M aiohttp/http_writer.py:124    Write a chun
 -- FOCUS
 read (aiohttp/multipart.py:304-322)
   Reads body part data.
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> data)
   calls: decode_iter, read_chunk
   called_by: _read_chunk_from_length, _read_chunk_from_stream, form, json, read_chunk, text, BodyPartReader
 
@@ -143,7 +143,7 @@ update_body (aiohttp/client_reqrep.py:1199-1259)
 _update_body_from_data (aiohttp/client_reqrep.py:1137-1180)
   Update request body from data.
   sig: _update_body_from_data(body)
-  behavior: ACCUMULATE(loop); BRANCH(isinstance_body_FormData)
+  behavior: BRANCH(isinstance_FormData -> result, else -> result); ACCUMULATE(loop -> result)
   calls: body
   called_by: _update_body, ClientRequest
   uses: FormData (formdata)
@@ -178,7 +178,7 @@ MultipartWriter (aiohttp/multipart.py:860-1146)
 append_payload (aiohttp/multipart.py:963-999)
   Adds a new body part to multipart writer.
   sig: append_payload(payload)
-  behavior: BRANCH(_is_form_data_self)
+  behavior: BRANCH(is_form_data -> result, else -> raise_RuntimeError)
   calls: append
   called_by: append, append_form, append_json, MultipartWriter
   raises: RuntimeError
@@ -186,20 +186,20 @@ append_payload (aiohttp/multipart.py:963-999)
 read_chunk (aiohttp/multipart.py:324-366)
   Reads body part content chunk of the specified size.
   sig: read_chunk(size)
-  behavior: BRANCH(_length_self)
+  behavior: BRANCH(length -> result, else -> result)
   calls: _read_chunk_from_length, _read_chunk_from_stream, read, readline
   called_by: read, BodyPartReader, BodyPartReaderPayload, MultipartReader
   raises: ValueError
 
 readline (aiohttp/multipart.py:423-450)
   Reads body part by line by line.
-  behavior: BRANCH(_unread_self)
+  behavior: BRANCH(unread -> result, else -> result)
   calls: append
   called_by: read_chunk, BodyPartReader, _read_headers, _readline, MultipartReader
 
 start (aiohttp/web_protocol.py:572-709)
   Process incoming request.
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> manager_requests_count)
   calls: _handle_request, _make_error_handler, close, force_close, log_debug, log_exception
   called_by: connection_made, RequestHandler
   uses: StreamWriter (http)
@@ -224,13 +224,13 @@ read (aiohttp/web_request.py:624-643)
 
 _gen_form_data (aiohttp/formdata.py:128-161)
   Encode a list of fields using the multipart/form-data MIME format
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> result)
   called_by: __call__, FormData
   raises: TypeError
 
 multipart (aiohttp/web_request.py:673-680)
   Return async iterator to process BODY as multipart.
-  behavior: DELEGATE(MultipartReader)
+  behavior: DELEGATE(MultipartReader -> result)
   called_by: post, BaseRequest
   uses: MultipartReader (multipart)
 
@@ -242,7 +242,7 @@ BodyPartReaderPayload (aiohttp/multipart.py:603-636)
 
 form (aiohttp/multipart.py:475-493)
   Like read(), but assumes that body parts contain form urlencoded data.
-  behavior: BRANCH(encoding)
+  behavior: BRANCH(encoding -> result, else -> result)
   calls: get_charset, read
   raises: ValueError
 
@@ -272,14 +272,14 @@ MultipartPayloadWriter (aiohttp/multipart.py:1149-1204)
 _load_json_data (aiohttp/cookiejar.py:164-195)
   Load cookies from parsed JSON data.
   sig: _load_json_data(data)
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> result)
   called_by: load, CookieJar
   uses: Morsel (http.cookies)
 
 _read (aiohttp/payload.py:510-526)
   Read a chunk of data from the file-like object.
   sig: _read(remaining_content_len)
-  behavior: DELEGATE(read)
+  behavior: DELEGATE(_value.read -> result)
 
 _read (aiohttp/payload.py:779-798)
   Read a chunk of data from the text file-like object.
@@ -293,7 +293,7 @@ _write_bytes (aiohttp/client_reqrep.py:1332-1405)
 as_bytes (aiohttp/multipart.py:1067-1092)
   Return bytes representation of the multipart data.
   sig: as_bytes(encoding, errors)
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> parts)
 
 body_exists (aiohttp/web_request.py:612-614)
   Return True if request has HTTP BODY, False otherwise.
@@ -301,7 +301,7 @@ body_exists (aiohttp/web_request.py:612-614)
 build_client_middlewares (aiohttp/client_middlewares.py:18-55)
   Apply middlewares to request handler.
   sig: build_client_middlewares(handler, middlewares)
-  behavior: ACCUMULATE(loop); UNWIND(reversed)
+  behavior: ACCUMULATE(loop -> result); UNWIND(reversed)
   calls: make_wrapper
 
 can_read_body (aiohttp/web_request.py:607-609)
@@ -310,7 +310,7 @@ can_read_body (aiohttp/web_request.py:607-609)
 decode (aiohttp/multipart.py:1052-1065)
   Return string representation of the multipart data.
   sig: decode(encoding, errors)
-  behavior: DELEGATE(join)
+  behavior: DELEGATE(join -> result)
 
 handle_json_data (examples/logging_middleware.py:78-84)
   Endpoint that echoes JSON data.
@@ -319,27 +319,21 @@ handle_json_data (examples/logging_middleware.py:78-84)
 handler (aiohttp/abc.py:55-56)
   Execute matched request handler
 
-json (aiohttp/_websocket/models.py:70-72)
-  Return parsed JSON data.
-  behavior: DELEGATE(loads)
-
 json (aiohttp/_websocket/models.py:55-59)
   Return parsed JSON data.
-  behavior: DELEGATE(loads)
+  behavior: DELEGATE(loads -> result)
 
 json (aiohttp/_websocket/models.py:81-85)
   Return parsed JSON data.
-  behavior: DELEGATE(loads)
+  behavior: DELEGATE(loads -> result)
 
-json (aiohttp/web_request.py:654-671)
-  Return BODY as JSON.
-  calls: text
-  raises: HTTPBadRequest
-  uses: HTTPBadRequest (web_exceptions)
+json (aiohttp/_websocket/models.py:70-72)
+  Return parsed JSON data.
+  behavior: DELEGATE(loads -> result)
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 27 with behavior annotations
+coverage: 80 symbols in L3, 25 with behavior annotations
 drill: aiohttp/client_reqrep.py (~65 lines, update_body)
 drill: aiohttp/multipart.py (~9 lines, json)
 drill: aiohttp/multipart.py (~338 lines, BodyPartReader)

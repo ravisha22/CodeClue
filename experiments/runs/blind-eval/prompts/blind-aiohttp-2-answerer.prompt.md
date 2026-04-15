@@ -51,8 +51,8 @@ aiohttp/client_proto.py                         371L  abort, close, closed, conn
 -- SYM
 append                              M aiohttp/multipart.py:948    function append
 append_payload                      M aiohttp/multipart.py:963    Adds a new body part to multipart writer.
-decode                              M aiohttp/helpers.py:139    Create a BasicAuth object from an Authorization...
 encode                              M aiohttp/helpers.py:178    Encode credentials.
+decode                              M aiohttp/helpers.py:139    Create a BasicAuth object from an Authorization...
 prepare                             M aiohttp/web_fileresponse.py:243    async_function prepare
 write                               M aiohttp/http_writer.py:167    Writes chunk of data to a stream.
 pre_freeze                          M aiohttp/web_app.py:212    function pre_freeze
@@ -152,7 +152,7 @@ TestServer (examples/token_refresh_middleware.py:121-243)
 
 _on_cleanup (aiohttp/web_app.py:430-441)
   sig: _on_cleanup(app)
-  behavior: ACCUMULATE(loop); UNWIND(reversed)
+  behavior: ACCUMULATE(loop -> errors); UNWIND(reversed)
   calls: CleanupError
   called_by: cleanup, Application
   raises: CleanupError
@@ -177,28 +177,28 @@ ResourcesView (aiohttp/web_urldispatcher.py:934-945)
   called_by: resources, UrlDispatcher
 
 resources (aiohttp/web_urldispatcher.py:1029-1030)
-  behavior: DELEGATE(ResourcesView)
+  behavior: DELEGATE(ResourcesView -> result)
   calls: ResourcesView
   called_by: _add_prefix_to_resources, PrefixedSubAppResource
 
 cleanup (aiohttp/web_runner.py:305-330)
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> result)
   calls: stop
   called_by: AppRunner
 
 _add_prefix_to_resources (aiohttp/web_urldispatcher.py:717-724)
   sig: _add_prefix_to_resources(prefix)
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> result)
   calls: index_resource, resources, unindex_resource
   called_by: PrefixedSubAppResource
 
-run_test_server (examples/basic_auth_middleware.py:119-131)
-  Run a simple test server with basic auth endpoints.
+run_test_server (examples/combined_middleware.py:238-252)
+  Run a test server with various endpoints.
   calls: TestServer
   called_by: main
 
-run_test_server (examples/logging_middleware.py:87-102)
-  Run a simple test server.
+run_test_server (examples/basic_auth_middleware.py:119-131)
+  Run a simple test server with basic auth endpoints.
   calls: TestServer
   called_by: main
 
@@ -207,8 +207,8 @@ run_test_server (examples/retry_middleware.py:150-164)
   calls: TestServer
   called_by: main
 
-run_test_server (examples/combined_middleware.py:238-252)
-  Run a test server with various endpoints.
+run_test_server (examples/logging_middleware.py:87-102)
+  Run a simple test server.
   calls: TestServer
   called_by: main
 
@@ -273,11 +273,6 @@ TestServer (examples/retry_middleware.py:91-147)
   imports: asyncio, logging, http, aiohttp
   called_by: run_test_server
 
-TestServer (examples/basic_auth_middleware.py:59-116)
-  Test server for basic auth endpoints.
-  imports: asyncio, base64, binascii, logging, aiohttp
-  called_by: run_test_server
-
 TestServer (examples/combined_middleware.py:159-235)
   Test server with stateful endpoints for middleware testing.
   imports: asyncio, base64, binascii, logging, http
@@ -286,6 +281,11 @@ TestServer (examples/combined_middleware.py:159-235)
 TestServer (examples/logging_middleware.py:59-84)
   Test server for logging middleware demo.
   imports: asyncio, logging, aiohttp
+  called_by: run_test_server
+
+TestServer (examples/basic_auth_middleware.py:59-116)
+  Test server for basic auth endpoints.
+  imports: asyncio, base64, binascii, logging, aiohttp
   called_by: run_test_server
 
 WSServerHandshakeError (aiohttp/client_exceptions.py:106-107)
@@ -302,18 +302,18 @@ _create_ssl_context (aiohttp/worker.py:205-220)
   called_by: _run, GunicornWebWorker
   raises: RuntimeError
 
+_make_server (aiohttp/web_runner.py:373-374)
+
+_make_server (aiohttp/web_runner.py:421-430)
+  behavior: DELEGATE(Server -> result)
+  uses: Server (web_server)
+
 _make_server (aiohttp/web_runner.py:333-334)
   Return a new server for the runner to serve requests.
 
-_make_server (aiohttp/web_runner.py:421-430)
-  behavior: DELEGATE(Server)
-  uses: Server (web_server)
-
-_make_server (aiohttp/web_runner.py:373-374)
-
 _on_startup (aiohttp/web_app.py:420-428)
   sig: _on_startup(app)
-  behavior: ACCUMULATE(loop)
+  behavior: ACCUMULATE(loop -> exits)
 
 add_app (aiohttp/abc.py:84-85)
   Add application to the nested apps stack.
@@ -334,35 +334,31 @@ app (aiohttp/web_request.py:862-866)
 
 cleanup (aiohttp/web_app.py:351-360)
   Causes on_cleanup signal
-  behavior: BRANCH(frozen_on_cleanup_self)
+  behavior: BRANCH(on_cleanup.frozen -> result, else -> result)
   calls: _on_cleanup
 
 cleanup_ctx (aiohttp/web_app.py:326-327)
 
-close (aiohttp/payload.py:325-335)
+close (aiohttp/payload.py:681-689)
   Close the payload if it holds any resources.
 
-close (aiohttp/payload.py:681-689)
+close (aiohttp/payload.py:325-335)
   Close the payload if it holds any resources.
 
 iter_chunks (aiohttp/streams.py:84-90)
   Yield chunks of data as they are received by the server.
-  behavior: DELEGATE(ChunkTupleAsyncStreamIterator)
+  behavior: DELEGATE(ChunkTupleAsyncStreamIterator -> result)
   calls: ChunkTupleAsyncStreamIterator
 
 named_resources (aiohttp/web_urldispatcher.py:1035-1036)
-  behavior: DELEGATE(MappingProxyType)
+  behavior: DELEGATE(MappingProxyType -> result)
   uses: MappingProxyType (types)
 
 on_cleanup (aiohttp/web_app.py:322-323)
 
-on_shutdown (examples/background_tasks.py:29-31)
-  sig: on_shutdown(app)
-  behavior: ACCUMULATE(loop)
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 14 with behavior annotations
+coverage: 80 symbols in L3, 13 with behavior annotations
 drill: aiohttp/web_runner.py (~2 lines, _cleanup_server)
 drill: aiohttp/web_runner.py (~1 lines, _cleanup_server)
 drill: aiohttp/web_runner.py (~1 lines, _cleanup_server)
