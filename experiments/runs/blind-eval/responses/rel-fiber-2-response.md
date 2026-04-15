@@ -1,0 +1,36 @@
+# Response: rel-fiber-2
+Date: 2026-04-15
+
+The clue file supports a **registration-to-execution** relationship between middleware and the request pipeline.
+
+1. **Middleware is registered as part of the routing surface at the app, group, and domain-router levels.** `App.Use` "registers a middleware route" for a matching prefix, `Group.Use` does the same for a group, and `domainRouter.Use` does the same for a domain router. This indicates middleware enters the request pipeline through route-style registration points rather than through a separate, unrelated system. [App.Use, app.go:860] [Group.Use, group.go:70] [domainRouter.Use, domain.go:350]
+
+2. **Middleware can also be attached when creating grouped route scopes.** `App.Group` and `Group.Group` both define a new sub-router with a common prefix and optional middleware, while the `Group` type itself is described as a collection of routes that share middleware and a common path prefix. That implies middleware is inherited or associated with grouped segments of the request pipeline. [App.Group, app.go:969] [Group.Group, group.go:187] [Group, group.go:14-15]
+
+3. **Middleware registration is not limited to `Use`; there is also an “all methods” middleware route form.** `Registering.All` explicitly "registers a middleware route" that matches requests with the provided path. So the pipeline accepts middleware both as prefix-based `Use` registrations and as path-bound middleware registrations via `All`. [Registering.All, register.go:50]
+
+4. **At least one middleware registration path normalizes handlers before they enter the pipeline.** `App.Use` explicitly calls `Handler`, which shows that middleware registration flows through handler-processing logic before becoming part of the pipeline. The clue file does not expose the `Handler` body, so the exact transformation is not visible. [App.Use, app.go:860] [GAPS, clue file]
+
+5. **The clue file explicitly names a request-execution core that contains middleware definitions and execution stages.** The `core` type "stores middleware and plugin definitions and defines the request execution process," and its methods include `preHooks`, `execFunc`, `execute`, `afterHooks`, and `timeout`. From that, the strongest clue-file-only conclusion is that middleware participates in a staged execution pipeline with pre-processing and post-processing phases around request execution. [core, client/core.go:48-48]
+
+6. **Middleware is visible from the request context during execution.** `FromContext` returns the `Middleware` from the Fiber context, and `Middleware.initialize` "sets up middleware for the request." Together these entries show a per-request relationship: middleware is initialized for a request and is retrievable from request context while the pipeline is running. [FromContext, middleware/session/middleware.go:179] [Middleware.initialize, middleware/session/middleware.go:111]
+
+7. **Fiber tracks whether the currently running handler is middleware.** `DefaultCtx.IsMiddleware` returns true if the current request handler was registered as middleware. This means the active request pipeline distinguishes middleware handlers from non-middleware handlers at runtime. [DefaultCtx.IsMiddleware, ctx.go:380-381]
+
+8. **Routing state and middleware state coexist in the same request context.** `DefaultCtx.Matched` reports whether the current request path was matched by the router, while `StoreInContext` stores values in both Fiber locals and request context. This supports the conclusion that middleware runs in the same contextual pipeline as route matching and can pass state forward through that context. [DefaultCtx.Matched, ctx.go:375-376] [StoreInContext, helpers.go:83-83]
+
+9. **Some middleware can short-circuit or annotate request handling outcomes.** `IsFromCache` reports whether middleware served the response from cache for the current request; `WasPutToCache` reports whether middleware stored the current response in cache; and `IsEarly` reports whether the request used early data and was accepted by middleware. These clues show middleware is not just decorative: it can directly affect whether the request is served, stored, or accepted during the handling pipeline. [IsFromCache, middleware/idempotency/idempotency.go:29] [WasPutToCache, middleware/idempotency/idempotency.go:35] [IsEarly, middleware/earlydata/earlydata.go:16]
+
+10. **Some middleware is conditional per request.** `middleware/skip.New` returns middleware that calls a predicate for each request, which shows there is a decision point inside the request pipeline where middleware may run or be bypassed based on request-specific logic. [New, middleware/skip/skip.go:10]
+
+11. **There is also an adapter path that converts external middleware into Fiber middleware.** `HTTPMiddleware` wraps `net/http` middleware into Fiber middleware, and `HTTPHandlerWithContext` calls `HTTPHandler` and `LocalContextFromHTTPRequest`. This shows middleware can enter the Fiber request pipeline through an adapter layer, with context bridging involved. [HTTPMiddleware, middleware/adaptor/adaptor.go:162] [HTTPHandlerWithContext, middleware/adaptor/adaptor.go:65]
+
+12. **The exact low-level call chain is only partially visible.** The clue file gives structural relations (registration points, context access, execution stages, and runtime flags), but it explicitly marks the area as having a mechanistic gap: "body logic needed for full answer." So the safe clue-file-only summary is that middleware is registered through app/group/domain APIs, associated with grouped route scopes, initialized into request context, and executed as part of a staged request process that distinguishes middleware handlers and can alter request outcomes. [GAPS, clue file] [App.Use, app.go:860] [Group.Use, group.go:70] [domainRouter.Use, domain.go:350] [Group, group.go:14-15] [core, client/core.go:48-48] [DefaultCtx.IsMiddleware, ctx.go:380-381]
+
+## Concise call-relationship summary
+
+- **Registration:** `App.Use`, `Group.Use`, `domainRouter.Use`, and `Registering.All` register middleware routes. [App.Use, app.go:860] [Group.Use, group.go:70] [domainRouter.Use, domain.go:350] [Registering.All, register.go:50]
+- **Scoping:** `App.Group`/`Group.Group` create route scopes that carry optional/shared middleware. [App.Group, app.go:969] [Group.Group, group.go:187] [Group, group.go:14-15]
+- **Execution pipeline:** `core` holds middleware definitions and exposes staged execution hooks (`preHooks`, `execute`, `afterHooks`). [core, client/core.go:48-48]
+- **Per-request setup/context:** `Middleware.initialize` sets middleware up for a request, `FromContext` retrieves it, and `StoreInContext` enables state propagation. [Middleware.initialize, middleware/session/middleware.go:111] [FromContext, middleware/session/middleware.go:179] [StoreInContext, helpers.go:83-83]
+- **Runtime identification/effect:** `DefaultCtx.IsMiddleware` identifies the current handler as middleware, and middleware can serve, store, accept, or skip request processing paths (`IsFromCache`, `WasPutToCache`, `IsEarly`, `skip.New`). [DefaultCtx.IsMiddleware, ctx.go:380-381] [IsFromCache, middleware/idempotency/idempotency.go:29] [WasPutToCache, middleware/idempotency/idempotency.go:35] [IsEarly, middleware/earlydata/earlydata.go:16] [New, middleware/skip/skip.go:10]
