@@ -144,18 +144,18 @@ SessionRedirectMixin (src/requests/sessions.py:107-353)
   calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
   raises: TooManyRedirects
 
-__call__ (src/requests/auth.py:285-303)
+__call__ (src/requests/auth.py:72-73)
   sig: __call__(r)
+  raises: NotImplementedError
 
-__call__ (src/requests/auth.py:94-96)
+__call__ (src/requests/auth.py:285-303)
   sig: __call__(r)
 
 __call__ (src/requests/auth.py:102-104)
   sig: __call__(r)
 
-__call__ (src/requests/auth.py:72-73)
+__call__ (src/requests/auth.py:94-96)
   sig: __call__(r)
-  raises: NotImplementedError
 
 _implementation (src/requests/help.py:34-63)
   Return a dict with the Python implementation and version.
@@ -189,27 +189,6 @@ RequestsCookieJar (src/requests/cookies.py:176-437)
   called_by: copy, cookiejar_from_dict
   raises: KeyError, CookieConflictError
 
-RequestsDependencyWarning (src/requests/exceptions.py:151-152)
-  An imported dependency doesn't match the expected version range.
-  extends: RequestsWarning
-  imports: urllib3.exceptions, compat
-
-HTTPError (src/requests/exceptions.py:56-57)
-  An HTTP error occurred.
-  extends: RequestException
-  imports: urllib3.exceptions, compat
-
-is_permanent_redirect (src/requests/models.py:779-784)
-  True if this Response one of the permanent versions of redirect.
-
-super_len (src/requests/utils.py:135-203)
-  sig: super_len(o)
-
-close (src/requests/sessions.py:796-799)
-  Closes all adapters and as such the session
-  behavior: ACCUMULATE(self.adapters.values(... -> result)
-  called_by: __exit__, Session, resolve_redirects, SessionRedirectMixin
-
 merge_hooks (src/requests/sessions.py:92-104)
   Properly merges both requests and session hooks.
   sig: merge_hooks(request_hooks, session_hooks, dict_class)
@@ -235,6 +214,11 @@ _find_no_duplicates (src/requests/cookies.py:386-413)
   calls: CookieConflictError
   called_by: __getitem__, get, RequestsCookieJar
   raises: KeyError, CookieConflictError
+
+close (src/requests/sessions.py:796-799)
+  Closes all adapters and as such the session
+  behavior: ACCUMULATE(self.adapters.values(... -> result)
+  called_by: __exit__, Session, resolve_redirects, SessionRedirectMixin
 
 get_connection_with_tls_context (src/requests/adapters.py:424-471)
   Returns a urllib3 connection for the given request and TLS settings.
@@ -291,12 +275,28 @@ set_environ (src/requests/utils.py:731-749)
   sig: set_environ(env_name, value)
   called_by: should_bypass_proxies
 
+RequestsDependencyWarning (src/requests/exceptions.py:151-152)
+  An imported dependency doesn't match the expected version range.
+  extends: RequestsWarning
+  imports: urllib3.exceptions, compat
+
 get (src/requests/sessions.py:595-604)
   Sends a GET request.
   sig: get(url)
   behavior: DELEGATE(request -> result)
   calls: request
   called_by: merge_environment_settings, send, Session, should_strip_auth, SessionRedirectMixin, merge_hooks
+
+HTTPError (src/requests/exceptions.py:56-57)
+  An HTTP error occurred.
+  extends: RequestException
+  imports: urllib3.exceptions, compat
+
+is_permanent_redirect (src/requests/models.py:779-784)
+  True if this Response one of the permanent versions of redirect.
+
+super_len (src/requests/utils.py:135-203)
+  sig: super_len(o)
 
 request (src/requests/sessions.py:502-593)
   Constructs a :class:`Request <Request>`, prepares it and sends it.
@@ -311,18 +311,17 @@ merge_setting (src/requests/sessions.py:62-89)
   behavior: ACCUMULATE(none_keys loop -> result)
   called_by: merge_environment_settings, prepare_request, Session, merge_hooks
 
-send (src/requests/sessions.py:675-750)
-  Send a given PreparedRequest.
-  sig: send(request)
-  behavior: BRANCH(allow_redirects -> self.resolve_redirect..., else -> [])
-  calls: get, get_adapter, resolve_redirects
-  called_by: request, Session, resolve_redirects, SessionRedirectMixin
-  raises: ValueError
+prepare_request (src/requests/sessions.py:459-500)
+  Constructs a :class:`PreparedRequest <PreparedRequest>` for
+  sig: prepare_request(request)
+  calls: merge_hooks, merge_setting
+  called_by: request, Session
+  uses: PreparedRequest (models), RequestsCookieJar (cookies)
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 23 with behavior annotations
-uncovered: set, set_cookie, cookiejar_from_dict, create_cookie
+coverage: 80 symbols in L3, 24 with behavior annotations
+uncovered: address_in_network, build_digest_header, cert_verify, delete
 drill: src/requests/sessions.py (~30 lines, merge_environment_settings)
 drill: src/requests/sessions.py (~12 lines, merge_hooks)
 drill: src/requests/help.py (~33 lines, _implementation)
@@ -451,74 +450,6 @@ def merge_setting(request_setting, session_setting, dict_class=OrderedDict):
         del merged_setting[key]
 
     return merged_setting
-```
-
-## info  (src/requests/help.py L66-122)
-```
-def info():
-    """Generate information for a bug report."""
-    try:
-        platform_info = {
-            "system": platform.system(),
-            "release": platform.release(),
-        }
-    except OSError:
-        platform_info = {
-            "system": "Unknown",
-            "release": "Unknown",
-        }
-
-    implementation_info = _implementation()
-    urllib3_info = {"version": urllib3.__version__}
-    charset_normalizer_info = {"version": None}
-    chardet_info = {"version": None}
-    if charset_normalizer:
-        charset_normalizer_info = {"version": charset_normalizer.__version__}
-    if chardet:
-        chardet_info = {"version": chardet.__version__}
-
-    pyopenssl_info = {
-        "version": None,
-        "openssl_version": "",
-    }
-    if OpenSSL:
-        pyopenssl_info = {
-            "version": OpenSSL.__version__,
-            "openssl_version": f"{OpenSSL.SSL.OPENSSL_VERSION_NUMBER:x}",
-        }
-    cryptography_info = {
-        "version": getattr(cryptography, "__version__", ""),
-    }
-    idna_info = {
-        "version": getattr(idna, "__version__", ""),
-    }
-
-    system_ssl = ssl.OPENSSL_VERSION_NUMBER
-    system_ssl_info = {"version": f"{system_ssl:x}" if system_ssl is not None else ""}
-
-    return {
-        "platform": platform_info,
-        "implementation": implementation_info,
-        "system_ssl": system_ssl_info,
-        "using_pyopenssl": pyopenssl is not None,
-        "using_charset_normalizer": chardet is None,
-        "pyOpenSSL": pyopenssl_info,
-        "urllib3": urllib3_info,
-        "chardet": chardet_info,
-        "charset_normalizer": charset_normalizer_info,
-        "cryptography": cryptography_info,
-        "idna": idna_info,
-        "requests": {
-            "version": requests_version,
-        },
-    }
-```
-
-## main  (src/requests/help.py L125-127)
-```
-def main():
-    """Pretty-print the bug information as JSON."""
-    print(json.dumps(info(), sort_keys=True, indent=2))
 ```
 
 ## __enter__  (tests/testserver/server.py L117-121)
@@ -726,6 +657,74 @@ def main():
 
         # Merge with session cookies
         merged_cookies = merge_cookies(
+            merge_cookies(RequestsCookieJar(), self.cookies), cookies
+        )
+
+        # Set environment's basic authentication if not explicitly set.
+        auth = request.auth
+        if self.trust_env and not auth and not self.auth:
+            auth = get_netrc_auth(request.url)
+
+        p = PreparedRequest()
+        p.prepare(
+            method=request.method.upper(),
+            url=request.url,
+            files=request.files,
+            data=request.data,
+            json=request.json,
+            headers=merge_setting(
+                request.headers, self.headers, dict_class=CaseInsensitiveDict
+            ),
+            params=merge_setting(request.params, self.params),
+            auth=merge_setting(auth, self.auth),
+            cookies=merged_cookies,
+            hooks=merge_hooks(request.hooks, self.hooks),
+        )
+        return p
+```
+
+## put  (src/requests/sessions.py L641-651)
+```
+    def put(self, url, data=None, **kwargs):
+        r"""Sends a PUT request. Returns :class:`Response` object.
+
+        :param url: URL for the new :class:`Request` object.
+        :param data: (optional) Dictionary, list of tuples, bytes, or file-like
+            object to send in the body of the :class:`Request`.
+        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :rtype: requests.Response
+        """
+
+        return self.request("PUT", url, data=data, **kwargs)
+```
+
+## request  (src/requests/sessions.py L502-593)
+```
+    def request(
+        self,
+        method,
+        url,
+        params=None,
+        data=None,
+        headers=None,
+        cookies=None,
+        files=None,
+        auth=None,
+        timeout=None,
+        allow_redirects=True,
+        proxies=None,
+        hooks=None,
+        stream=None,
+        verify=None,
+        cert=None,
+        json=None,
+    ):
+        """Constructs a :class:`Request <Request>`, prepares it and sends it.
+        Returns :class:`Response <Response>` object.
+
+        :param method: method for the new :class:`Request` object.
+        :param url: URL for the new :class:`Request` object.
+        :param params: (optional) Dictionary or bytes to be sent in the query
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

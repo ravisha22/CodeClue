@@ -147,10 +147,10 @@ main (examples/combined_middleware.py:308-316)
 main (examples/basic_auth_middleware.py:179-186)
   calls: run_test_server, run_tests
 
-main (examples/token_refresh_middleware.py:326-333)
+main (examples/retry_middleware.py:234-241)
   calls: run_test_server, run_tests
 
-main (examples/retry_middleware.py:234-241)
+main (examples/token_refresh_middleware.py:326-333)
   calls: run_test_server, run_tests
 
 main (examples/logging_middleware.py:157-166)
@@ -177,20 +177,27 @@ aiohttp_client_cls (aiohttp/pytest_plugin.py:353-376)
   Client class to use in ``aiohttp_client`` factory.
   called_by: aiohttp_client
 
+main (tools/check_sum.py:15-46)
+  sig: main(argv)
+  behavior: BRANCH(dst.exists() -> dst.read_text(), else -> '')
+
+main (examples/lowlevel_srv.py:10-17)
+  sig: main(loop)
+
+main (tools/cleanup_changes.py:27-41)
+  behavior: ACCUMULATE((root / 'CHANGES').it... -> delete)
+
 main (tools/check_changes.py:33-55)
   sig: main(argv)
   behavior: BRANCH(failed -> print('', file=sys.st..., else -> print('OK')); ACCUMULATE(changes.iterdir() loop -> result)
   calls: get_root
 
-main (examples/lowlevel_srv.py:10-17)
-  sig: main(loop)
-
-main (tools/check_sum.py:15-46)
-  sig: main(argv)
-  behavior: BRANCH(dst.exists() -> dst.read_text(), else -> '')
-
-main (tools/cleanup_changes.py:27-41)
-  behavior: ACCUMULATE((root / 'CHANGES').it... -> delete)
+aiohttp_client (aiohttp/pytest_plugin.py:380-431)
+  Factory to create a TestClient instance.
+  sig: aiohttp_client(loop, aiohttp_client_cls)
+  calls: aiohttp_client_cls
+  raises: ValueError
+  uses: TestServer (test_utils)
 
 DigestAuthMiddleware (aiohttp/client_middleware_digest_auth.py:145-469)
   HTTP digest authentication middleware for aiohttp client.
@@ -206,13 +213,6 @@ basicauth_from_netrc (aiohttp/helpers.py:244-270)
   called_by: proxies_from_env
   raises: LookupError
 
-aiohttp_client (aiohttp/pytest_plugin.py:380-431)
-  Factory to create a TestClient instance.
-  sig: aiohttp_client(loop, aiohttp_client_cls)
-  calls: aiohttp_client_cls
-  raises: ValueError
-  uses: TestServer (test_utils)
-
 aiohttp_raw_server (aiohttp/pytest_plugin.py:325-349)
   Factory to create a RawTestServer instance, given a web handler.
   sig: aiohttp_raw_server(loop)
@@ -225,44 +225,6 @@ aiohttp_server (aiohttp/pytest_plugin.py:296-321)
 
 aiohttp_unused_port (aiohttp/pytest_plugin.py:290-292)
   Return a port that is unused on the current host.
-
-Domain (aiohttp/web_urldispatcher.py:766-803)
-  extends: AbstractRuleMatching
-  imports: asyncio, base64, hashlib, html, inspect
-  calls: validation
-  raises: TypeError, ValueError
-  uses: URL (yarl)
-
-MaskDomain (aiohttp/web_urldispatcher.py:806-819)
-  extends: Domain
-  imports: asyncio, base64, hashlib, html, inspect
-
-_is_domain_match (aiohttp/cookiejar.py:470-483)
-  Implements domain matching adhering to RFC 6265.
-  sig: _is_domain_match(domain, hostname)
-  called_by: CookieJar
-
-add_domain (aiohttp/web_app.py:296-304)
-  sig: add_domain(domain, subapp)
-  calls: _add_subapp
-  raises: TypeError
-  uses: MaskDomain (web_urldispatcher), Domain (web_urldispatcher)
-
-clear_domain (aiohttp/cookiejar.py:220-221)
-  sig: clear_domain(domain)
-
-clear_domain (aiohttp/abc.py:171-172)
-  Clear all cookies for domain and all subdomains.
-  sig: clear_domain(domain)
-
-clear_domain (aiohttp/cookiejar.py:574-575)
-  sig: clear_domain(domain)
-
-match_domain (aiohttp/web_urldispatcher.py:799-800)
-  sig: match_domain(host)
-
-match_domain (aiohttp/web_urldispatcher.py:818-819)
-  sig: match_domain(host)
 
 proxies_from_env (aiohttp/helpers.py:273-296)
   behavior: ACCUMULATE(stripped.items() loop -> result)
@@ -331,10 +293,51 @@ escape_quotes (aiohttp/client_middleware_digest_auth.py:108-110)
   behavior: DELEGATE(replace -> result)
   called_by: _encode, DigestAuthMiddleware
 
+run_tests (examples/combined_middleware.py:255-305)
+  Run all the middleware tests.
+  calls: BasicAuthMiddleware, LoggingMiddleware, RetryMiddleware
+  called_by: main
+  uses: ClientSession (aiohttp)
+
+run_tests (examples/retry_middleware.py:167-231)
+  Run all retry middleware tests.
+  calls: RetryMiddleware
+  called_by: main
+  uses: ClientSession (aiohttp)
+
+run_tests (examples/logging_middleware.py:105-154)
+  Run all the middleware tests.
+  calls: LoggingMiddleware
+  called_by: main
+  uses: ClientSession (aiohttp)
+
+run_tests (examples/token_refresh_middleware.py:261-323)
+  Run all token refresh middleware tests.
+  calls: TokenRefreshMiddleware
+  called_by: main
+  uses: ClientSession (aiohttp)
+
+run_tests (examples/basic_auth_middleware.py:134-176)
+  Run all basic auth middleware tests.
+  calls: BasicAuthMiddleware
+  called_by: main
+  uses: ClientSession (aiohttp)
+
+FakeResolver (examples/fake_server.py:12-42)
+  extends: AbstractResolver
+  imports: asyncio, socket, ssl, aiohttp, aiohttp.abc
+  calls: close, resolve
+  called_by: main
+
+run_test_server (examples/combined_middleware.py:238-252)
+  Run a test server with various endpoints.
+  calls: TestServer
+  called_by: main
+
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
 coverage: 80 symbols in L3, 20 with behavior annotations
-uncovered: LoggingMiddleware, LoggingMiddleware, RetryMiddleware, RetryMiddleware
+uncovered: AbstractAccessLogger, AbstractAsyncAccessLogger, AbstractCookieJar, AbstractMatchInfo
 
 --- CLUE FILE END ---
 

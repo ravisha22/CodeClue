@@ -126,83 +126,29 @@ ComplexCLI (examples/complex/complex/cli.py:31-45)
   extends: Group
   imports: click
 
-cli (examples/termui/termui.py:9-11)
-  This script showcases different terminal UI helpers in Click.
-
 cli (examples/completion/completion.py:8-9)
   calls: group
 
-_match_short_opt (src/click/parser.py:389-427)
-  sig: _match_short_opt(arg, state)
-  behavior: ACCUMULATE(arg[1:] loop -> i, raises NoSuchOption)
-  calls: _get_value_from_state, _normalize_opt
-  called_by: _process_opts, _OptionParser
-  raises: NoSuchOption
-  uses: NoSuchOption (exceptions)
-
-_match_long_opt (src/click/parser.py:359-387)
-  sig: _match_long_opt(opt, explicit_value, state)
-  behavior: GUARD(opt not in self._long_opt -> raise NoSuchOption(opt, p...)
-  calls: _get_value_from_state
-  called_by: _process_opts, _OptionParser
-  raises: NoSuchOption, BadOptionUsage
-  uses: NoSuchOption (exceptions), BadOptionUsage (exceptions)
-
-__next__ (src/click/_termui_impl.py:134-140)
-  behavior: DELEGATE(next -> result)
-
-cli (examples/aliases/aliases.py:97-98)
-  An example application that supports aliases.
-
-cli (examples/validation/validation.py:34-48)
-  Validation.
-  sig: cli(count, foo, url)
-  calls: URL
-  raises: BadParameter
-
-cli (examples/imagepipe/imagepipe.py:11-20)
-  This script processes a bunch of images through pillow in a unix
-
-cli (examples/colors/colors.py:25-39)
-  This script prints some colors.
-  behavior: ACCUMULATE(all_colors loop -> result)
-
-cli (examples/naval/naval.py:6-12)
-  Naval Fate.
-
-cli (examples/complex/complex/commands/cmd_status.py:8-11)
-  Shows file changes in the current working directory.
-  sig: cli(ctx)
-
-cli (examples/complex/complex/cli.py:56-60)
-  A complex command line interface.
-  sig: cli(ctx, verbose, home)
-
-cli (examples/complex/complex/commands/cmd_init.py:9-13)
-  Initializes a repository.
-  sig: cli(ctx, path)
-
-cli (examples/repo/repo.py:44-57)
-  Repo is a command line tool that showcases how to build complex
-  sig: cli(ctx, repo_home, config, verbose)
-  behavior: ACCUMULATE(config loop -> result)
-  calls: set_config, Repo
-
-cli (examples/inout/inout.py:7-30)
-  This script works similar to the Unix `cat` command but it writes
-  sig: cli(input, output)
-  behavior: ACCUMULATE(input loop -> output)
-
-smoothen_cmd (examples/imagepipe/imagepipe.py:229-238)
-  Applies a smoothening filter.
-  sig: smoothen_cmd(images, iterations)
-  behavior: ACCUMULATE(images loop -> result)
-  calls: copy_filename
+cli (examples/termui/termui.py:9-11)
+  This script showcases different terminal UI helpers in Click.
 
 _expand_args (src/click/utils.py:578-628)
   Simulate Unix shell expansion with Python functions.
   sig: _expand_args(args)
   behavior: ACCUMULATE(args loop -> out)
+
+_resolve_incomplete (src/click/shell_completion.py:623-667)
+  Find the Click object that will handle the completion of the
+  sig: _resolve_incomplete(ctx, args, incomplete)
+  behavior: ACCUMULATE(params loop -> result)
+  calls: _is_incomplete_argument, _is_incomplete_option, _start_of_option
+  called_by: get_completions, ShellComplete
+
+shell_complete (src/click/shell_completion.py:19-54)
+  Perform shell completion for the given CLI program.
+  sig: shell_complete(cli, ctx_args, prog_name, complete_var, instruction)
+  calls: complete, get_completion_class
+  called_by: get_completions, ShellComplete
 
 convert_type (src/click/types.py:1112-1169)
   Find the most appropriate :class:`ParamType` for the given Python
@@ -218,19 +164,6 @@ Tuple (src/click/types.py:1060-1109)
   calls: fail, convert_type
   called_by: convert_type
   uses: BadParameter (exceptions)
-
-_resolve_incomplete (src/click/shell_completion.py:623-667)
-  Find the Click object that will handle the completion of the
-  sig: _resolve_incomplete(ctx, args, incomplete)
-  behavior: ACCUMULATE(params loop -> result)
-  calls: _is_incomplete_argument, _is_incomplete_option, _start_of_option
-  called_by: get_completions, ShellComplete
-
-shell_complete (src/click/shell_completion.py:19-54)
-  Perform shell completion for the given CLI program.
-  sig: shell_complete(cli, ctx_args, prog_name, complete_var, instruction)
-  calls: complete, get_completion_class
-  called_by: get_completions, ShellComplete
 
 Abort (src/click/exceptions.py:294-295)
   An internal signalling exception that signals Click to abort.
@@ -282,30 +215,66 @@ make_formatter (src/click/core.py:561-573)
   behavior: DELEGATE(formatter_class -> result)
   called_by: Command
 
-Group (src/click/core.py:1503-1951)
-  A group is a command that nests other commands (or more groups).
-  extends: Command
-  attrs: allow_extra_args=True, allow_interspersed_args=False
-  imports: enum, errno, inspect, gettext, itertools
-  calls: get_short_help_str, make_context, _make_sub_context, fail, scope, add_command, format_commands, _process_result
-  raises: TypeError, NoArgsIsHelpError, RuntimeError
-  uses: UsageError (exceptions)
+_match_short_opt (src/click/parser.py:389-427)
+  sig: _match_short_opt(arg, state)
+  behavior: ACCUMULATE(arg[1:] loop -> i, raises NoSuchOption)
+  calls: _get_value_from_state, _normalize_opt
+  called_by: _process_opts, _OptionParser
+  raises: NoSuchOption
+  uses: NoSuchOption (exceptions)
 
-CommandCollection (src/click/core.py:1961-2014)
-  A :class:`Group` that looks up subcommands on other groups.
-  extends: Group
-  imports: enum, errno, inspect, gettext, itertools
-  calls: _check_nested_chain
+_match_long_opt (src/click/parser.py:359-387)
+  sig: _match_long_opt(opt, explicit_value, state)
+  behavior: GUARD(opt not in self._long_opt -> raise NoSuchOption(opt, p...)
+  calls: _get_value_from_state
+  called_by: _process_opts, _OptionParser
+  raises: NoSuchOption, BadOptionUsage
+  uses: NoSuchOption (exceptions), BadOptionUsage (exceptions)
 
-add_command (src/click/core.py:1622-1630)
-  Registers another :class:`Command` with this group.
-  sig: add_command(cmd, name)
-  calls: _check_nested_chain
-  called_by: Group
-  raises: TypeError
+__next__ (src/click/_termui_impl.py:134-140)
+  behavior: DELEGATE(next -> result)
 
-group (examples/completion/completion.py:32-33)
-  called_by: cli
+cli (examples/colors/colors.py:25-39)
+  This script prints some colors.
+  behavior: ACCUMULATE(all_colors loop -> result)
+
+cli (examples/complex/complex/cli.py:56-60)
+  A complex command line interface.
+  sig: cli(ctx, verbose, home)
+
+cli (examples/inout/inout.py:7-30)
+  This script works similar to the Unix `cat` command but it writes
+  sig: cli(input, output)
+  behavior: ACCUMULATE(input loop -> output)
+
+cli (examples/imagepipe/imagepipe.py:11-20)
+  This script processes a bunch of images through pillow in a unix
+
+cli (examples/aliases/aliases.py:97-98)
+  An example application that supports aliases.
+
+cli (examples/naval/naval.py:6-12)
+  Naval Fate.
+
+cli (examples/complex/complex/commands/cmd_init.py:9-13)
+  Initializes a repository.
+  sig: cli(ctx, path)
+
+cli (examples/repo/repo.py:44-57)
+  Repo is a command line tool that showcases how to build complex
+  sig: cli(ctx, repo_home, config, verbose)
+  behavior: ACCUMULATE(config loop -> result)
+  calls: set_config, Repo
+
+cli (examples/complex/complex/commands/cmd_status.py:8-11)
+  Shows file changes in the current working directory.
+  sig: cli(ctx)
+
+cli (examples/validation/validation.py:34-48)
+  Validation.
+  sig: cli(count, foo, url)
+  calls: URL
+  raises: BadParameter
 
 ShellComplete (src/click/shell_completion.py:200-301)
   Base class for providing shell completion support.
@@ -319,9 +288,32 @@ get_completions (src/click/shell_completion.py:271-281)
   calls: _resolve_context, _resolve_incomplete, shell_complete
   called_by: complete, ShellComplete
 
+smoothen_cmd (examples/imagepipe/imagepipe.py:229-238)
+  Applies a smoothening filter.
+  sig: smoothen_cmd(images, iterations)
+  behavior: ACCUMULATE(images loop -> result)
+  calls: copy_filename
+
+Command (src/click/core.py:873-1485)
+  Commands are the basic building block of command line interfaces in
+  attrs: allow_extra_args=False, allow_interspersed_args=True, ignore_unknown_options=False
+  imports: enum, errno, inspect, gettext, itertools
+  calls: _main_shell_completion, format_epilog, format_help, format_help_text, format_usage, get_help_option, get_help_option_names, get_params
+  raises: NoArgsIsHelpError, Abort
+  uses: Exit (exceptions), UsageError (exceptions)
+
+Group (src/click/core.py:1503-1951)
+  A group is a command that nests other commands (or more groups).
+  extends: Command
+  attrs: allow_extra_args=True, allow_interspersed_args=False
+  imports: enum, errno, inspect, gettext, itertools
+  calls: get_short_help_str, make_context, _make_sub_context, fail, scope, add_command, format_commands, _process_result
+  raises: TypeError, NoArgsIsHelpError, RuntimeError
+  uses: UsageError (exceptions)
+
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 21 with behavior annotations
-uncovered: format_commands, format_epilog, format_help_text, format_usage
+coverage: 80 symbols in L3, 24 with behavior annotations
+uncovered: get_invalid_choice_message, get_parameter_source, handle_parse_result, iter_params_for_processing
 drill: src/click/utils.py (~31 lines, _expand_args)
 drill: src/click/core.py (~15 lines, _check_nested_chain)

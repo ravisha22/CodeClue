@@ -126,6 +126,10 @@ ClientResponseError (aiohttp/client_exceptions.py:59-99)
   extends: ClientError
   imports: asyncio, multidict, typedefs, ssl, client_reqrep
 
+_BaseRequestContextManager (aiohttp/client.py:1508-1542)
+  imports: asyncio, base64, hashlib, traceback, warnings
+  calls: __await__, send, throw
+
 ClientRequest (aiohttp/client_reqrep.py:954-1434)
   extends: ClientRequestBase
   imports: asyncio, codecs, io, traceback, warnings
@@ -169,16 +173,6 @@ StreamResponse (aiohttp/web_response.py:74-532)
   calls: _generate_content_type_header, _prepare_headers, _set_status, _start_compression, _write_headers, drain, enable_compression, write
   raises: RuntimeError, ValueError, TypeError
 
-RawRequestMessage (aiohttp/http_parser.py:99-111)
-  extends: NamedTuple
-  imports: asyncio, string, enum, multidict, yarl
-  called_by: HttpRequestParser
-
-RawResponseMessage (aiohttp/http_parser.py:112-123)
-  extends: NamedTuple
-  imports: asyncio, string, enum, multidict, yarl
-  called_by: HttpResponseParser
-
 BaseSite (aiohttp/web_runner.py:47-78)
   extends: ABC
   imports: asyncio, signal, socket, yarl, http_parser
@@ -220,6 +214,16 @@ HttpBadRequest (aiohttp/http_exceptions.py:55-57)
   attrs: code=400, message='Bad Request'
   imports: textwrap, multidict
 
+RawRequestMessage (aiohttp/http_parser.py:99-111)
+  extends: NamedTuple
+  imports: asyncio, string, enum, multidict, yarl
+  called_by: HttpRequestParser
+
+RawResponseMessage (aiohttp/http_parser.py:112-123)
+  extends: NamedTuple
+  imports: asyncio, string, enum, multidict, yarl
+  called_by: HttpResponseParser
+
 _RequestInfo (aiohttp/client_reqrep.py:102-106)
   extends: NamedTuple
   imports: asyncio, codecs, io, traceback, warnings
@@ -240,35 +244,33 @@ AiohttpServer (aiohttp/pytest_plugin.py:51-54)
   extends: Protocol
   imports: asyncio, inspect, warnings, pytest, test_utils
 
-ClientConnectionError (aiohttp/client_exceptions.py:123-124)
-  Base class for client socket errors.
-  extends: ClientError
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
+ClientWebSocketResponse (aiohttp/client_ws.py:60-560)
+  imports: asyncio, types, client_exceptions, client_reqrep, helpers
+  calls: _cancel_heartbeat, _cancel_pong_response_cb, _handle_ping_pong_exception, _ping_task_done, _reset_heartbeat, _set_closed, _set_closing, close
+  raises: TypeError, WSMessageTypeError, StopAsyncIteration, RuntimeError
+  uses: WSMessageError (http_websocket)
 
-ClientError (aiohttp/client_exceptions.py:55-56)
-  Base class for client connection errors.
-  extends: Exception
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
+BaseConnector (aiohttp/connector.py:226-793)
+  Base connector class.
+  imports: asyncio, random, socket, traceback, warnings
+  calls: _available_connections, _cleanup_closed, _get, _release_acquired, _release_waiter, _update_proxy_auth_header_and_build_proxy_req, _wait_for_available_connection, Connection
+  raises: NotImplementedError, ValueError, ClientConnectionError
+  uses: ClientRequestBase (client_reqrep)
 
-HTTPError (aiohttp/web_exceptions.py:172-173)
-  Base class for exceptions with status codes in the 400s and 500s.
-  extends: HTTPException
-  imports: warnings, http, multidict, yarl, helpers
+BaseKey (aiohttp/helpers.py:837-887)
+  Base for concrete context storage key classes.
+  imports: asyncio, base64, binascii, enum, inspect
+  raises: RuntimeError
 
-HTTPRedirection (aiohttp/web_exceptions.py:176-177)
-  Base class for exceptions with status codes in the 300s.
-  extends: HTTPException
-  imports: warnings, http, multidict, yarl, helpers
+BaseTimerContext (aiohttp/helpers.py:649-654)
+  imports: asyncio, base64, binascii, enum, inspect
 
-HTTPSuccessful (aiohttp/web_exceptions.py:180-181)
-  Base class for exceptions with status codes in the 200s.
-  extends: HTTPException
-  imports: warnings, http, multidict, yarl, helpers
+_SessionRequestContextManager (aiohttp/client.py:1549-1578)
+  imports: asyncio, base64, hashlib, traceback, warnings
 
-PayloadEncodingError (aiohttp/http_exceptions.py:60-61)
-  Base class for payload errors
-  extends: BadHttpMessage
-  imports: textwrap, multidict
+aiohttp_client_cls (aiohttp/pytest_plugin.py:353-376)
+  Client class to use in ``aiohttp_client`` factory.
+  called_by: aiohttp_client
 
 ResponseHandler (aiohttp/client_proto.py:31-371)
   Helper class to adapt between Protocol and StreamReader.
@@ -290,22 +292,12 @@ _FileResponseResult (aiohttp/web_fileresponse.py:61-67)
   extends: Enum
   imports: asyncio, io, enum, mimetypes, stat
 
-IOBasePayload (aiohttp/payload.py:452-714)
-  extends: Payload
-  imports: asyncio, enum, io, mimetypes, warnings
-  calls: _read_all, _set_or_restore_start_position, _should_stop_writing, set_content_disposition
-
-HTTPNotExtended (aiohttp/web_exceptions.py:495-496)
-  extends: HTTPServerError
-  attrs: status_code=510
-  imports: warnings, http, multidict, yarl, helpers
-
-HTTPRequestEntityTooLarge (aiohttp/web_exceptions.py:366-375)
-  extends: HTTPClientError
-  attrs: status_code=413
-  imports: warnings, http, multidict, yarl, helpers
+_make_request (aiohttp/web_server.py:97-105)
+  sig: _make_request(message, payload, protocol, writer, task)
+  behavior: DELEGATE(BaseRequest -> result)
+  uses: BaseRequest (web_request)
 
 -- GAPS
 type: RELATIONAL (answerable from L2-L3 structure)
-coverage: 80 symbols in L3, 0 with behavior annotations
-uncovered: _BaseRequestContextManager, BaseConnector, ClientWebSocketResponse, BaseKey
+coverage: 80 symbols in L3, 15 with behavior annotations
+uncovered: on_request_start, on_response_chunk_received, on_response_prepare, request

@@ -115,22 +115,6 @@ Session (src/requests/sessions.py:356-818)
   raises: InvalidSchema, ValueError
   uses: InvalidSchema (exceptions), PreparedRequest (models), RequestsCookieJar (cookies), Request (models)
 
-close (src/requests/sessions.py:796-799)
-  Closes all adapters and as such the session
-  behavior: ACCUMULATE(self.adapters.values(... -> result)
-  called_by: __exit__, Session, resolve_redirects, SessionRedirectMixin
-
-merge_hooks (src/requests/sessions.py:92-104)
-  Properly merges both requests and session hooks.
-  sig: merge_hooks(request_hooks, session_hooks, dict_class)
-  calls: get, merge_setting
-  called_by: prepare_request, Session
-
-get_netrc_auth (src/requests/utils.py:206-247)
-  Returns the Requests tuple auth for a given url from netrc.
-  sig: get_netrc_auth(url, raise_errors)
-  behavior: BRANCH(netrc_file is not None -> (netrc_file,), else -> (f'~/{f}' for f in N...)
-
 request_url (src/requests/adapters.py:524-554)
   Obtain the url to use when making the final request.
   sig: request_url(request, proxies)
@@ -145,14 +129,14 @@ prepare_url (src/requests/models.py:411-483)
   raises: MissingSchema, InvalidURL
   uses: MissingSchema (exceptions), InvalidURL (exceptions)
 
+get_full_url (src/requests/cookies.py:49-67)
+  behavior: GUARD(not self._r.headers.get('Host') -> return self._r.url)
+  calls: get
+
 session (src/requests/sessions.py:821-833)
   Returns a :class:`Session` for context-management.
   behavior: DELEGATE(Session -> result)
   calls: Session
-
-get_full_url (src/requests/cookies.py:49-67)
-  behavior: GUARD(not self._r.headers.get('Host') -> return self._r.url)
-  calls: get
 
 SessionRedirectMixin (src/requests/sessions.py:107-353)
   imports: adapters, auth, compat, cookies, exceptions
@@ -190,6 +174,30 @@ urldefragauth (src/requests/utils.py:1051-1065)
   Given a url remove the fragment and the authentication part.
   sig: urldefragauth(url)
 
+RequestsCookieJar (src/requests/cookies.py:176-437)
+  Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
+  extends: CookieJar, MutableMapping
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: CookieConflictError, __contains__, _find_no_duplicates, copy, get, get_policy, iteritems, iterkeys
+  called_by: copy, cookiejar_from_dict
+  raises: KeyError, CookieConflictError
+
+close (src/requests/sessions.py:796-799)
+  Closes all adapters and as such the session
+  behavior: ACCUMULATE(self.adapters.values(... -> result)
+  called_by: __exit__, Session, resolve_redirects, SessionRedirectMixin
+
+merge_hooks (src/requests/sessions.py:92-104)
+  Properly merges both requests and session hooks.
+  sig: merge_hooks(request_hooks, session_hooks, dict_class)
+  calls: get, merge_setting
+  called_by: prepare_request, Session
+
+get_netrc_auth (src/requests/utils.py:206-247)
+  Returns the Requests tuple auth for a given url from netrc.
+  sig: get_netrc_auth(url, raise_errors)
+  behavior: BRANCH(netrc_file is not None -> (netrc_file,), else -> (f'~/{f}' for f in N...)
+
 build_response (src/requests/adapters.py:337-372)
   Builds a :class:`Response <requests.Response>` object from a urllib3
   sig: build_response(req, resp)
@@ -210,6 +218,13 @@ get_adapter (src/requests/sessions.py:783-794)
   raises: InvalidSchema
   uses: InvalidSchema (exceptions)
 
+MockRequest (src/requests/cookies.py:23-100)
+  Wraps a `requests.Request` to mimic a `urllib2.Request`.
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: get_host, get_origin_req_host, is_unverifiable, get
+  called_by: extract_cookies_to_jar, get_cookie_header
+  raises: NotImplementedError
+
 copy (src/requests/cookies.py:428-433)
   Return a copy of this RequestsCookieJar.
   calls: get_policy, update, RequestsCookieJar
@@ -221,13 +236,6 @@ update (src/requests/cookies.py:358-364)
   behavior: BRANCH(isinstance(other, cookielib.C... -> result, else -> super().update(ot...)
   calls: copy, set_cookie
   called_by: __setstate__, copy, RequestsCookieJar, create_cookie, merge_cookies
-
-MockRequest (src/requests/cookies.py:23-100)
-  Wraps a `requests.Request` to mimic a `urllib2.Request`.
-  imports: calendar, copy, compat, threading, dummy_threading
-  calls: get_host, get_origin_req_host, is_unverifiable, get
-  called_by: extract_cookies_to_jar, get_cookie_header
-  raises: NotImplementedError
 
 raise_for_status (src/requests/models.py:1001-1028)
   Raises :class:`HTTPError`, if one occurred.
@@ -296,15 +304,10 @@ prepend_scheme_if_needed (src/requests/utils.py:976-1002)
   Given a URL that may or may not have a scheme, prepend the given scheme.
   sig: prepend_scheme_if_needed(url, new_scheme)
 
-select_proxy (src/requests/utils.py:825-848)
-  Select a proxy for the url, if applicable.
-  sig: select_proxy(url, proxies)
-  behavior: ACCUMULATE(proxy_keys loop -> result)
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 28 with behavior annotations
-uncovered: proxy_manager_for, merge_cookies, get_redirect_target, rebuild_method
-drill: src/requests/sessions.py (~12 lines, merge_hooks)
+coverage: 80 symbols in L3, 23 with behavior annotations
+uncovered: build_connection_pool_key_attributes, SOCKSProxyManager, add_headers, proxy_headers
 drill: src/requests/sessions.py (~3 lines, close)
+drill: src/requests/sessions.py (~12 lines, merge_hooks)
 drill: src/requests/utils.py (~32 lines, get_netrc_auth)

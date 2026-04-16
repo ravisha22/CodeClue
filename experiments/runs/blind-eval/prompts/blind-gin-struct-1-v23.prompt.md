@@ -1,0 +1,334 @@
+# Blind Evaluation Prompt - MRLF v2.4
+# Task: blind-gin-struct-1
+
+You are a senior software engineer. You have been given a codebase
+comprehension artifact (a "clue file") that summarises a repository's
+structure, symbols, and behavior. This is NOT the full source code - it is
+a compressed representation.
+
+Answer the question below using ONLY the information in the clue file.
+Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the modules, symbols, or relationships most relevant to the question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before concluding: follow calls: chains, walk extends: hierarchies, and use behavior: annotations as summaries of how control or responsibility moves. Use TREE and INDEX to situate the relationship in the repository structure. State explicitly what GAPS says cannot be determined from the clue alone. Finally, synthesize the answer, distinguishing supported structure from unresolved uncertainty.
+
+--- CLUE FILE START ---
+=CC v2.1 gin@HEAD 58mod 541sym
+? What public constructors and core handler types define Gin's routing surface in the docs?
+
+
+-- TREE
+binding/  (17 files)
+codec/  (5 files)
+  json/
+ginS/  (1 files)
+internal/  (2 files)
+  bytesconv/  fs/
+render/  (14 files)
+auth.go  context.go  context_appengine.go  debug.go  deprecated.go  doc.go  errors.go  fs.go  gin.go  logger.go  mode.go  path.go  recovery.go  response_writer.go  routergroup.go
+
+-- INDEX
+tree.go                                         950L  Param, ByName, Get, countParams, countSections
+errors.go                                       173L  Error, IsType, JSON, MarshalJSON, SetMeta
+gin.go                                          832L  Default, Delims, HandleContext, Handler, LoadHTMLFS
+context.go                                     1489L  Abort, AbortWithError, AbortWithStatus, AbortWithStatusJSON, AbortWithStatusPureJSON
+binding/default_validator.go                     95L  Error, Engine, ValidateStruct, lazyinit, validateStruct
+render/html.go                                  101L  Delims, Render, WriteContentType, HTML, Instance
+render/json.go                                  194L  Render, WriteContentType, AsciiJSON, Render, WriteContentType
+render/msgpack.go                                43L  Render, WriteContentType, MsgPack, WriteMsgPack
+render/redirect.go                               29L  Render, WriteContentType, Redirect
+render/text.go                                   41L  Render, WriteContentType, String, WriteString
+auth.go                                         116L  BasicAuth, BasicAuthForProxy, BasicAuthForRealm, authPair, searchCredential
+binding/binding.go                              127L  Binding, BindingBody, BindingUri, Default, StructValidator
+binding/binding_nomsgpack.go                    121L  Binding, BindingBody, BindingUri, Default, StructValidator
+binding/bson.go                                  30L  Bind, bsonBinding
+binding/form.go                                  64L  
+binding/form_mapping.go                         550L  BindUnmarshaler, MapFormWithTag, TrySet, head, mapForm
+binding/header.go                                37L  headerBinding, TrySet, mapHeader
+binding/json.go                                  56L  decodeJSON, jsonBinding
+binding/msgpack.go                               37L  decodeMsgPack, msgpackBinding
+  ...and 39 more modules
+
+-- SYM
+Context.Get                         M context.go:288    Get returns the value for the given key, ie: (v...
+Context.initQueryCache              M context.go:568    function Context.initQueryCache
+Context.GetQueryArray               M context.go:580    GetQueryArray returns a slice of strings for a ...
+Context.GetQuery                    M context.go:554    GetQuery is like Query(), it returns the keyed ...
+RouterGroup.handle                  M routergroup.go:86     function RouterGroup.handle
+Context.Query                       M context.go:525    Query returns the keyed url query value if it e...
+Context.ShouldBindWith              M context.go:919    ShouldBindWith binds the passed struct pointer ...
+Context.MustBindWith                M context.go:810    MustBindWith binds the passed struct pointer us...
+setByMultipartFormFile              M binding/multipart_form_mapping.go:35     function setByMultipartFormFile
+responseWriter.WriteHeaderNow       M response_writer.go:77     function responseWriter.WriteHeaderNow
+responseWriter.Written              M response_writer.go:106    function responseWriter.Written
+setArrayOfMultipartFormFiles        M binding/multipart_form_mapping.go:63     function setArrayOfMultipartFormFiles
+Context.AbortWithError              M context.go:238    AbortWithError calls `AbortWithStatus()` and `E...
+Context.requestHeader               M context.go:1050   function Context.requestHeader
+RouterGroup.returnObj               M routergroup.go:254    function RouterGroup.returnObj
+Context.Set                         M context.go:276    Set is used to store a new key/value pair exclu...
+Params.Get                          M tree.go:29     Get returns the value of the first Param which ...
+IsDebugging                         M debug.go:22     IsDebugging returns true if the framework is ru...
+Context.initFormCache               M context.go:638    function Context.initFormCache
+Context.ShouldBindBodyWith          M context.go:928    ShouldBindBodyWith is similar with ShouldBindWi...
+Context                             C context.go:61     Context is the most important part of gin.
+responseWriter.Write                M response_writer.go:84     function responseWriter.Write
+responseWriter.WriteHeader          M response_writer.go:67     function responseWriter.WriteHeader
+Engine.isTrustedProxy               M gin.go:469    isTrustedProxy will check whether the IP addres...
+Context.Next                        M context.go:188    Next should be used only inside middleware.
+RouterGroup.calculateAbsolutePath   M routergroup.go:250    function RouterGroup.calculateAbsolutePath
+SliceValidationError.Error          M binding/default_validator.go:24     Error concatenates all error elements in SliceV...
+Context.Error                       M context.go:252    Error attaches an error to the current context.
+RouterGroup.combineHandlers         M routergroup.go:241    function RouterGroup.combineHandlers
+Context.GetPostFormArray            M context.go:653    GetPostFormArray returns a slice of strings for...
+bsonBinding.Bind                    M binding/bson.go:20     function bsonBinding.Bind
+protobufBinding.Bind                M binding/protobuf.go:21     function protobufBinding.Bind
+Context.Bind                        M context.go:757    Bind checks the Method and Content-Type to sele...
+Context.String                      M context.go:1254   String writes the given string into the respons...
+Context.AbortWithStatus             M context.go:213    AbortWithStatus calls `Abort()` and writes the ...
+debugPrint                          M debug.go:56     function debugPrint
+Engine.isUnsafeTrustedProxies       M gin.go:457    isUnsafeTrustedProxies checks if Engine.trusted...
+errorMsgs.String                    M errors.go:161    function errorMsgs.String
+mapFormByTag                        M binding/form_mapping.go:46     function mapFormByTag
+LoggerWithConfig                    M logger.go:245    LoggerWithConfig instance a Logger middleware w...
+Context.Header                      M context.go:1080   Header is an intelligent shortcut for c.Writer....
+Error.Error                         M errors.go:82     Error implements the error interface.
+defaultValidator.lazyinit           M binding/default_validator.go:90     function defaultValidator.lazyinit
+responseWriter.WriteString          M response_writer.go:91     function responseWriter.WriteString
+CustomRecoveryWithWriter            M recovery.go:53     CustomRecoveryWithWriter returns a middleware f...
+Engine.Handler                      M gin.go:243    function Engine.Handler
+parseIP                             M gin.go:525    parseIP parse a string representation of an IP ...
+Context.ContentType                 M context.go:1036   ContentType returns the Content-Type header of ...
+mapping                             M binding/form_mapping.go:84     function mapping
+Context.File                        M context.go:1286   File writes the specified file into the body st...
+Context.Abort                       M context.go:207    Abort prevents pending handlers from being called.
+HandlersChain.Last                  M gin.go:60     Last returns the last handler in the chain.
+Context.BindUri                     M context.go:799    BindUri binds the passed struct pointer using b...
+setWithProperType                   M binding/form_mapping.go:323    function setWithProperType
+Error.JSON                          M errors.go:55     JSON creates a properly formatted JSON
+WriteJSON                           M render/json.go:67     WriteJSON marshals the given interface object a...
+WriteMsgPack                        M render/msgpack.go:39     WriteMsgPack writes MsgPack ContentType and enc...
+Redirect                            C render/redirect.go:13     Redirect contains the http request reference an...
+WriteString                         M render/text.go:33     WriteString writes data according to its format...
+Context.GetPostForm                 M context.go:624    GetPostForm is like PostForm(key).
+bufApp                              M path.go:128    Internal helper to lazily create a buffer if ne...
+RecoveryWithWriter                  M recovery.go:45     RecoveryWithWriter returns a middleware for a g...
+redirectRequest                     M gin.go:820    function redirectRequest
+Error                               C errors.go:32     Error represents a error's specification.
+shiftNRuneBytes                     M tree.go:687    Shift bytes in array by n bytes left
+getMapFromFormData                  M context.go:674    getMapFromFormData return a map which satisfies...
+Engine.prepareTrustedCIDRs          M gin.go:414    function Engine.prepareTrustedCIDRs
+Delims                              C render/html.go:15     Delims represents a set of Left and Right delim...
+Context.hasRequestContext           M context.go:1440   hasRequestContext returns whether c.Request has...
+mappingByPtr                        M binding/form_mapping.go:79     function mappingByPtr
+setFormMap                          M binding/form_mapping.go:528    function setFormMap
+Context.ClientIP                    M context.go:975    ClientIP implements one best effort algorithm t...
+updateRouteTree                     M gin.go:504    updateRouteTree do update to the route tree rec...
+Context.JSON                        M context.go:1205   JSON serializes the given struct as JSON into t...
+Engine.rebuild404Handlers           M gin.go:356    function Engine.rebuild404Handlers
+Engine.rebuild405Handlers           M gin.go:360    function Engine.rebuild405Handlers
+BSON.WriteContentType               M render/bson.go:32     WriteContentType (BSONBuf) writes BSONBuf Conte...
+  ...and 461 more symbols
+
+-- FOCUS
+Engine.Handler (gin.go:243-243)
+  behavior: GUARD(!engine.UseH2C -> return engine)
+  called_by: Run, RunListener, RunQUIC, RunTLS, RunUnix
+
+RouterGroup.createStaticHandler (routergroup.go:216-216)
+  sig: RouterGroup.createStaticHandler(relativePath string, fs http.FileSystem)
+  calls: Param, Open, calculateAbsolutePath
+  called_by: StaticFS
+
+RouterGroup.staticFileHandler (routergroup.go:181-181)
+  sig: RouterGroup.staticFileHandler(relativePath string, handler HandlerFunc)
+  behavior: GUARD(strings.Contains(relativePath, ":") || string... -> panic("URL paramet...)
+  calls: GET, HEAD, returnObj
+  called_by: StaticFile, StaticFileFS
+  raises: panic
+
+Core (codec/json/api.go:13-13)
+  Core the api for json codec.
+
+Context.Handler (context.go:167-167)
+  Handler returns the main handler.
+  behavior: DELEGATE(c.handlers.Last -> result)
+
+Context.HandlerName (context.go:149-149)
+  HandlerName returns the main handler's name.
+  behavior: DELEGATE(nameOfFunction -> result)
+
+Context.HandlerNames (context.go:155-155)
+  HandlerNames returns a list of all registered handlers for this context in descending order, following the semantics of 
+  behavior: ACCUMULATE(append loop -> hn)
+
+Engine.ServeHTTP (gin.go:662-662)
+  ServeHTTP conforms to the http.Handler interface.
+  sig: Engine.ServeHTTP(w http.ResponseWriter, req *http.Request)
+  calls: reset, handleHTTPRequest, updateRouteTrees
+  called_by: WrapH
+
+HandlersChain.Last (gin.go:60-60)
+  Last returns the last handler in the chain.
+  behavior: GUARD(length := len(c); length > 0 -> return c[length-1])
+  called_by: JSON, iterate
+
+Context.Next (context.go:188-188)
+  Next should be used only inside middleware.
+  behavior: ACCUMULATE(loop -> result)
+  called_by: handleHTTPRequest, serveError, ErrorLoggerT, LoggerWithConfig, CustomRecoveryWithWriter
+
+WrapF (utils.go:47-47)
+  WrapF is a helper function for wrapping http.HandlerFunc and returns a Gin middleware.
+  sig: WrapF(f http.HandlerFunc)
+  behavior: DELEGATE(func -> result)
+
+WrapH (utils.go:54-54)
+  WrapH is a helper function for wrapping http.Handler and returns a Gin middleware.
+  sig: WrapH(h http.Handler)
+  behavior: DELEGATE(func -> result)
+  calls: ServeHTTP
+
+Engine (gin.go:92-92)
+  Engine is the framework's instance, it contains the muxer, middleware and configuration settings.
+  methods: Delims, HandleContext, Handler, LoadHTMLFS, LoadHTMLFiles, LoadHTMLGlob
+
+RouterGroup.Match (routergroup.go:156-156)
+  Match registers a route that matches the specified methods that you declared.
+  sig: RouterGroup.Match(methods []string, relativePath string, handlers ...Handl...)
+  behavior: DELEGATE(group.returnObj -> result); ACCUMULATE(handle loop -> result)
+  calls: handle, returnObj
+
+RouteInfo (gin.go:68-68)
+  RouteInfo represents a request route's specification which contains method and path and its handler.
+
+Context (context.go:61-61)
+  Context is the most important part of gin.
+  methods: Abort, AbortWithError, AbortWithStatus, AbortWithStatusJSON, AbortWithStatusPureJSON, AddParam
+  called_by: ClientIP, Deadline, Done, Err, Value, hasRequestContext
+
+ErrorLoggerT (logger.go:212-212)
+  ErrorLoggerT returns a HandlerFunc for a given error type.
+  sig: ErrorLoggerT(typ ErrorType)
+  behavior: DELEGATE(func -> result)
+  calls: JSON, Next
+  called_by: ErrorLogger
+
+Bind (utils.go:29-29)
+  Bind is a helper function for given interface object and returns a Gin middleware.
+  sig: Bind(val any)
+  behavior: GUARD(value.Kind() == reflect.Ptr -> panic(`Bind struct...)
+  calls: Bind, Set
+  raises: panic
+
+ErrorLogger (logger.go:207-207)
+  ErrorLogger returns a HandlerFunc for any error type.
+  behavior: DELEGATE(ErrorLoggerT -> result)
+  calls: ErrorLoggerT
+
+Logger (logger.go:224-224)
+  Logger instances a Logger middleware that will write the logs to gin.DefaultWriter.
+  behavior: DELEGATE(LoggerWithConfig -> result)
+  calls: LoggerWithConfig
+
+Mode (mode.go:98-98)
+  Mode returns current gin mode.
+  behavior: DELEGATE(modeName.Load -> result)
+
+SetMode (mode.go:58-58)
+  SetMode sets gin mode according to input string.
+  sig: SetMode(value string)
+  behavior: DISPATCH(value)
+  called_by: init
+  raises: panic
+
+node.findCaseInsensitivePath (tree.go:671-671)
+  Makes a case-insensitive lookup of the given path and tries to find a handler.
+  sig: node.findCaseInsensitivePath(path string, fixTrailingSlash bool)
+  calls: findCaseInsensitivePathRec
+
+Engine.handleHTTPRequest (gin.go:690-690)
+  sig: Engine.handleHTTPRequest(c *Context)
+  behavior: PRECEDENCE(engine); ACCUMULATE(getValue loop -> result)
+  calls: Next, redirectFixedPath, redirectTrailingSlash, serveError
+  called_by: HandleContext, ServeHTTP
+
+Engine.Run (gin.go:540-540)
+  Run attaches the router to a http.Server and starts listening and serving HTTP requests.
+  sig: Engine.Run(addr ...string)
+  behavior: UNWIND(defer)
+  calls: Handler, isUnsafeTrustedProxies, updateRouteTrees
+  called_by: main
+
+Engine.updateRouteTrees (gin.go:517-517)
+  updateRouteTrees do update to the route trees
+  behavior: ACCUMULATE(updateRouteTree loop -> result)
+  calls: updateRouteTree
+  called_by: Run, ServeHTTP
+
+Engine.RunListener (gin.go:645-645)
+  RunListener attaches the router to a http.Server and starts listening and serving HTTP requests through the specified ne
+  sig: Engine.RunListener(listener net.Listener)
+  behavior: UNWIND(defer)
+  calls: Handler, isUnsafeTrustedProxies
+  called_by: RunFd
+
+Engine.RunQUIC (gin.go:630-630)
+  RunQUIC attaches the router to a http.Server and starts listening and serving QUIC requests.
+  sig: Engine.RunQUIC(addr, certFile, keyFile string)
+  behavior: UNWIND(defer)
+  calls: Handler, isUnsafeTrustedProxies
+
+Engine.RunTLS (gin.go:561-561)
+  RunTLS attaches the router to a http.Server and starts listening and serving HTTPS (secure) requests.
+  sig: Engine.RunTLS(addr, certFile, keyFile string)
+  behavior: UNWIND(defer)
+  calls: Handler, isUnsafeTrustedProxies
+
+Engine.RunUnix (gin.go:581-581)
+  RunUnix attaches the router to a http.Server and starts listening and serving HTTP requests through the specified unix s
+  sig: Engine.RunUnix(file string)
+  behavior: PRECEDENCE(engine -> err); UNWIND(defer)
+  calls: Handler, isUnsafeTrustedProxies
+
+Engine.HandleContext (gin.go:680-680)
+  HandleContext re-enters a context that has been rewritten.
+  sig: Engine.HandleContext(c *Context)
+  calls: reset, handleHTTPRequest
+
+Engine.Routes (gin.go:390-390)
+  Routes returns a slice of registered routes, including some useful information, such as: the http method, path, and the 
+  behavior: ACCUMULATE(iterate loop -> result)
+  calls: iterate
+
+Engine.RunFd (gin.go:607-607)
+  RunFd attaches the router to a http.Server and starts listening and serving HTTP requests through the specified file des
+  sig: Engine.RunFd(fd int)
+  behavior: PRECEDENCE(engine -> err); UNWIND(defer)
+  calls: RunListener, isUnsafeTrustedProxies
+
+Engine.isUnsafeTrustedProxies (gin.go:457-457)
+  isUnsafeTrustedProxies checks if Engine.trustedCIDRs contains all IPs, it's not safe if it has (returns true)
+  behavior: DELEGATE(engine.isTrustedProxy -> result)
+  calls: isTrustedProxy
+  called_by: Run, RunFd, RunListener, RunQUIC, RunTLS, RunUnix
+
+Engine.Delims (gin.go:259-259)
+  Delims sets template left and right delims and returns an Engine instance.
+  sig: Engine.Delims(left, right string)
+  called_by: LoadHTMLFS, LoadHTMLFiles, LoadHTMLGlob
+
+Engine.SetHTMLTemplate (gin.go:312-312)
+  SetHTMLTemplate associate a template with HTML renderer.
+  sig: Engine.SetHTMLTemplate(templ *template.Template)
+  called_by: LoadHTMLFS, LoadHTMLFiles, LoadHTMLGlob
+
+-- GAPS
+type: STRUCTURAL (answerable from L0-L2)
+coverage: 80 symbols in L3, 56 with behavior annotations
+uncovered: redirectFixedPath, redirectTrailingSlash, serveError, updateRouteTree
+
+--- CLUE FILE END ---
+
+QUESTION: What public constructors and core handler types define Gin's routing surface in the docs?
+
+Provide a detailed answer based solely on the clue file above.
+For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.

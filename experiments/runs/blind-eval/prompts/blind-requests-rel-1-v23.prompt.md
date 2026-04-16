@@ -129,6 +129,28 @@ Session (src/requests/sessions.py:356-818)
   raises: InvalidSchema, ValueError
   uses: InvalidSchema (exceptions), PreparedRequest (models), RequestsCookieJar (cookies), Request (models)
 
+build_response (src/requests/adapters.py:337-372)
+  Builds a :class:`Response <requests.Response>` object from a urllib3
+  sig: build_response(req, resp)
+  behavior: BRANCH(isinstance(req.url, bytes) -> req.url.decode('utf-8'), else -> req.url)
+  called_by: HTTPAdapter
+  uses: Response (models), CaseInsensitiveDict (structures)
+
+MockRequest (src/requests/cookies.py:23-100)
+  Wraps a `requests.Request` to mimic a `urllib2.Request`.
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: get_host, get_origin_req_host, is_unverifiable, get
+  called_by: extract_cookies_to_jar, get_cookie_header
+  raises: NotImplementedError
+
+send (src/requests/sessions.py:675-750)
+  Send a given PreparedRequest.
+  sig: send(request)
+  behavior: BRANCH(allow_redirects -> self.resolve_redirect..., else -> [])
+  calls: get, get_adapter, resolve_redirects
+  called_by: request, Session, resolve_redirects, SessionRedirectMixin
+  raises: ValueError
+
 PreparedRequest (src/requests/models.py:315-639)
   The fully mutable :class:`PreparedRequest <PreparedRequest>` object,
   extends: RequestEncodingMixin, RequestHooksMixin
@@ -148,6 +170,93 @@ RequestsWarning (src/requests/exceptions.py:143-144)
   Base warning for Requests.
   extends: Warning
   imports: urllib3.exceptions, compat
+
+prepare_request (src/requests/sessions.py:459-500)
+  Constructs a :class:`PreparedRequest <PreparedRequest>` for
+  sig: prepare_request(request)
+  calls: merge_hooks, merge_setting
+  called_by: request, Session
+  uses: PreparedRequest (models), RequestsCookieJar (cookies)
+
+session (src/requests/sessions.py:821-833)
+  Returns a :class:`Session` for context-management.
+  behavior: DELEGATE(Session -> result)
+  calls: Session
+
+request (src/requests/sessions.py:502-593)
+  Constructs a :class:`Request <Request>`, prepares it and sends it.
+  sig: request(method, url, params, data, headers...)
+  calls: merge_environment_settings, prepare_request, send
+  called_by: delete, get, head, options, patch, post, put, Session
+  uses: Request (models)
+
+SessionRedirectMixin (src/requests/sessions.py:107-353)
+  imports: adapters, auth, compat, cookies, exceptions
+  calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
+  raises: TooManyRedirects
+
+Response (src/requests/models.py:642-1041)
+  The :class:`Response <Response>` object, which contains a
+  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
+  calls: close, generate, iter_content, raise_for_status
+  raises: StreamConsumedError, HTTPError, TypeError, RuntimeError
+  uses: ChunkedEncodingError (exceptions), ContentDecodingError (exceptions), ConnectionError (exceptions), RequestsSSLError (exceptions)
+
+request (src/requests/api.py:14-59)
+  Constructs and sends a :class:`Request <Request>`.
+  sig: request(method, url)
+  called_by: delete, get, head, options, patch, post, put
+
+RequestEncodingMixin (src/requests/models.py:86-205)
+  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
+  raises: ValueError
+
+RequestHooksMixin (src/requests/models.py:208-229)
+  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
+  raises: ValueError
+
+_urllib3_request_context (src/requests/adapters.py:77-111)
+  sig: _urllib3_request_context(request, verify, client_cert, poolmanager)
+  called_by: build_connection_pool_key_attributes, HTTPAdapter
+
+request_url (src/requests/adapters.py:524-554)
+  Obtain the url to use when making the final request.
+  sig: request_url(request, proxies)
+  called_by: HTTPAdapter
+
+send (src/requests/adapters.py:120-137)
+  Sends PreparedRequest object.
+  sig: send(request, stream, timeout, verify, cert...)
+  raises: NotImplementedError
+
+send (src/requests/adapters.py:591-697)
+  Sends PreparedRequest object.
+  sig: send(request, stream, timeout, verify, cert...)
+  raises: InvalidURL, ConnectionError, ProxyError, ValueError
+  uses: InvalidURL (exceptions), TimeoutSauce (urllib3.util), ConnectionError (exceptions), ProxyError (exceptions)
+
+merge_hooks (src/requests/sessions.py:92-104)
+  Properly merges both requests and session hooks.
+  sig: merge_hooks(request_hooks, session_hooks, dict_class)
+  calls: get, merge_setting
+  called_by: prepare_request, Session
+
+__init__ (src/requests/exceptions.py:18-25)
+  Initialize RequestException with `request` and `response` objects.
+
+RequestsCookieJar (src/requests/cookies.py:176-437)
+  Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
+  extends: CookieJar, MutableMapping
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: CookieConflictError, __contains__, _find_no_duplicates, copy, get, get_policy, iteritems, iterkeys
+  called_by: copy, cookiejar_from_dict
+  raises: KeyError, CookieConflictError
+
+MockResponse (src/requests/cookies.py:103-121)
+  Wraps a `httplib.HTTPMessage` to mimic a `urllib.addinfourl`.
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: getheaders
+  called_by: extract_cookies_to_jar
 
 ContentDecodingError (src/requests/exceptions.py:124-125)
   Failed to decode response content.
@@ -196,123 +305,10 @@ HTTPBasicAuth (src/requests/auth.py:76-96)
   imports: hashlib, threading, warnings, base64, compat
   calls: _basic_auth_str
 
-HTTPProxyAuth (src/requests/auth.py:99-104)
-  Attaches HTTP Proxy Authentication to a given Request object.
-  extends: HTTPBasicAuth
-  imports: hashlib, threading, warnings, base64, compat
-  calls: _basic_auth_str
-
-ReadTimeout (src/requests/exceptions.py:88-89)
-  The server did not send any data in the allotted amount of time.
-  extends: Timeout
-  imports: urllib3.exceptions, compat
-
-RequestException (src/requests/exceptions.py:13-25)
-  There was an ambiguous exception that occurred while handling your
-  extends: IOError
-  imports: urllib3.exceptions, compat
-
-RequestsDependencyWarning (src/requests/exceptions.py:151-152)
-  An imported dependency doesn't match the expected version range.
-  extends: RequestsWarning
-  imports: urllib3.exceptions, compat
-
-RequestsCookieJar (src/requests/cookies.py:176-437)
-  Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
-  extends: CookieJar, MutableMapping
-  imports: calendar, copy, compat, threading, dummy_threading
-  calls: CookieConflictError, __contains__, _find_no_duplicates, copy, get, get_policy, iteritems, iterkeys
-  called_by: copy, cookiejar_from_dict
-  raises: KeyError, CookieConflictError
-
-build_response (src/requests/adapters.py:337-372)
-  Builds a :class:`Response <requests.Response>` object from a urllib3
-  sig: build_response(req, resp)
-  behavior: BRANCH(isinstance(req.url, bytes) -> req.url.decode('utf-8'), else -> req.url)
-  called_by: HTTPAdapter
-  uses: Response (models), CaseInsensitiveDict (structures)
-
-send (src/requests/sessions.py:675-750)
-  Send a given PreparedRequest.
-  sig: send(request)
-  behavior: BRANCH(allow_redirects -> self.resolve_redirect..., else -> [])
-  calls: get, get_adapter, resolve_redirects
-  called_by: request, Session, resolve_redirects, SessionRedirectMixin
-  raises: ValueError
-
-MockRequest (src/requests/cookies.py:23-100)
-  Wraps a `requests.Request` to mimic a `urllib2.Request`.
-  imports: calendar, copy, compat, threading, dummy_threading
-  calls: get_host, get_origin_req_host, is_unverifiable, get
-  called_by: extract_cookies_to_jar, get_cookie_header
-  raises: NotImplementedError
-
-merge_hooks (src/requests/sessions.py:92-104)
-  Properly merges both requests and session hooks.
-  sig: merge_hooks(request_hooks, session_hooks, dict_class)
-  calls: get, merge_setting
-  called_by: prepare_request, Session
-
-__init__ (src/requests/exceptions.py:18-25)
-  Initialize RequestException with `request` and `response` objects.
-
-prepare_request (src/requests/sessions.py:459-500)
-  Constructs a :class:`PreparedRequest <PreparedRequest>` for
-  sig: prepare_request(request)
-  calls: merge_hooks, merge_setting
-  called_by: request, Session
-  uses: PreparedRequest (models), RequestsCookieJar (cookies)
-
-session (src/requests/sessions.py:821-833)
-  Returns a :class:`Session` for context-management.
-  behavior: DELEGATE(Session -> result)
-  calls: Session
-
-request (src/requests/sessions.py:502-593)
-  Constructs a :class:`Request <Request>`, prepares it and sends it.
-  sig: request(method, url, params, data, headers...)
-  calls: merge_environment_settings, prepare_request, send
-  called_by: delete, get, head, options, patch, post, put, Session
-  uses: Request (models)
-
-request (src/requests/api.py:14-59)
-  Constructs and sends a :class:`Request <Request>`.
-  sig: request(method, url)
-  called_by: delete, get, head, options, patch, post, put
-
-SessionRedirectMixin (src/requests/sessions.py:107-353)
-  imports: adapters, auth, compat, cookies, exceptions
-  calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
-  raises: TooManyRedirects
-
-Response (src/requests/models.py:642-1041)
-  The :class:`Response <Response>` object, which contains a
-  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
-  calls: close, generate, iter_content, raise_for_status
-  raises: StreamConsumedError, HTTPError, TypeError, RuntimeError
-  uses: ChunkedEncodingError (exceptions), ContentDecodingError (exceptions), ConnectionError (exceptions), RequestsSSLError (exceptions)
-
-RequestEncodingMixin (src/requests/models.py:86-205)
-  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
-  raises: ValueError
-
-RequestHooksMixin (src/requests/models.py:208-229)
-  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
-  raises: ValueError
-
-_urllib3_request_context (src/requests/adapters.py:77-111)
-  sig: _urllib3_request_context(request, verify, client_cert, poolmanager)
-  called_by: build_connection_pool_key_attributes, HTTPAdapter
-
-request_url (src/requests/adapters.py:524-554)
-  Obtain the url to use when making the final request.
-  sig: request_url(request, proxies)
-  called_by: HTTPAdapter
-
 -- GAPS
 type: RELATIONAL (answerable from L2-L3 structure)
 coverage: 80 symbols in L3, 27 with behavior annotations
-uncovered: get_unicode_from_response, stream_decode_response_unicode, ChunkedEncodingError, ConnectionError
+uncovered: get_unicode_from_response, stream_decode_response_unicode, HTTPAdapter, build_connection_pool_key_attributes
 
 --- CLUE FILE END ---
 

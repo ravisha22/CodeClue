@@ -110,38 +110,6 @@ get_best_encoding                   M src/click/_compat.py:48     Returns the de
   ...and 579 more symbols
 
 -- FOCUS
-_is_incomplete_option (src/click/shell_completion.py:537-559)
-  Determine if the given parameter is an option that needs a value.
-  sig: _is_incomplete_option(ctx, args, param)
-  behavior: ACCUMULATE(enumerate(reversed(ar... -> result); UNWIND(reversed)
-  calls: _start_of_option
-  called_by: _resolve_incomplete
-
-_start_of_option (src/click/shell_completion.py:528-534)
-  Check if the value looks like the start of an option.
-  sig: _start_of_option(ctx, value)
-  called_by: _is_incomplete_option, _resolve_incomplete
-
-coerce_path_result (src/click/types.py:955-966)
-  sig: coerce_path_result(value)
-  called_by: Path
-
-get_help_option (src/click/core.py:1054-1079)
-  Returns the help option object.
-  sig: get_help_option(ctx)
-  calls: get_help_option_names
-  called_by: get_params, Command
-
-get_help_option_names (src/click/core.py:1046-1052)
-  Returns the names for the help option.
-  sig: get_help_option_names(ctx)
-  behavior: ACCUMULATE(self.params loop -> result)
-  called_by: get_help_option, Command
-
-get_help_extra (src/click/core.py:3052-3134)
-  sig: get_help_extra(ctx)
-  called_by: Option
-
 OptionHelpExtra (src/click/types.py:1205-1209)
   extends: TypedDict
   imports: enum, stat, gettext, exceptions, utils
@@ -170,11 +138,6 @@ option (src/click/decorators.py:352-377)
   calls: _param_memo
   called_by: confirmation_option, help_option, password_option, version_option
 
-open_file (src/click/utils.py:358-404)
-  Open a file, with extra behavior to handle ``'-'`` to indicate
-  sig: open_file(filename, mode, encoding, errors, lazy...)
-  calls: KeepOpenFile, LazyFile
-
 Option (src/click/core.py:2646-3335)
   Options are usually optional values on the command line and
   extends: Parameter
@@ -182,6 +145,11 @@ Option (src/click/core.py:2646-3335)
   imports: enum, errno, inspect, gettext, itertools
   calls: get_help_extra, _write_opts, prompt_for_value, batch
   raises: TypeError, ValueError
+
+open_file (src/click/utils.py:358-404)
+  Open a file, with extra behavior to handle ``'-'`` to indicate
+  sig: open_file(filename, mode, encoding, errors, lazy...)
+  calls: KeepOpenFile, LazyFile
 
 BadArgumentUsage (src/click/exceptions.py:259-265)
   Raised if an argument is generally supplied but the use of the argument
@@ -197,6 +165,18 @@ NoSuchOption (src/click/exceptions.py:208-239)
   Raised if click attempted to handle an option that does not
   extends: UsageError
   imports: gettext, globals, utils, core
+
+_is_incomplete_option (src/click/shell_completion.py:537-559)
+  Determine if the given parameter is an option that needs a value.
+  sig: _is_incomplete_option(ctx, args, param)
+  behavior: ACCUMULATE(enumerate(reversed(ar... -> result); UNWIND(reversed)
+  calls: _start_of_option
+  called_by: _resolve_incomplete
+
+_start_of_option (src/click/shell_completion.py:528-534)
+  Check if the value looks like the start of an option.
+  sig: _start_of_option(ctx, value)
+  called_by: _is_incomplete_option, _resolve_incomplete
 
 argument (src/click/decorators.py:324-349)
   Attaches an argument to the command.
@@ -217,6 +197,10 @@ File (src/click/types.py:754-872)
 _is_file_like (src/click/types.py:875-876)
   sig: _is_file_like(value)
   called_by: File
+
+coerce_path_result (src/click/types.py:955-966)
+  sig: coerce_path_result(value)
+  called_by: Path
 
 split_envvar_value (src/click/types.py:126-134)
   Given a value from an environment variable this splits it up
@@ -242,14 +226,6 @@ _get_value_from_state (src/click/parser.py:429-467)
   raises: BadOptionUsage
   uses: BadOptionUsage (exceptions)
 
-LazyFile (src/click/utils.py:109-194)
-  A lazy file works like a regular file but it does not fully open
-  imports: types, globals, typing_extensions, glob, exceptions
-  calls: close, close_intelligently, open, format_filename
-  called_by: open_file
-  raises: FileError
-  uses: FileError (exceptions)
-
 _OptionParser (src/click/parser.py:220-499)
   The option parser is an internal class that is ultimately used to
   imports: gettext, exceptions, core, warnings, shell_completion
@@ -265,16 +241,51 @@ type_cast_value (src/click/core.py:2342-2396)
   raises: BadParameter
   uses: BadParameter (exceptions)
 
+_AtomicFile (src/click/_compat.py:452-485)
+  imports: codecs, io, types, weakref, errno
+  calls: close
+  called_by: open_stream
+
 _Argument (src/click/parser.py:181-209)
   imports: gettext, exceptions, core, warnings, shell_completion
   called_by: add_argument, _OptionParser
   raises: BadArgumentUsage
+
+LazyFile (src/click/utils.py:109-194)
+  A lazy file works like a regular file but it does not fully open
+  imports: types, globals, typing_extensions, glob, exceptions
+  calls: close, close_intelligently, open, format_filename
+  called_by: open_file
+  raises: FileError
+  uses: FileError (exceptions)
 
 _Option (src/click/parser.py:127-178)
   imports: gettext, exceptions, core, warnings, shell_completion
   calls: _split_opt
   called_by: add_option, _OptionParser
   raises: ValueError
+
+format_progress_line (src/click/_termui_impl.py:209-234)
+  calls: format_bar, format_eta, format_pct, format_pos
+  called_by: render_progress, ProgressBar
+
+get_help_option (src/click/core.py:1054-1079)
+  Returns the help option object.
+  sig: get_help_option(ctx)
+  calls: get_help_option_names
+  called_by: get_params, Command
+
+Argument (src/click/core.py:3338-3413)
+  Arguments are positional parameters to a command.
+  extends: Parameter
+  attrs: param_type_name='argument'
+  imports: enum, errno, inspect, gettext, itertools
+  raises: TypeError
+
+FileError (src/click/exceptions.py:277-291)
+  Raised if a file cannot be opened.
+  extends: ClickException
+  imports: gettext, globals, utils, core
 
 KeepOpenFile (src/click/utils.py:197-219)
   imports: types, globals, typing_extensions, glob, exceptions
@@ -284,6 +295,10 @@ _is_incomplete_argument (src/click/shell_completion.py:503-525)
   Determine if the given parameter is an argument that can still
   sig: _is_incomplete_argument(ctx, param)
   called_by: _resolve_incomplete
+
+_unquote_file (src/click/_termui_impl.py:679-685)
+  sig: _unquote_file(url)
+  called_by: open_url
 
 add_argument (src/click/parser.py:286-292)
   Adds a positional argument named `dest` to the parser.
@@ -297,26 +312,16 @@ add_command (src/click/core.py:1622-1630)
   called_by: Group
   raises: TypeError
 
-confirmation_option (src/click/decorators.py:380-401)
-  Add a ``--yes`` option which shows a prompt before continuing if
-  calls: option
-
-help_option (src/click/decorators.py:527-551)
-  Pre-configured ``--help`` option which immediately prints the help page
-  calls: option
-
-password_option (src/click/decorators.py:404-418)
-  Add a ``--password`` option which prompts for a password, hiding
-  calls: option
-
-resolve_command (src/click/core.py:1907-1932)
-  sig: resolve_command(ctx, args)
-  calls: fail
-  called_by: Group
+command (src/click/decorators.py:168-255)
+  Creates a new :class:`Command` and uses the decorated function as
+  sig: command(name, cls)
+  behavior: UNWIND(reversed)
+  raises: TypeError
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
 coverage: 80 symbols in L3, 15 with behavior annotations
-uncovered: _process_args_for_options, _find_binary_reader, _WindowsConsoleReader, _force_correct_text_reader
+uncovered: _BaseCommand, _MultiCommand, value_from_envvar, read1
 drill: src/click/core.py (~18 lines, command_path)
 drill: src/click/decorators.py (~24 lines, option)
+drill: src/click/utils.py (~41 lines, open_file)

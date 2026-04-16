@@ -12,109 +12,106 @@ log/  (3 files)
 middleware/  (87 files)
 
 -- INDEX
+log/log.go                                      121L  CommonLogger, FormatLogger, toString, Logger, WithLogger
+router.go                                       767L  RebuildTree, RemoveRoute, RemoveRouteByName, RemoveRouteFunc, addPrefixToRoute
+middleware/cache/manager_msgp.go                945L  DecodeMsg, EncodeMsg, MarshalMsg, Msgsize, UnmarshalMsg
+redirect_msgp.go                                301L  DecodeMsg, EncodeMsg, MarshalMsg, Msgsize, UnmarshalMsg
 path.go                                         844L  CheckConstraint, Constraint, CustomConstraint, GetTrimmedParam, RemoveEscapeChar
 client/client.go                                863L  C, AddHeader, AddHeaders, AddParam, AddParams
+helpers.go                                     1126L  isEtagStale, method, methodInt, quoteRawString, quoteString
 bind.go                                         477L  AcquireBind, All, Body, CBOR, Cookie
+middleware/csrf/storage_manager_msgp.go          92L  DecodeMsg, EncodeMsg, MarshalMsg, Msgsize, UnmarshalMsg
+middleware/idempotency/response_msgp.go         282L  DecodeMsg, EncodeMsg, MarshalMsg, Msgsize, UnmarshalMsg
+middleware/limiter/manager_msgp.go              160L  DecodeMsg, EncodeMsg, MarshalMsg, Msgsize, UnmarshalMsg
 client/request.go                              1122L  AcquireFile, AcquireRequest, Add, All, Del
 res.go                                         1153L  Cookie, App, Append, Attachment, AutoFormat
+mount.go                                        227L  MountPath, appendSubAppLists, generateAppListKeys, hasMountedApps, mount
 client/transport.go                             377L  composeRedirectURL, doRedirectsWithClient, extractTLSConfig, forEachHostClient, Client
-binder/form.go                                  124L  Bind, Reset, bindMultipart, FormBinding, acquireFileHeaderMap
-app.go                                         1486L  Add, All, Config, Connect, Delete
-client/cookiejar.go                             334L  AcquireCookieJar, Get, Release, Set, SetByHost
-client/core.go                                  304L  acquireErrChan, acquireResponseChan, addMissingPort, afterHooks, execFunc
-internal/storage/memory/memory.go               233L  Entry, New, Close, Conn, Delete
-domain.go                                       688L  DomainParam, domainCheckResult, domainLocalsKeyType, match, domainMatcher
-middleware/paginate/page_info.go                190L  NewPageInfo, CursorValues, NextCursorURL, NextCursorURLWithKeys, NextPageURL
-middleware/csrf/csrf.go                         403L  DeleteToken, Handler, HandlerFromContext, New, TokenFromContext
-redirect.go                                     433L  AcquireRedirect, FlashMessage, OldInputData, Back, Message
-client/response.go                              241L  AcquireResponse, ReleaseResponse, Body, BodyStream, CBOR
-  ...and 132 more modules
+  ...and 133 more modules
 
 -- SYM
-domainRouter.Add                    M domain.go:530    Add allows you to specify multiple HTTP methods...
-Client.applyTLSConfig               M client/client.go:103    function Client.applyTLSConfig
-Client.SetTLSConfig                 M client/client.go:249    SetTLSConfig sets the TLS configuration for the...
-App.Add                             M app.go:953    Add allows you to specify multiple HTTP methods...
-Cookie.Add                          M client/request.go:781    Add adds a cookie key-value pair.
-Group.Add                           M group.go:167    Add allows you to specify multiple HTTP methods...
-C                                   M client/client.go:810    C returns the default client.
-Client.applyDial                    M client/client.go:107    function Client.applyDial
-Client.SetDial                      M client/client.go:606    SetDial sets the custom dial function for the c...
-Registering.Add                     M register.go:111    Add allows you to specify multiple HTTP methods...
-walkBalancingClientWithBreak        M client/transport.go:268    walkBalancingClientWithBreak traverses balancin...
-defaultLogger.privateLog            M log/default.go:24     privateLog logs a message at a given level log ...
-defaultLogger.privateLogf           M log/default.go:47     privateLogf logs a formatted message at a given...
-defaultLogger.privateLogw           M log/default.go:74     privateLogw logs a message at a given level log...
-Client.TLSConfig                    M client/client.go:236    TLSConfig returns the client's TLS configuration.
-Cookie.All                          M client/request.go:816    All returns an iterator over cookie key-value p...
-pathMatch                           M client/cookiejar.go:307    pathMatch determines whether the request path m...
-Cookie.Del                          M client/request.go:786    Del deletes a cookie by key.
-isASCIIAlphanumeric                 M domain.go:217    isASCIIAlphanumeric returns true if the rune is...
-domainRouter.wrapHandlers           M domain.go:278    wrapHandlers wraps every handler in the slice w...
-MemoryLock.Lock                     M middleware/idempotency/locker.go:25     Lock acquires the lock for the provided key, cr...
 MemoryLock.Unlock                   M middleware/idempotency/locker.go:41     Unlock releases the lock associated with the pr...
-Response.Body                       M client/response.go:88     Body returns the HTTP response body as a byte s...
-domainRouter.registerGroup          M domain.go:336    registerGroup returns the group to associate wi...
-domainRouter.registerPath           M domain.go:327    registerPath returns the full path for registra...
-FormData.Set                        M client/request.go:893    Set sets a single form field, overriding previo...
-App.normalizePath                   M router.go:398    function App.normalizePath
-domainRouter.Name                   M domain.go:602    Name assigns a name to the most recently regist...
-ReleaseFile                         M client/request.go:1053   ReleaseFile returns the File object to the pool.
-buildPaginationURL                  M middleware/paginate/page_info.go:121    buildPaginationURL parses baseURL and sets/repl...
-DefaultReq.Get                      M req.go:427    Get returns the HTTP request header specified b...
-Request.Reset                       M client/request.go:680    Reset clears the Request object, returning it t...
-Session.Get                         M middleware/session/session.go:74     Release releases the session back to the pool.
+MemoryLock.Lock                     M middleware/idempotency/locker.go:25     Lock acquires the lock for the provided key, cr...
+defaultLogger.privateLogf           M log/default.go:47     privateLogf logs a formatted message at a given...
+Level.toString                      M log/log.go:116    function Level.toString
+defaultLogger.Errorf                M log/default.go:174    Errorf formats according to a format specifier ...
+App.register                        M router.go:513    function App.register
+App.methodInt                       M helpers.go:923    HTTP methods and their unique INTs
+App.addRoute                        M router.go:590    function App.addRoute
+Cookie.Add                          M client/request.go:781    Add adds a cookie key-value pair.
 App.pruneAutoHeadRouteLocked        M router.go:491    pruneAutoHeadRouteLocked removes an automatical...
+App.Name                            M app.go:783    Name Assign name to specific route.
+defaultLogger.privateLog            M log/default.go:24     privateLog logs a message at a given level log ...
+DefaultCtx.Next                     M ctx.go:243    Next executes the next method in the stack that...
+domainRouter.Name                   M domain.go:602    Name assigns a name to the most recently regist...
+App.Add                             M app.go:953    Add allows you to specify multiple HTTP methods...
+FormData.Add                        M client/request.go:888    Add adds a single form field.
+PathParam.Add                       M client/request.go:829    Add adds a path parameter key-value pair.
+domainRegistering.Add               M domain.go:675    function domainRegistering.Add
+domainRouter.Add                    M domain.go:530    Add allows you to specify multiple HTTP methods...
+Group.Add                           M group.go:167    Add allows you to specify multiple HTTP methods...
+Registering.Add                     M register.go:111    Add allows you to specify multiple HTTP methods...
+DefaultReq.Locals                   M req.go:672    Locals makes it possible to pass any values und...
+DefaultRes.Append                   M res.go:140    Append the specified value to the HTTP response...
+Response.String                     M client/response.go:109    String returns the response body as a trimmed s...
+DefaultCtx.String                   M ctx.go:571    String returns unique string representation of ...
+C                                   M client/client.go:810    C returns the default client.
+walkBalancingClientWithBreak        M client/transport.go:268    walkBalancingClientWithBreak traverses balancin...
+Client.LBClient                     M client/client.go:128    LBClient returns the underlying fasthttp.LBClie...
+Group.Name                          M group.go:27     Name Assign name to specific route or group its...
+defaultLogger.privateLogw           M log/default.go:74     privateLogw logs a message at a given level log...
+DefaultRes.WriteString              M res.go:1110   WriteString appends s to response body.
+ReleaseFile                         M client/request.go:1053   ReleaseFile returns the File object to the pool.
+Response.Body                       M client/response.go:88     Body returns the HTTP response body as a byte s...
+Request.Reset                       M client/request.go:680    Reset clears the Request object, returning it t...
+DefaultReq.Host                     M req.go:465    Host contains the host derived from the X-Forwa...
+App.normalizePath                   M router.go:398    function App.normalizePath
+DefaultReq.Body                     M req.go:149    Body contains the raw body submitted in a POST ...
+Cookie.All                          M client/request.go:816    All returns an iterator over cookie key-value p...
+domainRouter.wrapHandlers           M domain.go:278    wrapHandlers wraps every handler in the slice w...
+FormData.Set                        M client/request.go:893    Set sets a single form field, overriding previo...
+Session.Get                         M middleware/session/session.go:74     Release releases the session back to the pool.
+buildPaginationURL                  M middleware/paginate/page_info.go:121    buildPaginationURL parses baseURL and sets/repl...
+domainRouter.registerGroup          M domain.go:336    registerGroup returns the group to associate wi...
+DefaultCtx.Path                     M ctx.go:297    Path returns the path part of the request URL.
+Response.Reset                      M client/response.go:193    Reset clears the Response object, making it rea...
 Request.resetBody                   M client/request.go:438    resetBody clears the existing body.
+Bind.Body                           M bind.go:385    Body binds the request body into the struct, ma...
 newClient                           M client/client.go:783    function newClient
-searchCookieByKeyAndPath            M client/cookiejar.go:294    searchCookieByKeyAndPath looks up a cookie by i...
-setConfigToRequest                  M client/client.go:672    setConfigToRequest sets the parameters passed v...
+Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...
+SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
+standardClientTransport.Do          M client/transport.go:50     function standardClientTransport.Do
+defaultLogger.Warnf                 M log/default.go:169    Warnf formats according to a format specifier a...
 Request.Send                        M client/request.go:673    Send executes the Request.
+isASCIIAlphanumeric                 M domain.go:217    isASCIIAlphanumeric returns true if the rune is...
 Request.SetMethod                   M client/request.go:82     SetMethod sets the HTTP method for the Request.
 Request.SetURL                      M client/request.go:93     SetURL sets the URL for the Request.
-Bind.validateStruct                 M bind.go:183    Struct validation.
-SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
-domainMatcher.match                 M domain.go:139    match checks if a hostname matches the domain p...
-Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
-manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
-DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
-walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
-isUnixNetwork                       M middleware/adaptor/adaptor.go:208    function isUnixNetwork
-Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...
-DefaultReq.Body                     M req.go:149    Body contains the raw body submitted in a POST ...
-forEachHostClient                   M client/transport.go:231    forEachHostClient applies fn to every host clie...
-Do                                  M middleware/proxy/proxy.go:146    Do performs the given http request and fills th...
-Client.currentTLSConfig             M client/client.go:99     function Client.currentTLSConfig
-CookieJar.cookiesForRequest         M client/cookiejar.go:103    cookiesForRequest returns cookies that match th...
-resolveRemoteAddr                   M middleware/adaptor/adaptor.go:212    function resolveRemoteAddr
-Bind                                C bind.go:40     Bind provides helper methods for binding reques...
-Request.Put                         M client/request.go:648    Put sends a PUT request to the given URL.
-parseUintDirective                  M middleware/cache/cache.go:937    function parseUintDirective
-BindError.Error                     M bind.go:65     function BindError.Error
-DefaultReq.IsProxyTrusted           M req.go:1080   IsProxyTrusted checks trustworthiness of remote...
-Session.refresh                     M middleware/session/session.go:278    refresh generates a new session, and sets sessi...
-DefaultReq.getBody                  M req.go:1140   function DefaultReq.getBody
-CookieJar.SetByHost                 M client/cookiejar.go:154    SetByHost stores the given cookies for the spec...
-PreStartupMessageData.addEntry      M hooks.go:164    function PreStartupMessageData.addEntry
-decodeKey                           M middleware/encryptcookie/utils.go:20     decodeKey decodes the provided base64-encoded k...
-DefaultCtx.MediaType                M req.go:244    MediaType returns the MIME type from the Conten...
+Cookie.Del                          M client/request.go:786    Del deletes a cookie by key.
+DefaultCtx.RequestCtx               M ctx.go:118    RequestCtx returns *fasthttp.RequestCtx that ca...
+DefaultReq.RequestCtx               M req.go:201    RequestCtx returns *fasthttp.RequestCtx that ca...
+DefaultRes.RequestCtx               M res.go:248    RequestCtx returns *fasthttp.RequestCtx that ca...
 Request.Get                         M client/request.go:633    Get sends a GET request to the given URL.
-extractFieldFromError               M bind.go:76     function extractFieldFromError
-standardClientTransport.Do          M client/transport.go:50     function standardClientTransport.Do
-DefaultCtx.Get                      M ctx.go:200    Get returns the HTTP request header specified b...
-redirectionMsg.Msgsize              M redirect_msgp.go:196    Msgsize returns an upper bound estimate of the ...
-  ...and 1400 more symbols
+DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
+ExponentialBackoff.next             M addon/retry/exponential_backoff.go:62     next calculates the next sleeping time interval.
+App.next                            M router.go:115    function App.next
+DefaultCtx.App                      M ctx.go:102    App returns the *App reference to the instance ...
+DefaultReq.App                      M req.go:83     App returns the *App reference to the instance ...
+DefaultRes.App                      M res.go:134    App returns the *App reference to the instance ...
+CookieJar.SetByHost                 M client/cookiejar.go:154    SetByHost stores the given cookies for the spec...
+walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
+DefaultCtx.configDependentPaths     M ctx.go:632    configDependentPaths set paths for route recogn...
+App.nextCustom                      M router.go:216    function App.nextCustom
+domainRouter.registerPath           M domain.go:327    registerPath returns the full path for registra...
+forEachHostClient                   M client/transport.go:231    forEachHostClient applies fn to every host clie...
+DefaultRes.Write                    M res.go:1098   Write appends p into response body.
+  ...and 1398 more symbols
 
 -- FOCUS
-Route.match (router.go:68-68)
-  sig: Route.match(detectionPath, path string, params *[maxParams]string)
-  behavior: GUARD(r.root && len(detectionPath) == 1 && detectio... -> return true); PRECEDENCE(r -> len)
-  called_by: next, nextCustom
-
-App.requestHandler (router.go:315-315)
-  sig: App.requestHandler(rctx *fasthttp.RequestCtx)
-  behavior: GUARD(d, isDefault := ctx.(*DefaultCtx); isDefault -> return); PRECEDENCE(d -> err); UNWIND(defer)
-  calls: next, nextCustom
+RoutePatternMatch (path.go:155-155)
+  RoutePatternMatch reports whether path matches the provided Fiber route pattern.
+  sig: RoutePatternMatch(path, pattern string, cfg ...Config)
+  behavior: PRECEDENCE(len -> path -> pattern); UNWIND(defer)
+  calls: RemoveEscapeCharBytes, parseRoute, getMatch, reset
 
 pathMatch (client/cookiejar.go:307-307)
   pathMatch determines whether the request path matches the cookie path according to RFC 6265 section 5.1.4.
@@ -122,64 +119,39 @@ pathMatch (client/cookiejar.go:307-307)
   behavior: PRECEDENCE(len -> bytes)
   called_by: cookiesForRequest, searchCookieByKeyAndPath
 
+Request.DisablePathNormalizing (client/request.go:614-614)
+  DisablePathNormalizing reports whether path normalizing is disabled for the Request.
+  called_by: parserRequestURL
+
 CookieJar.cookiesForRequest (client/cookiejar.go:103-103)
   cookiesForRequest returns cookies that match the given host, path and security settings.
   sig: CookieJar.cookiesForRequest(host string, path []byte, secure bool)
   behavior: ACCUMULATE(domainMatch loop -> kept); UNWIND(defer)
-  calls: domainMatch, pathMatch
+  calls: domainMatch, pathMatch, Path, Secure, Lock, Unlock
   called_by: getByHostAndPath
 
-domainMatch (client/cookiejar.go:327-327)
-  domainMatch reports whether host domain-matches the given cookie domain.
-  sig: domainMatch(host, domain string)
-  behavior: GUARD(host == domain -> return true)
-  called_by: cookiesForRequest
-
-HTTPMiddleware (middleware/adaptor/adaptor.go:162-162)
-  HTTPMiddleware wraps net/http middleware to fiber middleware
-  sig: HTTPMiddleware(mw func(http.Handler)
-  calls: CopyContextToFiberContext, HTTPHandler
-
-routeParser.getMatch (path.go:507-507)
-  getMatch parses the passed url and tries to match it against the route segments and determine the parameter positions
-  sig: routeParser.getMatch(detectionPath, path string, params *[maxParams]string, p...)
-  behavior: GUARD(detectionPath != "" -> return false); ACCUMULATE(len loop -> result)
-  calls: CheckConstraint, findParamLen, hasPartialMatchBoundary
-  called_by: RoutePatternMatch
-
-CookieJar.getByHostAndPath (client/cookiejar.go:60-60)
-  getByHostAndPath returns cookies stored for a specific host and path.
-  sig: CookieJar.getByHostAndPath(host, path []byte, secure bool)
-  behavior: GUARD(cj.hostCookies == nil -> return nil); PRECEDENCE(cj -> err)
-  calls: cookiesForRequest
-  called_by: Get, dumpCookiesToReq
-
-searchCookieByKeyAndPath (client/cookiejar.go:294-294)
-  searchCookieByKeyAndPath looks up a cookie by its key and path from the provided slice of cookies.
-  sig: searchCookieByKeyAndPath(key, path []byte, cookies []*fasthttp.Cookie)
-  behavior: ACCUMULATE(Equal loop -> result)
-  calls: pathMatch
-  called_by: SetByHost, parseCookiesFromResp
-
-RoutePatternMatch (path.go:155-155)
-  RoutePatternMatch reports whether path matches the provided Fiber route pattern.
-  sig: RoutePatternMatch(path, pattern string, cfg ...Config)
-  behavior: PRECEDENCE(len -> path -> pattern); UNWIND(defer)
-  calls: RemoveEscapeCharBytes, parseRoute, getMatch, reset
-
-Request.DisablePathNormalizing (client/request.go:614-614)
-  DisablePathNormalizing reports whether path normalizing is disabled for the Request.
+DefaultCtx.RestartRouting (ctx.go:265-266)
+  RestartRouting instead of going to the next handler.
+  behavior: GUARD(c.handlerCtx != nil -> return err)
+  calls: next, nextCustom
 
 CopyContextToFiberContext (middleware/adaptor/adaptor.go:101-101)
   CopyContextToFiberContext copies the values of context.Context to a fasthttp.RequestCtx.
   sig: CopyContextToFiberContext(src any, requestContext *fasthttp.RequestCtx)
   behavior: GUARD(requestContext == nil -> return); PRECEDENCE(requestContext -> not_v.IsValid -> t); ACCUMULATE(IsNil loop -> result)
+  calls: Type
   called_by: HTTPMiddleware
 
 ConvertRequest (middleware/adaptor/adaptor.go:89-89)
   ConvertRequest converts a fiber.Ctx to a http.Request.
   sig: ConvertRequest(c fiber.Ctx, forServer bool)
   behavior: GUARD(err := fasthttpadaptor.ConvertRequest(c.Reque... -> return nil, err)
+  calls: RequestCtx
+
+Request.SetDisablePathNormalizing (client/request.go:619-619)
+  SetDisablePathNormalizing configures the Request to disable or enable path normalizing.
+  sig: Request.SetDisablePathNormalizing(disable bool)
+  called_by: setConfigToRequest
 
 isValidRequestID (middleware/requestid/requestid.go:61-61)
   isValidRequestID reports whether the request ID contains only visible ASCII characters (0x20–0x7E) and is non-empty.
@@ -187,19 +159,24 @@ isValidRequestID (middleware/requestid/requestid.go:61-61)
   behavior: GUARD(rid == "" -> return false); ACCUMULATE(loop -> result)
   called_by: sanitizeRequestID
 
-Request.SetDisablePathNormalizing (client/request.go:619-619)
-  SetDisablePathNormalizing configures the Request to disable or enable path normalizing.
-  sig: Request.SetDisablePathNormalizing(disable bool)
+DefaultCtx.Path (ctx.go:297-297)
+  Path returns the path part of the request URL.
+  sig: DefaultCtx.Path(override ...string)
+  behavior: DELEGATE(c.app.toString -> result)
+  calls: configDependentPaths, toString
+  called_by: ErrorHandler, Get, cookiesForRequest, dumpCookiesToReq, parseCookiesFromResp, searchCookieByKeyAndPath, New, defaultLoggerInstance
+
+Client.DisablePathNormalizing (client/client.go:437-437)
+  DisablePathNormalizing reports whether path normalizing is disabled for the client.
+  called_by: parserRequestURL
 
 Middleware.initialize (middleware/session/middleware.go:111-111)
   initialize sets up middleware for the request.
   sig: Middleware.initialize(c fiber.Ctx, cfg *Config)
   behavior: GUARD(err != nil -> panic(err)); UNWIND(defer)
+  calls: Lock, Unlock
   called_by: NewWithStore
   raises: panic
-
-Client.DisablePathNormalizing (client/client.go:437-437)
-  DisablePathNormalizing reports whether path normalizing is disabled for the client.
 
 paramsMatch (helpers.go:412-412)
   paramsMatch returns whether offerParams contains all parameters present in specParams.
@@ -211,27 +188,24 @@ paramsMatch (helpers.go:412-412)
 App.printRoutesMessage (listen.go:516-517)
   printRoutesMessage print all routes with method, path, name and handlers in a format of table, like this: method | path 
   behavior: GUARD(IsChild() -> return); PRECEDENCE(IsChild -> os); ACCUMULATE(FuncForPC loop -> newRoute handlers)
-  called_by: printMessages
+  called_by: printMessages, prefork
 
 DefaultCtx.IsMiddleware (ctx.go:380-381)
   IsMiddleware returns true if the current request handler was registered as middleware.
   behavior: GUARD(c.route == nil -> return false); PRECEDENCE(c)
 
-DefaultCtx.Path (ctx.go:297-297)
-  Path returns the path part of the request URL.
-  sig: DefaultCtx.Path(override ...string)
-  behavior: DELEGATE(c.app.toString -> result)
-  calls: configDependentPaths
+domainMatch (client/cookiejar.go:327-327)
+  domainMatch reports whether host domain-matches the given cookie domain.
+  sig: domainMatch(host, domain string)
+  behavior: GUARD(host == domain -> return true)
+  called_by: cookiesForRequest
 
-DefaultCtx.Matched (ctx.go:375-376)
-  Matched returns true if the current request path was matched by the router.
-  behavior: DELEGATE(c.getMatched -> result)
-  calls: getMatched
-  called_by: OverrideParam
-
-DefaultCtx.RestartRouting (ctx.go:265-266)
-  RestartRouting instead of going to the next handler.
-  behavior: GUARD(c.handlerCtx != nil -> return err)
+routeParser.getMatch (path.go:507-507)
+  getMatch parses the passed url and tries to match it against the route segments and determine the parameter positions
+  sig: routeParser.getMatch(detectionPath, path string, params *[maxParams]string, p...)
+  behavior: GUARD(detectionPath != "" -> return false); ACCUMULATE(len loop -> result)
+  calls: CheckConstraint, findParamLen, hasPartialMatchBoundary
+  called_by: RoutePatternMatch
 
 Request.PathParam (client/request.go:365-365)
   PathParam returns the value of a named path parameter.
@@ -244,6 +218,11 @@ sanitizeRequestID (middleware/requestid/requestid.go:43-43)
   behavior: GUARD(isValidRequestID(rid) -> return rid); ACCUMULATE(generator loop -> result)
   calls: isValidRequestID
   called_by: New
+
+Request.PathParams (client/request.go:374-374)
+  PathParams returns an iterator over all path parameters.
+  behavior: DELEGATE(r.path.All -> result)
+  calls: All
 
 FiberHandler (middleware/adaptor/adaptor.go:194-194)
   FiberHandler wraps fiber handler to net/http handler
@@ -267,15 +246,42 @@ sanitizePath (middleware/static/static.go:27-27)
   behavior: PRECEDENCE(bytes -> strings); ACCUMULATE(PathUnescape loop -> result)
   called_by: New
 
-Request.PathParams (client/request.go:374-374)
-  PathParams returns an iterator over all path parameters.
-  behavior: DELEGATE(r.path.All -> result)
-  calls: All
+parserRequestURL (client/hooks.go:72-72)
+  parserRequestURL sets options for the hostclient and normalizes the URL.
+  sig: parserRequestURL(c *Client, req *Request)
+  behavior: GUARD(!protocolCheck.MatchString(uri) -> return ErrURLFormat); PRECEDENCE(not_protocolCheck.MatchString -> disablePathNormalizing); ACCUMULATE(ReplaceAll loop -> result)
+  calls: DisablePathNormalizing
+
+PathParam.Add (client/request.go:829-829)
+  Add adds a path parameter key-value pair.
+  sig: PathParam.Add(key, val string)
+  called_by: All, Connect, Delete, Get, Head, Options, Patch, Post
+
+parseRequestCacheControl (middleware/cache/cache.go:1104-1104)
+  sig: parseRequestCacheControl(cc []byte)
+  calls: parseCacheControlDirectives, parseUintDirective
+  called_by: New, parseRequestCacheControlString
+
+PathParam.Reset (client/request.go:869-869)
+  Reset clears the PathParam map.
+  called_by: ReleaseFile, ReleaseRequest, String, AcquireCtx, ResetWithContext, privateLog, privateLogf, privateLogw
+
+PathParam.Del (client/request.go:834-834)
+  Del deletes a path parameter by key.
+  sig: PathParam.Del(key string)
+  called_by: DelCookies, DelData, SetHeaders, DelParams, SetValWithStruct
+
+FiberHandlerFunc (middleware/adaptor/adaptor.go:199-199)
+  FiberHandlerFunc wraps fiber handler to net/http handler func
+  sig: FiberHandlerFunc(h fiber.Handler)
+  behavior: DELEGATE(handlerFunc -> result)
+  calls: handlerFunc
+  called_by: FiberHandler
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 55 with behavior annotations
-uncovered: App.next, App.nextCustom, Request.SetParam, Client.SetDisablePathNormalizing
-drill: client/cookiejar.go (~1 lines, pathMatch)
+coverage: 80 symbols in L3, 53 with behavior annotations
+uncovered: App.nextCustom, App.next, Request.AddFile, App.processSubAppsRoutes
 drill: path.go (~1 lines, RoutePatternMatch)
+drill: client/cookiejar.go (~1 lines, pathMatch)
 drill: client/request.go (~1 lines, Request.DisablePathNormalizing)

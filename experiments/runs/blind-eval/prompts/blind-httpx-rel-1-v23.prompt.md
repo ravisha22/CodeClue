@@ -1,0 +1,350 @@
+# Blind Evaluation Prompt - MRLF v2.4
+# Task: blind-httpx-rel-1
+
+You are a senior software engineer. You have been given a codebase
+comprehension artifact (a "clue file") that summarises a repository's
+structure, symbols, and behavior. This is NOT the full source code - it is
+a compressed representation.
+
+Answer the question below using ONLY the information in the clue file.
+Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the modules, symbols, or relationships most relevant to the question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before concluding: follow calls: chains, walk extends: hierarchies, and use behavior: annotations as summaries of how control or responsibility moves. Use TREE and INDEX to situate the relationship in the repository structure. State explicitly what GAPS says cannot be determined from the clue alone. Finally, synthesize the answer, distinguishing supported structure from unresolved uncertainty.
+
+--- CLUE FILE START ---
+=CC v2.1 httpx@HEAD 60mod 1241sym
+? How do HTTPX's top-level helper functions, `Client`, and explicit `Request` objects relate in the documented send pipeline?
+
+
+-- TREE
+httpx/  (23 files)
+  _transports/
+tests/  (37 files)
+  client/  models/
+
+-- INDEX
+httpx/__init__.py                               106L  main
+httpx/__version__.py                              3L  
+httpx/_api.py                                   438L  delete, get, head, options, patch
+httpx/_auth.py                                  348L  async_auth_flow, auth_flow, sync_auth_flow, Auth, auth_flow
+httpx/_client.py                               2019L  aclose, delete, get, head, options
+httpx/_config.py                                248L  Limits, raw_auth, Proxy, as_dict, Timeout
+httpx/_content.py                               240L  AsyncIteratorByteStream, ByteStream, IteratorByteStream, UnattachedStream, encode_content
+httpx/_decoders.py                              393L  decode, flush, BrotliDecoder, decode, flush
+httpx/_exceptions.py                            377L  CloseError, ConnectError, ConnectTimeout, CookieConflict, DecodingError
+httpx/_main.py                                  506L  download_response, format_certificate, format_request_headers, format_response_headers, get_lexer_for_response
+httpx/_models.py                               1277L  add_unredirected_header, info, clear, delete, extract_cookies
+httpx/_multipart.py                             300L  get_length, render, render_data, render_headers, DataField
+httpx/_status_codes.py                          162L  get_reason_phrase, is_client_error, is_error, is_informational, is_redirect
+httpx/_transports/__init__.py                    15L  
+httpx/_transports/asgi.py                       187L  ASGIResponseStream, receive, send, handle_async_request, ASGITransport
+httpx/_transports/base.py                        86L  aclose, handle_async_request, AsyncBaseTransport, close, handle_request
+  ...and 44 more modules
+
+-- SYM
+map_httpcore_exceptions             M httpx/_transports/default.py:96     function map_httpcore_exceptions
+_load_httpcore_exceptions           M httpx/_transports/default.py:74     function _load_httpcore_exceptions
+QueryParams                         C httpx/_urls.py:420    URL query parameters, as a multi-dict.
+items                               M httpx/_urls.py:486    Return all items in the query params.
+request                             M httpx/_api.py:39     Sends an HTTP request.
+URL                                 C httpx/_urls.py:15     url = httpx.URL("HTTPS://jo%40email.com:a%20sec...
+ByteStream                          C httpx/_content.py:31     class ByteStream
+copy_with                           M httpx/_urls.py:327    Copy this URL, returning a new URL with some co...
+PERCENT                             M httpx/_urlparse.py:478    function PERCENT
+percent_encoded                     M httpx/_urlparse.py:482    Use percent-encoding to quote a string.
+get_list                            M httpx/_models.py:252    Return a list of all header values for a given ...
+_port_or_default                    M httpx/_client.py:77     function _port_or_default
+multi_items                         M httpx/_models.py:231    Return a list of `(key, value)` pairs of headers.
+get                                 M httpx/_urls.py:512    Get a value from the query param for a given key.
+add_unredirected_header             M httpx/_models.py:1257   function add_unredirected_header
+_format_form_param                  M httpx/_multipart.py:33     Encode a name/value pair within a multipart form.
+quote                               M httpx/_urlparse.py:497    Use percent-encoding to quote a string, omittin...
+_get_content_decoder                M httpx/_models.py:699    Returns a decoder instance which can be used to...
+_skip_leading_empty_chunks          M httpx/_transports/wsgi.py:22     function _skip_leading_empty_chunks
+Headers                             C httpx/_models.py:139    HTTP headers, as a case-insensitive multi-dict.
+iter_chunks                         M httpx/_multipart.py:258    function iter_chunks
+keys                                M httpx/_urls.py:463    Return all the keys in the query params.
+urlparse                            M httpx/_urlparse.py:213    function urlparse
+aclose                              M httpx/_models.py:1065   Close the response and release the connection.
+close                               M httpx/_models.py:961    Close the response and release the connection.
+_CookieCompatRequest                C httpx/_models.py:1243   Wraps a `Request` instance up in a compatibilit...
+aclose                              M httpx/_transports/base.py:85     async_function aclose
+close                               M httpx/_transports/base.py:61     function close
+WSGIByteStream                      C httpx/_transports/wsgi.py:30     class WSGIByteStream
+aiter_bytes                         M httpx/_models.py:982    A byte-iterator over the decoded response content.
+iter_bytes                          M httpx/_models.py:884    A byte-iterator over the decoded response content.
+__new__                             M httpx/_status_codes.py:28     function __new__
+is_running_trio                     M httpx/_transports/asgi.py:29     function is_running_trio
+get_list                            M httpx/_urls.py:526    Get all values from the query param for a given...
+clear                               M httpx/_models.py:1192   Delete all cookies.
+get_lexer_for_response              M httpx/_main.py:103    function get_lexer_for_response
+aiter_raw                           M httpx/_models.py:1037   A byte-iterator over the raw response content.
+iter_raw                            M httpx/_models.py:935    A byte-iterator over the raw response content.
+_build_auth                         M httpx/_client.py:445    function _build_auth
+format_request_headers              M httpx/_main.py:116    function format_request_headers
+format_response_headers             M httpx/_main.py:129    function format_response_headers
+multi_items                         M httpx/_urls.py:498    Return all items in the query params.
+_DigestAuthChallenge                C httpx/_auth.py:343    class _DigestAuthChallenge
+get_content_length                  M httpx/_multipart.py:265    Return the length of the multipart encoded cont...
+items                               M httpx/_models.py:216    Return `(key, value)` items of headers.
+DataField                           C httpx/_multipart.py:70     A single form field item, within a multipart fo...
+aiter_text                          M httpx/_models.py:1007   A str-iterator over the decoded response content
+iter_text                           M httpx/_models.py:907    A str-iterator over the decoded response content
+_parse_content_type_charset         M httpx/_models.py:85     function _parse_content_type_charset
+_parse_header_links                 M httpx/_models.py:93     Returns a list of parsed link headers, for more...
+print_help                          M httpx/_main.py:26     function print_help
+codes                               C httpx/_status_codes.py:8      HTTP status codes and reason phrases
+merge                               M httpx/_urls.py:582    Return a new QueryParams instance, updated with.
+set                                 M httpx/_urls.py:537    Return a new QueryParams instance, setting the ...
+add                                 M httpx/_urls.py:552    Return a new QueryParams instance, setting or a...
+remove                              M httpx/_urls.py:567    Return a new QueryParams instance, removing the...
+join                                M httpx/_urls.py:354    Return an absolute URL, using this URL as the b...
+_CookieCompatResponse               C httpx/_models.py:1261   Wraps a `Request` instance up in a compatibilit...
+keys                                M httpx/_models.py:202    function keys
+AsyncResponseStream                 C httpx/_transports/default.py:265    class AsyncResponseStream
+ResponseStream                      C httpx/_transports/default.py:121    class ResponseStream
+_is_https_redirect                  M httpx/_client.py:62     Return 'True' if 'location' is a HTTPS upgrade ...
+_same_origin                        M httpx/_client.py:83     Return 'True' if the given URLs share the same ...
+Cookies                             C httpx/_models.py:1079   HTTP Cookies, as a mutable mapping.
+__aiter__                           M httpx/_transports/asgi.py:59     async_function __aiter__
+ASGIResponseStream                  C httpx/_transports/asgi.py:55     class ASGIResponseStream
+create_event                        M httpx/_transports/asgi.py:44     function create_event
+extract_cookies                     M httpx/_models.py:1101   Loads any cookies based on the response `Set-Co...
+values                              M httpx/_urls.py:474    Return all the values in the query params.
+encode_content                      M httpx/_content.py:107    function encode_content
+  ...and 463 more symbols
+
+-- FOCUS
+request (httpx/_client.py:771-825)
+  Build and send a request.
+  sig: request(method, url)
+
+request (httpx/_client.py:1485-1540)
+  Build and send a request.
+  sig: request(method, url)
+
+send (httpx/_client.py:1594-1643)
+  Send a request.
+  sig: send(request)
+  raises: RuntimeError, exc
+
+send (httpx/_client.py:879-928)
+  Send a request.
+  sig: send(request)
+  raises: RuntimeError, exc
+
+handle_request (httpx/_transports/base.py:26-59)
+  Send a single HTTP request and return a response.
+  sig: handle_request(request)
+  raises: NotImplementedError
+
+_send_handling_redirects (httpx/_client.py:964-999)
+  sig: _send_handling_redirects(request, follow_redirects, history)
+  behavior: ACCUMULATE(_send_single_request... -> history, raises TooManyRedirects)
+  raises: TooManyRedirects, exc
+
+_send_single_request (httpx/_client.py:1001-1034)
+  Sends a single request, without handling any redirections.
+  sig: _send_single_request(request)
+  raises: RuntimeError
+
+_send_single_request (httpx/_client.py:1717-1749)
+  Sends a single request, without handling any redirections.
+  sig: _send_single_request(request)
+  raises: RuntimeError
+
+_build_redirect_request (httpx/_client.py:475-492)
+  Given a request and a redirect response, return a new request that
+  sig: _build_redirect_request(request, response)
+  calls: _redirect_headers, _redirect_method, _redirect_stream, _redirect_url
+  called_by: AsyncClient, Client
+
+build_request (httpx/_client.py:340-389)
+  Build and return a request instance.
+  sig: build_request(method, url)
+  calls: _merge_cookies, _merge_headers, _merge_queryparams, _merge_url
+  called_by: AsyncClient, Client
+
+_build_request_auth (httpx/_client.py:457-473)
+  sig: _build_request_auth(request, auth)
+  calls: _build_auth
+  called_by: AsyncClient, Client
+
+_send_handling_auth (httpx/_client.py:930-962)
+  sig: _send_handling_auth(request, auth, follow_redirects, history)
+  raises: exc
+
+_send_handling_auth (httpx/_client.py:1645-1677)
+  sig: _send_handling_auth(request, auth, follow_redirects, history)
+  raises: exc
+
+_send_handling_redirects (httpx/_client.py:1679-1715)
+  sig: _send_handling_redirects(request, follow_redirects, history)
+  behavior: ACCUMULATE(len loop -> history, raises TooManyRedirects)
+  raises: TooManyRedirects, exc
+
+handle_request (httpx/_transports/wsgi.py:91-149)
+  sig: handle_request(request)
+  behavior: ACCUMULATE(request.headers.raw loop -> key)
+  calls: WSGIByteStream
+
+request (httpx/_exceptions.py:97-102)
+  behavior: GUARD(self._request is None -> raise RuntimeError('The ....)
+  raises: RuntimeError
+
+AsyncClient (httpx/_client.py:1307-2019)
+  An asynchronous HTTP client, with connection pooling, HTTP/2, redirects,
+  extends: BaseClient
+  imports: enum, logging, warnings, types, ssl
+  calls: __aenter__, __aexit__, _build_redirect_request, _build_request_auth, _get_proxy_map, _set_timeout, build_request, BoundAsyncStream
+  raises: RuntimeError, exc, TooManyRedirects, ImportError
+
+Client (httpx/_client.py:594-1304)
+  An HTTP client, with connection pooling, HTTP/2, redirects, cookie persistence, etc.
+  extends: BaseClient
+  imports: enum, logging, warnings, types, ssl
+  calls: _build_redirect_request, _build_request_auth, _get_proxy_map, _set_timeout, build_request, BoundSyncStream, __enter__, __exit__
+  raises: RuntimeError, exc, TooManyRedirects, ImportError
+
+BaseClient (httpx/_client.py:188-591)
+  imports: enum, logging, warnings, types, ssl
+  calls: _build_auth, _enforce_trailing_slash, _merge_cookies, _merge_headers, _merge_queryparams, _merge_url, _redirect_headers, _redirect_method
+  raises: RemoteProtocolError, TypeError
+
+Request (httpx/_models.py:382-512)
+  imports: codecs, email.message, urllib.request, http.cookiejar
+  calls: set_cookie_header, Cookies, items, Headers
+  raises: RequestNotRead
+
+request (httpx/_api.py:39-120)
+  Sends an HTTP request.
+  sig: request(method, url)
+  called_by: delete, get, head, options, patch, post, put
+
+_CookieCompatRequest (httpx/_models.py:1243-1259)
+  Wraps a `Request` instance up in a compatibility interface suitable
+  extends: Request
+  imports: codecs, email.message, urllib.request, http.cookiejar
+  calls: add_unredirected_header
+  called_by: extract_cookies, set_cookie_header, Cookies
+
+print_request_headers (httpx/_main.py:147-153)
+  sig: print_request_headers(request, http2)
+  calls: format_request_headers
+  called_by: trace
+
+handle_async_request (httpx/_transports/asgi.py:99-187)
+  sig: handle_async_request(request)
+  calls: __aiter__, ASGIResponseStream, create_event
+
+ClientState (httpx/_client.py:125-136)
+  extends: Enum
+  attrs: UNOPENED=1, OPENED=2, CLOSED=3
+  imports: enum, logging, warnings, types, ssl
+
+RequestError (httpx/_exceptions.py:107-123)
+  Base class for all exceptions that may occur when issuing a `.request()`.
+  extends: HTTPError
+
+RequestNotRead (httpx/_exceptions.py:351-364)
+  Attempted to access streaming request content, without having called `read()`.
+  extends: StreamError
+
+_get_client_nonce (httpx/_auth.py:303-309)
+  sig: _get_client_nonce(nonce_count, nonce)
+  called_by: DigestAuth
+
+format_request_headers (httpx/_main.py:116-126)
+  sig: format_request_headers(request, http2)
+  called_by: print_request_headers
+
+handle_async_request (httpx/_transports/base.py:77-83)
+  sig: handle_async_request(request)
+  raises: NotImplementedError
+
+handle_async_request (httpx/_transports/default.py:374-403)
+  sig: handle_async_request(request)
+  calls: AsyncResponseStream, map_httpcore_exceptions
+  called_by: AsyncHTTPTransport
+
+handle_async_request (httpx/_transports/mock.py:29-43)
+  sig: handle_async_request(request)
+
+handle_request (httpx/_transports/default.py:230-259)
+  sig: handle_request(request)
+  calls: ResponseStream, map_httpcore_exceptions
+  called_by: HTTPTransport
+
+handle_request (httpx/_transports/mock.py:19-27)
+  sig: handle_request(request)
+  raises: TypeError
+
+request (httpx/_models.py:596-604)
+  Returns the request instance associated to the current response.
+  raises: RuntimeError
+
+request (httpx/_exceptions.py:103-107)
+  sig: request(request)
+
+request (httpx/_models.py:607-608)
+  sig: request(value)
+
+request_context (httpx/_exceptions.py:365-378)
+  A context manager that can be used to attach the given request context
+  sig: request_context(request)
+  raises: exc
+
+send (httpx/_transports/asgi.py:148-167)
+  sig: send(message)
+
+delete (httpx/_client.py:1234-1261)
+  Send a `DELETE` request.
+  sig: delete(url)
+  behavior: DELEGATE(request -> result)
+
+delete (httpx/_client.py:1949-1976)
+  Send a `DELETE` request.
+  sig: delete(url)
+  behavior: DELEGATE(request -> result)
+
+get (httpx/_client.py:1036-1063)
+  Send a `GET` request.
+  sig: get(url)
+  behavior: DELEGATE(request -> result)
+
+get (httpx/_client.py:1751-1778)
+  Send a `GET` request.
+  sig: get(url)
+  behavior: DELEGATE(request -> result)
+
+head (httpx/_client.py:1094-1121)
+  Send a `HEAD` request.
+  sig: head(url)
+  behavior: DELEGATE(request -> result)
+
+head (httpx/_client.py:1809-1836)
+  Send a `HEAD` request.
+  sig: head(url)
+  behavior: DELEGATE(request -> result)
+
+options (httpx/_client.py:1065-1092)
+  Send an `OPTIONS` request.
+  sig: options(url)
+  behavior: DELEGATE(request -> result)
+
+options (httpx/_client.py:1780-1807)
+  Send an `OPTIONS` request.
+  sig: options(url)
+  behavior: DELEGATE(request -> result)
+
+-- GAPS
+type: STRUCTURAL (answerable from L0-L2)
+coverage: 80 symbols in L3, 25 with behavior annotations
+uncovered: is_client_error, UseClientDefault, encode_request, is_client_error
+
+--- CLUE FILE END ---
+
+QUESTION: How do HTTPX's top-level helper functions, `Client`, and explicit `Request` objects relate in the documented send pipeline?
+
+Provide a detailed answer based solely on the clue file above.
+For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.

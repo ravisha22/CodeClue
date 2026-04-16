@@ -57,8 +57,8 @@ ZodNumber._parse                    M packages/zod/src/v3/types.ts:1370   method
 ZodEffects._parse                   M packages/zod/src/v3/types.ts:4322   method ZodEffects._parse
 ZodBigInt._parse                    M packages/zod/src/v3/types.ts:1636   method ZodBigInt._parse
 ZodIntersection._parse              M packages/zod/src/v3/types.ts:3292   method ZodIntersection._parse
-ZodFunction._parse                  M packages/zod/src/v3/types.ts:3822   method ZodFunction._parse
 ZodArray._parse                     M packages/zod/src/v3/types.ts:2241   method ZodArray._parse
+ZodFunction._parse                  M packages/zod/src/v3/types.ts:3822   method ZodFunction._parse
 ZodDate._parse                      M packages/zod/src/v3/types.ts:1878   method ZodDate._parse
 ZodPipeline._parse                  M packages/zod/src/v3/types.ts:4782   method ZodPipeline._parse
 ZodUnion._parse                     M packages/zod/src/v3/types.ts:2947   method ZodUnion._parse
@@ -66,34 +66,34 @@ ZodBoolean._parse                   M packages/zod/src/v3/types.ts:1834   method
 ZodEnum._parse                      M packages/zod/src/v3/types.ts:4082   method ZodEnum._parse
 ZodPromise._parse                   M packages/zod/src/v3/types.ts:4244   method ZodPromise._parse
 ZodSymbol._parse                    M packages/zod/src/v3/types.ts:2010   method ZodSymbol._parse
-ZodUndefined._parse                 M packages/zod/src/v3/types.ts:2045   method ZodUndefined._parse
 ZodVoid._parse                      M packages/zod/src/v3/types.ts:2193   method ZodVoid._parse
 ZodNaN._parse                       M packages/zod/src/v3/types.ts:4702   method ZodNaN._parse
 ZodNull._parse                      M packages/zod/src/v3/types.ts:2080   method ZodNull._parse
-ZodNativeEnum._parse                M packages/zod/src/v3/types.ts:4179   method ZodNativeEnum._parse
-ZodRecord._parse                    M packages/zod/src/v3/types.ts:3514   method ZodRecord._parse
-ZodSet._parse                       M packages/zod/src/v3/types.ts:3691   method ZodSet._parse
-ZodTuple._parse                     M packages/zod/src/v3/types.ts:3399   method ZodTuple._parse
+ZodUndefined._parse                 M packages/zod/src/v3/types.ts:2045   method ZodUndefined._parse
 ZodLiteral._parse                   M packages/zod/src/v3/types.ts:4007   method ZodLiteral._parse
 ZodMap._parse                       M packages/zod/src/v3/types.ts:3603   method ZodMap._parse
+ZodNativeEnum._parse                M packages/zod/src/v3/types.ts:4179   method ZodNativeEnum._parse
 ZodNever._parse                     M packages/zod/src/v3/types.ts:2164   method ZodNever._parse
+ZodSet._parse                       M packages/zod/src/v3/types.ts:3691   method ZodSet._parse
+ZodTuple._parse                     M packages/zod/src/v3/types.ts:3399   method ZodTuple._parse
+ZodRecord._parse                    M packages/zod/src/v3/types.ts:3514   method ZodRecord._parse
 ZodBranded._parse                   M packages/zod/src/v3/types.ts:4748   method ZodBranded._parse
 ZodCatch._parse                     M packages/zod/src/v3/types.ts:4619   method ZodCatch._parse
 ZodDefault._parse                   M packages/zod/src/v3/types.ts:4569   method ZodDefault._parse
 ZodLazy._parse                      M packages/zod/src/v3/types.ts:3979   method ZodLazy._parse
 ZodNullable._parse                  M packages/zod/src/v3/types.ts:4530   method ZodNullable._parse
 ZodOptional._parse                  M packages/zod/src/v3/types.ts:4490   method ZodOptional._parse
+ZodReadonly._parse                  M packages/zod/src/v3/types.ts:4877   method ZodReadonly._parse
 ZodUnknown._parse                   M packages/zod/src/v3/types.ts:2140   method ZodUnknown._parse
 ZodAny._parse                       M packages/zod/src/v3/types.ts:2115   method ZodAny._parse
-ZodReadonly._parse                  M packages/zod/src/v3/types.ts:4877   method ZodReadonly._parse
+ZodPromise.unwrap                   M packages/zod/src/v3/types.ts:4240   method ZodPromise.unwrap
 ZodBranded.unwrap                   M packages/zod/src/v3/types.ts:4758   method ZodBranded.unwrap
 ZodNullable.unwrap                  M packages/zod/src/v3/types.ts:4538   method ZodNullable.unwrap
 ZodOptional.unwrap                  M packages/zod/src/v3/types.ts:4498   method ZodOptional.unwrap
-ZodPromise.unwrap                   M packages/zod/src/v3/types.ts:4240   method ZodPromise.unwrap
 ZodReadonly.unwrap                  M packages/zod/src/v3/types.ts:4896   method ZodReadonly.unwrap
 ZodBigInt.maxValue                  M packages/zod/src/v3/types.ts:1810   method ZodBigInt.maxValue
-ZodNumber.maxValue                  M packages/zod/src/v3/types.ts:1587   method ZodNumber.maxValue
 ZodBigInt.minValue                  M packages/zod/src/v3/types.ts:1800   method ZodBigInt.minValue
+ZodNumber.maxValue                  M packages/zod/src/v3/types.ts:1587   method ZodNumber.maxValue
   ...and 2442 more symbols
 
 -- FOCUS
@@ -113,88 +113,115 @@ $ZodCheckPropertyParams (packages/zod/src/v4/core/api.ts:1083-1083)
   type alias $ZodCheckPropertyParams = CheckParams<checks.$ZodCheckProperty, "property" | "schema" | "when">
   uses: CheckParams, checks.$ZodCheckProperty, property, schema
 
-$Decode (packages/zod/src/v4/core/parse.ts:109-109)
-  type alias $Decode = <T extends schemas.$ZodType>( schema: T, value: core.input<T>, _ctx?: schemas.ParseContext<errors.$ZodIssue> ) => core.output<T>
-  uses: T, schemas.$ZodType, schema, value
+KeySchema (packages/zod/src/v3/types.ts:3493-3493)
+  type alias KeySchema = ZodType<string | number | symbol, any, any>
+  uses: ZodType, string, number, symbol
 
-$Decode (packages/zod/src/v4/core/parse.ts:110-110)
-  type alias $Decode = <T extends schemas.$ZodType>( schema: T, value: core.input<T>, _ctx?: schemas.ParseContext<errors.$ZodIssue> ) => core.output<T>
-  uses: T, schemas.$ZodType, schema, value
+KeySchema (packages/zod/src/v3/types.ts:3493-3494)
+  type alias KeySchema = ZodType<string | number | symbol, any, any>
+  uses: ZodType, string, number, symbol
 
-$DecodeAsync (packages/zod/src/v4/core/parse.ts:134-134)
-  type alias $DecodeAsync = <T extends schemas.$ZodType>( schema: T, value: core.input<T>, _ctx?: schemas.ParseContext<errors.$ZodIssue> ) => Promise<core.output<T>>
-  uses: T, schemas.$ZodType, schema, value
+ZodMap.keySchema (packages/zod/src/v3/types.ts:3597-3600)
+  method ZodMap.keySchema
+  calls: keySchema
+  called_by: ZodDiscriminatedUnion, ZodMap, ZodObject, keySchema, ZodRecord
+  uses: this._def.keyType
 
-$DecodeAsync (packages/zod/src/v4/core/parse.ts:135-135)
-  type alias $DecodeAsync = <T extends schemas.$ZodType>( schema: T, value: core.input<T>, _ctx?: schemas.ParseContext<errors.$ZodIssue> ) => Promise<core.output<T>>
-  uses: T, schemas.$ZodType, schema, value
+ZodMap.valueSchema (packages/zod/src/v3/types.ts:3600-3603)
+  method ZodMap.valueSchema
+  calls: valueSchema
+  called_by: ZodDiscriminatedUnion, ZodMap, ZodObject, valueSchema, ZodRecord
+  uses: this._def.valueType
 
-$Encode (packages/zod/src/v4/core/parse.ts:97-97)
-  type alias $Encode = <T extends schemas.$ZodType>( schema: T, value: core.output<T>, _ctx?: schemas.ParseContext<errors.$ZodIssue> ) => core.input<T>
-  uses: T, schemas.$ZodType, schema, value
+ZodRecord.keySchema (packages/zod/src/v3/types.ts:3508-3511)
+  method ZodRecord.keySchema
+  calls: keySchema
+  called_by: ZodDiscriminatedUnion, keySchema, ZodMap, ZodObject, ZodRecord
+  uses: this._def.keyType
 
-$Encode (packages/zod/src/v4/core/parse.ts:96-96)
-  type alias $Encode = <T extends schemas.$ZodType>( schema: T, value: core.output<T>, _ctx?: schemas.ParseContext<errors.$ZodIssue> ) => core.input<T>
-  uses: T, schemas.$ZodType, schema, value
+ZodRecord.valueSchema (packages/zod/src/v3/types.ts:3511-3514)
+  method ZodRecord.valueSchema
+  calls: valueSchema
+  called_by: ZodDiscriminatedUnion, valueSchema, ZodMap, ZodObject, ZodRecord
+  uses: this._def.valueType
 
-$Encode (packages/zod/src/v4/core/parse.ts:95-95)
-  type alias $Encode = <T extends schemas.$ZodType>( schema: T, value: core.output<T>, _ctx?: schemas.ParseContext<errors.$ZodIssue> ) => core.input<T>
-  uses: T, schemas.$ZodType, schema, value
+ZodLazy.schema (packages/zod/src/v3/types.ts:3975-3979)
+  method ZodLazy.schema
+  behavior: DELEGATE(this._def.getter -> result)
+  called_by: ZodDiscriminatedUnion, ZodLazy, ZodObject
+  uses: this._def.getter
 
-$EncodeAsync (packages/zod/src/v4/core/parse.ts:121-121)
-  type alias $EncodeAsync = <T extends schemas.$ZodType>( schema: T, value: core.output<T>, _ctx?: schemas.ParseContext<errors.$ZodIssue> ) => Promise<core.input<T>>
-  uses: T, schemas.$ZodType, schema, value
+$ZodInternalIssue (packages/zod/src/v4/core/errors.ts:194-194)
+  type alias $ZodInternalIssue = T extends any ? RawIssue<T> : never
+  uses: T, any, RawIssue, never
 
-$EncodeAsync (packages/zod/src/v4/core/parse.ts:122-122)
-  type alias $EncodeAsync = <T extends schemas.$ZodType>( schema: T, value: core.output<T>, _ctx?: schemas.ParseContext<errors.$ZodIssue> ) => Promise<core.input<T>>
-  uses: T, schemas.$ZodType, schema, value
+$ZodInternalIssue (packages/zod/src/v4/core/errors.ts:193-193)
+  type alias $ZodInternalIssue = T extends any ? RawIssue<T> : never
+  uses: T, any, RawIssue, never
 
-$Parse (packages/zod/src/v4/core/parse.ts:8-8)
-  type alias $Parse = <T extends schemas.$ZodType>( schema: T, value: unknown, _ctx?: schemas.ParseContext<errors.$ZodIssue>, _params?: { callee?: util.AnyFunc; Err?: $ZodErrorClass }
-  uses: T, schemas.$ZodType, schema, value
+ZodInvalidIntersectionTypesIssue (packages/zod/src/v3/ZodError.ts:131-134)
+  interface ZodInvalidIntersectionTypesIssue
+  extends: ZodIssueBase
+  uses: ZodIssueCode.invalid_intersection_types
 
-$Parse (packages/zod/src/v4/core/parse.ts:9-9)
-  type alias $Parse = <T extends schemas.$ZodType>( schema: T, value: unknown, _ctx?: schemas.ParseContext<errors.$ZodIssue>, _params?: { callee?: util.AnyFunc; Err?: $ZodErrorClass }
-  uses: T, schemas.$ZodType, schema, value
+$ZodRawIssue (packages/zod/src/v4/core/errors.ts:207-207)
+  type alias $ZodRawIssue = $ZodInternalIssue<T>
+  uses: $ZodInternalIssue, T
 
-$Parse (packages/zod/src/v4/core/parse.ts:7-7)
-  type alias $Parse = <T extends schemas.$ZodType>( schema: T, value: unknown, _ctx?: schemas.ParseContext<errors.$ZodIssue>, _params?: { callee?: util.AnyFunc; Err?: $ZodErrorClass }
-  uses: T, schemas.$ZodType, schema, value
+$ZodRawIssue (packages/zod/src/v4/core/errors.ts:208-208)
+  type alias $ZodRawIssue = $ZodInternalIssue<T>
+  uses: $ZodInternalIssue, T
 
-$ParseAsync (packages/zod/src/v4/core/parse.ts:32-32)
-  type alias $ParseAsync = <T extends schemas.$ZodType>( schema: T, value: unknown, _ctx?: schemas.ParseContext<errors.$ZodIssue>, _params?: { callee?: util.AnyFunc; Err?: $ZodErrorClass }
-  uses: T, schemas.$ZodType, schema, value
+$ZodChecks (packages/zod/src/v4/core/checks.ts:1269-1269)
+  type alias $ZodChecks = | $ZodCheckLessThan | $ZodCheckGreaterThan | $ZodCheckMultipleOf | $ZodCheckNumberFormat | $ZodCheckBigIntFormat | $ZodCheckMaxSize | $ZodCheckMinSize
+  uses: $ZodCheckLessThan, $ZodCheckGreaterThan, $ZodCheckMultipleOf, $ZodCheckNumberFormat
 
-$ParseAsync (packages/zod/src/v4/core/parse.ts:31-31)
-  type alias $ParseAsync = <T extends schemas.$ZodType>( schema: T, value: unknown, _ctx?: schemas.ParseContext<errors.$ZodIssue>, _params?: { callee?: util.AnyFunc; Err?: $ZodErrorClass }
-  uses: T, schemas.$ZodType, schema, value
+$ZodChecks (packages/zod/src/v4/core/checks.ts:1263-1263)
+  type alias $ZodChecks = | $ZodCheckLessThan
+  uses: $ZodCheckLessThan
 
-$SafeDecode (packages/zod/src/v4/core/parse.ts:160-160)
-  type alias $SafeDecode = <T extends schemas.$ZodType>( schema: T, value: core.input<T>, _ctx?: schemas.ParseContext<errors.$ZodIssue> ) => util.SafeParseResult<core.output<T>>
-  uses: T, schemas.$ZodType, schema, value
+$ZodChecks (packages/zod/src/v4/core/checks.ts:1268-1268)
+  type alias $ZodChecks = | $ZodCheckLessThan | $ZodCheckGreaterThan | $ZodCheckMultipleOf | $ZodCheckNumberFormat | $ZodCheckBigIntFormat | $ZodCheckMaxSize
+  uses: $ZodCheckLessThan, $ZodCheckGreaterThan, $ZodCheckMultipleOf, $ZodCheckNumberFormat
 
-$SafeDecode (packages/zod/src/v4/core/parse.ts:159-159)
-  type alias $SafeDecode = <T extends schemas.$ZodType>( schema: T, value: core.input<T>, _ctx?: schemas.ParseContext<errors.$ZodIssue> ) => util.SafeParseResult<core.output<T>>
-  uses: T, schemas.$ZodType, schema, value
+$ZodChecks (packages/zod/src/v4/core/checks.ts:1266-1266)
+  type alias $ZodChecks = | $ZodCheckLessThan | $ZodCheckGreaterThan | $ZodCheckMultipleOf | $ZodCheckNumberFormat
+  uses: $ZodCheckLessThan, $ZodCheckGreaterThan, $ZodCheckMultipleOf, $ZodCheckNumberFormat
 
-$SafeDecodeAsync (packages/zod/src/v4/core/parse.ts:184-184)
-  type alias $SafeDecodeAsync = <T extends schemas.$ZodType>( schema: T, value: core.input<T>, _ctx?: schemas.ParseContext<errors.$ZodIssue> ) => Promise<util.SafeParseResult<core.output<T>>>
-  uses: T, schemas.$ZodType, schema, value
+$ZodChecks (packages/zod/src/v4/core/checks.ts:1264-1264)
+  type alias $ZodChecks = | $ZodCheckLessThan | $ZodCheckGreaterThan
+  uses: $ZodCheckLessThan, $ZodCheckGreaterThan
 
-$SafeDecodeAsync (packages/zod/src/v4/core/parse.ts:185-185)
-  type alias $SafeDecodeAsync = <T extends schemas.$ZodType>( schema: T, value: core.input<T>, _ctx?: schemas.ParseContext<errors.$ZodIssue> ) => Promise<util.SafeParseResult<core.output<T>>>
-  uses: T, schemas.$ZodType, schema, value
+$ZodChecks (packages/zod/src/v4/core/checks.ts:1265-1265)
+  type alias $ZodChecks = | $ZodCheckLessThan | $ZodCheckGreaterThan | $ZodCheckMultipleOf
+  uses: $ZodCheckLessThan, $ZodCheckGreaterThan, $ZodCheckMultipleOf
 
-$SafeEncode (packages/zod/src/v4/core/parse.ts:146-146)
-  type alias $SafeEncode = <T extends schemas.$ZodType>( schema: T, value: core.output<T>, _ctx?: schemas.ParseContext<errors.$ZodIssue> ) => util.SafeParseResult<core.input<T>>
-  uses: T, schemas.$ZodType, schema, value
+$ZodChecks (packages/zod/src/v4/core/checks.ts:1267-1267)
+  type alias $ZodChecks = | $ZodCheckLessThan | $ZodCheckGreaterThan | $ZodCheckMultipleOf | $ZodCheckNumberFormat | $ZodCheckBigIntFormat
+  uses: $ZodCheckLessThan, $ZodCheckGreaterThan, $ZodCheckMultipleOf, $ZodCheckNumberFormat
 
-$SafeEncode (packages/zod/src/v4/core/parse.ts:147-147)
-  type alias $SafeEncode = <T extends schemas.$ZodType>( schema: T, value: core.output<T>, _ctx?: schemas.ParseContext<errors.$ZodIssue> ) => util.SafeParseResult<core.input<T>>
-  uses: T, schemas.$ZodType, schema, value
+$ZodErrorTree (packages/zod/src/v4/core/errors.ts:327-327)
+  type alias $ZodErrorTree = T extends util.Primitive ? { errors: U[] }
+  uses: T, util.Primitive, errors, U
+
+$ZodErrorTree (packages/zod/src/v4/core/errors.ts:328-328)
+  type alias $ZodErrorTree = T extends util.Primitive ? { errors: U[] }
+  uses: T, util.Primitive, errors, U
+
+$ZodStandardSchema (packages/zod/src/v4/core/schemas.ts:170-170)
+  type alias $ZodStandardSchema = StandardSchemaV1.Props<core.input<T>, core.output<T>>
+  uses: StandardSchemaV1.Props, core.input, T, core.output
+
+$ZodStandardSchema (packages/zod/src/v4/core/schemas.ts:169-169)
+  type alias $ZodStandardSchema = StandardSchemaV1.Props<core.input<T>, core.output<T>>
+  uses: StandardSchemaV1.Props, core.input, T, core.output
+
+$ZodStringFormatChecks (packages/zod/src/v4/core/checks.ts:1285-1285)
+  type alias $ZodStringFormatChecks = | $ZodCheckRegex | $ZodCheckLowerCase | $ZodCheckUpperCase | $ZodCheckIncludes | $ZodCheckStartsWith | $ZodCheckEndsWith
+  uses: $ZodCheckRegex, $ZodCheckLowerCase, $ZodCheckUpperCase, $ZodCheckIncludes
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
 coverage: 80 symbols in L3, 2 with behavior annotations
-uncovered: $ZodCheckLengthEqualsParams, $ZodCheckLessThanParams, $ZodCheckLessThanParams, $ZodCheckLessThanParams
+uncovered: $ZodCheckUpperCaseParams, $ZodCheckUpperCaseParams, $ZodErrorClass, $ZodErrorClass
 drill: packages/zod/src/v3/types.ts (~1 lines, ZodMap.valueSchema)

@@ -1,0 +1,821 @@
+# Blind Evaluation Prompt - MRLF v2.4 with File 2 Drill-Down
+# Task: blind-httpx-struct-2
+
+You are a senior software engineer. You have been given:
+1. A codebase comprehension artifact (clue file) - a compressed representation
+2. Source code snippets for key functions identified as needing deeper analysis
+
+Answer the question using the clue file AND the source snippets below.
+Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the symbols most relevant to the question from FOCUS, SYM, and INDEX. Trace those symbols through the clue before forming any conclusion: follow calls: chains, walk extends: hierarchies, and read behavior: annotations as compact control-flow summaries. Use TREE and INDEX to place each symbol in its module context. Then consult the provided source snippets only to confirm or refine the traced path. State explicitly what GAPS says cannot be determined from the evidence. Finally, synthesize the answer, separating supported conclusions from remaining uncertainty.
+
+--- CLUE FILE (File 1) ---
+=CC v2.1 httpx@HEAD 60mod 1241sym
+? What public configuration and error surfaces do the HTTPX API docs expose around clients?
+
+
+-- TREE
+httpx/  (23 files)
+  _transports/
+tests/  (37 files)
+  client/  models/
+
+-- INDEX
+httpx/__init__.py                               106L  main
+httpx/__version__.py                              3L  
+httpx/_api.py                                   438L  delete, get, head, options, patch
+httpx/_auth.py                                  348L  async_auth_flow, auth_flow, sync_auth_flow, Auth, auth_flow
+httpx/_client.py                               2019L  aclose, delete, get, head, options
+httpx/_config.py                                248L  Limits, raw_auth, Proxy, as_dict, Timeout
+httpx/_content.py                               240L  AsyncIteratorByteStream, ByteStream, IteratorByteStream, UnattachedStream, encode_content
+httpx/_decoders.py                              393L  decode, flush, BrotliDecoder, decode, flush
+httpx/_exceptions.py                            377L  CloseError, ConnectError, ConnectTimeout, CookieConflict, DecodingError
+httpx/_main.py                                  506L  download_response, format_certificate, format_request_headers, format_response_headers, get_lexer_for_response
+httpx/_models.py                               1277L  add_unredirected_header, info, clear, delete, extract_cookies
+httpx/_multipart.py                             300L  get_length, render, render_data, render_headers, DataField
+httpx/_status_codes.py                          162L  get_reason_phrase, is_client_error, is_error, is_informational, is_redirect
+httpx/_transports/__init__.py                    15L  
+httpx/_transports/asgi.py                       187L  ASGIResponseStream, receive, send, handle_async_request, ASGITransport
+httpx/_transports/base.py                        86L  aclose, handle_async_request, AsyncBaseTransport, close, handle_request
+  ...and 44 more modules
+
+-- SYM
+map_httpcore_exceptions             M httpx/_transports/default.py:96     function map_httpcore_exceptions
+_load_httpcore_exceptions           M httpx/_transports/default.py:74     function _load_httpcore_exceptions
+QueryParams                         C httpx/_urls.py:420    URL query parameters, as a multi-dict.
+items                               M httpx/_urls.py:486    Return all items in the query params.
+request                             M httpx/_api.py:39     Sends an HTTP request.
+URL                                 C httpx/_urls.py:15     url = httpx.URL("HTTPS://jo%40email.com:a%20sec...
+ByteStream                          C httpx/_content.py:31     class ByteStream
+copy_with                           M httpx/_urls.py:327    Copy this URL, returning a new URL with some co...
+PERCENT                             M httpx/_urlparse.py:478    function PERCENT
+percent_encoded                     M httpx/_urlparse.py:482    Use percent-encoding to quote a string.
+get_list                            M httpx/_models.py:252    Return a list of all header values for a given ...
+_port_or_default                    M httpx/_client.py:77     function _port_or_default
+multi_items                         M httpx/_models.py:231    Return a list of `(key, value)` pairs of headers.
+get                                 M httpx/_urls.py:512    Get a value from the query param for a given key.
+add_unredirected_header             M httpx/_models.py:1257   function add_unredirected_header
+_format_form_param                  M httpx/_multipart.py:33     Encode a name/value pair within a multipart form.
+quote                               M httpx/_urlparse.py:497    Use percent-encoding to quote a string, omittin...
+_get_content_decoder                M httpx/_models.py:699    Returns a decoder instance which can be used to...
+_skip_leading_empty_chunks          M httpx/_transports/wsgi.py:22     function _skip_leading_empty_chunks
+Headers                             C httpx/_models.py:139    HTTP headers, as a case-insensitive multi-dict.
+iter_chunks                         M httpx/_multipart.py:258    function iter_chunks
+keys                                M httpx/_urls.py:463    Return all the keys in the query params.
+urlparse                            M httpx/_urlparse.py:213    function urlparse
+aclose                              M httpx/_models.py:1065   Close the response and release the connection.
+close                               M httpx/_models.py:961    Close the response and release the connection.
+_CookieCompatRequest                C httpx/_models.py:1243   Wraps a `Request` instance up in a compatibilit...
+aclose                              M httpx/_transports/base.py:85     async_function aclose
+close                               M httpx/_transports/base.py:61     function close
+WSGIByteStream                      C httpx/_transports/wsgi.py:30     class WSGIByteStream
+aiter_bytes                         M httpx/_models.py:982    A byte-iterator over the decoded response content.
+iter_bytes                          M httpx/_models.py:884    A byte-iterator over the decoded response content.
+__new__                             M httpx/_status_codes.py:28     function __new__
+is_running_trio                     M httpx/_transports/asgi.py:29     function is_running_trio
+get_list                            M httpx/_urls.py:526    Get all values from the query param for a given...
+clear                               M httpx/_models.py:1192   Delete all cookies.
+get_lexer_for_response              M httpx/_main.py:103    function get_lexer_for_response
+aiter_raw                           M httpx/_models.py:1037   A byte-iterator over the raw response content.
+iter_raw                            M httpx/_models.py:935    A byte-iterator over the raw response content.
+_build_auth                         M httpx/_client.py:445    function _build_auth
+format_request_headers              M httpx/_main.py:116    function format_request_headers
+format_response_headers             M httpx/_main.py:129    function format_response_headers
+multi_items                         M httpx/_urls.py:498    Return all items in the query params.
+_DigestAuthChallenge                C httpx/_auth.py:343    class _DigestAuthChallenge
+get_content_length                  M httpx/_multipart.py:265    Return the length of the multipart encoded cont...
+items                               M httpx/_models.py:216    Return `(key, value)` items of headers.
+DataField                           C httpx/_multipart.py:70     A single form field item, within a multipart fo...
+aiter_text                          M httpx/_models.py:1007   A str-iterator over the decoded response content
+iter_text                           M httpx/_models.py:907    A str-iterator over the decoded response content
+_parse_content_type_charset         M httpx/_models.py:85     function _parse_content_type_charset
+_parse_header_links                 M httpx/_models.py:93     Returns a list of parsed link headers, for more...
+print_help                          M httpx/_main.py:26     function print_help
+codes                               C httpx/_status_codes.py:8      HTTP status codes and reason phrases
+merge                               M httpx/_urls.py:582    Return a new QueryParams instance, updated with.
+set                                 M httpx/_urls.py:537    Return a new QueryParams instance, setting the ...
+add                                 M httpx/_urls.py:552    Return a new QueryParams instance, setting or a...
+remove                              M httpx/_urls.py:567    Return a new QueryParams instance, removing the...
+join                                M httpx/_urls.py:354    Return an absolute URL, using this URL as the b...
+_CookieCompatResponse               C httpx/_models.py:1261   Wraps a `Request` instance up in a compatibilit...
+keys                                M httpx/_models.py:202    function keys
+AsyncResponseStream                 C httpx/_transports/default.py:265    class AsyncResponseStream
+ResponseStream                      C httpx/_transports/default.py:121    class ResponseStream
+_is_https_redirect                  M httpx/_client.py:62     Return 'True' if 'location' is a HTTPS upgrade ...
+_same_origin                        M httpx/_client.py:83     Return 'True' if the given URLs share the same ...
+Cookies                             C httpx/_models.py:1079   HTTP Cookies, as a mutable mapping.
+__aiter__                           M httpx/_transports/asgi.py:59     async_function __aiter__
+ASGIResponseStream                  C httpx/_transports/asgi.py:55     class ASGIResponseStream
+create_event                        M httpx/_transports/asgi.py:44     function create_event
+extract_cookies                     M httpx/_models.py:1101   Loads any cookies based on the response `Set-Co...
+values                              M httpx/_urls.py:474    Return all the values in the query params.
+encode_content                      M httpx/_content.py:107    function encode_content
+  ...and 463 more symbols
+
+-- FOCUS
+HTTPStatusError (httpx/_exceptions.py:258-271)
+  The response had an error HTTP status of 4xx or 5xx.
+  extends: HTTPError
+
+ProxyError (httpx/_exceptions.py:202-208)
+  An error occurred while establishing a proxy connection.
+  extends: TransportError
+
+TransportError (httpx/_exceptions.py:123-129)
+  Base class for all exceptions that occur at the level of the Transport API.
+  extends: RequestError
+
+HTTPError (httpx/_exceptions.py:74-107)
+  Base class for `RequestError` and `HTTPStatusError`.
+  extends: Exception
+  raises: RuntimeError
+
+stream (httpx/_api.py:124-171)
+  Alternative to `httpx.request()` that streams the response body
+  sig: stream(method, url)
+
+raise_for_status (httpx/_models.py:794-829)
+  Raise the `HTTPStatusError` if one occurred.
+  behavior: BRANCH(self.has_redirect_location -> "{error_type} '{0.sta..., else -> "{err...)
+  raises: HTTPStatusError, RuntimeError
+
+URL (httpx/_urls.py:15-420)
+  url = httpx.URL("HTTPS://jo%40email.com:a%20secret@müller.de:1234/pa%20th?search=ab#anchorlink")
+  imports: urllib.parse, idna, warnings
+  calls: add, items, merge, remove, set, QueryParams, copy_with, join
+  called_by: copy_with, join
+  raises: TypeError
+
+Limits (httpx/_config.py:159-198)
+  Configuration for limits to various client behaviors.
+  imports: ssl, warnings, certifi
+
+Timeout (httpx/_config.py:72-156)
+  Timeout configuration.
+  imports: ssl, warnings, certifi
+  raises: ValueError
+
+stream (httpx/_client.py:1543-1592)
+  Alternative to `httpx.request()` that streams the response body
+  sig: stream(method, url)
+
+stream (httpx/_client.py:828-877)
+  Alternative to `httpx.request()` that streams the response body
+  sig: stream(method, url)
+
+is_client_error (httpx/_models.py:751-755)
+  A property which is `True` for 4xx status codes, `False` otherwise.
+  behavior: DELEGATE(codes.is_client_error -> result)
+  called_by: Response
+
+is_error (httpx/_models.py:765-769)
+  A property which is `True` for 4xx and 5xx status codes, `False` otherwise.
+  behavior: DELEGATE(codes.is_error -> result)
+  called_by: Response
+
+is_server_error (httpx/_models.py:758-762)
+  A property which is `True` for 5xx status codes, `False` otherwise.
+  behavior: DELEGATE(codes.is_server_error -> result)
+  called_by: Response
+
+CloseError (httpx/_exceptions.py:193-199)
+  Failed to close a connection.
+  extends: NetworkError
+
+ConnectError (httpx/_exceptions.py:187-193)
+  Failed to establish a connection.
+  extends: NetworkError
+
+DecodingError (httpx/_exceptions.py:243-249)
+  Decoding of the response failed, due to a malformed encoding.
+  extends: RequestError
+
+LocalProtocolError (httpx/_exceptions.py:222-232)
+  A protocol was violated by the client.
+  extends: ProtocolError
+
+NetworkError (httpx/_exceptions.py:167-175)
+  The base class for network-related errors.
+  extends: TransportError
+
+ProtocolError (httpx/_exceptions.py:216-222)
+  The protocol was violated.
+  extends: TransportError
+
+ReadError (httpx/_exceptions.py:175-181)
+  Failed to receive data from the network.
+  extends: NetworkError
+
+RemoteProtocolError (httpx/_exceptions.py:232-240)
+  The protocol was violated by the server.
+  extends: ProtocolError
+
+RequestError (httpx/_exceptions.py:107-123)
+  Base class for all exceptions that may occur when issuing a `.request()`.
+  extends: HTTPError
+
+StreamError (httpx/_exceptions.py:297-309)
+  The base class for stream exceptions.
+  extends: RuntimeError
+
+WriteError (httpx/_exceptions.py:181-187)
+  Failed to send data through the network.
+  extends: NetworkError
+
+is_client_error (httpx/_status_codes.py:67-71)
+  Returns `True` for 4xx status codes, `False` otherwise.
+  sig: is_client_error(cls, value)
+
+is_error (httpx/_status_codes.py:81-85)
+  Returns `True` for 4xx or 5xx status codes, `False` otherwise.
+  sig: is_error(cls, value)
+
+is_server_error (httpx/_status_codes.py:74-78)
+  Returns `True` for 5xx status codes, `False` otherwise.
+  sig: is_server_error(cls, value)
+
+QueryParams (httpx/_urls.py:420-642)
+  URL query parameters, as a multi-dict.
+  imports: urllib.parse, idna, warnings
+  calls: get, get_list, items, keys, multi_items, values
+  called_by: add, merge, remove, set, params, URL
+  raises: RuntimeError
+
+copy_with (httpx/_urls.py:327-342)
+  Copy this URL, returning a new URL with some components altered.
+  behavior: DELEGATE(URL -> result)
+  calls: URL
+  called_by: copy_add_param, copy_merge_params, copy_remove_param, copy_set_param, URL
+
+add (httpx/_urls.py:552-567)
+  Return a new QueryParams instance, setting or appending the value of a key.
+  sig: add(key, value)
+  calls: get_list, QueryParams
+  called_by: copy_add_param, URL
+
+merge (httpx/_urls.py:582-600)
+  Return a new QueryParams instance, updated with.
+  sig: merge(params)
+  calls: QueryParams
+  called_by: copy_merge_params, URL
+
+remove (httpx/_urls.py:567-582)
+  Return a new QueryParams instance, removing the value of a key.
+  sig: remove(key)
+  calls: QueryParams
+  called_by: copy_remove_param, URL
+
+set (httpx/_urls.py:537-552)
+  Return a new QueryParams instance, setting the value of a key.
+  sig: set(key, value)
+  calls: QueryParams
+  called_by: copy_set_param, URL
+
+items (httpx/_urls.py:486-498)
+  Return all items in the query params.
+  behavior: DELEGATE(dictcomp.items -> result)
+  called_by: multi_items, values, QueryParams, URL
+
+join (httpx/_urls.py:354-369)
+  Return an absolute URL, using this URL as the base.
+  sig: join(url)
+  calls: URL
+  called_by: URL
+
+ClientState (httpx/_client.py:125-136)
+  extends: Enum
+  attrs: UNOPENED=1, OPENED=2, CLOSED=3
+  imports: enum, logging, warnings, types, ssl
+
+Response (httpx/_models.py:515-1076)
+  imports: codecs, email.message, urllib.request, http.cookiejar
+  calls: extract_cookies, Cookies, get_list, items, Headers, _get_content_decoder, aclose, aiter_bytes
+  raises: HTTPStatusError, RuntimeError, ResponseNotRead, ValueError
+
+copy_add_param (httpx/_urls.py:345-348)
+  sig: copy_add_param(key, value)
+  behavior: DELEGATE(copy_with -> result)
+  calls: add, copy_with
+
+copy_merge_params (httpx/_urls.py:351-354)
+  sig: copy_merge_params(params)
+  behavior: DELEGATE(copy_with -> result)
+  calls: merge, copy_with
+
+copy_remove_param (httpx/_urls.py:348-351)
+  sig: copy_remove_param(key)
+  behavior: DELEGATE(copy_with -> result)
+  calls: remove, copy_with
+
+copy_set_param (httpx/_urls.py:342-345)
+  sig: copy_set_param(key, value)
+  behavior: DELEGATE(copy_with -> result)
+  calls: set, copy_with
+
+get_list (httpx/_urls.py:526-537)
+  Get all values from the query param for a given key.
+  sig: get_list(key)
+  behavior: DELEGATE(list -> result)
+  calls: get
+  called_by: add, QueryParams
+
+get (httpx/_urls.py:512-526)
+  Get a value from the query param for a given key.
+  sig: get(key, default)
+  called_by: get_list, QueryParams
+
+keys (httpx/_urls.py:463-474)
+  Return all the keys in the query params.
+  behavior: DELEGATE(_dict.keys -> result)
+  called_by: __iter__, QueryParams
+
+multi_items (httpx/_urls.py:498-512)
+  Return all items in the query params.
+  behavior: ACCUMULATE(self._dict.items() loop -> multi items)
+  calls: items
+  called_by: QueryParams
+
+-- GAPS
+type: MECHANISTIC (body logic needed for full answer)
+coverage: 50 symbols in L3, 17 with behavior annotations
+drill: httpx/_api.py (~34 lines, stream)
+drill: httpx/_client.py (~39 lines, stream)
+drill: httpx/_client.py (~39 lines, stream)
+drill: httpx/_models.py (~35 lines, raise_for_status)
+
+--- END CLUE FILE ---
+
+--- SOURCE SNIPPETS (File 2 Drill-Down) ---
+## stream  (httpx/_client.py L828-877)
+```
+    def stream(
+        self,
+        method: str,
+        url: URL | str,
+        *,
+        content: RequestContent | None = None,
+        data: RequestData | None = None,
+        files: RequestFiles | None = None,
+        json: typing.Any | None = None,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+        auth: AuthTypes | UseClientDefault | None = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        extensions: RequestExtensions | None = None,
+    ) -> typing.Iterator[Response]:
+        """
+        Alternative to `httpx.request()` that streams the response body
+        instead of loading it into memory at once.
+
+        **Parameters**: See `httpx.request`.
+
+        See also: [Streaming Responses][0]
+
+        [0]: /quickstart#streaming-responses
+        """
+        request = self.build_request(
+            method=method,
+            url=url,
+            content=content,
+            data=data,
+            files=files,
+            json=json,
+            params=params,
+            headers=headers,
+            cookies=cookies,
+            timeout=timeout,
+            extensions=extensions,
+        )
+        response = self.send(
+            request=request,
+            auth=auth,
+            follow_redirects=follow_redirects,
+            stream=True,
+        )
+        try:
+            yield response
+        finally:
+            response.close()
+```
+
+## raise_for_status  (httpx/_models.py L794-829)
+```
+    def raise_for_status(self) -> Response:
+        """
+        Raise the `HTTPStatusError` if one occurred.
+        """
+        request = self._request
+        if request is None:
+            raise RuntimeError(
+                "Cannot call `raise_for_status` as the request "
+                "instance has not been set on this response."
+            )
+
+        if self.is_success:
+            return self
+
+        if self.has_redirect_location:
+            message = (
+                "{error_type} '{0.status_code} {0.reason_phrase}' for url '{0.url}'\n"
+                "Redirect location: '{0.headers[location]}'\n"
+                "For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/{0.status_code}"
+            )
+        else:
+            message = (
+                "{error_type} '{0.status_code} {0.reason_phrase}' for url '{0.url}'\n"
+                "For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/{0.status_code}"
+            )
+
+        status_class = self.status_code // 100
+        error_types = {
+            1: "Informational response",
+            3: "Redirect response",
+            4: "Client error",
+            5: "Server error",
+        }
+        error_type = error_types.get(status_class, "Invalid status code")
+        message = message.format(self, error_type=error_type)
+        raise HTTPStatusError(message, request=request, response=self)
+```
+
+## __aenter__  (tests/client/test_async_client.py L228-230)
+```
+        async def __aenter__(self):
+            await super().__aenter__()
+            self.events.append(f"{self.name}.__aenter__")
+```
+
+## __aexit__  (tests/client/test_async_client.py L232-234)
+```
+        async def __aexit__(self, *args):
+            await super().__aexit__(*args)
+            self.events.append(f"{self.name}.__aexit__")
+```
+
+## __init__  (tests/test_multipart.py L390-391)
+```
+        def __init__(self, iterator: typing.Iterator[bytes]) -> None:
+            self._iterator = iterator
+```
+
+## _init_proxy_transport  (httpx/_client.py L740-758)
+```
+    def _init_proxy_transport(
+        self,
+        proxy: Proxy,
+        verify: ssl.SSLContext | str | bool = True,
+        cert: CertTypes | None = None,
+        trust_env: bool = True,
+        http1: bool = True,
+        http2: bool = False,
+        limits: Limits = DEFAULT_LIMITS,
+    ) -> BaseTransport:
+        return HTTPTransport(
+            verify=verify,
+            cert=cert,
+            trust_env=trust_env,
+            http1=http1,
+            http2=http2,
+            limits=limits,
+            proxy=proxy,
+        )
+```
+
+## _init_transport  (httpx/_client.py L718-738)
+```
+    def _init_transport(
+        self,
+        verify: ssl.SSLContext | str | bool = True,
+        cert: CertTypes | None = None,
+        trust_env: bool = True,
+        http1: bool = True,
+        http2: bool = False,
+        limits: Limits = DEFAULT_LIMITS,
+        transport: BaseTransport | None = None,
+    ) -> BaseTransport:
+        if transport is not None:
+            return transport
+
+        return HTTPTransport(
+            verify=verify,
+            cert=cert,
+            trust_env=trust_env,
+            http1=http1,
+            http2=http2,
+            limits=limits,
+        )
+```
+
+## _send_handling_auth  (httpx/_client.py L930-962)
+```
+    def _send_handling_auth(
+        self,
+        request: Request,
+        auth: Auth,
+        follow_redirects: bool,
+        history: list[Response],
+    ) -> Response:
+        auth_flow = auth.sync_auth_flow(request)
+        try:
+            request = next(auth_flow)
+
+            while True:
+                response = self._send_handling_redirects(
+                    request,
+                    follow_redirects=follow_redirects,
+                    history=history,
+                )
+                try:
+                    try:
+                        next_request = auth_flow.send(response)
+                    except StopIteration:
+                        return response
+
+                    response.history = list(history)
+                    response.read()
+                    request = next_request
+                    history.append(response)
+
+                except BaseException as exc:
+                    response.close()
+                    raise exc
+        finally:
+            auth_flow.close()
+```
+
+## _send_handling_redirects  (httpx/_client.py L964-999)
+```
+    def _send_handling_redirects(
+        self,
+        request: Request,
+        follow_redirects: bool,
+        history: list[Response],
+    ) -> Response:
+        while True:
+            if len(history) > self.max_redirects:
+                raise TooManyRedirects(
+                    "Exceeded maximum allowed redirects.", request=request
+                )
+
+            for hook in self._event_hooks["request"]:
+                hook(request)
+
+            response = self._send_single_request(request)
+            try:
+                for hook in self._event_hooks["response"]:
+                    hook(response)
+                response.history = list(history)
+
+                if not response.has_redirect_location:
+                    return response
+
+                request = self._build_redirect_request(request, response)
+                history = history + [response]
+
+                if follow_redirects:
+                    response.read()
+                else:
+                    response.next_request = request
+                    return response
+
+            except BaseException as exc:
+                response.close()
+                raise exc
+```
+
+## _send_single_request  (httpx/_client.py L1001-1034)
+```
+    def _send_single_request(self, request: Request) -> Response:
+        """
+        Sends a single request, without handling any redirections.
+        """
+        transport = self._transport_for_url(request.url)
+        start = time.perf_counter()
+
+        if not isinstance(request.stream, SyncByteStream):
+            raise RuntimeError(
+                "Attempted to send an async request with a sync Client instance."
+            )
+
+        with request_context(request=request):
+            response = transport.handle_request(request)
+
+        assert isinstance(response.stream, SyncByteStream)
+
+        response.request = request
+        response.stream = BoundSyncStream(
+            response.stream, response=response, start=start
+        )
+        self.cookies.extract_cookies(response)
+        response.default_encoding = self._default_encoding
+
+        logger.info(
+            'HTTP Request: %s %s "%s %d %s"',
+            request.method,
+            request.url,
+            response.http_version,
+            response.status_code,
+            response.reason_phrase,
+        )
+
+        return response
+```
+
+## _transport_for_url  (httpx/_client.py L760-769)
+```
+    def _transport_for_url(self, url: URL) -> BaseTransport:
+        """
+        Returns the transport instance that should be used for a given URL.
+        This will either be the standard connection pool, or a proxy.
+        """
+        for pattern, transport in self._mounts.items():
+            if pattern.matches(url):
+                return self._transport if transport is None else transport
+
+        return self._transport
+```
+
+## aclose  (tests/client/test_async_client.py L221-226)
+```
+        async def aclose(self):
+            # The base implementation of httpx.AsyncBaseTransport just
+            # calls into `.aclose`, so simple transport cases can just override
+            # this method for any cleanup, where more complex cases
+            # might want to additionally override `__aenter__`/`__aexit__`.
+            self.events.append(f"{self.name}.aclose")
+```
+
+## delete  (httpx/_models.py L1168-1190)
+```
+    def delete(
+        self,
+        name: str,
+        domain: str | None = None,
+        path: str | None = None,
+    ) -> None:
+        """
+        Delete a cookie by name. May optionally include domain and path
+        in order to specify exactly which cookie to delete.
+        """
+        if domain is not None and path is not None:
+            return self.jar.clear(domain, path, name)
+
+        remove = [
+            cookie
+            for cookie in self.jar
+            if cookie.name == name
+            and (domain is None or cookie.domain == domain)
+            and (path is None or cookie.path == path)
+        ]
+
+        for cookie in remove:
+            self.jar.clear(cookie.domain, cookie.path, cookie.name)
+```
+
+## get  (httpx/_urls.py L512-526)
+```
+    def get(self, key: typing.Any, default: typing.Any = None) -> typing.Any:
+        """
+        Get a value from the query param for a given key. If the key occurs
+        more than once, then only the first value is returned.
+
+        Usage:
+
+        q = httpx.QueryParams("a=123&a=456&b=789")
+        assert q.get("a") == "123"
+        """
+        if key in self._dict:
+            return self._dict[str(key)][0]
+        return default
+
+    def get_list(self, key: str) -> list[str]:
+```
+
+## head  (httpx/_client.py L1094-1121)
+```
+    def head(
+        self,
+        url: URL | str,
+        *,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        extensions: RequestExtensions | None = None,
+    ) -> Response:
+        """
+        Send a `HEAD` request.
+
+        **Parameters**: See `httpx.request`.
+        """
+        return self.request(
+            "HEAD",
+            url,
+            params=params,
+            headers=headers,
+            cookies=cookies,
+            auth=auth,
+            follow_redirects=follow_redirects,
+            timeout=timeout,
+            extensions=extensions,
+        )
+```
+
+## options  (httpx/_client.py L1065-1092)
+```
+    def options(
+        self,
+        url: URL | str,
+        *,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        extensions: RequestExtensions | None = None,
+    ) -> Response:
+        """
+        Send an `OPTIONS` request.
+
+        **Parameters**: See `httpx.request`.
+        """
+        return self.request(
+            "OPTIONS",
+            url,
+            params=params,
+            headers=headers,
+            cookies=cookies,
+            auth=auth,
+            follow_redirects=follow_redirects,
+            timeout=timeout,
+            extensions=extensions,
+        )
+```
+
+## patch  (httpx/_client.py L1197-1232)
+```
+    def patch(
+        self,
+        url: URL | str,
+        *,
+        content: RequestContent | None = None,
+        data: RequestData | None = None,
+        files: RequestFiles | None = None,
+        json: typing.Any | None = None,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        extensions: RequestExtensions | None = None,
+    ) -> Response:
+        """
+        Send a `PATCH` request.
+
+        **Parameters**: See `httpx.request`.
+        """
+        return self.request(
+            "PATCH",
+            url,
+            content=content,
+            data=data,
+            files=files,
+            json=json,
+            params=params,
+            headers=headers,
+            cookies=cookies,
+            auth=auth,
+            follow_redirects=follow_redirects,
+            timeout=timeout,
+            extensions=extensions,
+        )
+```
+
+## post  (httpx/_client.py L1123-1158)
+```
+    def post(
+        self,
+        url: URL | str,
+        *,
+        content: RequestContent | None = None,
+        data: RequestData | None = None,
+        files: RequestFiles | None = None,
+        json: typing.Any | None = None,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+... (truncated)
+```
+--- END SOURCE SNIPPETS ---
+
+QUESTION: What public configuration and error surfaces do the HTTPX API docs expose around clients?
+
+Provide a detailed answer based on the clue file and source snippets above.
+For each claim you make, cite the specific clue entry or source snippet that supports it.

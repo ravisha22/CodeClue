@@ -131,18 +131,18 @@ SessionRedirectMixin (src/requests/sessions.py:107-353)
   calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
   raises: TooManyRedirects
 
-__call__ (src/requests/auth.py:285-303)
+__call__ (src/requests/auth.py:72-73)
   sig: __call__(r)
+  raises: NotImplementedError
 
-__call__ (src/requests/auth.py:94-96)
+__call__ (src/requests/auth.py:285-303)
   sig: __call__(r)
 
 __call__ (src/requests/auth.py:102-104)
   sig: __call__(r)
 
-__call__ (src/requests/auth.py:72-73)
+__call__ (src/requests/auth.py:94-96)
   sig: __call__(r)
-  raises: NotImplementedError
 
 _implementation (src/requests/help.py:34-63)
   Return a dict with the Python implementation and version.
@@ -176,27 +176,6 @@ RequestsCookieJar (src/requests/cookies.py:176-437)
   called_by: copy, cookiejar_from_dict
   raises: KeyError, CookieConflictError
 
-RequestsDependencyWarning (src/requests/exceptions.py:151-152)
-  An imported dependency doesn't match the expected version range.
-  extends: RequestsWarning
-  imports: urllib3.exceptions, compat
-
-HTTPError (src/requests/exceptions.py:56-57)
-  An HTTP error occurred.
-  extends: RequestException
-  imports: urllib3.exceptions, compat
-
-is_permanent_redirect (src/requests/models.py:779-784)
-  True if this Response one of the permanent versions of redirect.
-
-super_len (src/requests/utils.py:135-203)
-  sig: super_len(o)
-
-close (src/requests/sessions.py:796-799)
-  Closes all adapters and as such the session
-  behavior: ACCUMULATE(self.adapters.values(... -> result)
-  called_by: __exit__, Session, resolve_redirects, SessionRedirectMixin
-
 merge_hooks (src/requests/sessions.py:92-104)
   Properly merges both requests and session hooks.
   sig: merge_hooks(request_hooks, session_hooks, dict_class)
@@ -222,6 +201,11 @@ _find_no_duplicates (src/requests/cookies.py:386-413)
   calls: CookieConflictError
   called_by: __getitem__, get, RequestsCookieJar
   raises: KeyError, CookieConflictError
+
+close (src/requests/sessions.py:796-799)
+  Closes all adapters and as such the session
+  behavior: ACCUMULATE(self.adapters.values(... -> result)
+  called_by: __exit__, Session, resolve_redirects, SessionRedirectMixin
 
 get_connection_with_tls_context (src/requests/adapters.py:424-471)
   Returns a urllib3 connection for the given request and TLS settings.
@@ -278,12 +262,28 @@ set_environ (src/requests/utils.py:731-749)
   sig: set_environ(env_name, value)
   called_by: should_bypass_proxies
 
+RequestsDependencyWarning (src/requests/exceptions.py:151-152)
+  An imported dependency doesn't match the expected version range.
+  extends: RequestsWarning
+  imports: urllib3.exceptions, compat
+
 get (src/requests/sessions.py:595-604)
   Sends a GET request.
   sig: get(url)
   behavior: DELEGATE(request -> result)
   calls: request
   called_by: merge_environment_settings, send, Session, should_strip_auth, SessionRedirectMixin, merge_hooks
+
+HTTPError (src/requests/exceptions.py:56-57)
+  An HTTP error occurred.
+  extends: RequestException
+  imports: urllib3.exceptions, compat
+
+is_permanent_redirect (src/requests/models.py:779-784)
+  True if this Response one of the permanent versions of redirect.
+
+super_len (src/requests/utils.py:135-203)
+  sig: super_len(o)
 
 request (src/requests/sessions.py:502-593)
   Constructs a :class:`Request <Request>`, prepares it and sends it.
@@ -298,18 +298,17 @@ merge_setting (src/requests/sessions.py:62-89)
   behavior: ACCUMULATE(none_keys loop -> result)
   called_by: merge_environment_settings, prepare_request, Session, merge_hooks
 
-send (src/requests/sessions.py:675-750)
-  Send a given PreparedRequest.
-  sig: send(request)
-  behavior: BRANCH(allow_redirects -> self.resolve_redirect..., else -> [])
-  calls: get, get_adapter, resolve_redirects
-  called_by: request, Session, resolve_redirects, SessionRedirectMixin
-  raises: ValueError
+prepare_request (src/requests/sessions.py:459-500)
+  Constructs a :class:`PreparedRequest <PreparedRequest>` for
+  sig: prepare_request(request)
+  calls: merge_hooks, merge_setting
+  called_by: request, Session
+  uses: PreparedRequest (models), RequestsCookieJar (cookies)
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 23 with behavior annotations
-uncovered: set, set_cookie, cookiejar_from_dict, create_cookie
+coverage: 80 symbols in L3, 24 with behavior annotations
+uncovered: address_in_network, build_digest_header, cert_verify, delete
 drill: src/requests/sessions.py (~30 lines, merge_environment_settings)
 drill: src/requests/sessions.py (~12 lines, merge_hooks)
 drill: src/requests/help.py (~33 lines, _implementation)

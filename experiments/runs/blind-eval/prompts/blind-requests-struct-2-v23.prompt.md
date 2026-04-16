@@ -125,6 +125,21 @@ RequestsWarning (src/requests/exceptions.py:143-144)
   extends: Warning
   imports: urllib3.exceptions, compat
 
+RequestsCookieJar (src/requests/cookies.py:176-437)
+  Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
+  extends: CookieJar, MutableMapping
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: CookieConflictError, __contains__, _find_no_duplicates, copy, get, get_policy, iteritems, iterkeys
+  called_by: copy, cookiejar_from_dict
+  raises: KeyError, CookieConflictError
+
+MockRequest (src/requests/cookies.py:23-100)
+  Wraps a `requests.Request` to mimic a `urllib2.Request`.
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: get_host, get_origin_req_host, is_unverifiable, get
+  called_by: extract_cookies_to_jar, get_cookie_header
+  raises: NotImplementedError
+
 Session (src/requests/sessions.py:356-818)
   A Requests session.
   extends: SessionRedirectMixin
@@ -134,23 +149,16 @@ Session (src/requests/sessions.py:356-818)
   raises: InvalidSchema, ValueError
   uses: InvalidSchema (exceptions), PreparedRequest (models), RequestsCookieJar (cookies), Request (models)
 
+copy (src/requests/cookies.py:428-433)
+  Return a copy of this RequestsCookieJar.
+  calls: get_policy, update, RequestsCookieJar
+  called_by: __getstate__, update, RequestsCookieJar, _copy_cookie_jar
+
 merge_hooks (src/requests/sessions.py:92-104)
   Properly merges both requests and session hooks.
   sig: merge_hooks(request_hooks, session_hooks, dict_class)
   calls: get, merge_setting
   called_by: prepare_request, Session
-
-MockRequest (src/requests/cookies.py:23-100)
-  Wraps a `requests.Request` to mimic a `urllib2.Request`.
-  imports: calendar, copy, compat, threading, dummy_threading
-  calls: get_host, get_origin_req_host, is_unverifiable, get
-  called_by: extract_cookies_to_jar, get_cookie_header
-  raises: NotImplementedError
-
-copy (src/requests/cookies.py:428-433)
-  Return a copy of this RequestsCookieJar.
-  calls: get_policy, update, RequestsCookieJar
-  called_by: __getstate__, update, RequestsCookieJar, _copy_cookie_jar
 
 FileModeWarning (src/requests/exceptions.py:147-148)
   A file was opened in text mode, but Requests determined its binary length.
@@ -189,65 +197,10 @@ get_netrc_auth (src/requests/utils.py:206-247)
   sig: get_netrc_auth(url, raise_errors)
   behavior: BRANCH(netrc_file is not None -> (netrc_file,), else -> (f'~/{f}' for f in N...)
 
-RequestsCookieJar (src/requests/cookies.py:176-437)
-  Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
-  extends: CookieJar, MutableMapping
-  imports: calendar, copy, compat, threading, dummy_threading
-  calls: CookieConflictError, __contains__, _find_no_duplicates, copy, get, get_policy, iteritems, iterkeys
-  called_by: copy, cookiejar_from_dict
-  raises: KeyError, CookieConflictError
-
 RequestsDependencyWarning (src/requests/exceptions.py:151-152)
   An imported dependency doesn't match the expected version range.
   extends: RequestsWarning
   imports: urllib3.exceptions, compat
-
-request (src/requests/api.py:14-59)
-  Constructs and sends a :class:`Request <Request>`.
-  sig: request(method, url)
-  called_by: delete, get, head, options, patch, post, put
-
-delete (src/requests/api.py:148-157)
-  Sends a DELETE request.
-  sig: delete(url)
-  behavior: DELEGATE(request -> result)
-  calls: request
-
-get (src/requests/api.py:62-73)
-  Sends a GET request.
-  sig: get(url, params)
-  behavior: DELEGATE(request -> result)
-  calls: request
-
-head (src/requests/api.py:88-100)
-  Sends a HEAD request.
-  sig: head(url)
-  behavior: DELEGATE(request -> result)
-  calls: request
-
-options (src/requests/api.py:76-85)
-  Sends an OPTIONS request.
-  sig: options(url)
-  behavior: DELEGATE(request -> result)
-  calls: request
-
-patch (src/requests/api.py:133-145)
-  Sends a PATCH request.
-  sig: patch(url, data)
-  behavior: DELEGATE(request -> result)
-  calls: request
-
-post (src/requests/api.py:103-115)
-  Sends a POST request.
-  sig: post(url, data, json)
-  behavior: DELEGATE(request -> result)
-  calls: request
-
-put (src/requests/api.py:118-130)
-  Sends a PUT request.
-  sig: put(url, data)
-  behavior: DELEGATE(request -> result)
-  calls: request
 
 prepare_request (src/requests/sessions.py:459-500)
   Constructs a :class:`PreparedRequest <PreparedRequest>` for
@@ -316,10 +269,46 @@ get_cookie_header (src/requests/cookies.py:140-148)
   sig: get_cookie_header(jar, request)
   calls: get_new_headers, MockRequest, get
 
+get_host (src/requests/cookies.py:43-44)
+  called_by: get_origin_req_host, host, MockRequest
+
+get_origin_req_host (src/requests/cookies.py:46-47)
+  behavior: DELEGATE(get_host -> result)
+  calls: get_host
+  called_by: origin_req_host, MockRequest
+
+is_unverifiable (src/requests/cookies.py:69-70)
+  called_by: unverifiable, MockRequest
+
+send (src/requests/sessions.py:675-750)
+  Send a given PreparedRequest.
+  sig: send(request)
+  behavior: BRANCH(allow_redirects -> self.resolve_redirect..., else -> [])
+  calls: get, get_adapter, resolve_redirects
+  called_by: request, Session, resolve_redirects, SessionRedirectMixin
+  raises: ValueError
+
+close (src/requests/sessions.py:796-799)
+  Closes all adapters and as such the session
+  behavior: ACCUMULATE(self.adapters.values(... -> result)
+  called_by: __exit__, Session, resolve_redirects, SessionRedirectMixin
+
+mount (src/requests/sessions.py:801-810)
+  Registers a connection adapter to a prefix.
+  sig: mount(prefix, adapter)
+  behavior: ACCUMULATE(keys_to_move loop -> result)
+  called_by: __init__, Session
+
+merge_environment_settings (src/requests/sessions.py:752-781)
+  Check the environment and merge it with some settings.
+  sig: merge_environment_settings(url, proxies, stream, verify, cert)
+  calls: get, merge_setting
+  called_by: request, Session
+
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 29 with behavior annotations
-uncovered: get_header, get_new_headers, head, host
+coverage: 80 symbols in L3, 34 with behavior annotations
+uncovered: request, delete, get, head
 
 --- CLUE FILE END ---
 

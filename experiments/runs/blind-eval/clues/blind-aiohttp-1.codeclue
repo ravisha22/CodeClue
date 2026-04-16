@@ -182,10 +182,6 @@ BodyPartReader (aiohttp/multipart.py:257-599)
   raises: RuntimeError, StopAsyncIteration, ValueError
   uses: ZLibDecompressor (compression_utils), CIMultiDict (multidict)
 
-MultipartPayloadWriter (aiohttp/multipart.py:1149-1204)
-  imports: base64, binascii, uuid, warnings, types
-  called_by: MultipartWriter
-
 JsonBytesPayload (aiohttp/payload.py:943-963)
   JSON payload for encoders that return bytes directly.
   extends: BytesPayload
@@ -194,6 +190,10 @@ JsonBytesPayload (aiohttp/payload.py:943-963)
 JsonPayload (aiohttp/payload.py:924-940)
   extends: BytesPayload
   imports: asyncio, enum, io, mimetypes, warnings
+
+MultipartPayloadWriter (aiohttp/multipart.py:1149-1204)
+  imports: base64, binascii, uuid, warnings, types
+  called_by: MultipartWriter
 
 body_exists (aiohttp/web_request.py:612-614)
   Return True if request has HTTP BODY, False otherwise.
@@ -205,26 +205,12 @@ handle_json_data (examples/logging_middleware.py:78-84)
   Endpoint that echoes JSON data.
   sig: handle_json_data(request)
 
-read_chunk (aiohttp/multipart.py:324-366)
-  Reads body part content chunk of the specified size.
-  sig: read_chunk(size)
-  behavior: BRANCH(self._length -> await self._read_chun..., else -> await self._read_ch...)
-  calls: _read_chunk_from_length, _read_chunk_from_stream, read, readline
-  called_by: read, BodyPartReader, BodyPartReaderPayload, MultipartReader
-  raises: ValueError
-
 MultipartReader (aiohttp/multipart.py:639-854)
   Multipart body reader.
   imports: base64, binascii, uuid, warnings, types
   calls: read_chunk, readline, _get_boundary, _get_part_reader, _maybe_release_last_part, _read_boundary, _read_headers, _read_until_first_boundary
   raises: ValueError, StopAsyncIteration, BadHttpMessage, RuntimeError
   uses: HeadersParser (http), BadHttpMessage (http_exceptions), CIMultiDict (multidict)
-
-_update_body (aiohttp/client_reqrep.py:1182-1197)
-  Update request body after its already been set.
-  sig: _update_body(body)
-  calls: _update_body_from_data, _update_transfer_encoding
-  called_by: update_body, ClientRequest
 
 MultipartWriter (aiohttp/multipart.py:860-1146)
   Multipart body writer.
@@ -233,6 +219,26 @@ MultipartWriter (aiohttp/multipart.py:860-1146)
   calls: enable_compression, enable_encoding, write_eof, MultipartPayloadWriter, append, append_payload, close
   raises: ValueError, RuntimeError, TypeError
   uses: ZLibCompressor (compression_utils), CIMultiDict (multidict)
+
+read_chunk (aiohttp/multipart.py:324-366)
+  Reads body part content chunk of the specified size.
+  sig: read_chunk(size)
+  behavior: BRANCH(self._length -> await self._read_chun..., else -> await self._read_ch...)
+  calls: _read_chunk_from_length, _read_chunk_from_stream, read, readline
+  called_by: read, BodyPartReader, BodyPartReaderPayload, MultipartReader
+  raises: ValueError
+
+_update_body (aiohttp/client_reqrep.py:1182-1197)
+  Update request body after its already been set.
+  sig: _update_body(body)
+  calls: _update_body_from_data, _update_transfer_encoding
+  called_by: update_body, ClientRequest
+
+strip_auth_from_url (aiohttp/helpers.py:184-190)
+  Remove user and password from URL if present and return BasicAuth object.
+  sig: strip_auth_from_url(url)
+  calls: BasicAuth
+  called_by: proxies_from_env
 
 read (aiohttp/web_request.py:624-643)
   Read request body if present.
@@ -245,12 +251,6 @@ _gen_form_data (aiohttp/formdata.py:128-161)
   behavior: ACCUMULATE(self._fields loop -> result, raises TypeError)
   called_by: __call__, FormData
   raises: TypeError
-
-strip_auth_from_url (aiohttp/helpers.py:184-190)
-  Remove user and password from URL if present and return BasicAuth object.
-  sig: strip_auth_from_url(url)
-  calls: BasicAuth
-  called_by: proxies_from_env
 
 _read (aiohttp/payload.py:510-526)
   Read a chunk of data from the file-like object.
@@ -290,32 +290,28 @@ send_json_bytes (aiohttp/client_ws.py:306-318)
   sig: send_json_bytes(data, compress)
   calls: send_bytes
 
-readline (aiohttp/multipart.py:423-450)
-  Reads body part by line by line.
-  behavior: BRANCH(self._unread -> self._unread.popleft(), else -> await self._content.r...)
-  calls: append
-  called_by: read_chunk, BodyPartReader, _read_headers, _readline, MultipartReader
+append_json (aiohttp/multipart.py:1001-1008)
+  Helper to append JSON part.
+  sig: append_json(obj, headers)
+  calls: append_payload
+  uses: CIMultiDict (multidict), JsonPayload (payload)
 
-form (aiohttp/multipart.py:475-493)
-  Like read(), but assumes that body parts contain form urlencoded data.
-  behavior: BRANCH(encoding is not None -> encoding, else -> self.get_charset(defa...)
-  calls: get_charset, read
-  raises: ValueError
-
-text (aiohttp/multipart.py:459-465)
-  Like read(), but assumes that body part contains text data.
-  calls: get_charset, read
-
-LookupError (aiohttp/payload.py:50-51)
-  Raised when no payload factory is found for the given data type.
+RequestPayloadError (aiohttp/web_protocol.py:75-76)
+  Payload parsing error.
   extends: Exception
-  imports: asyncio, enum, io, mimetypes, warnings
-  called_by: get, PayloadRegistry
+  imports: asyncio, asyncio.streams, traceback, html, http
+
+rel_url (aiohttp/web_request.py:256-257)
+
+_make_request (aiohttp/web_server.py:97-105)
+  sig: _make_request(message, payload, protocol, writer, task)
+  behavior: DELEGATE(BaseRequest -> result)
+  uses: BaseRequest (web_request)
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 34 with behavior annotations
-uncovered: BufferedReaderPayload, HttpRequestParser, PayloadRegistry, RawRequestMessage
+coverage: 80 symbols in L3, 26 with behavior annotations
+uncovered: HTTPBadRequest, HTTPMisdirectedRequest, HttpBadRequest, HttpRequestParser
 drill: aiohttp/client_reqrep.py (~41 lines, _update_body_from_data)
 drill: aiohttp/multipart.py (~9 lines, json)
 drill: aiohttp/multipart.py (~17 lines, read)

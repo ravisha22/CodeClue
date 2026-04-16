@@ -123,38 +123,6 @@ get_best_encoding                   M src/click/_compat.py:48     Returns the de
   ...and 579 more symbols
 
 -- FOCUS
-_is_incomplete_option (src/click/shell_completion.py:537-559)
-  Determine if the given parameter is an option that needs a value.
-  sig: _is_incomplete_option(ctx, args, param)
-  behavior: ACCUMULATE(enumerate(reversed(ar... -> result); UNWIND(reversed)
-  calls: _start_of_option
-  called_by: _resolve_incomplete
-
-_start_of_option (src/click/shell_completion.py:528-534)
-  Check if the value looks like the start of an option.
-  sig: _start_of_option(ctx, value)
-  called_by: _is_incomplete_option, _resolve_incomplete
-
-coerce_path_result (src/click/types.py:955-966)
-  sig: coerce_path_result(value)
-  called_by: Path
-
-get_help_option (src/click/core.py:1054-1079)
-  Returns the help option object.
-  sig: get_help_option(ctx)
-  calls: get_help_option_names
-  called_by: get_params, Command
-
-get_help_option_names (src/click/core.py:1046-1052)
-  Returns the names for the help option.
-  sig: get_help_option_names(ctx)
-  behavior: ACCUMULATE(self.params loop -> result)
-  called_by: get_help_option, Command
-
-get_help_extra (src/click/core.py:3052-3134)
-  sig: get_help_extra(ctx)
-  called_by: Option
-
 OptionHelpExtra (src/click/types.py:1205-1209)
   extends: TypedDict
   imports: enum, stat, gettext, exceptions, utils
@@ -183,11 +151,6 @@ option (src/click/decorators.py:352-377)
   calls: _param_memo
   called_by: confirmation_option, help_option, password_option, version_option
 
-open_file (src/click/utils.py:358-404)
-  Open a file, with extra behavior to handle ``'-'`` to indicate
-  sig: open_file(filename, mode, encoding, errors, lazy...)
-  calls: KeepOpenFile, LazyFile
-
 Option (src/click/core.py:2646-3335)
   Options are usually optional values on the command line and
   extends: Parameter
@@ -195,6 +158,11 @@ Option (src/click/core.py:2646-3335)
   imports: enum, errno, inspect, gettext, itertools
   calls: get_help_extra, _write_opts, prompt_for_value, batch
   raises: TypeError, ValueError
+
+open_file (src/click/utils.py:358-404)
+  Open a file, with extra behavior to handle ``'-'`` to indicate
+  sig: open_file(filename, mode, encoding, errors, lazy...)
+  calls: KeepOpenFile, LazyFile
 
 BadArgumentUsage (src/click/exceptions.py:259-265)
   Raised if an argument is generally supplied but the use of the argument
@@ -210,6 +178,18 @@ NoSuchOption (src/click/exceptions.py:208-239)
   Raised if click attempted to handle an option that does not
   extends: UsageError
   imports: gettext, globals, utils, core
+
+_is_incomplete_option (src/click/shell_completion.py:537-559)
+  Determine if the given parameter is an option that needs a value.
+  sig: _is_incomplete_option(ctx, args, param)
+  behavior: ACCUMULATE(enumerate(reversed(ar... -> result); UNWIND(reversed)
+  calls: _start_of_option
+  called_by: _resolve_incomplete
+
+_start_of_option (src/click/shell_completion.py:528-534)
+  Check if the value looks like the start of an option.
+  sig: _start_of_option(ctx, value)
+  called_by: _is_incomplete_option, _resolve_incomplete
 
 argument (src/click/decorators.py:324-349)
   Attaches an argument to the command.
@@ -230,6 +210,10 @@ File (src/click/types.py:754-872)
 _is_file_like (src/click/types.py:875-876)
   sig: _is_file_like(value)
   called_by: File
+
+coerce_path_result (src/click/types.py:955-966)
+  sig: coerce_path_result(value)
+  called_by: Path
 
 split_envvar_value (src/click/types.py:126-134)
   Given a value from an environment variable this splits it up
@@ -255,14 +239,6 @@ _get_value_from_state (src/click/parser.py:429-467)
   raises: BadOptionUsage
   uses: BadOptionUsage (exceptions)
 
-LazyFile (src/click/utils.py:109-194)
-  A lazy file works like a regular file but it does not fully open
-  imports: types, globals, typing_extensions, glob, exceptions
-  calls: close, close_intelligently, open, format_filename
-  called_by: open_file
-  raises: FileError
-  uses: FileError (exceptions)
-
 _OptionParser (src/click/parser.py:220-499)
   The option parser is an internal class that is ultimately used to
   imports: gettext, exceptions, core, warnings, shell_completion
@@ -278,16 +254,51 @@ type_cast_value (src/click/core.py:2342-2396)
   raises: BadParameter
   uses: BadParameter (exceptions)
 
+_AtomicFile (src/click/_compat.py:452-485)
+  imports: codecs, io, types, weakref, errno
+  calls: close
+  called_by: open_stream
+
 _Argument (src/click/parser.py:181-209)
   imports: gettext, exceptions, core, warnings, shell_completion
   called_by: add_argument, _OptionParser
   raises: BadArgumentUsage
+
+LazyFile (src/click/utils.py:109-194)
+  A lazy file works like a regular file but it does not fully open
+  imports: types, globals, typing_extensions, glob, exceptions
+  calls: close, close_intelligently, open, format_filename
+  called_by: open_file
+  raises: FileError
+  uses: FileError (exceptions)
 
 _Option (src/click/parser.py:127-178)
   imports: gettext, exceptions, core, warnings, shell_completion
   calls: _split_opt
   called_by: add_option, _OptionParser
   raises: ValueError
+
+format_progress_line (src/click/_termui_impl.py:209-234)
+  calls: format_bar, format_eta, format_pct, format_pos
+  called_by: render_progress, ProgressBar
+
+get_help_option (src/click/core.py:1054-1079)
+  Returns the help option object.
+  sig: get_help_option(ctx)
+  calls: get_help_option_names
+  called_by: get_params, Command
+
+Argument (src/click/core.py:3338-3413)
+  Arguments are positional parameters to a command.
+  extends: Parameter
+  attrs: param_type_name='argument'
+  imports: enum, errno, inspect, gettext, itertools
+  raises: TypeError
+
+FileError (src/click/exceptions.py:277-291)
+  Raised if a file cannot be opened.
+  extends: ClickException
+  imports: gettext, globals, utils, core
 
 KeepOpenFile (src/click/utils.py:197-219)
   imports: types, globals, typing_extensions, glob, exceptions
@@ -297,6 +308,10 @@ _is_incomplete_argument (src/click/shell_completion.py:503-525)
   Determine if the given parameter is an argument that can still
   sig: _is_incomplete_argument(ctx, param)
   called_by: _resolve_incomplete
+
+_unquote_file (src/click/_termui_impl.py:679-685)
+  sig: _unquote_file(url)
+  called_by: open_url
 
 add_argument (src/click/parser.py:286-292)
   Adds a positional argument named `dest` to the parser.
@@ -310,29 +325,19 @@ add_command (src/click/core.py:1622-1630)
   called_by: Group
   raises: TypeError
 
-confirmation_option (src/click/decorators.py:380-401)
-  Add a ``--yes`` option which shows a prompt before continuing if
-  calls: option
-
-help_option (src/click/decorators.py:527-551)
-  Pre-configured ``--help`` option which immediately prints the help page
-  calls: option
-
-password_option (src/click/decorators.py:404-418)
-  Add a ``--password`` option which prompts for a password, hiding
-  calls: option
-
-resolve_command (src/click/core.py:1907-1932)
-  sig: resolve_command(ctx, args)
-  calls: fail
-  called_by: Group
+command (src/click/decorators.py:168-255)
+  Creates a new :class:`Command` and uses the decorated function as
+  sig: command(name, cls)
+  behavior: UNWIND(reversed)
+  raises: TypeError
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
 coverage: 80 symbols in L3, 15 with behavior annotations
-uncovered: _process_args_for_options, _find_binary_reader, _WindowsConsoleReader, _force_correct_text_reader
+uncovered: _BaseCommand, _MultiCommand, value_from_envvar, read1
 drill: src/click/core.py (~18 lines, command_path)
 drill: src/click/decorators.py (~24 lines, option)
+drill: src/click/utils.py (~41 lines, open_file)
 
 --- END CLUE FILE ---
 
@@ -388,6 +393,57 @@ def option(
     return decorator
 ```
 
+## open_file  (src/click/utils.py L358-404)
+```
+def open_file(
+    filename: str | os.PathLike[str],
+    mode: str = "r",
+    encoding: str | None = None,
+    errors: str | None = "strict",
+    lazy: bool = False,
+    atomic: bool = False,
+) -> t.IO[t.Any]:
+    """Open a file, with extra behavior to handle ``'-'`` to indicate
+    a standard stream, lazy open on write, and atomic write. Similar to
+    the behavior of the :class:`~click.File` param type.
+
+    If ``'-'`` is given to open ``stdout`` or ``stdin``, the stream is
+    wrapped so that using it in a context manager will not close it.
+    This makes it possible to use the function without accidentally
+    closing a standard stream:
+
+    .. code-block:: python
+
+        with open_file(filename) as f:
+            ...
+
+    :param filename: The name or Path of the file to open, or ``'-'`` for
+        ``stdin``/``stdout``.
+    :param mode: The mode in which to open the file.
+    :param encoding: The encoding to decode or encode a file opened in
+        text mode.
+    :param errors: The error handling mode.
+    :param lazy: Wait to open the file until it is accessed. For read
+        mode, the file is temporarily opened to raise access errors
+        early, then closed until it is read again.
+    :param atomic: Write to a temporary file and replace the given file
+        on close.
+
+    .. versionadded:: 3.0
+    """
+    if lazy:
+        return t.cast(
+            "t.IO[t.Any]", LazyFile(filename, mode, encoding, errors, atomic=atomic)
+        )
+
+    f, should_close = open_stream(filename, mode, encoding, errors, atomic=atomic)
+
+    if not should_close:
+        f = t.cast("t.IO[t.Any]", KeepOpenFile(f))
+
+    return f
+```
+
 ## get_params  (src/click/core.py L1002-1025)
 ```
     def get_params(self, ctx: Context) -> list[Parameter]:
@@ -428,281 +484,258 @@ def _param_memo(f: t.Callable[..., t.Any], param: Parameter) -> None:
         f.__click_params__.append(param)  # type: ignore
 ```
 
-## decorator  (src/click/decorators.py L115-121)
+## KeepOpenFile  (src/click/utils.py L197-219)
 ```
-    def decorator(f: t.Callable[te.Concatenate[T, P], R]) -> t.Callable[P, R]:
-        def new_func(*args: P.args, **kwargs: P.kwargs) -> R:
-            ctx = get_current_context()
-            obj = ctx.meta[key]
-            return ctx.invoke(f, obj, *args, **kwargs)
+class KeepOpenFile:
+    def __init__(self, file: t.IO[t.Any]) -> None:
+        self._file: t.IO[t.Any] = file
 
-        return update_wrapper(new_func, f)
-```
+    def __getattr__(self, name: str) -> t.Any:
+        return getattr(self._file, name)
 
-## argument  (src/click/decorators.py L324-349)
-```
-def argument(
-    *param_decls: str, cls: type[Argument] | None = None, **attrs: t.Any
-) -> t.Callable[[FC], FC]:
-    """Attaches an argument to the command.  All positional arguments are
-    passed as parameter declarations to :class:`Argument`; all keyword
-    arguments are forwarded unchanged (except ``cls``).
-    This is equivalent to creating an :class:`Argument` instance manually
-    and attaching it to the :attr:`Command.params` list.
+    def __enter__(self) -> KeepOpenFile:
+        return self
 
-    For the default argument class, refer to :class:`Argument` and
-    :class:`Parameter` for descriptions of parameters.
-
-    :param cls: the argument class to instantiate.  This defaults to
-                :class:`Argument`.
-    :param param_decls: Passed as positional arguments to the constructor of
-        ``cls``.
-    :param attrs: Passed as keyword arguments to the constructor of ``cls``.
-    """
-    if cls is None:
-        cls = Argument
-
-    def decorator(f: FC) -> FC:
-        _param_memo(f, cls(param_decls, **attrs))
-        return f
-
-    return decorator
-```
-
-## command  (tests/test_formatting.py L68-69)
-```
-    def command():
-        """A command."""
-```
-
-## callback  (tests/test_context.py L116-117)
-```
-        def callback():
-            called.append(True)
-```
-
-## confirmation_option  (src/click/decorators.py L380-401)
-```
-def confirmation_option(*param_decls: str, **kwargs: t.Any) -> t.Callable[[FC], FC]:
-    """Add a ``--yes`` option which shows a prompt before continuing if
-    not passed. If the prompt is declined, the program will exit.
-
-    :param param_decls: One or more option names. Defaults to the single
-        value ``"--yes"``.
-    :param kwargs: Extra arguments are passed to :func:`option`.
-    """
-
-    def callback(ctx: Context, param: Parameter, value: bool) -> None:
-        if not value:
-            ctx.abort()
-
-    if not param_decls:
-        param_decls = ("--yes",)
-
-    kwargs.setdefault("is_flag", True)
-    kwargs.setdefault("callback", callback)
-    kwargs.setdefault("expose_value", False)
-    kwargs.setdefault("prompt", "Do you want to continue?")
-    kwargs.setdefault("help", "Confirm the action without prompting.")
-    return option(*param_decls, **kwargs)
-```
-
-## group  (tests/test_commands.py L523-524)
-```
-    def group(t):
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
         pass
+
+    def __repr__(self) -> str:
+        return repr(self._file)
+
+    def __iter__(self) -> cabc.Iterator[t.AnyStr]:
+        return iter(self._file)
 ```
 
-## show_help  (src/click/decorators.py L536-540)
+## LazyFile  (src/click/utils.py L109-194)
 ```
-    def show_help(ctx: Context, param: Parameter, value: bool) -> None:
-        """Callback that print the help page on ``<stdout>`` and exits."""
-        if value and not ctx.resilient_parsing:
-            echo(ctx.get_help(), color=ctx.color)
-            ctx.exit()
-```
-
-## help_option  (src/click/decorators.py L527-551)
-```
-def help_option(*param_decls: str, **kwargs: t.Any) -> t.Callable[[FC], FC]:
-    """Pre-configured ``--help`` option which immediately prints the help page
-    and exits the program.
-
-    :param param_decls: One or more option names. Defaults to the single
-        value ``"--help"``.
-    :param kwargs: Extra arguments are passed to :func:`option`.
+class LazyFile:
+    """A lazy file works like a regular file but it does not fully open
+    the file but it does perform some basic checks early to see if the
+    filename parameter does make sense.  This is useful for safely opening
+    files for writing.
     """
 
-    def show_help(ctx: Context, param: Parameter, value: bool) -> None:
-        """Callback that print the help page on ``<stdout>`` and exits."""
-        if value and not ctx.resilient_parsing:
-            echo(ctx.get_help(), color=ctx.color)
-            ctx.exit()
+    def __init__(
+        self,
+        filename: str | os.PathLike[str],
+        mode: str = "r",
+        encoding: str | None = None,
+        errors: str | None = "strict",
+        atomic: bool = False,
+    ):
+        self.name: str = os.fspath(filename)
+        self.mode = mode
+        self.encoding = encoding
+        self.errors = errors
+        self.atomic = atomic
+        self._f: t.IO[t.Any] | None
+        self.should_close: bool
 
-    if not param_decls:
-        param_decls = ("--help",)
+        if self.name == "-":
+            self._f, self.should_close = open_stream(filename, mode, encoding, errors)
+        else:
+            if "r" in mode:
+                # Open and close the file in case we're opening it for
+                # reading so that we can catch at least some errors in
+                # some cases early.
+                open(filename, mode).close()
+            self._f = None
+            self.should_close = True
 
-    kwargs.setdefault("is_flag", True)
-    kwargs.setdefault("expose_value", False)
-    kwargs.setdefault("is_eager", True)
-    kwargs.setdefault("help", _("Show this message and exit."))
-    kwargs.setdefault("callback", show_help)
+    def __getattr__(self, name: str) -> t.Any:
+        return getattr(self.open(), name)
 
-    return option(*param_decls, **kwargs)
+    def __repr__(self) -> str:
+        if self._f is not None:
+            return repr(self._f)
+        return f"<unopened file '{format_filename(self.name)}' {self.mode}>"
+
+    def open(self) -> t.IO[t.Any]:
+        """Opens the file if it's not yet open.  This call might fail with
+        a :exc:`FileError`.  Not handling this error will produce an error
+        that Click shows.
+        """
+        if self._f is not None:
+            return self._f
+        try:
+            rv, self.should_close = open_stream(
+                self.name, self.mode, self.encoding, self.errors, atomic=self.atomic
+            )
+        except OSError as e:
+            from .exceptions import FileError
+
+            raise FileError(self.name, hint=e.strerror) from e
+        self._f = rv
+        return rv
+
+    def close(self) -> None:
+        """Closes the underlying file, no matter what."""
+        if self._f is not None:
+            self._f.close()
+
+    def close_intelligently(self) -> None:
+        """This function only closes the file if it was opened by the lazy
+        file wrapper.  For instance this will never close stdin.
+        """
+        if self.should_close:
+            self.close()
+
+    def __enter__(self) -> LazyFile:
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
+        self.close_intelligently()
+
+    def __iter__(self) -> cabc.Iterator[t.AnyStr]:
+        self.open()
+        return iter(self._f)  # type: ignore
 ```
 
-## new_func  (src/click/decorators.py L45-46)
+## __init__  (tests/test_utils.py L682-685)
 ```
-    def new_func(*args: P.args, **kwargs: P.kwargs) -> R:
-        return f(get_current_context().obj, *args, **kwargs)
+    def __init__(self, package_name):
+        self.__package__ = package_name
+
+
 ```
 
-## make_pass_decorator  (src/click/decorators.py L51-97)
+## _parse_decls  (src/click/core.py L2222-2225)
 ```
-def make_pass_decorator(
-    object_type: type[T], ensure: bool = False
-) -> t.Callable[[t.Callable[te.Concatenate[T, P], R]], t.Callable[P, R]]:
-    """Given an object type this creates a decorator that will work
-    similar to :func:`pass_obj` but instead of passing the object of the
-    current context, it will find the innermost context of type
-    :func:`object_type`.
+    def _parse_decls(
+        self, decls: cabc.Sequence[str], expose_value: bool
+    ) -> tuple[str | None, list[str], list[str]]:
+        raise NotImplementedError()
+```
 
-    This generates a decorator that works roughly like this::
+## add_to_parser  (src/click/core.py L2294-2295)
+```
+    def add_to_parser(self, parser: _OptionParser, ctx: Context) -> None:
+        raise NotImplementedError()
+```
 
-        from functools import update_wrapper
+## get_error_hint  (src/click/core.py L2615-2620)
+```
+    def get_error_hint(self, ctx: Context) -> str:
+        """Get a stringified version of the param for use in error messages to
+        indicate which param caused the error.
+        """
+        hint_list = self.opts or [self.human_readable_name]
+        return " / ".join(f"'{x}'" for x in hint_list)
+```
 
-        def decorator(f):
-            @pass_context
-            def new_func(ctx, *args, **kwargs):
-                obj = ctx.find_object(object_type)
-                return ctx.invoke(f, obj, *args, **kwargs)
-            return update_wrapper(new_func, f)
-        return decorator
+## get_usage_pieces  (src/click/core.py L2612-2613)
+```
+    def get_usage_pieces(self, ctx: Context) -> list[str]:
+        return []
+```
 
-    :param object_type: the type of the object to pass.
-    :param ensure: if set to `True`, a new object will be created and
-                   remembered on the context if it's not there yet.
+## human_readable_name  (src/click/core.py L2228-2232)
+```
+    def human_readable_name(self) -> str:
+        """Returns the human readable name of this parameter.  This is the
+        same as the name for options, but the metavar for arguments.
+        """
+        return self.name  # type: ignore
+```
+
+## make_metavar  (src/click/core.py L2234-2246)
+```
+    def make_metavar(self, ctx: Context) -> str:
+        if self.metavar is not None:
+            return self.metavar
+
+        metavar = self.type.get_metavar(param=self, ctx=ctx)
+
+        if metavar is None:
+            metavar = self.type.name.upper()
+
+        if self.nargs != 1:
+            metavar += "..."
+
+        return metavar
+```
+
+## Argument  (src/click/core.py L3338-3413)
+```
+class Argument(Parameter):
+    """Arguments are positional parameters to a command.  They generally
+    provide fewer features than options but can have infinite ``nargs``
+    and are required by default.
+
+    All parameters are passed onwards to the constructor of :class:`Parameter`.
     """
 
-    def decorator(f: t.Callable[te.Concatenate[T, P], R]) -> t.Callable[P, R]:
-        def new_func(*args: P.args, **kwargs: P.kwargs) -> R:
-            ctx = get_current_context()
+    param_type_name = "argument"
 
-            obj: T | None
-            if ensure:
-                obj = ctx.ensure_object(object_type)
+    def __init__(
+        self,
+        param_decls: cabc.Sequence[str],
+        required: bool | None = None,
+        **attrs: t.Any,
+    ) -> None:
+        # Auto-detect the requirement status of the argument if not explicitly set.
+        if required is None:
+            # The argument gets automatically required if it has no explicit default
+            # value set and is setup to match at least one value.
+            if attrs.get("default", UNSET) is UNSET:
+                required = attrs.get("nargs", 1) > 0
+            # If the argument has a default value, it is not required.
             else:
-                obj = ctx.find_object(object_type)
+                required = False
 
-            if obj is None:
-                raise RuntimeError(
-                    "Managed to invoke callback without a context"
-                    f" object of type {object_type.__name__!r}"
-                    " existing."
-                )
+        if "multiple" in attrs:
+            raise TypeError("__init__() got an unexpected keyword argument 'multiple'.")
 
-            return ctx.invoke(f, obj, *args, **kwargs)
+        super().__init__(param_decls, required=required, **attrs)
 
-        return update_wrapper(new_func, f)
+    @property
+    def human_readable_name(self) -> str:
+        if self.metavar is not None:
+            return self.metavar
+        return self.name.upper()  # type: ignore
 
-    return decorator
-```
+    def make_metavar(self, ctx: Context) -> str:
+        if self.metavar is not None:
+            return self.metavar
+        var = self.type.get_metavar(param=self, ctx=ctx)
+        if not var:
+            var = self.name.upper()  # type: ignore
+        if self.deprecated:
+            var += "!"
+        if not self.required:
+            var = f"[{var}]"
+        if self.nargs != 1:
+            var += "..."
+        return var
 
-## pass_context  (src/click/decorators.py L28-36)
-```
-def pass_context(f: t.Callable[te.Concatenate[Context, P], R]) -> t.Callable[P, R]:
-    """Marks a callback as wanting to receive the current context
-    object as first argument.
-    """
+    def _parse_decls(
+        self, decls: cabc.Sequence[str], expose_value: bool
+    ) -> tuple[str | None, list[str], list[str]]:
+        if not decls:
+            if not expose_value:
+                return None, [], []
+            raise TypeError("Argument is marked as exposed, but does not have a name.")
+        if len(decls) == 1:
+            name = arg = decls[0]
+            name = name.replace("-", "_").lower()
+        else:
+            raise TypeError(
+                "Arguments take exactly one parameter declaration, got"
+                f" {len(decls)}: {decls}."
+            )
+        return name, [arg], []
 
-    def new_func(*args: P.args, **kwargs: P.kwargs) -> R:
-        return f(get_current_context(), *args, **kwargs)
-
-    return update_wrapper(new_func, f)
-```
-
-## pass_meta_key  (src/click/decorators.py L100-130)
-```
-def pass_meta_key(
-    key: str, *, doc_description: str | None = None
-) -> t.Callable[[t.Callable[te.Concatenate[T, P], R]], t.Callable[P, R]]:
-    """Create a decorator that passes a key from
-    :attr:`click.Context.meta` as the first argument to the decorated
-    function.
-
-    :param key: Key in ``Context.meta`` to pass.
-    :param doc_description: Description of the object being passed,
-        inserted into the decorator's docstring. Defaults to "the 'key'
-        key from Context.meta".
-
-    .. versionadded:: 8.0
-    """
-
-    def decorator(f: t.Callable[te.Concatenate[T, P], R]) -> t.Callable[P, R]:
-        def new_func(*args: P.args, **kwargs: P.kwargs) -> R:
-            ctx = get_current_context()
-            obj = ctx.meta[key]
-            return ctx.invoke(f, obj, *args, **kwargs)
-
-        return update_wrapper(new_func, f)
-
-    if doc_description is None:
-        doc_description = f"the {key!r} key from :attr:`click.Context.meta`"
-
-    decorator.__doc__ = (
-        f"Decorator that passes {doc_description} as the first argument"
-        " to the decorated function."
-    )
-    return decorator
-```
-
-## pass_obj  (src/click/decorators.py L39-48)
-```
-def pass_obj(f: t.Callable[te.Concatenate[T, P], R]) -> t.Callable[P, R]:
-    """Similar to :func:`pass_context`, but only pass the object on the
-    context onwards (:attr:`Context.obj`).  This is useful if that object
-    represents the state of a nested system.
-    """
-
-    def new_func(*args: P.args, **kwargs: P.kwargs) -> R:
-        return f(get_current_context().obj, *args, **kwargs)
-
-    return update_wrapper(new_func, f)
-```
-
-## password_option  (src/click/decorators.py L404-418)
-```
-def password_option(*param_decls: str, **kwargs: t.Any) -> t.Callable[[FC], FC]:
-    """Add a ``--password`` option which prompts for a password, hiding
-    input and asking to enter the value again for confirmation.
-
-    :param param_decls: One or more option names. Defaults to the single
-        value ``"--password"``.
-    :param kwargs: Extra arguments are passed to :func:`option`.
-    """
-    if not param_decls:
-        param_decls = ("--password",)
-
-    kwargs.setdefault("prompt", True)
-    kwargs.setdefault("confirmation_prompt", True)
-    kwargs.setdefault("hide_input", True)
-    return option(*param_decls, **kwargs)
-```
-
-## version_option  (src/click/decorators.py L421-524)
-```
-def version_option(
-    version: str | None = None,
-    *param_decls: str,
-    package_name: str | None = None,
-    prog_name: str | None = None,
-    message: str | None = None,
-    **kwargs: t.Any,
-) -> t.Callable[[FC], FC]:
-    """Add a ``--version`` option which immediately prints the version
-    number and exits the program.
-
-    If ``version`` is not provided, Click will try to detect it using
+    def get_usage_pieces(self, ctx: Context) -> list[str]:
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

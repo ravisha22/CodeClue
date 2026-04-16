@@ -113,6 +113,13 @@ build_response (src/requests/adapters.py:337-372)
   called_by: HTTPAdapter
   uses: Response (models), CaseInsensitiveDict (structures)
 
+MockRequest (src/requests/cookies.py:23-100)
+  Wraps a `requests.Request` to mimic a `urllib2.Request`.
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: get_host, get_origin_req_host, is_unverifiable, get
+  called_by: extract_cookies_to_jar, get_cookie_header
+  raises: NotImplementedError
+
 Session (src/requests/sessions.py:356-818)
   A Requests session.
   extends: SessionRedirectMixin
@@ -121,22 +128,6 @@ Session (src/requests/sessions.py:356-818)
   called_by: session
   raises: InvalidSchema, ValueError
   uses: InvalidSchema (exceptions), PreparedRequest (models), RequestsCookieJar (cookies), Request (models)
-
-MockRequest (src/requests/cookies.py:23-100)
-  Wraps a `requests.Request` to mimic a `urllib2.Request`.
-  imports: calendar, copy, compat, threading, dummy_threading
-  calls: get_host, get_origin_req_host, is_unverifiable, get
-  called_by: extract_cookies_to_jar, get_cookie_header
-  raises: NotImplementedError
-
-merge_hooks (src/requests/sessions.py:92-104)
-  Properly merges both requests and session hooks.
-  sig: merge_hooks(request_hooks, session_hooks, dict_class)
-  calls: get, merge_setting
-  called_by: prepare_request, Session
-
-__init__ (src/requests/exceptions.py:18-25)
-  Initialize RequestException with `request` and `response` objects.
 
 request (src/requests/api.py:14-59)
   Constructs and sends a :class:`Request <Request>`.
@@ -162,11 +153,6 @@ request (src/requests/sessions.py:502-593)
   called_by: delete, get, head, options, patch, post, put, Session
   uses: Request (models)
 
-SessionRedirectMixin (src/requests/sessions.py:107-353)
-  imports: adapters, auth, compat, cookies, exceptions
-  calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
-  raises: TooManyRedirects
-
 PreparedRequest (src/requests/models.py:315-639)
   The fully mutable :class:`PreparedRequest <PreparedRequest>` object,
   extends: RequestEncodingMixin, RequestHooksMixin
@@ -175,6 +161,11 @@ PreparedRequest (src/requests/models.py:315-639)
   called_by: copy, Request
   raises: MissingSchema, InvalidURL, UnicodeError, NotImplementedError
   uses: HTTPBasicAuth (auth), InvalidJSONError (exceptions), CaseInsensitiveDict (structures), MissingSchema (exceptions)
+
+SessionRedirectMixin (src/requests/sessions.py:107-353)
+  imports: adapters, auth, compat, cookies, exceptions
+  calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
+  raises: TooManyRedirects
 
 Response (src/requests/models.py:642-1041)
   The :class:`Response <Response>` object, which contains a
@@ -210,6 +201,29 @@ RequestsWarning (src/requests/exceptions.py:143-144)
   Base warning for Requests.
   extends: Warning
   imports: urllib3.exceptions, compat
+
+MockResponse (src/requests/cookies.py:103-121)
+  Wraps a `httplib.HTTPMessage` to mimic a `urllib.addinfourl`.
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: getheaders
+  called_by: extract_cookies_to_jar
+
+RequestsCookieJar (src/requests/cookies.py:176-437)
+  Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
+  extends: CookieJar, MutableMapping
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: CookieConflictError, __contains__, _find_no_duplicates, copy, get, get_policy, iteritems, iterkeys
+  called_by: copy, cookiejar_from_dict
+  raises: KeyError, CookieConflictError
+
+merge_hooks (src/requests/sessions.py:92-104)
+  Properly merges both requests and session hooks.
+  sig: merge_hooks(request_hooks, session_hooks, dict_class)
+  calls: get, merge_setting
+  called_by: prepare_request, Session
+
+__init__ (src/requests/exceptions.py:18-25)
+  Initialize RequestException with `request` and `response` objects.
 
 delete (src/requests/api.py:148-157)
   Sends a DELETE request.
@@ -296,29 +310,7 @@ put (src/requests/sessions.py:641-651)
   behavior: DELEGATE(request -> result)
   calls: request
 
-_encode_files (src/requests/models.py:139-205)
-  Build the body for a multipart/form-data request.
-  sig: _encode_files(files, data)
-  behavior: ACCUMULATE(fields loop -> new fields)
-  called_by: prepare_body, PreparedRequest
-  raises: ValueError
-  uses: RequestField (urllib3.fields)
-
-json (src/requests/models.py:949-982)
-  Decodes the JSON response body (if any) as a Python object.
-  raises: RequestsJSONDecodeError
-  uses: RequestsJSONDecodeError (exceptions)
-
-resolve_redirects (src/requests/sessions.py:160-280)
-  Receives a Response.
-  sig: resolve_redirects(resp, req, stream, timeout, verify...)
-  behavior: ACCUMULATE(req.copy loop -> hist, raises TooManyRedirects)
-  calls: close, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies
-  called_by: send, Session
-  raises: TooManyRedirects
-  uses: TooManyRedirects (exceptions)
-
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
 coverage: 80 symbols in L3, 28 with behavior annotations
-uncovered: RequestsDependencyWarning, build_connection_pool_key_attributes, generate, HTTPAdapter
+uncovered: RequestsDependencyWarning, build_connection_pool_key_attributes, generate, get

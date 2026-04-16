@@ -182,93 +182,6 @@ from_response (aiohttp/multipart.py:688-699)
   Constructs reader instance from HTTP response.
   sig: from_response(cls, response)
 
-body_exists (aiohttp/web_request.py:612-614)
-  Return True if request has HTTP BODY, False otherwise.
-
-can_read_body (aiohttp/web_request.py:607-609)
-  Return True if request's HTTP BODY can be read, False otherwise.
-
-remote (aiohttp/web_request.py:408-420)
-  Remote IP of client initiated HTTP request.
-
-version (aiohttp/web_request.py:381-386)
-  Read only property for getting HTTP version of request.
-
-AppRunner (aiohttp/web_runner.py:380-453)
-  Web Application runner
-  imports: asyncio, signal, socket, yarl, http_parser
-  calls: cleanup
-  raises: TypeError
-
-delete (aiohttp/client.py:1388-1392)
-  Perform HTTP DELETE request.
-  sig: delete(url)
-  behavior: DELEGATE(_RequestContextManager -> result)
-
-get (aiohttp/client.py:1334-1342)
-  Perform HTTP GET request.
-  sig: get(url)
-  behavior: DELEGATE(_RequestContextManager -> result)
-
-head (aiohttp/client.py:1354-1362)
-  Perform HTTP HEAD request.
-  sig: head(url)
-  behavior: DELEGATE(_RequestContextManager -> result)
-
-options (aiohttp/client.py:1344-1352)
-  Perform HTTP OPTIONS request.
-  sig: options(url)
-  behavior: DELEGATE(_RequestContextManager -> result)
-
-patch (aiohttp/client.py:1380-1386)
-  Perform HTTP PATCH request.
-  sig: patch(url)
-  behavior: DELEGATE(_RequestContextManager -> result)
-
-post (aiohttp/client.py:1364-1370)
-  Perform HTTP POST request.
-  sig: post(url)
-  behavior: DELEGATE(_RequestContextManager -> result)
-
-put (aiohttp/client.py:1372-1378)
-  Perform HTTP PUT request.
-  sig: put(url)
-  behavior: DELEGATE(_RequestContextManager -> result)
-
-start (aiohttp/client_reqrep.py:427-474)
-  Start response processing.
-  sig: start(connection)
-  calls: read
-  raises: ClientResponseError
-  uses: ClientResponseError (client_exceptions)
-
-DigestAuthMiddleware (aiohttp/client_middleware_digest_auth.py:145-469)
-  HTTP digest authentication middleware for aiohttp client.
-  imports: hashlib, yarl, client_exceptions, client_middlewares, client_reqrep
-  calls: _authenticate, H, KD, _encode, _in_protection_space, escape_quotes, parse_header_pairs
-  raises: ValueError, ClientError
-  uses: URL (yarl), ClientError (client_exceptions)
-
-LoggingMiddleware (examples/logging_middleware.py:27-56)
-  Middleware that logs request timing and response status.
-  imports: asyncio, logging, aiohttp
-  called_by: run_tests
-
-LoggingMiddleware (examples/combined_middleware.py:38-63)
-  Middleware that logs request timing and response status.
-  imports: asyncio, base64, binascii, logging, http
-  called_by: run_tests
-
-__call__ (examples/retry_middleware.py:47-88)
-  Execute request with retry logic.
-  sig: __call__(request, handler)
-  behavior: ACCUMULATE(range(self.max_retrie... -> delay)
-
-__call__ (examples/combined_middleware.py:119-156)
-  Execute request with retry logic.
-  sig: __call__(request, handler)
-  behavior: ACCUMULATE(range(self.max_retrie... -> delay)
-
 handle_error (aiohttp/web_protocol.py:752-812)
   Handle errors.
   sig: handle_error(request, status, exc, message)
@@ -306,6 +219,11 @@ _handle (aiohttp/web_urldispatcher.py:623-633)
   raises: HTTPNotFound
   uses: HTTPNotFound (web_exceptions)
 
+Application (aiohttp/web_app.py:71-400)
+  imports: asyncio, logging, warnings, aiosignal, frozenlist
+  calls: _add_subapp, _check_frozen, _prepare_middleware, handler, reg_handler, _reg_subapp_signals, add_routes, freeze
+  raises: TypeError, RuntimeError, ValueError
+
 RequestHandler (aiohttp/web_protocol.py:119-822)
   HTTP protocol implementation.
   extends: BaseProtocol
@@ -314,6 +232,19 @@ RequestHandler (aiohttp/web_protocol.py:119-822)
   raises: ConnectionError
   uses: Response (web_response), HTTPInternalServerError (web_exceptions), StreamWriter (http)
 
+StreamResponse (aiohttp/web_response.py:74-532)
+  extends: HeadersMixin, CookieMixin
+  imports: asyncio, enum, math, warnings, concurrent.futures
+  calls: _generate_content_type_header, _prepare_headers, _set_status, _start_compression, _write_headers, drain, enable_compression, write
+  raises: RuntimeError, ValueError, TypeError
+
+BaseRequest (aiohttp/web_request.py:109-823)
+  extends: HeadersMixin
+  imports: asyncio, io, socket, string, tempfile
+  calls: _etag_values, _if_match_or_none_impl, get_extra_info, multipart, read, text, FileField
+  raises: RuntimeError, ValueError, HTTPUnsupportedMediaType, HTTPBadRequest
+  uses: ETag (helpers), MultipartReader (multipart), HTTPRequestEntityTooLarge (web_exceptions), HTTPUnsupportedMediaType (web_exceptions)
+
 Response (aiohttp/web_response.py:535-740)
   extends: StreamResponse
   imports: asyncio, enum, math, warnings, concurrent.futures
@@ -321,10 +252,69 @@ Response (aiohttp/web_response.py:535-740)
   called_by: json_bytes_response, json_response
   raises: RuntimeError, ValueError, TypeError
 
+_cancel_pong_response_cb (aiohttp/web_ws.py:142-145)
+  called_by: _cancel_heartbeat, _reset_heartbeat, _send_heartbeat, WebSocketResponse
+
+_handle (aiohttp/web_app.py:366-390)
+  sig: _handle(request)
+  calls: handler, freeze, _build_middlewares
+
+_make_response (aiohttp/web_fileresponse.py:168-222)
+  Return the response result, io object, stat result, and encoding.
+  sig: _make_response(request, accept_encoding)
+  calls: _etag_match, _get_file_path_stat_encoding
+
+HTTPBadRequest (aiohttp/web_exceptions.py:288-289)
+  extends: HTTPClientError
+  attrs: status_code=400
+  imports: warnings, http, multidict, yarl, helpers
+
+HTTPMisdirectedRequest (aiohttp/web_exceptions.py:394-395)
+  extends: HTTPClientError
+  attrs: status_code=421
+  imports: warnings, http, multidict, yarl, helpers
+
+HttpProcessingError (aiohttp/http_exceptions.py:10-41)
+  HTTP error.
+  extends: Exception
+  attrs: code=0, message='', headers=None
+  imports: textwrap, multidict
+
+HttpRequestParser (aiohttp/http_parser.py:573-676)
+  Read request status line.
+  imports: asyncio, string, enum, multidict, yarl
+  calls: RawRequestMessage
+  raises: BadHttpMessage, BadHttpMethod, BadStatusLine, InvalidURLError
+
+HttpResponseParser (aiohttp/http_parser.py:677-760)
+  Read response status line and headers.
+  imports: asyncio, string, enum, multidict, yarl
+  calls: RawResponseMessage
+  raises: BadStatusLine
+
+RawRequestMessage (aiohttp/http_parser.py:99-111)
+  extends: NamedTuple
+  imports: asyncio, string, enum, multidict, yarl
+  called_by: HttpRequestParser
+
+RawResponseMessage (aiohttp/http_parser.py:112-123)
+  extends: NamedTuple
+  imports: asyncio, string, enum, multidict, yarl
+  called_by: HttpResponseParser
+
+Request (aiohttp/web_request.py:826-884)
+  extends: BaseRequest
+  imports: asyncio, io, socket, string, tempfile
+
+_FileResponseResult (aiohttp/web_fileresponse.py:61-67)
+  The result of the file response.
+  extends: Enum
+  imports: asyncio, io, enum, mimetypes, stat
+
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 24 with behavior annotations
-uncovered: TraceRequestHeadersSentParams, TraceRequestRedirectParams, TraceRequestStartParams, TraceResponseChunkReceivedParams
+coverage: 80 symbols in L3, 16 with behavior annotations
+uncovered: ClientHttpProxyError, ClientRequestArgs, ClientResponseError, GunicornUVLoopWebWorker
 drill: aiohttp/web_protocol.py (~37 lines, _handle_request)
 drill: aiohttp/web_ws.py (~11 lines, _handle_ping_pong_exception)
 

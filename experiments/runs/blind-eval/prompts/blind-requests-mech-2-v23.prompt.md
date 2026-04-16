@@ -148,25 +148,14 @@ RequestsWarning (src/requests/exceptions.py:143-144)
   extends: Warning
   imports: urllib3.exceptions, compat
 
+__init__ (src/requests/exceptions.py:18-25)
+  Initialize RequestException with `request` and `response` objects.
+
 MockResponse (src/requests/cookies.py:103-121)
   Wraps a `httplib.HTTPMessage` to mimic a `urllib.addinfourl`.
   imports: calendar, copy, compat, threading, dummy_threading
   calls: getheaders
   called_by: extract_cookies_to_jar
-
-get_unicode_from_response (src/requests/utils.py:578-614)
-  Returns the requested content back in unicode.
-  sig: get_unicode_from_response(r)
-  calls: get_encoding_from_headers
-
-handle_redirect (src/requests/auth.py:236-239)
-  Reset num_401_calls counter on redirects.
-  sig: handle_redirect(r)
-
-stream_decode_response_unicode (src/requests/utils.py:551-565)
-  Stream decodes an iterator.
-  sig: stream_decode_response_unicode(iterator, r)
-  behavior: ACCUMULATE(iterator loop -> result)
 
 RequestsCookieJar (src/requests/cookies.py:176-437)
   Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
@@ -176,18 +165,6 @@ RequestsCookieJar (src/requests/cookies.py:176-437)
   called_by: copy, cookiejar_from_dict
   raises: KeyError, CookieConflictError
 
-CaseInsensitiveDict (src/requests/structures.py:13-80)
-  A case-insensitive ``dict``-like object.
-  extends: MutableMapping
-  imports: compat
-  calls: lower_items
-  called_by: __eq__, copy
-
-RequestsDependencyWarning (src/requests/exceptions.py:151-152)
-  An imported dependency doesn't match the expected version range.
-  extends: RequestsWarning
-  imports: urllib3.exceptions, compat
-
 iter_content (src/requests/models.py:801-857)
   Iterates over the response data.
   sig: iter_content(chunk_size, decode_unicode)
@@ -196,23 +173,17 @@ iter_content (src/requests/models.py:801-857)
   raises: StreamConsumedError, TypeError, ChunkedEncodingError, ContentDecodingError
   uses: StreamConsumedError (exceptions), ChunkedEncodingError (exceptions), ContentDecodingError (exceptions), ConnectionError (exceptions)
 
-extract_cookies_to_jar (src/requests/cookies.py:124-137)
-  Extract the cookies from the response into a CookieJar.
-  sig: extract_cookies_to_jar(jar, request, response)
-  calls: MockRequest, MockResponse
-
-copy (src/requests/cookies.py:428-433)
-  Return a copy of this RequestsCookieJar.
-  calls: get_policy, update, RequestsCookieJar
-  called_by: __getstate__, update, RequestsCookieJar, _copy_cookie_jar
-
-__init__ (src/requests/exceptions.py:18-25)
-  Initialize RequestException with `request` and `response` objects.
-
 json (src/requests/models.py:949-982)
   Decodes the JSON response body (if any) as a Python object.
   raises: RequestsJSONDecodeError
   uses: RequestsJSONDecodeError (exceptions)
+
+MockRequest (src/requests/cookies.py:23-100)
+  Wraps a `requests.Request` to mimic a `urllib2.Request`.
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: get_host, get_origin_req_host, is_unverifiable, get
+  called_by: extract_cookies_to_jar, get_cookie_header
+  raises: NotImplementedError
 
 Session (src/requests/sessions.py:356-818)
   A Requests session.
@@ -223,6 +194,11 @@ Session (src/requests/sessions.py:356-818)
   raises: InvalidSchema, ValueError
   uses: InvalidSchema (exceptions), PreparedRequest (models), RequestsCookieJar (cookies), Request (models)
 
+extract_cookies_to_jar (src/requests/cookies.py:124-137)
+  Extract the cookies from the response into a CookieJar.
+  sig: extract_cookies_to_jar(jar, request, response)
+  calls: MockRequest, MockResponse
+
 resolve_redirects (src/requests/sessions.py:160-280)
   Receives a Response.
   sig: resolve_redirects(resp, req, stream, timeout, verify...)
@@ -232,12 +208,10 @@ resolve_redirects (src/requests/sessions.py:160-280)
   raises: TooManyRedirects
   uses: TooManyRedirects (exceptions)
 
-MockRequest (src/requests/cookies.py:23-100)
-  Wraps a `requests.Request` to mimic a `urllib2.Request`.
-  imports: calendar, copy, compat, threading, dummy_threading
-  calls: get_host, get_origin_req_host, is_unverifiable, get
-  called_by: extract_cookies_to_jar, get_cookie_header
-  raises: NotImplementedError
+copy (src/requests/cookies.py:428-433)
+  Return a copy of this RequestsCookieJar.
+  calls: get_policy, update, RequestsCookieJar
+  called_by: __getstate__, update, RequestsCookieJar, _copy_cookie_jar
 
 merge_hooks (src/requests/sessions.py:92-104)
   Properly merges both requests and session hooks.
@@ -249,22 +223,6 @@ get_redirect_target (src/requests/sessions.py:108-126)
   Receives a Response.
   sig: get_redirect_target(resp)
   called_by: resolve_redirects, SessionRedirectMixin
-
-__iter__ (src/requests/models.py:752-754)
-  Allows you to use a response as an iterator.
-  behavior: DELEGATE(iter_content -> result)
-  calls: iter_content
-
-content (src/requests/models.py:893-909)
-  Content of the response, in bytes.
-  calls: iter_content
-  raises: RuntimeError
-
-iter_lines (src/requests/models.py:859-890)
-  Iterates over the response data, one line at a time.
-  sig: iter_lines(chunk_size, decode_unicode, delimiter)
-  behavior: ACCUMULATE(self.iter_content(chu... -> chunk)
-  calls: iter_content
 
 FileModeWarning (src/requests/exceptions.py:147-148)
   A file was opened in text mode, but Requests determined its binary length.
@@ -285,11 +243,21 @@ __init__ (src/requests/cookies.py:110-115)
   Make a MockResponse for `cookiejar` to read.
   sig: __init__(headers)
 
+__iter__ (src/requests/models.py:752-754)
+  Allows you to use a response as an iterator.
+  behavior: DELEGATE(iter_content -> result)
+  calls: iter_content
+
 _find (src/requests/cookies.py:366-384)
   Requests uses this method internally to get cookie values.
   sig: _find(name, domain, path)
   behavior: ACCUMULATE(iter(self) loop -> result)
   raises: KeyError
+
+content (src/requests/models.py:893-909)
+  Content of the response, in bytes.
+  calls: iter_content
+  raises: RuntimeError
 
 default_headers (src/requests/utils.py:887-898)
   :rtype: requests.structures.CaseInsensitiveDict
@@ -308,16 +276,48 @@ is_permanent_redirect (src/requests/models.py:779-784)
 is_redirect (src/requests/models.py:772-776)
   True if this Response is a well-formed HTTP redirect that could have
 
+iter_lines (src/requests/models.py:859-890)
+  Iterates over the response data, one line at a time.
+  sig: iter_lines(chunk_size, decode_unicode, delimiter)
+  behavior: ACCUMULATE(self.iter_content(chu... -> chunk)
+  calls: iter_content
+
 links (src/requests/models.py:985-999)
   Returns the parsed header links of the response, if any.
 
 text (src/requests/models.py:912-947)
   Content of the response, in unicode.
 
+get_unicode_from_response (src/requests/utils.py:578-614)
+  Returns the requested content back in unicode.
+  sig: get_unicode_from_response(r)
+  calls: get_encoding_from_headers
+
+handle_redirect (src/requests/auth.py:236-239)
+  Reset num_401_calls counter on redirects.
+  sig: handle_redirect(r)
+
+stream_decode_response_unicode (src/requests/utils.py:551-565)
+  Stream decodes an iterator.
+  sig: stream_decode_response_unicode(iterator, r)
+  behavior: ACCUMULATE(iterator loop -> result)
+
+CaseInsensitiveDict (src/requests/structures.py:13-80)
+  A case-insensitive ``dict``-like object.
+  extends: MutableMapping
+  imports: compat
+  calls: lower_items
+  called_by: __eq__, copy
+
+RequestsDependencyWarning (src/requests/exceptions.py:151-152)
+  An imported dependency doesn't match the expected version range.
+  extends: RequestsWarning
+  imports: urllib3.exceptions, compat
+
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 23 with behavior annotations
-uncovered: lower_items, set, set_cookie, cookiejar_from_dict
+coverage: 80 symbols in L3, 27 with behavior annotations
+uncovered: merge_cookies, SOCKSProxyManager, __contains__, __exit__
 drill: src/requests/adapters.py (~33 lines, build_response)
 drill: src/requests/exceptions.py (~10 lines, __init__)
 drill: src/requests/auth.py (~39 lines, handle_401)
@@ -532,206 +532,153 @@ drill: src/requests/auth.py (~39 lines, handle_401)
         return f"Digest {base}"
 ```
 
-## ChunkedEncodingError  (src/requests/exceptions.py L120-121)
+## close  (src/requests/sessions.py L796-799)
 ```
-class ChunkedEncodingError(RequestException):
-    """The server declared chunked encoding but sent an invalid chunk."""
-```
-
-## ConnectTimeout  (src/requests/exceptions.py L81-85)
-```
-class ConnectTimeout(ConnectionError, Timeout):
-    """The request timed out while trying to connect to the remote server.
-
-    Requests that produced this error are safe to retry.
-    """
+    def close(self):
+        """Closes all adapters and as such the session"""
+        for v in self.adapters.values():
+            v.close()
 ```
 
-## ConnectionError  (src/requests/exceptions.py L60-61)
+## send  (tests/test_requests.py L2576-2580)
 ```
-class ConnectionError(RequestException):
-    """A Connection error occurred."""
+        self.calls.append(SendCall(args, kwargs))
+        return self.build_response()
+
+    def build_response(self):
+        request = self.calls[-1].args[0]
 ```
 
-## ContentDecodingError  (src/requests/exceptions.py L124-125)
+## BaseAdapter  (src/requests/adapters.py L114-141)
 ```
-class ContentDecodingError(RequestException, BaseHTTPError):
-    """Failed to decode response content."""
-```
+class BaseAdapter:
+    """The Base Transport Adapter"""
 
-## FileModeWarning  (src/requests/exceptions.py L147-148)
-```
-class FileModeWarning(RequestsWarning, DeprecationWarning):
-    """A file was opened in text mode, but Requests determined its binary length."""
-```
+    def __init__(self):
+        super().__init__()
 
-## HTTPError  (src/requests/exceptions.py L56-57)
-```
-class HTTPError(RequestException):
-    """An HTTP error occurred."""
-```
+    def send(
+        self, request, stream=False, timeout=None, verify=True, cert=None, proxies=None
+    ):
+        """Sends PreparedRequest object. Returns Response object.
 
-## InvalidHeader  (src/requests/exceptions.py L112-113)
-```
-class InvalidHeader(RequestException, ValueError):
-    """The header value provided was somehow invalid."""
-```
-
-## InvalidJSONError  (src/requests/exceptions.py L28-29)
-```
-class InvalidJSONError(RequestException):
-    """A JSON error occurred."""
-```
-
-## InvalidProxyURL  (src/requests/exceptions.py L116-117)
-```
-class InvalidProxyURL(InvalidURL):
-    """The proxy URL provided is invalid."""
-```
-
-## InvalidSchema  (src/requests/exceptions.py L104-105)
-```
-class InvalidSchema(RequestException, ValueError):
-    """The URL scheme provided is either invalid or unsupported."""
-```
-
-## InvalidURL  (src/requests/exceptions.py L108-109)
-```
-class InvalidURL(RequestException, ValueError):
-    """The URL provided was somehow invalid."""
-```
-
-## __reduce__  (src/requests/exceptions.py L45-53)
-```
-    def __reduce__(self):
+        :param request: The :class:`PreparedRequest <PreparedRequest>` being sent.
+        :param stream: (optional) Whether to stream the request content.
+        :param timeout: (optional) How long to wait for the server to send
+            data before giving up, as a float, or a :ref:`(connect timeout,
+            read timeout) <timeouts>` tuple.
+        :type timeout: float or tuple
+        :param verify: (optional) Either a boolean, in which case it controls whether we verify
+            the server's TLS certificate, or a string, in which case it must be a path
+            to a CA bundle to use
+        :param cert: (optional) Any user-provided SSL certificate to be trusted.
+        :param proxies: (optional) The proxies dictionary to apply to the request.
         """
-        The __reduce__ method called when pickling the object must
-        be the one from the JSONDecodeError (be it json/simplejson)
-        as it expects all the arguments for instantiation, not just
-        one like the IOError, and the MRO would by default call the
-        __reduce__ method from the IOError due to the inheritance order.
+        raise NotImplementedError
+
+    def close(self):
+        """Cleans up adapter specific items."""
+        raise NotImplementedError
+```
+
+## __getstate__  (src/requests/sessions.py L812-814)
+```
+    def __getstate__(self):
+        state = {attr: getattr(self, attr, None) for attr in self.__attrs__}
+        return state
+```
+
+## __setstate__  (src/requests/sessions.py L816-818)
+```
+    def __setstate__(self, state):
+        for attr, value in state.items():
+            setattr(self, attr, value)
+```
+
+## add_headers  (src/requests/adapters.py L556-568)
+```
+    def add_headers(self, request, **kwargs):
+        """Add any headers needed by the connection. As of v2.0 this does
+        nothing by default, but is left for overriding by users that subclass
+        the :class:`HTTPAdapter <requests.adapters.HTTPAdapter>`.
+
+        This should not be called from user code, and is only exposed for use
+        when subclassing the
+        :class:`HTTPAdapter <requests.adapters.HTTPAdapter>`.
+
+        :param request: The :class:`PreparedRequest <PreparedRequest>` to add headers to.
+        :param kwargs: The keyword arguments from the call to send().
         """
-        return CompatJSONDecodeError.__reduce__(self)
+        pass
 ```
 
-## JSONDecodeError  (src/requests/exceptions.py L32-53)
+## build_connection_pool_key_attributes  (src/requests/adapters.py L374-422)
 ```
-class JSONDecodeError(InvalidJSONError, CompatJSONDecodeError):
-    """Couldn't decode the text into json"""
+    def build_connection_pool_key_attributes(self, request, verify, cert=None):
+        """Build the PoolKey attributes used by urllib3 to return a connection.
 
-    def __init__(self, *args, **kwargs):
+        This looks at the PreparedRequest, the user-specified verify value,
+        and the value of the cert parameter to determine what PoolKey values
+        to use to select a connection from a given urllib3 Connection Pool.
+
+        The SSL related pool key arguments are not consistently set. As of
+        this writing, use the following to determine what keys may be in that
+        dictionary:
+
+        * If ``verify`` is ``True``, ``"ssl_context"`` will be set and will be the
+          default Requests SSL Context
+        * If ``verify`` is ``False``, ``"ssl_context"`` will not be set but
+          ``"cert_reqs"`` will be set
+        * If ``verify`` is a string, (i.e., it is a user-specified trust bundle)
+          ``"ca_certs"`` will be set if the string is not a directory recognized
+          by :py:func:`os.path.isdir`, otherwise ``"ca_cert_dir"`` will be
+          set.
+        * If ``"cert"`` is specified, ``"cert_file"`` will always be set. If
+          ``"cert"`` is a tuple with a second item, ``"key_file"`` will also
+          be present
+
+        To override these settings, one may subclass this class, call this
+        method and use the above logic to change parameters as desired. For
+        example, if one wishes to use a custom :py:class:`ssl.SSLContext` one
+        must both set ``"ssl_context"`` and based on what else they require,
+        alter the other keys to ensure the desired behaviour.
+
+        :param request:
+            The PreparedReqest being sent over the connection.
+        :type request:
+            :class:`~requests.models.PreparedRequest`
+        :param verify:
+            Either a boolean, in which case it controls whether
+            we verify the server's TLS certificate, or a string, in which case it
+            must be a path to a CA bundle to use.
+        :param cert:
+            (optional) Any user-provided SSL certificate for client
+            authentication (a.k.a., mTLS). This may be a string (i.e., just
+            the path to a file which holds both certificate and key) or a
+            tuple of length 2 with the certificate file path and key file
+            path.
+        :returns:
+            A tuple of two dictionaries. The first is the "host parameters"
+            portion of the Pool Key including scheme, hostname, and port. The
+            second is a dictionary of SSLContext related parameters.
         """
-        Construct the JSONDecodeError instance first with all
-        args. Then use it's args to construct the IOError so that
-        the json specific args aren't used as IOError specific args
-        and the error message from JSONDecodeError is preserved.
-        """
-        CompatJSONDecodeError.__init__(self, *args)
-        InvalidJSONError.__init__(self, *self.args, **kwargs)
-
-    def __reduce__(self):
-        """
-        The __reduce__ method called when pickling the object must
-        be the one from the JSONDecodeError (be it json/simplejson)
-        as it expects all the arguments for instantiation, not just
-        one like the IOError, and the MRO would by default call the
-        __reduce__ method from the IOError due to the inheritance order.
-        """
-        return CompatJSONDecodeError.__reduce__(self)
+        return _urllib3_request_context(request, verify, cert, self.poolmanager)
 ```
 
-## MissingSchema  (src/requests/exceptions.py L100-101)
+## cert_verify  (src/requests/adapters.py L281-335)
 ```
-class MissingSchema(RequestException, ValueError):
-    """The URL scheme (e.g. http or https) is missing."""
-```
+    def cert_verify(self, conn, url, verify, cert):
+        """Verify a SSL certificate. This method should not be called from user
+        code, and is only exposed for use when subclassing the
+        :class:`HTTPAdapter <requests.adapters.HTTPAdapter>`.
 
-## ProxyError  (src/requests/exceptions.py L64-65)
-```
-class ProxyError(ConnectionError):
-    """A proxy error occurred."""
-```
-
-## ReadTimeout  (src/requests/exceptions.py L88-89)
-```
-class ReadTimeout(Timeout):
-    """The server did not send any data in the allotted amount of time."""
-```
-
-## RequestException  (src/requests/exceptions.py L13-25)
-```
-class RequestException(IOError):
-    """There was an ambiguous exception that occurred while handling your
-    request.
-    """
-
-    def __init__(self, *args, **kwargs):
-        """Initialize RequestException with `request` and `response` objects."""
-        response = kwargs.pop("response", None)
-        self.response = response
-        self.request = kwargs.pop("request", None)
-        if response is not None and not self.request and hasattr(response, "request"):
-            self.request = self.response.request
-        super().__init__(*args, **kwargs)
-```
-
-## RequestsDependencyWarning  (src/requests/exceptions.py L151-152)
-```
-class RequestsDependencyWarning(RequestsWarning):
-    """An imported dependency doesn't match the expected version range."""
-```
-
-## RequestsWarning  (src/requests/exceptions.py L143-144)
-```
-class RequestsWarning(Warning):
-    """Base warning for Requests."""
-```
-
-## RetryError  (src/requests/exceptions.py L132-133)
-```
-class RetryError(RequestException):
-    """Custom retries logic failed"""
-```
-
-## SSLError  (src/requests/exceptions.py L68-69)
-```
-class SSLError(ConnectionError):
-    """An SSL error occurred."""
-```
-
-## StreamConsumedError  (src/requests/exceptions.py L128-129)
-```
-class StreamConsumedError(RequestException, TypeError):
-    """The content for this response was already consumed."""
-```
-
-## Timeout  (src/requests/exceptions.py L72-78)
-```
-class Timeout(RequestException):
-    """The request timed out.
-
-    Catching this error will catch both
-    :exc:`~requests.exceptions.ConnectTimeout` and
-    :exc:`~requests.exceptions.ReadTimeout` errors.
-    """
-```
-
-## TooManyRedirects  (src/requests/exceptions.py L96-97)
-```
-class TooManyRedirects(RequestException):
-    """Too many redirects."""
-```
-
-## URLRequired  (src/requests/exceptions.py L92-93)
-```
-class URLRequired(RequestException):
-    """A valid URL is required to make a request."""
-```
-
-## UnrewindableBodyError  (src/requests/exceptions.py L136-137)
-```
-class UnrewindableBodyError(RequestException):
-    """Requests encountered an error when trying to rewind a body."""
+        :param conn: The urllib3 connection object associated with the cert.
+        :param url: The requested URL.
+        :param verify: Either a boolean, in which case it controls whether we verify
+            the server's TLS certificate, or a string, in which case it must be a path
+            to a CA bundle to use
+        :param cert: The SSL certificate to verify.
+... (truncated)
 ```
 --- END SOURCE SNIPPETS ---
 

@@ -148,6 +148,50 @@ AiohttpClient (aiohttp/pytest_plugin.py:31-48)
   extends: Protocol
   imports: asyncio, inspect, warnings, pytest, test_utils
 
+Application (aiohttp/web_app.py:71-400)
+  imports: asyncio, logging, warnings, aiosignal, frozenlist
+  calls: _add_subapp, _check_frozen, _prepare_middleware, handler, reg_handler, _reg_subapp_signals, add_routes, freeze
+  raises: TypeError, RuntimeError, ValueError
+
+Server (aiohttp/web_server.py:30-126)
+  imports: asyncio, warnings, http_parser, streams, web_protocol
+  calls: shutdown
+
+ServerRunner (aiohttp/web_runner.py:355-377)
+  Low-level web server runner
+  imports: asyncio, signal, socket, yarl, http_parser
+
+aiohttp_raw_server (aiohttp/pytest_plugin.py:325-349)
+  Factory to create a RawTestServer instance, given a web handler.
+  sig: aiohttp_raw_server(loop)
+  uses: RawTestServer (test_utils)
+
+ClientWebSocketResponse (aiohttp/client_ws.py:60-560)
+  imports: asyncio, types, client_exceptions, client_reqrep, helpers
+  calls: _cancel_heartbeat, _cancel_pong_response_cb, _handle_ping_pong_exception, _ping_task_done, _reset_heartbeat, _set_closed, _set_closing, close
+  raises: TypeError, WSMessageTypeError, StopAsyncIteration, RuntimeError
+  uses: WSMessageError (http_websocket)
+
+WebSocketReady (aiohttp/web_ws.py:70-75)
+  imports: asyncio, base64, binascii, hashlib, multidict
+  called_by: can_prepare, WebSocketResponse
+
+WebSocketReader (aiohttp/_websocket/reader_c.py:141-499)
+  imports: asyncio, builtins, base_protocol, compression_utils, helpers
+  calls: set_exception, _feed_data, _handle_frame
+  raises: WebSocketError
+  uses: WebSocketError (models), UNPACK_LEN3 (helpers), ZLibDecompressor (compression_utils), WSMessageClose (models)
+
+WebSocketReader (aiohttp/_websocket/reader_py.py:141-499)
+  imports: asyncio, builtins, base_protocol, compression_utils, helpers
+  calls: set_exception, _feed_data, _handle_frame
+  raises: WebSocketError
+  uses: WebSocketError (models), UNPACK_LEN3 (helpers), ZLibDecompressor (compression_utils), WSMessageClose (models)
+
+aiohttp_client_cls (aiohttp/pytest_plugin.py:353-376)
+  Client class to use in ``aiohttp_client`` factory.
+  called_by: aiohttp_client
+
 ServerDisconnectedError (aiohttp/client_exceptions.py:216-224)
   Server disconnected.
   extends: ServerConnectionError
@@ -169,146 +213,95 @@ WebSocketError (aiohttp/_websocket/models.py:155-163)
   imports: enum
   calls: __init__
 
-Domain (aiohttp/web_urldispatcher.py:766-803)
-  extends: AbstractRuleMatching
-  imports: asyncio, base64, hashlib, html, inspect
-  calls: validation
-  raises: TypeError, ValueError
-  uses: URL (yarl)
+__call__ (aiohttp/web_server.py:116-126)
+  uses: RequestHandler (web_protocol)
 
-HTTPServerError (aiohttp/web_exceptions.py:459-460)
-  extends: HTTPError
-  imports: warnings, http, multidict, yarl, helpers
+_make_server (aiohttp/web_runner.py:421-430)
+  behavior: DELEGATE(Server -> result)
+  uses: Server (web_server)
 
-MaskDomain (aiohttp/web_urldispatcher.py:806-819)
-  extends: Domain
-  imports: asyncio, base64, hashlib, html, inspect
+_cleanup_server (aiohttp/web_runner.py:452-453)
 
-WSServerHandshakeError (aiohttp/client_exceptions.py:106-107)
-  websocket server handshake error.
-  extends: ClientResponseError
-  imports: asyncio, multidict, typedefs, ssl, client_reqrep
+_cleanup_server (aiohttp/web_runner.py:337-338)
+  Run any cleanup steps after the server is shutdown.
 
-UrlDispatcher (aiohttp/web_urldispatcher.py:965-1227)
-  extends: AbstractRouter
-  imports: asyncio, base64, hashlib, html, inspect
-  calls: DynamicResource, MatchInfoError, PlainResource, ResourcesView, RoutesView, StaticResource, _get_resource_index_key, add_resource
-  raises: RuntimeError, ValueError
+_cleanup_server (aiohttp/web_runner.py:376-377)
 
-StaticResource (aiohttp/web_urldispatcher.py:500-704)
-  extends: PrefixResource
-  attrs: VERSION_KEY='v'
-  imports: asyncio, base64, hashlib, html, inspect
-  calls: ResourceRoute, _directory_as_html, _get_file_hash, UrlMappingMatchInfo, _quote_path, _unquote_path_safe
-  called_by: add_static, UrlDispatcher
-  raises: ValueError, RuntimeError, HTTPNotFound, HTTPForbidden
+_make_server (aiohttp/web_runner.py:373-374)
 
-MatchInfoError (aiohttp/web_urldispatcher.py:276-289)
-  extends: UrlMappingMatchInfo
-  imports: asyncio, base64, hashlib, html, inspect
-  calls: SystemRoute
-  called_by: UrlDispatcher
+_make_server (aiohttp/web_runner.py:333-334)
+  Return a new server for the runner to serve requests.
 
-UrlMappingMatchInfo (aiohttp/web_urldispatcher.py:213-273)
-  extends: AbstractMatchInfo
-  imports: asyncio, base64, hashlib, html, inspect
-  called_by: Resource, StaticResource
-  raises: RuntimeError
+main (aiohttp/web.py:501-565)
+  sig: main(argv)
+  behavior: BRANCH(args.path and args.hostname i... -> None, else -> args.hostname or 'l...)
+  calls: run_app
+  uses: ArgumentParser (argparse)
 
-DynamicResource (aiohttp/web_urldispatcher.py:402-472)
-  extends: Resource
-  attrs: GOOD='[^{}/]+'
-  imports: asyncio, base64, hashlib, html, inspect
-  calls: _quote_path, _requote_path, _unquote_path_safe
-  called_by: add_resource, UrlDispatcher
-  raises: ValueError
+server (aiohttp/web_runner.py:269-270)
 
-BaseRequest (aiohttp/web_request.py:109-823)
-  extends: HeadersMixin
-  imports: asyncio, io, socket, string, tempfile
-  calls: _etag_values, _if_match_or_none_impl, get_extra_info, multipart, read, text, FileField
-  raises: RuntimeError, ValueError, HTTPUnsupportedMediaType, HTTPBadRequest
-  uses: ETag (helpers), MultipartReader (multipart), HTTPRequestEntityTooLarge (web_exceptions), HTTPUnsupportedMediaType (web_exceptions)
+main (examples/fake_server.py:98-117)
+  calls: start, stop, FakeFacebook, FakeResolver
+  uses: TCPConnector (aiohttp), ClientSession (aiohttp)
 
-Resource (aiohttp/web_urldispatcher.py:308-357)
-  extends: AbstractResource
-  imports: asyncio, base64, hashlib, html, inspect
-  calls: register_route, ResourceRoute, UrlMappingMatchInfo
-  raises: RuntimeError
+aiohttp_server (aiohttp/pytest_plugin.py:296-321)
+  Factory to create a TestServer instance, given an app.
+  sig: aiohttp_server(loop)
+  uses: TestServer (test_utils)
 
-RoutesView (aiohttp/web_urldispatcher.py:948-962)
-  extends: Sized
-  imports: asyncio, base64, hashlib, html, inspect
-  called_by: routes, UrlDispatcher
+WebSocketDataQueue (aiohttp/_websocket/reader_c.py:60-138)
+  WebSocketDataQueue resumes and pauses an underlying stream.
+  imports: asyncio, builtins, base_protocol, compression_utils, helpers
+  calls: _read_from_buffer, _release_waiter, set_exception
+  raises: EofStream
 
-ResourcesView (aiohttp/web_urldispatcher.py:934-945)
-  extends: Sized
-  imports: asyncio, base64, hashlib, html, inspect
-  called_by: resources, UrlDispatcher
+WebSocketDataQueue (aiohttp/_websocket/reader_py.py:60-138)
+  WebSocketDataQueue resumes and pauses an underlying stream.
+  imports: asyncio, builtins, base_protocol, compression_utils, helpers
+  calls: _read_from_buffer, _release_waiter, set_exception
+  raises: EofStream
 
-CleanupError (aiohttp/web_app.py:403-406)
-  extends: RuntimeError
-  imports: asyncio, logging, warnings, aiosignal, frozenlist
-  called_by: _on_cleanup, CleanupContext
+WebSocketWriter (aiohttp/_websocket/writer.py:40-262)
+  WebSocket writer.
+  imports: asyncio, random, base_protocol, client_exceptions, compression_utils
+  calls: _get_compressor, _send_compressed_frame_async_locked, _send_compressed_frame_sync, _write_websocket_frame, send_frame
+  raises: ClientConnectionResetError
+  uses: ZLibCompressor (compression_utils), PACK_LEN1 (helpers), ClientConnectionResetError (client_exceptions), PACK_RANDBITS (helpers)
 
-PlainResource (aiohttp/web_urldispatcher.py:362-399)
-  extends: Resource
-  imports: asyncio, base64, hashlib, html, inspect
-  called_by: add_resource, UrlDispatcher
+pytest_pyfunc_call (aiohttp/pytest_plugin.py:212-231)
+  Run coroutines in an event loop instead of a normal function call.
+  sig: pytest_pyfunc_call(pyfuncitem)
+  calls: _passthrough_loop_context, _runtime_warning_context
 
-SystemRoute (aiohttp/web_urldispatcher.py:885-912)
-  extends: AbstractRoute
-  imports: asyncio, base64, hashlib, html, inspect
-  called_by: MatchInfoError
-  raises: RuntimeError
+__call__ (aiohttp/formdata.py:163-167)
+  behavior: BRANCH(self._is_multipart -> return self._gen_form..., else -> return self._...)
+  calls: _gen_form_data, _gen_form_urlencoded
 
-PrefixedSubAppResource (aiohttp/web_urldispatcher.py:707-748)
-  extends: PrefixResource
-  imports: asyncio, base64, hashlib, html, inspect
-  calls: _add_prefix_to_resources, index_resource, resources, routes, unindex_resource, add_app
-  raises: RuntimeError
+__call__ (aiohttp/tracing.py:41-41)
 
-StreamResponse (aiohttp/web_response.py:74-532)
-  extends: HeadersMixin, CookieMixin
-  imports: asyncio, enum, math, warnings, concurrent.futures
-  calls: _generate_content_type_header, _prepare_headers, _set_status, _start_compression, _write_headers, drain, enable_compression, write
-  raises: RuntimeError, ValueError, TypeError
+__call__ (aiohttp/pytest_plugin.py:42-48)
+  sig: __call__(__param)
 
-Response (aiohttp/web_response.py:535-740)
-  extends: StreamResponse
-  imports: asyncio, enum, math, warnings, concurrent.futures
-  calls: write
-  called_by: json_bytes_response, json_response
-  raises: RuntimeError, ValueError, TypeError
+__call__ (aiohttp/typedefs.py:38-40)
+  sig: __call__(request, handler)
 
-BaseSite (aiohttp/web_runner.py:47-78)
-  extends: ABC
-  imports: asyncio, signal, socket, yarl, http_parser
-  calls: _check_site, _reg_site, _unreg_site
-  raises: RuntimeError
+__call__ (aiohttp/helpers.py:641-646)
+  behavior: ACCUMULATE(self._callbacks loop -> result)
 
-RouteDef (aiohttp/web_routedef.py:46-67)
-  extends: AbstractRouteDef
-  imports: typedefs, web_request, web_response, web_urldispatcher
-  called_by: inner, RouteTableDef
+__call__ (aiohttp/payload.py:75-77)
+  sig: __call__(factory)
+  calls: register_payload
 
-View (aiohttp/web_urldispatcher.py:915-931)
-  extends: AbstractView
-  imports: asyncio, base64, hashlib, html, inspect
-  calls: method, __await__, _iter, _raise_allowed_methods
-  raises: HTTPMethodNotAllowed
-  uses: HTTPMethodNotAllowed (web_exceptions)
+__call__ (aiohttp/pytest_plugin.py:58-64)
+  sig: __call__(handler)
 
-AbstractResource (aiohttp/web_urldispatcher.py:101-145)
-  extends: Sized
-  imports: asyncio, base64, hashlib, html, inspect
+__call__ (aiohttp/pytest_plugin.py:34-40)
+  sig: __call__(__param)
 
-AbstractRoute (aiohttp/web_urldispatcher.py:148-210)
-  extends: ABC
-  imports: asyncio, base64, hashlib, html, inspect
-  raises: ValueError, TypeError
+__call__ (aiohttp/pytest_plugin.py:52-54)
+  sig: __call__(app)
 
 -- GAPS
 type: RELATIONAL (answerable from L2-L3 structure)
-coverage: 80 symbols in L3, 0 with behavior annotations
-uncovered: Application, Server, ServerRunner, aiohttp_raw_server
+coverage: 80 symbols in L3, 11 with behavior annotations
+uncovered: __call__, ServerFingerprintMismatch, __call__, __call__

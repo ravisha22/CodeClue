@@ -135,25 +135,14 @@ RequestsWarning (src/requests/exceptions.py:143-144)
   extends: Warning
   imports: urllib3.exceptions, compat
 
+__init__ (src/requests/exceptions.py:18-25)
+  Initialize RequestException with `request` and `response` objects.
+
 MockResponse (src/requests/cookies.py:103-121)
   Wraps a `httplib.HTTPMessage` to mimic a `urllib.addinfourl`.
   imports: calendar, copy, compat, threading, dummy_threading
   calls: getheaders
   called_by: extract_cookies_to_jar
-
-get_unicode_from_response (src/requests/utils.py:578-614)
-  Returns the requested content back in unicode.
-  sig: get_unicode_from_response(r)
-  calls: get_encoding_from_headers
-
-handle_redirect (src/requests/auth.py:236-239)
-  Reset num_401_calls counter on redirects.
-  sig: handle_redirect(r)
-
-stream_decode_response_unicode (src/requests/utils.py:551-565)
-  Stream decodes an iterator.
-  sig: stream_decode_response_unicode(iterator, r)
-  behavior: ACCUMULATE(iterator loop -> result)
 
 RequestsCookieJar (src/requests/cookies.py:176-437)
   Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
@@ -163,18 +152,6 @@ RequestsCookieJar (src/requests/cookies.py:176-437)
   called_by: copy, cookiejar_from_dict
   raises: KeyError, CookieConflictError
 
-CaseInsensitiveDict (src/requests/structures.py:13-80)
-  A case-insensitive ``dict``-like object.
-  extends: MutableMapping
-  imports: compat
-  calls: lower_items
-  called_by: __eq__, copy
-
-RequestsDependencyWarning (src/requests/exceptions.py:151-152)
-  An imported dependency doesn't match the expected version range.
-  extends: RequestsWarning
-  imports: urllib3.exceptions, compat
-
 iter_content (src/requests/models.py:801-857)
   Iterates over the response data.
   sig: iter_content(chunk_size, decode_unicode)
@@ -183,23 +160,17 @@ iter_content (src/requests/models.py:801-857)
   raises: StreamConsumedError, TypeError, ChunkedEncodingError, ContentDecodingError
   uses: StreamConsumedError (exceptions), ChunkedEncodingError (exceptions), ContentDecodingError (exceptions), ConnectionError (exceptions)
 
-extract_cookies_to_jar (src/requests/cookies.py:124-137)
-  Extract the cookies from the response into a CookieJar.
-  sig: extract_cookies_to_jar(jar, request, response)
-  calls: MockRequest, MockResponse
-
-copy (src/requests/cookies.py:428-433)
-  Return a copy of this RequestsCookieJar.
-  calls: get_policy, update, RequestsCookieJar
-  called_by: __getstate__, update, RequestsCookieJar, _copy_cookie_jar
-
-__init__ (src/requests/exceptions.py:18-25)
-  Initialize RequestException with `request` and `response` objects.
-
 json (src/requests/models.py:949-982)
   Decodes the JSON response body (if any) as a Python object.
   raises: RequestsJSONDecodeError
   uses: RequestsJSONDecodeError (exceptions)
+
+MockRequest (src/requests/cookies.py:23-100)
+  Wraps a `requests.Request` to mimic a `urllib2.Request`.
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: get_host, get_origin_req_host, is_unverifiable, get
+  called_by: extract_cookies_to_jar, get_cookie_header
+  raises: NotImplementedError
 
 Session (src/requests/sessions.py:356-818)
   A Requests session.
@@ -210,6 +181,11 @@ Session (src/requests/sessions.py:356-818)
   raises: InvalidSchema, ValueError
   uses: InvalidSchema (exceptions), PreparedRequest (models), RequestsCookieJar (cookies), Request (models)
 
+extract_cookies_to_jar (src/requests/cookies.py:124-137)
+  Extract the cookies from the response into a CookieJar.
+  sig: extract_cookies_to_jar(jar, request, response)
+  calls: MockRequest, MockResponse
+
 resolve_redirects (src/requests/sessions.py:160-280)
   Receives a Response.
   sig: resolve_redirects(resp, req, stream, timeout, verify...)
@@ -219,12 +195,10 @@ resolve_redirects (src/requests/sessions.py:160-280)
   raises: TooManyRedirects
   uses: TooManyRedirects (exceptions)
 
-MockRequest (src/requests/cookies.py:23-100)
-  Wraps a `requests.Request` to mimic a `urllib2.Request`.
-  imports: calendar, copy, compat, threading, dummy_threading
-  calls: get_host, get_origin_req_host, is_unverifiable, get
-  called_by: extract_cookies_to_jar, get_cookie_header
-  raises: NotImplementedError
+copy (src/requests/cookies.py:428-433)
+  Return a copy of this RequestsCookieJar.
+  calls: get_policy, update, RequestsCookieJar
+  called_by: __getstate__, update, RequestsCookieJar, _copy_cookie_jar
 
 merge_hooks (src/requests/sessions.py:92-104)
   Properly merges both requests and session hooks.
@@ -236,22 +210,6 @@ get_redirect_target (src/requests/sessions.py:108-126)
   Receives a Response.
   sig: get_redirect_target(resp)
   called_by: resolve_redirects, SessionRedirectMixin
-
-__iter__ (src/requests/models.py:752-754)
-  Allows you to use a response as an iterator.
-  behavior: DELEGATE(iter_content -> result)
-  calls: iter_content
-
-content (src/requests/models.py:893-909)
-  Content of the response, in bytes.
-  calls: iter_content
-  raises: RuntimeError
-
-iter_lines (src/requests/models.py:859-890)
-  Iterates over the response data, one line at a time.
-  sig: iter_lines(chunk_size, decode_unicode, delimiter)
-  behavior: ACCUMULATE(self.iter_content(chu... -> chunk)
-  calls: iter_content
 
 FileModeWarning (src/requests/exceptions.py:147-148)
   A file was opened in text mode, but Requests determined its binary length.
@@ -272,11 +230,21 @@ __init__ (src/requests/cookies.py:110-115)
   Make a MockResponse for `cookiejar` to read.
   sig: __init__(headers)
 
+__iter__ (src/requests/models.py:752-754)
+  Allows you to use a response as an iterator.
+  behavior: DELEGATE(iter_content -> result)
+  calls: iter_content
+
 _find (src/requests/cookies.py:366-384)
   Requests uses this method internally to get cookie values.
   sig: _find(name, domain, path)
   behavior: ACCUMULATE(iter(self) loop -> result)
   raises: KeyError
+
+content (src/requests/models.py:893-909)
+  Content of the response, in bytes.
+  calls: iter_content
+  raises: RuntimeError
 
 default_headers (src/requests/utils.py:887-898)
   :rtype: requests.structures.CaseInsensitiveDict
@@ -295,16 +263,48 @@ is_permanent_redirect (src/requests/models.py:779-784)
 is_redirect (src/requests/models.py:772-776)
   True if this Response is a well-formed HTTP redirect that could have
 
+iter_lines (src/requests/models.py:859-890)
+  Iterates over the response data, one line at a time.
+  sig: iter_lines(chunk_size, decode_unicode, delimiter)
+  behavior: ACCUMULATE(self.iter_content(chu... -> chunk)
+  calls: iter_content
+
 links (src/requests/models.py:985-999)
   Returns the parsed header links of the response, if any.
 
 text (src/requests/models.py:912-947)
   Content of the response, in unicode.
 
+get_unicode_from_response (src/requests/utils.py:578-614)
+  Returns the requested content back in unicode.
+  sig: get_unicode_from_response(r)
+  calls: get_encoding_from_headers
+
+handle_redirect (src/requests/auth.py:236-239)
+  Reset num_401_calls counter on redirects.
+  sig: handle_redirect(r)
+
+stream_decode_response_unicode (src/requests/utils.py:551-565)
+  Stream decodes an iterator.
+  sig: stream_decode_response_unicode(iterator, r)
+  behavior: ACCUMULATE(iterator loop -> result)
+
+CaseInsensitiveDict (src/requests/structures.py:13-80)
+  A case-insensitive ``dict``-like object.
+  extends: MutableMapping
+  imports: compat
+  calls: lower_items
+  called_by: __eq__, copy
+
+RequestsDependencyWarning (src/requests/exceptions.py:151-152)
+  An imported dependency doesn't match the expected version range.
+  extends: RequestsWarning
+  imports: urllib3.exceptions, compat
+
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 23 with behavior annotations
-uncovered: lower_items, set, set_cookie, cookiejar_from_dict
+coverage: 80 symbols in L3, 27 with behavior annotations
+uncovered: merge_cookies, SOCKSProxyManager, __contains__, __exit__
 drill: src/requests/adapters.py (~33 lines, build_response)
 drill: src/requests/exceptions.py (~10 lines, __init__)
 drill: src/requests/auth.py (~39 lines, handle_401)

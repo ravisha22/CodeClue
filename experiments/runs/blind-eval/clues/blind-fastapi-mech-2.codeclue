@@ -1,0 +1,312 @@
+=CC v2.1 fastapi@HEAD 1118mod 5241sym
+? How does FastAPI turn raised exceptions and validation failures into HTTP responses?
+
+
+-- TREE
+docs_src/  (454 files)
+  additional_responses/  additional_status_codes/  advanced_middleware/  app_testing/  async_tests/  authentication_error_status_code/  background_tasks/  behind_a_proxy/  bigger_applications/  body/  ...+66
+fastapi/  (48 files)
+  _compat/  dependencies/  middleware/  openapi/  security/
+scripts/  (35 files)
+tests/  (581 files)
+  benchmarks/  test_modules_same_name_body/  test_request_params/  test_tutorial/  test_validate_response_recursive/
+
+-- INDEX
+docs_src/additional_responses/__init__.py         0L  
+docs_src/additional_responses/tutorial001_py310.py    22L  Item, Message, read_item
+docs_src/additional_responses/tutorial002_py310.py    28L  Item, read_item
+docs_src/additional_responses/tutorial003_py310.py    37L  Item, Message, read_item
+docs_src/additional_responses/tutorial004_py310.py    30L  Item, read_item
+docs_src/additional_status_codes/__init__.py      0L  
+docs_src/additional_status_codes/tutorial001_an_py310.py    25L  upsert_item
+docs_src/additional_status_codes/tutorial001_py310.py    23L  upsert_item
+docs_src/advanced_middleware/__init__.py          0L  
+docs_src/advanced_middleware/tutorial001_py310.py    11L  main
+docs_src/advanced_middleware/tutorial002_py310.py    13L  main
+docs_src/advanced_middleware/tutorial003_py310.py    11L  main
+docs_src/app_testing/__init__.py                  0L  
+docs_src/app_testing/app_a_py310/__init__.py      0L  
+docs_src/app_testing/app_a_py310/main.py          8L  read_main
+docs_src/app_testing/app_a_py310/test_main.py    11L  test_read_main
+docs_src/app_testing/app_b_an_py310/__init__.py     0L  
+docs_src/app_testing/app_b_an_py310/main.py      38L  Item, create_item, read_main
+docs_src/app_testing/app_b_an_py310/test_main.py    65L  test_create_existing_item, test_create_item, test_create_item_bad_token, test_read_item, test_read_item_bad_token
+docs_src/app_testing/app_b_py310/__init__.py      0L  
+  ...and 1098 more modules
+
+-- SYM
+api_route                           M fastapi/routing.py:1415   function api_route
+lenient_issubclass                  M fastapi/_compat/shared.py:47     function lenient_issubclass
+add_api_route                       M fastapi/routing.py:1332   function add_api_route
+_impartial                          M fastapi/dependencies/models.py:25     function _impartial
+_serialize_data                     M fastapi/routing.py:467    function _serialize_data
+get_graphql_response                M scripts/notify_translations.py:198    function get_graphql_response
+read_image                          M docs_src/stream_data/tutorial002_py310.py:12     function read_image
+get_langs                           M scripts/translate.py:36     function get_langs
+get_flat_models_from_model          M fastapi/_compat/v2.py:424    function get_flat_models_from_model
+make_not_authenticated_error        M fastapi/security/api_key.py:29     The WWW-Authenticate header is not standardized...
+get_lang_paths                      M scripts/docs.py:102    function get_lang_paths
+ModelField                          C fastapi/_compat/v2.py:101    class ModelField
+_unwrapped_call                     M fastapi/dependencies/models.py:18     function _unwrapped_call
+get                                 M fastapi/applications.py:1564   Add a *path operation* using an HTTP GET operat...
+_annotation_is_sequence             M fastapi/_compat/shared.py:58     function _annotation_is_sequence
+body                                M docs_src/custom_request_and_route/tutorial001_an_py310.py:10     async_function body
+body                                M docs_src/custom_request_and_route/tutorial001_py310.py:9      async_function body
+get_model_fields                    M fastapi/_compat/v2.py:382    function get_model_fields
+get_flat_models_from_field          M fastapi/_compat/v2.py:449    function get_flat_models_from_field
+get_default                         M fastapi/_compat/v2.py:155    function get_default
+generate_lang_path                  M scripts/translate.py:40     function generate_lang_path
+UserInDB                            C docs_src/security/tutorial003_an_py310.py:41     class UserInDB
+UserInDB                            C docs_src/security/tutorial003_py310.py:39     class UserInDB
+check_api_key                       M fastapi/security/api_key.py:45     function check_api_key
+make_not_authenticated_error        M fastapi/security/oauth2.py:401    The OAuth 2 specification doesn't define the ch...
+GzipRequest                         C docs_src/custom_request_and_route/tutorial001_an_py310.py:9      class GzipRequest
+GzipRequest                         C docs_src/custom_request_and_route/tutorial001_py310.py:8      class GzipRequest
+_add_lang_code_to_url               M scripts/doc_parsing_utils.py:279    function _add_lang_code_to_url
+get_flat_models_from_fields         M fastapi/_compat/v2.py:465    function get_flat_models_from_fields
+get_validation_alias                M fastapi/dependencies/utils.py:1052   function get_validation_alias
+iter_all_en_paths                   M scripts/translate.py:151    Iterate on the markdown files to translate in o...
+generate_en_path                    M scripts/translate.py:50     function generate_en_path
+EnFile                              C scripts/mkdocs_hooks.py:48     class EnFile
+make_not_authenticated_error        M fastapi/security/http.py:87     function make_not_authenticated_error
+_serialize_item                     M fastapi/routing.py:620    function _serialize_item
+_annotation_is_complex              M fastapi/_compat/shared.py:80     function _annotation_is_complex
+_serialize_sse_item                 M fastapi/routing.py:496    function _serialize_sse_item
+get                                 M fastapi/routing.py:1827   Add a *path operation* using an HTTP GET operat...
+APIWebSocketRoute                   C fastapi/routing.py:765    class APIWebSocketRoute
+_regenerate_error_with_loc          M fastapi/_compat/v2.py:473    function _regenerate_error_with_loc
+asdict                              M fastapi/_compat/v2.py:87     function asdict
+get_en_config                       M scripts/docs.py:98     function get_en_config
+get_graphql_response                M scripts/sponsors.py:92     function get_graphql_response
+_AsyncLiftContextManager            C fastapi/routing.py:165    Wraps a synchronous context manager to make it ...
+User                                C docs_src/graphql_/tutorial001_py310.py:7      class User
+_format_endpoint_context            M fastapi/exceptions.py:193    function _format_endpoint_context
+make_not_authenticated_error        M fastapi/security/open_id_connect_url.py:80     function make_not_authenticated_error
+add_permalinks_page                 M scripts/docs.py:650    Add or update header permalinks in specific pag...
+get_llm_translatable                M scripts/translate.py:212    function get_llm_translatable
+CodeIncludeInfo                     C scripts/doc_parsing_utils.py:37     class CodeIncludeInfo
+iter_en_paths_to_translate          M scripts/translate.py:175    function iter_en_paths_to_translate
+get_graphql_response                M scripts/contributors.py:121    function get_graphql_response
+get_flat_models_from_annotation     M fastapi/_compat/v2.py:433    function get_flat_models_from_annotation
+list_removable                      M scripts/translate.py:272    function list_removable
+resolve_file                        M scripts/mkdocs_hooks.py:63     function resolve_file
+User                                C docs_src/security/tutorial002_an_py310.py:12     class User
+User                                C docs_src/security/tutorial002_py310.py:10     class User
+get_user                            M docs_src/security/tutorial003_an_py310.py:45     function get_user
+get_user                            M docs_src/security/tutorial003_py310.py:43     function get_user
+remove_header_permalinks            M scripts/docs.py:196    function remove_header_permalinks
+UserInDB                            C docs_src/security/tutorial004_an_py310.py:45     class UserInDB
+UserInDB                            C docs_src/security/tutorial004_py310.py:44     class UserInDB
+UserInDB                            C docs_src/security/tutorial005_an_py310.py:57     class UserInDB
+UserInDB                            C docs_src/security/tutorial005_py310.py:56     class UserInDB
+__init__                            M scripts/docs.py:72     function __init__
+translate_page                      M scripts/translate.py:61     function translate_page
+field_annotation_is_sequence        M fastapi/_compat/shared.py:64     function field_annotation_is_sequence
+field_annotation_is_complex         M fastapi/_compat/shared.py:88     function field_annotation_is_complex
+add_event_handler                   M fastapi/routing.py:4901   Add an event handler function for startup or sh...
+HTMLLinkAttribute                   C scripts/doc_parsing_utils.py:58     class HTMLLinkAttribute
+update_languages                    M scripts/docs.py:275    Update the mkdocs.yml file Languages section in...
+process_one_page                    M scripts/translation_fixer.py:65     Fix one translated document by comparing it to ...
+get_request_handler                 M fastapi/routing.py:347    function get_request_handler
+  ...and 1368 more symbols
+
+-- FOCUS
+RequestValidationError (fastapi/exceptions.py:212-221)
+  extends: ValidationException
+  imports: annotated_doc, pydantic, starlette.exceptions
+
+ResponseValidationError (fastapi/exceptions.py:234-243)
+  extends: ValidationException
+  imports: annotated_doc, pydantic, starlette.exceptions
+
+ValidationException (fastapi/exceptions.py:174-209)
+  extends: Exception
+  imports: annotated_doc, pydantic, starlette.exceptions
+  calls: _format_endpoint_context
+
+WebSocketRequestValidationError (fastapi/exceptions.py:224-231)
+  extends: ValidationException
+  imports: annotated_doc, pydantic, starlette.exceptions
+
+http_exception_handler (fastapi/exception_handlers.py:11-17)
+  sig: http_exception_handler(request, exc)
+  uses: JSONResponse (starlette.responses), Response (starlette.responses)
+
+request_validation_exception_handler (fastapi/exception_handlers.py:20-26)
+  sig: request_validation_exception_handler(request, exc)
+  behavior: DELEGATE(JSONResponse -> result)
+  uses: JSONResponse (starlette.responses)
+
+get_validation_alias (fastapi/dependencies/utils.py:1052-1054)
+  sig: get_validation_alias(field)
+  called_by: _extract_form_body, _get_multidict_value, request_body_to_args, request_params_to_args
+
+validation_alias (fastapi/_compat/v2.py:113-117)
+
+websocket_request_validation_exception_handler (fastapi/exception_handlers.py:29-34)
+  sig: websocket_request_validation_exception_handler(websocket, exc)
+
+custom_http_exception_handler (docs_src/handling_errors/tutorial006_py310.py:13-15)
+  sig: custom_http_exception_handler(request, exc)
+  behavior: DELEGATE(http_exception_handler -> result)
+
+http_exception_handler (docs_src/handling_errors/tutorial004_py310.py:10-11)
+  sig: http_exception_handler(request, exc)
+  behavior: DELEGATE(PlainTextResponse -> result)
+  uses: PlainTextResponse (fastapi.responses)
+
+validation_exception_handler (docs_src/handling_errors/tutorial005_py310.py:11-15)
+  sig: validation_exception_handler(request, exc)
+  behavior: DELEGATE(JSONResponse -> result)
+  uses: JSONResponse (fastapi.responses)
+
+validation_exception_handler (docs_src/handling_errors/tutorial006_py310.py:19-21)
+  sig: validation_exception_handler(request, exc)
+  behavior: DELEGATE(request_validation_exception_handler -> result)
+
+validation_exception_handler (docs_src/handling_errors/tutorial004_py310.py:15-19)
+  sig: validation_exception_handler(request, exc)
+  behavior: ACCUMULATE(exc.errors() loop -> message)
+  uses: PlainTextResponse (fastapi.responses)
+
+ValidationErrorLoggingRoute (docs_src/custom_request_and_route/tutorial002_py310.py:8-20)
+  extends: APIRoute
+  imports: fastapi, fastapi.exceptions, fastapi.routing
+  calls: get_route_handler
+  raises: HTTPException
+  uses: HTTPException (fastapi)
+
+ValidationErrorLoggingRoute (docs_src/custom_request_and_route/tutorial002_an_py310.py:9-21)
+  extends: APIRoute
+  imports: fastapi, fastapi.exceptions, fastapi.routing
+  calls: get_route_handler
+  raises: HTTPException
+  uses: HTTPException (fastapi)
+
+redirect_fastapi (docs_src/custom_response/tutorial006b_py310.py:8-9)
+
+HTTPBasic (fastapi/security/http.py:105-219)
+  HTTP Basic authentication.
+  extends: HTTPBase
+  imports: binascii, base64, annotated_doc, fastapi.exceptions, fastapi.openapi.models
+  calls: make_not_authenticated_error, HTTPBasicCredentials
+  raises: make_not_authenticated_error
+  uses: HTTPException (fastapi.exceptions)
+
+HTTPAuthorizationCredentials (fastapi/security/http.py:29-66)
+  The HTTP authorization credentials in the result of using `HTTPBearer` or
+  extends: BaseModel
+  imports: binascii, base64, annotated_doc, fastapi.exceptions, fastapi.openapi.models
+  called_by: HTTPBase, HTTPBearer, HTTPDigest
+
+HTTPBearer (fastapi/security/http.py:222-316)
+  HTTP Bearer token authentication.
+  extends: HTTPBase
+  imports: binascii, base64, annotated_doc, fastapi.exceptions, fastapi.openapi.models
+  calls: HTTPAuthorizationCredentials, make_not_authenticated_error
+  raises: make_not_authenticated_error
+  uses: HTTPException (fastapi.exceptions)
+
+HTTPDigest (fastapi/security/http.py:319-417)
+  HTTP Digest authentication.
+  extends: HTTPBase
+  imports: binascii, base64, annotated_doc, fastapi.exceptions, fastapi.openapi.models
+  calls: HTTPAuthorizationCredentials, make_not_authenticated_error
+  raises: make_not_authenticated_error
+  uses: HTTPException (fastapi.exceptions)
+
+HTTPBasicCredentials (fastapi/security/http.py:16-26)
+  The HTTP Basic credentials given as the result of using `HTTPBasic` in a
+  extends: BaseModel
+  imports: binascii, base64, annotated_doc, fastapi.exceptions, fastapi.openapi.models
+  called_by: HTTPBasic
+
+HTTPException (fastapi/exceptions.py:17-83)
+  An HTTP exception you can raise in your own code to show errors to the client.
+  extends: StarletteHTTPException
+  imports: annotated_doc, pydantic, starlette.exceptions
+
+FastAPI (fastapi/applications.py:45-4693)
+  `FastAPI` app class, the main entrypoint to use FastAPI.
+  extends: Starlette
+  imports: enum, annotated_doc, fastapi, fastapi.datastructures, fastapi.exception_handlers
+  calls: __call__, add_api_route, add_api_websocket_route, delete, get, head, include_router, on_event
+  uses: Default (fastapi.datastructures), Doc (annotated_doc), JSONResponse (starlette.responses)
+
+get (fastapi/routing.py:1827-2204)
+  Add a *path operation* using an HTTP GET operation.
+  sig: get(path)
+  behavior: DELEGATE(api_route -> result)
+  calls: api_route
+  called_by: APIRoute, get_request_handler, get_websocket_app
+  uses: Default (fastapi.datastructures), Doc (annotated_doc)
+
+get (fastapi/applications.py:1564-1937)
+  Add a *path operation* using an HTTP GET operation.
+  sig: get(path)
+  behavior: DELEGATE(router.get -> result)
+  called_by: redoc_html, swagger_ui_html, setup, FastAPI
+  uses: Default (fastapi.datastructures), Doc (annotated_doc)
+
+delete (fastapi/routing.py:2968-3345)
+  Add a *path operation* using an HTTP DELETE operation.
+  sig: delete(path)
+  behavior: DELEGATE(api_route -> result)
+  calls: api_route
+  uses: Default (fastapi.datastructures), Doc (annotated_doc)
+
+delete (fastapi/applications.py:2693-3066)
+  Add a *path operation* using an HTTP DELETE operation.
+  sig: delete(path)
+  behavior: DELEGATE(router.delete -> result)
+  called_by: FastAPI
+  uses: Default (fastapi.datastructures), Doc (annotated_doc)
+
+head (fastapi/routing.py:3722-4104)
+  Add a *path operation* using an HTTP HEAD operation.
+  sig: head(path)
+  behavior: DELEGATE(api_route -> result)
+  calls: api_route
+  uses: Default (fastapi.datastructures), Doc (annotated_doc)
+
+head (fastapi/applications.py:3439-3812)
+  Add a *path operation* using an HTTP HEAD operation.
+  sig: head(path)
+  behavior: DELEGATE(router.head -> result)
+  called_by: FastAPI
+  uses: Default (fastapi.datastructures), Doc (annotated_doc)
+
+options (fastapi/routing.py:3345-3722)
+  Add a *path operation* using an HTTP OPTIONS operation.
+  sig: options(path)
+  behavior: DELEGATE(api_route -> result)
+  calls: api_route
+  uses: Default (fastapi.datastructures), Doc (annotated_doc)
+
+options (fastapi/applications.py:3066-3439)
+  Add a *path operation* using an HTTP OPTIONS operation.
+  sig: options(path)
+  behavior: DELEGATE(router.options -> result)
+  called_by: FastAPI
+  uses: Default (fastapi.datastructures), Doc (annotated_doc)
+
+patch (fastapi/routing.py:4104-4486)
+  Add a *path operation* using an HTTP PATCH operation.
+  sig: patch(path)
+  behavior: DELEGATE(api_route -> result)
+  calls: api_route
+  uses: Default (fastapi.datastructures), Doc (annotated_doc)
+
+patch (fastapi/applications.py:3812-4190)
+  Add a *path operation* using an HTTP PATCH operation.
+  sig: patch(path)
+  behavior: DELEGATE(router.patch -> result)
+  called_by: FastAPI
+  uses: Default (fastapi.datastructures), Doc (annotated_doc)
+
+-- GAPS
+type: MECHANISTIC (body logic needed for full answer)
+coverage: 80 symbols in L3, 36 with behavior annotations
+uncovered: DependencyScopeError, EndpointContext, ORJSONResponse, PydanticV1NotSupportedError
+drill: fastapi/dependencies/utils.py (~3 lines, get_validation_alias)
+drill: fastapi/exception_handlers.py (~9 lines, http_exception_handler)
