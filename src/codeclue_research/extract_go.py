@@ -76,6 +76,31 @@ def _clean_go_expr(expr: str) -> str:
     return expr
 
 
+def _compact_go_text(text: str) -> str:
+    return " ".join(text.split())
+
+
+def _truncate_go_text(text: str, max_len: int) -> str:
+    compact = _compact_go_text(text)
+    if len(compact) <= max_len:
+        return compact
+    return compact[: max_len - 3].rstrip() + "..."
+
+
+def _go_pattern_text(prefix: str, detail: str, *, max_len: int = 80) -> str:
+    text = f"{prefix}({detail})"
+    if len(text) <= max_len:
+        return text
+    return f"{prefix}({_truncate_go_text(detail, max_len - len(prefix) - 2)})"
+
+
+def _go_action_text(expr: str, *, max_len: int = 24) -> str:
+    raw = _compact_go_text(expr.strip())
+    if not raw:
+        return "result"
+    return _truncate_go_text(raw, max_len)
+
+
 def _go_ref_summary(expr: str, *, source: bool = False) -> str:
     cleaned = _clean_go_expr(expr)
     tokens = re.findall(r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*", cleaned)
@@ -220,6 +245,24 @@ def _find_go_accumulate_target(lines: list[str], start_idx: int) -> str:
     return "result"
 
 
+def _go_loop_label(lines: list[str], start_idx: int) -> str:
+    block_lines, _ = _collect_go_block_lines(lines, start_idx)
+    for line in block_lines[1:]:
+        match = re.search(r"([A-Za-z_][A-Za-z0-9_\.]*)\s*\(", line)
+        if match:
+            return _truncate_go_text(f"{match.group(1).split('.')[-1]} loop", 24)
+    return "loop"
+
+
+def _go_loop_raise(lines: list[str], start_idx: int) -> str:
+    block_lines, _ = _collect_go_block_lines(lines, start_idx)
+    for line in block_lines[1:]:
+        match = re.search(r"panic\s*\(([^)]*)\)", line)
+        if match:
+            return _truncate_go_text(match.group(1), 20)
+    return ""
+
+
 def _extract_go_behavior_patterns(body: str) -> list[str]:
     patterns: list[str] = []
     if not body:
@@ -270,29 +313,51 @@ def _extract_go_behavior_patterns(body: str) -> list[str]:
         branch_idx, branch_cond = first_branch
         block_lines, end_idx = _collect_go_block_lines(raw_lines, branch_idx)
         true_action_expr = _first_go_terminal_action(block_lines[1:])
-        false_action_expr = _find_next_go_terminal_action(raw_lines, end_idx + 1)
-        has_branch_else = has_else_branch and bool(false_action_expr)
+        branch_window = "\n".join(raw_lines[branch_idx: min(len(raw_lines), end_idx + 6)])
+        branch_match = re.search(
+            r"(?s)if\s+(.+?)\s*\{\s*(return\b.*?|panic\b.*?)\s*\}\s*else\s*\{\s*(return\b.*?|panic\b.*?)\s*\}",
+            branch_window,
+        )
+        false_action_expr = branch_match.group(3).strip() if branch_match else ""
+        else_idx = end_idx
+        current_line = _strip_go_line_comment(raw_lines[end_idx]).strip() if end_idx < len(raw_lines) else ""
+        if "} else" not in current_line and not false_action_expr:
+            else_idx = end_idx + 1
+            while else_idx < len(raw_lines) and not _strip_go_line_comment(raw_lines[else_idx]).strip():
+                else_idx += 1
+        if else_idx < len(raw_lines) and not false_action_expr:
+            else_line = _strip_go_line_comment(raw_lines[else_idx]).strip()
+            if else_line.startswith("else") or else_line.startswith("} else"):
+                false_action_expr = _find_next_go_terminal_action(raw_lines, else_idx + 1)
+        has_branch_else = bool(false_action_expr)
         if true_action_expr and not has_branch_else:
-            guard_condition = _summarize_go_condition(branch_cond)
-            guard_action = _summarize_go_action(true_action_expr, branch_cond)
-            patterns.append(f"GUARD({guard_condition} -> {guard_action})")
+            guard_condition = _truncate_go_text(branch_cond, 48)
+            guard_action = _go_action_text(true_action_expr, max_len=22)
+            patterns.append(_go_pattern_text("GUARD", f"{guard_condition} -> {guard_action}"))
         if true_action_expr and has_branch_else:
-            cond = _summarize_go_condition(branch_cond)
-            true_action = _summarize_go_action(true_action_expr, branch_cond)
-            false_action = _summarize_go_action(false_action_expr, branch_cond)
-            patterns.append(f"BRANCH({cond} -> {true_action}, else -> {false_action})")
+            cond = _truncate_go_text(branch_match.group(1), 28) if branch_match else _truncate_go_text(branch_cond, 28)
+            true_expr = branch_match.group(2).strip() if branch_match else true_action_expr
+            true_action = _go_action_text(true_expr, max_len=22)
+            false_action = _go_action_text(false_action_expr, max_len=22)
+            patterns.append(_go_pattern_text("BRANCH", f"{cond} -> {true_action}, else -> {false_action}"))
 
     if len(top_level_conditions) >= 2 and top_level_return_count >= 2:
         sources = [_summarize_go_condition(cond) for cond in top_level_conditions[:3]]
         if has_else_branch:
             sources.append("default")
-        patterns.append(f"PRECEDENCE({' -> '.join(dict.fromkeys(sources))})")
+        patterns.append(_go_pattern_text("PRECEDENCE", " -> ".join(dict.fromkeys(sources))))
 
     if delegate_callee and top_level_return_count == 1:
         patterns.append(f"DELEGATE({delegate_callee} -> result)")
 
     if loop_idx is not None:
-        patterns.append(f"ACCUMULATE(loop -> {_find_go_accumulate_target(raw_lines, loop_idx)})")
+        loop_label = _go_loop_label(raw_lines, loop_idx)
+        target = _find_go_accumulate_target(raw_lines, loop_idx).replace("_", " ")
+        raise_name = _go_loop_raise(raw_lines, loop_idx)
+        detail = f"{loop_label} -> {target}"
+        if raise_name:
+            detail += f", raises {raise_name}"
+        patterns.append(_go_pattern_text("ACCUMULATE", detail))
 
     if has_defer:
         patterns.append("UNWIND(defer)")

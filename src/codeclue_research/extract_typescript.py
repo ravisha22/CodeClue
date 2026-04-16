@@ -64,6 +64,31 @@ def _clean_ts_expr(expr: str) -> str:
     return expr.strip(" {}();")
 
 
+def _compact_ts_text(text: str) -> str:
+    return " ".join(text.split())
+
+
+def _truncate_ts_text(text: str, max_len: int) -> str:
+    compact = _compact_ts_text(text)
+    if len(compact) <= max_len:
+        return compact
+    return compact[: max_len - 3].rstrip() + "..."
+
+
+def _ts_pattern_text(prefix: str, detail: str, *, max_len: int = 80) -> str:
+    text = f"{prefix}({detail})"
+    if len(text) <= max_len:
+        return text
+    return f"{prefix}({_truncate_ts_text(detail, max_len - len(prefix) - 2)})"
+
+
+def _ts_action_text(expr: str, *, max_len: int = 24) -> str:
+    raw = _compact_ts_text(expr.strip())
+    if not raw:
+        return "result"
+    return _truncate_ts_text(raw, max_len)
+
+
 def _ts_ref_summary(expr: str, *, source: bool = False) -> str:
     cleaned = _clean_ts_expr(expr)
     tokens = re.findall(r"[$A-Za-z_][$A-Za-z0-9_]*(?:\.[$A-Za-z_][$A-Za-z0-9_]*)*", cleaned)
@@ -141,9 +166,9 @@ def _extract_ts_behavior_patterns(body: str) -> list[str]:
 
     guard_match = re.search(r"(?s)if\s*\(([^)]*)\)\s*\{\s*([^{}]*return\b[^{};]*;?)\s*\}(?!\s*else\b)", body)
     if guard_match:
-        guard_condition = _summarize_ts_condition(guard_match.group(1))
-        guard_action = _summarize_ts_action(guard_match.group(2), guard_match.group(1))
-        patterns.append(f"GUARD({guard_condition} -> {guard_action})")
+        guard_condition = _truncate_ts_text(guard_match.group(1), 48)
+        guard_action = _ts_action_text(guard_match.group(2), max_len=22)
+        patterns.append(_ts_pattern_text("GUARD", f"{guard_condition} -> {guard_action}"))
 
     switch_match = re.search(r"\bswitch\s*\(([^)]*)\)", body)
     if switch_match:
@@ -154,17 +179,17 @@ def _extract_ts_behavior_patterns(body: str) -> list[str]:
         sources = [_summarize_ts_condition(cond) for cond in chain_matches[:3]]
         if re.search(r"\belse\s*\{", body):
             sources.append("default")
-        patterns.append(f"PRECEDENCE({' -> '.join(dict.fromkeys(sources))})")
+        patterns.append(_ts_pattern_text("PRECEDENCE", " -> ".join(dict.fromkeys(sources))))
 
     branch_match = re.search(
         r"(?s)if\s*\(([^)]*)\)\s*\{\s*([^{}]*return\b[^{};]*;?)\s*\}\s*else\s*\{\s*([^{}]*return\b[^{};]*;?)\s*\}",
         body,
     )
     if branch_match:
-        cond = _summarize_ts_condition(branch_match.group(1))
-        true_action = _summarize_ts_action(branch_match.group(2), branch_match.group(1))
-        false_action = _summarize_ts_action(branch_match.group(3), branch_match.group(1))
-        patterns.append(f"BRANCH({cond} -> {true_action}, else -> {false_action})")
+        cond = _truncate_ts_text(branch_match.group(1), 28)
+        true_action = _ts_action_text(branch_match.group(2), max_len=18)
+        false_action = _ts_action_text(branch_match.group(3), max_len=18)
+        patterns.append(_ts_pattern_text("BRANCH", f"{cond} -> {true_action}, else -> {false_action}"))
 
     delegate_match = re.search(r"(?m)^\s*return\s+(?:await\s+)?([$A-Za-z_][$A-Za-z0-9_\.]*)\s*\(", body)
     if delegate_match and len(re.findall(r"\breturn\b", body)) == 1:
@@ -176,7 +201,13 @@ def _extract_ts_behavior_patterns(body: str) -> list[str]:
             body,
         )
         target = next((group for group in acc_match.groups() if group), "result") if acc_match else "result"
-        patterns.append(f"ACCUMULATE(loop -> {target.replace('.', '_')[:24]})")
+        loop_call = re.search(r"([$A-Za-z_][$A-Za-z0-9_\.]*)\s*\(", body)
+        loop_label = f"{loop_call.group(1).split('.')[-1]} loop" if loop_call else "loop"
+        throw_match = re.search(r"\bthrow\s+([^;]+)", body)
+        detail = f"{_truncate_ts_text(loop_label, 24)} -> {target.replace('.', ' ')[:24]}"
+        if throw_match:
+            detail += f", raises {_truncate_ts_text(throw_match.group(1), 18)}"
+        patterns.append(_ts_pattern_text("ACCUMULATE", detail))
 
     if ".map(" in body:
         patterns.append("TRANSFORM(map)")

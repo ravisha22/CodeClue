@@ -94,6 +94,34 @@ def _clip_summary(text: str, *, max_parts: int = 4, max_len: int = 32) -> str:
     return normalized or "value"
 
 
+def _compact_text(text: str) -> str:
+    return " ".join(text.split())
+
+
+def _truncate_text(text: str, max_len: int) -> str:
+    compact = _compact_text(text)
+    if len(compact) <= max_len:
+        return compact
+    return compact[: max_len - 3].rstrip() + "..."
+
+
+def _pattern_text(prefix: str, detail: str, *, max_len: int = 80) -> str:
+    text = f"{prefix}({detail})"
+    if len(text) <= max_len:
+        return text
+    return f"{prefix}({_truncate_text(detail, max_len - len(prefix) - 2)})"
+
+
+def _expr_text(node: ast.AST | None, *, max_len: int = 60) -> str:
+    if node is None:
+        return "condition"
+    try:
+        text = ast.unparse(node)
+    except Exception:
+        text = _reference_summary(node)
+    return _truncate_text(text, max_len)
+
+
 def _literal_summary(node: ast.AST | None) -> str:
     if isinstance(node, ast.Constant):
         if node.value is None:
@@ -240,6 +268,23 @@ def _find_terminal_action(stmts: list[ast.stmt]) -> ast.stmt | None:
     return None
 
 
+def _terminal_action_text(stmts: list[ast.stmt], *, max_len: int = 28) -> str:
+    action = _find_terminal_action(stmts)
+    if isinstance(action, ast.Return):
+        if action.value is None:
+            return "return"
+        return _truncate_text(f"return {ast.unparse(action.value)}", max_len)
+    if isinstance(action, ast.Raise):
+        exc = ast.unparse(action.exc) if action.exc is not None else "Exception"
+        return _truncate_text(f"raise {exc}", max_len)
+    for stmt in stmts:
+        if isinstance(stmt, ast.Expr):
+            return _truncate_text(ast.unparse(stmt.value), max_len)
+        if isinstance(stmt, ast.Assign):
+            return _truncate_text(ast.unparse(stmt.value), max_len)
+    return "result"
+
+
 def _summarize_action(stmts: list[ast.stmt], context: ast.AST | None = None) -> str:
     action = _find_terminal_action(stmts)
     context_hints = set(_identifier_hints(context))
@@ -308,6 +353,28 @@ def _extract_accumulator_target(loop: ast.stmt) -> str:
         if isinstance(child, ast.Call) and isinstance(child.func, ast.Attribute) and child.func.attr in {"append", "extend", "update", "add", "write"}:
             return _clip_summary(_reference_summary(child.func.value).replace(".", "_"), max_parts=4, max_len=24)
     return "result"
+
+
+def _loop_label(loop: ast.stmt) -> str:
+    if isinstance(loop, (ast.For, ast.AsyncFor)):
+        return _truncate_text(f"{ast.unparse(loop.iter)} loop", 24)
+    if isinstance(loop, ast.While):
+        for child in ast.walk(loop):
+            if isinstance(child, ast.Call):
+                return _truncate_text(f"{_reference_summary(child.func)} loop", 24)
+        return _truncate_text(f"{_expr_text(loop.test, max_len=18)} loop", 24)
+    return "loop"
+
+
+def _loop_raises(loop: ast.stmt) -> str:
+    for child in ast.walk(loop):
+        if isinstance(child, ast.Raise):
+            exc = child.exc
+            if isinstance(exc, ast.Call):
+                return _truncate_text(_reference_summary(exc.func), 20)
+            if exc is not None:
+                return _truncate_text(_reference_summary(exc), 20)
+    return ""
 
 
 def _guarded_name(test: ast.AST | None) -> str:
@@ -381,9 +448,9 @@ def _extract_behavior_patterns(node: ast.FunctionDef | ast.AsyncFunctionDef) -> 
 
     first_stmt = body[0]
     if isinstance(first_stmt, ast.If) and _is_early_exit(first_stmt) and not first_stmt.orelse and len(body) > 1:
-        guard_condition = _summarize_condition(first_stmt.test)
-        guard_action = _summarize_action(first_stmt.body, first_stmt.test)
-        patterns.append(f"GUARD({guard_condition} -> {guard_action})")
+        guard_condition = _expr_text(first_stmt.test)
+        guard_action = _terminal_action_text(first_stmt.body)
+        patterns.append(_pattern_text("GUARD", f"{guard_condition} -> {guard_action}"))
 
     if_chain: list[ast.If] = []
     cursor = body[0] if isinstance(body[0], ast.If) else None
@@ -403,11 +470,11 @@ def _extract_behavior_patterns(node: ast.FunctionDef | ast.AsyncFunctionDef) -> 
                     sources.append("raise")
                 else:
                     sources.append("default")
-            patterns.append(f"PRECEDENCE({' -> '.join(list(dict.fromkeys(sources))[:4])})")
+            patterns.append(_pattern_text("PRECEDENCE", " -> ".join(list(dict.fromkeys(sources))[:4])))
 
     repeated_if_sources = _extract_repeated_if_precedence(body)
     if len(repeated_if_sources) >= 2:
-        repeated_pattern = f"PRECEDENCE({' -> '.join(repeated_if_sources[:4])})"
+        repeated_pattern = _pattern_text("PRECEDENCE", " -> ".join(repeated_if_sources[:4]))
         if not any(pattern.startswith("PRECEDENCE(") for pattern in patterns):
             patterns.append(repeated_pattern)
         else:
@@ -420,10 +487,10 @@ def _extract_behavior_patterns(node: ast.FunctionDef | ast.AsyncFunctionDef) -> 
 
     for stmt in body:
         if isinstance(stmt, ast.If) and stmt.orelse and not (len(stmt.orelse) == 1 and isinstance(stmt.orelse[0], ast.If)):
-            test_summary = _summarize_condition(stmt.test)
-            true_action = _summarize_action(stmt.body, stmt.test)
-            false_action = _summarize_action(stmt.orelse, stmt.test)
-            patterns.append(f"BRANCH({test_summary} -> {true_action}, else -> {false_action})")
+            test_summary = _expr_text(stmt.test, max_len=32)
+            true_action = _terminal_action_text(stmt.body, max_len=24)
+            false_action = _terminal_action_text(stmt.orelse, max_len=24)
+            patterns.append(_pattern_text("BRANCH", f"{test_summary} -> {true_action}, else -> {false_action}"))
             break
 
     simple_body = [stmt for stmt in body if not isinstance(stmt, ast.Expr)]
@@ -440,7 +507,13 @@ def _extract_behavior_patterns(node: ast.FunctionDef | ast.AsyncFunctionDef) -> 
 
     for stmt in body:
         if isinstance(stmt, (ast.For, ast.AsyncFor, ast.While)):
-            patterns.append(f"ACCUMULATE(loop -> {_extract_accumulator_target(stmt)})")
+            target = _extract_accumulator_target(stmt).replace("_", " ")
+            loop_label = _loop_label(stmt)
+            raise_name = _loop_raises(stmt)
+            detail = f"{loop_label} -> {target}"
+            if raise_name:
+                detail += f", raises {raise_name}"
+            patterns.append(_pattern_text("ACCUMULATE", detail))
             break
 
     for stmt in ast.walk(node):

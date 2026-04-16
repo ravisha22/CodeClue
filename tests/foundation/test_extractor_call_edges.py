@@ -631,3 +631,71 @@ def test_ts_extractor_captures_property_access_uses(tmp_path: Path):
     )
     uses = parse_node.semantic_contract.get("uses", [])
     assert "obj._zod.def" in uses
+
+
+def test_python_behavior_patterns_include_condition_and_actions(tmp_path: Path):
+    _write_fixture(
+        tmp_path,
+        "behavior.py",
+        """\
+        def process(value, chunks):
+            if value is None:
+                raise ValueError("missing")
+            if value == "env":
+                return load_env()
+            else:
+                return load_default()
+            for chunk in chunks:
+                body.append(chunk)
+        """,
+    )
+    nodes, _ = extract_python_nodes_edges(tmp_path)
+    process_node = next(n for n in nodes if n.semantic_contract.get("symbol_name") == "process")
+    patterns = process_node.semantic_contract.get("behavior_patterns", [])
+    assert any("GUARD(value is None" in pattern and "raise ValueError" in pattern for pattern in patterns)
+    assert any("BRANCH(value == 'env'" in pattern and "load_env" in pattern and "load_default" in pattern for pattern in patterns)
+
+
+def test_go_behavior_patterns_include_richer_details():
+    body = """\
+    func readBody(err error) {
+        if err != nil {
+            return err
+        } else {
+            return fmt.Errorf("wrap: %w", err)
+        }
+        for {
+            body += chunk
+            panic(EntityTooLarge)
+        }
+    }
+    """
+    patterns = _extract_go_behavior_patterns(body)
+    assert any("BRANCH(err != nil" in pattern and "return err" in pattern and "fmt.Errorf" in pattern for pattern in patterns)
+    assert any("ACCUMULATE(" in pattern and "body" in pattern and "EntityTooLarge" in pattern for pattern in patterns)
+
+
+def test_ts_behavior_patterns_include_richer_details(tmp_path: Path):
+    _write_fixture(
+        tmp_path,
+        "behavior.ts",
+        """\
+        export function choose(opts?: string, envvar?: string) {
+            if (!opts) {
+                return defaultValue;
+            }
+            if (opts) {
+                return opts;
+            } else if (envvar) {
+                return envvar;
+            } else {
+                return defaultValue;
+            }
+        }
+        """,
+    )
+    nodes, _ = extract_typescript_nodes_edges(tmp_path)
+    choose_node = next(n for n in nodes if n.semantic_contract.get("symbol_name") == "choose")
+    patterns = choose_node.semantic_contract.get("behavior_patterns", [])
+    assert any("GUARD(!opts" in pattern and "return defaultValue" in pattern for pattern in patterns)
+    assert any(pattern.startswith("PRECEDENCE(") and "opts" in pattern and "envvar" in pattern for pattern in patterns)

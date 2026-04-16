@@ -29,6 +29,7 @@ from codeclue_research.clue_view_mrlf import (
     _render_gaps,
     _extract_question_keywords,
     _select_focus_nodes,
+    _classify_question_type,
     _word_count,
     render_mrlf,
     generate_detail_store,
@@ -335,6 +336,37 @@ class TestL3:
         words = _word_count(result)
         assert words < 150  # generous margin
 
+    def test_question_entity_expansion_matches_symbol_names(self):
+        graph = CanonicalClueGraph(
+            metadata={"schema_version": "2.0"},
+            repository={"name": "entity-expansion", "root_path": "."},
+            nodes=[
+                _make_node("module:src/request.py", "module", "src/request.py", symbol_name="src/request.py"),
+                _make_node(
+                    "sym:req:request_entry",
+                    "function",
+                    "src/request.py",
+                    symbol_name="request_entry",
+                    purpose="Main request workflow",
+                ),
+                _make_node(
+                    "sym:req:BaseRequest.post",
+                    "function",
+                    "src/request.py",
+                    symbol_name="BaseRequest.post",
+                    purpose="function helper",
+                ),
+            ],
+            edges=[
+                _make_edge("contains", "module:src/request.py", "sym:req:request_entry"),
+                _make_edge("contains", "module:src/request.py", "sym:req:BaseRequest.post"),
+                _make_edge("calls", "sym:req:request_entry", "sym:req:BaseRequest.post"),
+            ],
+        )
+        focus = _select_focus_nodes(graph, "How does post cleanup work?")
+        focus_names = {n.semantic_contract.get("symbol_name", "") for n in focus}
+        assert "BaseRequest.post" in focus_names
+
     def test_semantic_anchor_beats_lexical_neighbor(self):
         graph = CanonicalClueGraph(
             metadata={"schema_version": "2.0"},
@@ -404,6 +436,26 @@ class TestGaps:
         result = _render_gaps(graph, "How is Flask connected to Config?", focus, l2)
         assert "relational" in result.lower()
 
+    def test_classifier_prefers_mechanistic_for_behavior_verbs(self):
+        graph = _make_small_graph()
+        l2 = [n for n in graph.nodes if n.node_type != "module"]
+        focus = _select_focus_nodes(graph, "How does Config.from_file handle fallback precedence?")
+        assert _classify_question_type(
+            "How does Config.from_file handle fallback precedence?",
+            focus,
+            l2,
+        ) == "MECHANISTIC"
+
+    def test_classifier_marks_default_behavior_as_mechanistic(self):
+        graph = _make_small_graph()
+        l2 = [n for n in graph.nodes if n.node_type != "module"]
+        focus = _select_focus_nodes(graph, "What is the default behavior when Config.from_file fails?")
+        assert _classify_question_type(
+            "What is the default behavior when Config.from_file fails?",
+            focus,
+            l2,
+        ) == "MECHANISTIC"
+
     def test_drill_targets_rank_relevant_symbols_first(self):
         graph = _make_small_graph()
         route_node = _make_node(
@@ -428,6 +480,34 @@ class TestGaps:
         drills = [line for line in result.splitlines() if line.startswith("drill:")]
         assert drills
         assert "route_match" in drills[0]
+
+    def test_gaps_reports_uncovered_expanded_candidates(self):
+        nodes = [_make_node("module:src/chain.py", "module", "src/chain.py", symbol_name="src/chain.py")]
+        edges = []
+        for idx in range(25):
+            sym_id = f"sym:chain:func{idx:03d}"
+            nodes.append(
+                _make_node(
+                    sym_id,
+                    "function",
+                    "src/chain.py",
+                    symbol_name=f"func{idx:03d}",
+                    purpose="function helper",
+                )
+            )
+            edges.append(_make_edge("contains", "module:src/chain.py", sym_id))
+            if idx and idx != 12:
+                edges.append(_make_edge("calls", "sym:chain:func012", sym_id))
+        graph = CanonicalClueGraph(
+            metadata={"schema_version": "2.0"},
+            repository={"name": "chain", "root_path": "."},
+            nodes=nodes,
+            edges=edges,
+        )
+        focus = _select_focus_nodes(graph, "How does func012 fail over?")[:20]
+        l2 = [n for n in graph.nodes if n.node_type != "module"]
+        result = _render_gaps(graph, "How does func012 fail over?", focus, l2)
+        assert "uncovered:" in result.lower()
 
     def test_drill_targets_prefer_call_chain_before_large_irrelevant_body(self):
         matcher = _make_node(

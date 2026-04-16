@@ -26,6 +26,7 @@ from __future__ import annotations
 import json
 import re
 from collections import defaultdict
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -541,13 +542,104 @@ def _betweenness_centrality(
     return bc
 
 
-def _select_focus_nodes(
+@dataclass
+class _FocusSelection:
+    selected_nodes: list[Node]
+    ranked_candidate_ids: list[str]
+    expanded_candidate_ids: list[str]
+
+
+def _extract_question_entities(question: str, keywords: set[str]) -> set[str]:
+    entities = set(keywords)
+    q = question.lower()
+    for dotted in re.findall(r"[a-zA-Z_]\w*(?:\.[a-zA-Z_]\w*)+", question):
+        entities.add(dotted.lower())
+        entities.update(_split_compound_words(dotted))
+    for phrase in (
+        "error handler",
+        "default behavior",
+        "edge case",
+        "what happens",
+    ):
+        if phrase in q:
+            entities.add(phrase)
+    operation_clusters = [
+        (
+            {"json", "multipart", "upload", "uploads", "form", "forms", "payload", "body"},
+            {"post", "read", "json", "multipart", "baserequest.post", "baserequest.read", "baserequest.json"},
+        ),
+        (
+            {"restart", "routing", "route", "routes", "dispatch", "404", "405", "method"},
+            {"restartrouting", "next", "match", "defaultctx.restartrouting", "app.next", "app.nextcustom"},
+        ),
+        (
+            {"cleanup", "teardown", "shutdown", "error", "fallback", "default"},
+            {"cleanup", "handle_error", "error_handler"},
+        ),
+    ]
+    for triggers, expansions in operation_clusters:
+        if triggers & entities or any(trigger in q for trigger in triggers):
+            entities.update(expansions)
+    return {entity for entity in entities if entity}
+
+
+def _question_entity_overlap(node: Node, question_entities: set[str]) -> float:
+    if not question_entities:
+        return 0.0
+    sc = node.semantic_contract or {}
+    symbol_name = sc.get("symbol_name", node.node_id)
+    lower_name = symbol_name.lower()
+    name_tokens = _split_compound_words(symbol_name)
+    if not name_tokens and lower_name:
+        name_tokens = set(re.findall(r"[a-z0-9]{3,}", lower_name))
+    best = 0.0
+    for entity in question_entities:
+        if "." in entity and entity in lower_name:
+            best = max(best, 1.4)
+            continue
+        if " " in entity:
+            phrase_tokens = set(entity.split())
+            if phrase_tokens:
+                overlap = len(phrase_tokens & name_tokens) / len(phrase_tokens)
+                if overlap:
+                    best = max(best, 0.8 + 0.4 * overlap)
+            continue
+        if entity in name_tokens:
+            best = max(best, 1.0)
+        elif entity in lower_name:
+            best = max(best, 0.75)
+    return best
+
+
+def _question_has_mechanistic_signals(question: str) -> bool:
+    q = question.lower()
+    mechanistic_signals = (
+        r"\bhow does\b",
+        r"\bwhat happens\b",
+        r"\bhow .* handle\b",
+        r"\bprecedence\b",
+        r"\berror\b",
+        r"\bwhen .* fails?\b",
+        r"\bedge case\b",
+        r"\binternally\b",
+        r"\bdefault behavior\b",
+        r"\bfallback\b",
+        r"\bcleanup\b",
+        r"\bteardown\b",
+        r"\bstep by step\b",
+        r"\bunder the hood\b",
+    )
+    return any(re.search(pattern, q) for pattern in mechanistic_signals)
+
+
+def _analyze_focus_selection(
     graph: CanonicalClueGraph,
     question: str,
     budget: int = BUDGET_L3,
-) -> list[Node]:
-    """Select task-relevant nodes via semantic anchoring and structure."""
+) -> _FocusSelection:
+    """Select and rank task-relevant nodes, retaining expanded candidates for GAPS."""
     keywords = _extract_question_keywords(question)
+    question_entities = _extract_question_entities(question, keywords)
     node_by_id = {n.node_id: n for n in graph.nodes}
     symbol_nodes = [
         node for node in graph.nodes
@@ -555,7 +647,7 @@ def _select_focus_nodes(
     ]
     soft_cap = max(20, min(80, budget // 25 if budget > 0 else 80))
 
-    def _fallback_nodes() -> list[Node]:
+    def _fallback_nodes() -> _FocusSelection:
         call_edges = [(e.from_node, e.to_node) for e in graph.edges if e.edge_type == "calls"]
         ranks = _pagerank([n.node_id for n in symbol_nodes], call_edges)
         ordered = sorted(
@@ -566,7 +658,8 @@ def _select_focus_nodes(
                 node.semantic_contract.get("symbol_name", node.node_id),
             ),
         )
-        return ordered[:soft_cap]
+        ranked_ids = [node.node_id for node in ordered]
+        return _FocusSelection(ordered[:soft_cap], ranked_ids, ranked_ids[soft_cap:])
 
     if not keywords:
         return _fallback_nodes()
@@ -587,6 +680,7 @@ def _select_focus_nodes(
 
     semantic_scores: dict[str, float] = {}
     lexical_scores: dict[str, float] = {}
+    entity_scores: dict[str, float] = {}
     class_anchors: list[str] = []
     function_anchors: list[str] = []
     for node in symbol_nodes:
@@ -597,8 +691,10 @@ def _select_focus_nodes(
             node.source_anchor.file_path,
             keywords,
         )
+        entity_overlap = _question_entity_overlap(node, question_entities)
         semantic_scores[node.node_id] = overlap
         lexical_scores[node.node_id] = lexical_overlap
+        entity_scores[node.node_id] = entity_overlap
         if overlap > 0:
             if node.node_type == "class":
                 class_anchors.append(node.node_id)
@@ -609,11 +705,24 @@ def _select_focus_nodes(
     anchors = list(semantic_anchors)
     lexical_fallback = False
     lexical_supplements: list[str] = []
+    entity_expansions: list[str] = [
+        node.node_id
+        for node in sorted(
+            symbol_nodes,
+            key=lambda node: (
+                -entity_scores.get(node.node_id, 0.0),
+                -lexical_scores.get(node.node_id, 0.0),
+                0 if node.node_type == "class" else 1,
+                node.semantic_contract.get("symbol_name", node.node_id),
+            ),
+        )
+        if entity_scores.get(node.node_id, 0.0) > 0
+    ][: max(8, min(20, soft_cap // 2))]
     if not anchors:
         lexical_anchors = [
             node.node_id
             for node in symbol_nodes
-            if lexical_scores.get(node.node_id, 0.0) > 0
+            if lexical_scores.get(node.node_id, 0.0) > 0 or entity_scores.get(node.node_id, 0.0) > 0
         ]
         anchors = lexical_anchors[:soft_cap]
         lexical_fallback = bool(anchors)
@@ -623,13 +732,16 @@ def _select_focus_nodes(
             for node in sorted(
                 symbol_nodes,
                 key=lambda node: (
+                    -entity_scores.get(node.node_id, 0.0),
                     -lexical_scores.get(node.node_id, 0.0),
                     0 if node.node_type == "class" else 1,
                     node.semantic_contract.get("symbol_name", node.node_id),
                 ),
             )
-            if lexical_scores.get(node.node_id, 0.0) > 0 and node.node_id not in semantic_anchors
-        ][: max(6, min(16, soft_cap // 4))]
+            if (
+                lexical_scores.get(node.node_id, 0.0) > 0 or entity_scores.get(node.node_id, 0.0) > 0
+            ) and node.node_id not in semantic_anchors
+        ][: max(8, min(20, soft_cap // 3))]
     if not anchors:
         return _fallback_nodes()
 
@@ -641,6 +753,9 @@ def _select_focus_nodes(
     for lexical_id in lexical_supplements:
         candidates.add(lexical_id)
         anchor_tier[lexical_id] = min(anchor_tier.get(lexical_id, 1), 1)
+    for entity_id in entity_expansions:
+        candidates.add(entity_id)
+        anchor_tier[entity_id] = min(anchor_tier.get(entity_id, 1), 1)
     for anchor in list(anchors):
         anchor_node = node_by_id.get(anchor)
         if not anchor_node:
@@ -702,39 +817,82 @@ def _select_focus_nodes(
     relational_focus = bool({
         "inheritance", "inherit", "extends", "extension", "relationship", "relationships", "hierarchy",
     } & keywords)
-    if semantic_anchors:
-        ranked_ids = sorted(
+
+    mechanistic_focus = _question_has_mechanistic_signals(question)
+    priority_entity_ids = [
+        nid
+        for nid in sorted(
             candidate_ids,
             key=lambda nid: (
-                0 if semantic_scores.get(nid, 0.0) > 0 else 1,
-                0 if relational_focus and (node_by_id[nid].semantic_contract or {}).get("bases") else 1,
+                -entity_scores.get(nid, 0.0),
                 anchor_tier.get(nid, 3),
                 -semantic_scores.get(nid, 0.0),
-                -_node_question_relevance(node_by_id[nid], keywords),
-                -anchor_support.get(nid, 0.0),
-                proximity.get(nid, 99),
-                -centrality.get(nid, 0.0),
-                -lexical_scores.get(nid, 0.0),
-                type_priority.get(node_by_id[nid].node_type, 2),
                 node_by_id[nid].semantic_contract.get("symbol_name", node_by_id[nid].node_id),
             ),
         )
-    else:
-        ranked_ids = sorted(
-            candidate_ids,
-            key=lambda nid: (
-                0 if relational_focus and (node_by_id[nid].semantic_contract or {}).get("bases") else 1,
-                anchor_tier.get(nid, 3),
-                -_node_question_relevance(node_by_id[nid], keywords),
-                proximity.get(nid, 99),
-                -anchor_support.get(nid, 0.0),
-                -centrality.get(nid, 0.0),
-                -lexical_scores.get(nid, 0.0),
-                type_priority.get(node_by_id[nid].node_type, 2),
-                node_by_id[nid].semantic_contract.get("symbol_name", node_by_id[nid].node_id),
-            ),
+        if entity_scores.get(nid, 0.0) > 0
+    ][: max(6, min(12, soft_cap // 3))]
+
+    def _rank_key(nid: str, expansion_bonus: float = 0.0) -> tuple:
+        return (
+            0 if (semantic_scores.get(nid, 0.0) > 0 or entity_scores.get(nid, 0.0) > 0) else 1,
+            0 if relational_focus and (node_by_id[nid].semantic_contract or {}).get("bases") else 1,
+            0 if mechanistic_focus and entity_scores.get(nid, 0.0) > 0 else 1,
+            anchor_tier.get(nid, 3),
+            -expansion_bonus,
+            -semantic_scores.get(nid, 0.0),
+            -entity_scores.get(nid, 0.0),
+            -_node_question_relevance(node_by_id[nid], keywords),
+            -anchor_support.get(nid, 0.0),
+            proximity.get(nid, 99),
+            -centrality.get(nid, 0.0),
+            -lexical_scores.get(nid, 0.0),
+            type_priority.get(node_by_id[nid].node_type, 2),
+            node_by_id[nid].semantic_contract.get("symbol_name", node_by_id[nid].node_id),
         )
-    return [node_by_id[nid] for nid in ranked_ids[:soft_cap]]
+
+    ranked_ids = sorted(candidate_ids, key=_rank_key)
+    if mechanistic_focus and priority_entity_ids:
+        ranked_ids = priority_entity_ids + [nid for nid in ranked_ids if nid not in priority_entity_ids]
+
+    if mechanistic_focus and ranked_ids:
+        seed_ids = list(dict.fromkeys(priority_entity_ids + ranked_ids[: max(6, min(12, soft_cap // 2))]))
+        expansion_support: dict[str, float] = defaultdict(float)
+        for seed_id in seed_ids:
+            for neighbor in call_neighbors.get(seed_id, set()):
+                neighbor_node = node_by_id.get(neighbor)
+                if not neighbor_node or neighbor_node.node_type == "module":
+                    continue
+                if _is_test_file(neighbor_node.source_anchor.file_path):
+                    continue
+                candidates.add(neighbor)
+                anchor_tier[neighbor] = min(anchor_tier.get(neighbor, 4), anchor_tier.get(seed_id, 2) + 1)
+                proximity.setdefault(neighbor, proximity.get(seed_id, 0) + 1)
+                expansion_support[neighbor] += max(0.5, _node_question_relevance(node_by_id[seed_id], keywords))
+        if expansion_support:
+            candidate_ids = [nid for nid in candidates if nid in node_by_id]
+            centrality = _betweenness_centrality(candidate_ids, structural_edges)
+            ranked_ids = sorted(
+                candidate_ids,
+                key=lambda nid: _rank_key(nid, expansion_support.get(nid, 0.0)),
+            )
+
+    selected_ids = ranked_ids[:soft_cap]
+    expanded_candidate_ids = [nid for nid in ranked_ids if nid not in selected_ids]
+    return _FocusSelection(
+        selected_nodes=[node_by_id[nid] for nid in selected_ids],
+        ranked_candidate_ids=ranked_ids,
+        expanded_candidate_ids=expanded_candidate_ids,
+    )
+
+
+def _select_focus_nodes(
+    graph: CanonicalClueGraph,
+    question: str,
+    budget: int = BUDGET_L3,
+) -> list[Node]:
+    """Select task-relevant nodes via semantic anchoring and structure."""
+    return _analyze_focus_selection(graph, question, budget=budget).selected_nodes
 
 
 def _render_l3(
@@ -909,6 +1067,19 @@ def _classify_question_type(
     """
     q = question.lower()
     keywords = _extract_question_keywords(question)
+    behavior_verbs = {"handle", "resolve", "convert", "dispatch", "process"}
+    symbolish_reference = bool(re.search(r"[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)+", question))
+    behavior_verb_hit = any(re.search(rf"\b{verb}\b", q) for verb in behavior_verbs)
+    mechanistic_signal = _question_has_mechanistic_signals(question) or any(
+        phrase in q
+        for phrase in (
+            "what happens",
+            "when ",
+            "error",
+            "default behavior",
+            "edge case",
+        )
+    )
 
     relational_signals = [
         "relationship",
@@ -926,39 +1097,26 @@ def _classify_question_type(
         "flow between",
         "used by",
     ]
-    for signal in relational_signals:
-        if re.search(signal, q):
-            return "RELATIONAL"
-
     structural_score = _question_content_overlap(l2_symbols, keywords)
     behavior_score = _question_content_overlap(focus_nodes, keywords, behavior_only=True)
 
-    mechanistic_signals = [
-        "how does",
-        "what happens when",
-        "what does .* actually do",
-        "internally",
-        "under the hood",
-        "precedence",
-        "order of",
-        "step by step",
-        "what logic",
-        "error handling",
-        "cleanup",
-        "teardown",
-        "fallback",
-    ]
-    if any(re.search(signal, q) for signal in mechanistic_signals):
-        if (
-            " work" in q
-            or "internally" in q
-            or "what happens when" in q
-            or behavior_score > 0
-            or structural_score == 0
-        ):
-            return "MECHANISTIC"
+    if mechanistic_signal and (
+        behavior_verb_hit
+        or symbolish_reference
+        or " work" in q
+        or "internally" in q
+        or behavior_score > 0
+        or structural_score == 0
+    ):
+        return "MECHANISTIC"
 
-    if behavior_score > structural_score + 0.05:
+    if behavior_verb_hit and (symbolish_reference or any(word in keywords for word in behavior_verbs)):
+        return "MECHANISTIC"
+
+    if any(re.search(signal, q) for signal in relational_signals):
+        return "RELATIONAL"
+
+    if behavior_score >= structural_score - 0.05:
         return "MECHANISTIC"
 
     return "STRUCTURAL"
@@ -979,6 +1137,7 @@ def _render_gaps(
     3. Costed drill targets (file:lines + estimated size for informed drill-down)
     """
     question_keywords = _extract_question_keywords(question)
+    question_entities = _extract_question_entities(question, question_keywords)
     question_type = _classify_question_type(question, focus_nodes, l2_symbols)
 
     # Count coverage
@@ -1001,6 +1160,25 @@ def _render_gaps(
     # Line 2: coverage
     lines.append(f"coverage: {total_focus} symbols in L3, {with_behavior} with behavior annotations")
 
+    selection = _analyze_focus_selection(graph, question, budget=BUDGET_L3)
+    focus_ids = {node.node_id for node in focus_nodes}
+    node_by_id = {node.node_id: node for node in graph.nodes}
+    candidate_order = {nid: idx for idx, nid in enumerate(selection.ranked_candidate_ids)}
+    uncovered_pool = sorted(
+        (nid for nid in selection.ranked_candidate_ids if nid not in focus_ids),
+        key=lambda nid: (
+            -_question_entity_overlap(node_by_id[nid], question_entities),
+            -_drill_question_overlap(node_by_id[nid], question_keywords),
+            candidate_order[nid],
+        ),
+    )
+    uncovered = [
+        (node_by_id[nid].semantic_contract or {}).get("symbol_name", nid)
+        for nid in uncovered_pool
+    ]
+    if uncovered:
+        lines.append(f"uncovered: {', '.join(uncovered[:4])}")
+
     # Line 3+: drill targets for mechanistic questions.
     # v2.1.1: For MECHANISTIC questions, ALL function-level FOCUS nodes are
     # drill candidates, not just unannotated ones. Behavioral annotations
@@ -1016,7 +1194,6 @@ def _render_gaps(
                 "function", "method", "async_function", "async_method", None
             )
         ]
-        focus_ids = {node.node_id for node in focus_nodes}
         focus_relevance = {
             node.node_id: _drill_question_overlap(node, question_keywords)
             for node in focus_nodes
