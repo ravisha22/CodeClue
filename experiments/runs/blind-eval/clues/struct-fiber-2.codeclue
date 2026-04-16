@@ -76,8 +76,8 @@ Bind.validateStruct                 M bind.go:183    Struct validation.
 SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
 domainMatcher.match                 M domain.go:139    match checks if a hostname matches the domain p...
 Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
-manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
+manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
 isUnixNetwork                       M middleware/adaptor/adaptor.go:208    function isUnixNetwork
 Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...
@@ -109,7 +109,7 @@ redirectionMsg.Msgsize              M redirect_msgp.go:196    Msgsize returns an
 CopyContextToFiberContext (middleware/adaptor/adaptor.go:101-101)
   CopyContextToFiberContext copies the values of context.Context to a fasthttp.RequestCtx.
   sig: CopyContextToFiberContext(src any, requestContext *fasthttp.RequestCtx)
-  behavior: GUARD(requestContext -> none); PRECEDENCE(requestContext -> not_v.IsValid -> t); ACCUMULATE(loop -> result)
+  behavior: GUARD(requestContext == nil -> return); PRECEDENCE(requestContext -> not_v.IsValid -> t); ACCUMULATE(IsNil loop -> result)
   called_by: HTTPMiddleware
 
 HTTPHandlerWithContext (middleware/adaptor/adaptor.go:65-65)
@@ -127,12 +127,27 @@ Ctx (ctx_interface_gen.go:18-18)
 logger (client/hooks.go:345-345)
   logger is a response hook that logs request and response data if debug mode is enabled.
   sig: logger(c *Client, resp *Response, req *Request)
-  behavior: GUARD(not_c.debug -> none)
+  behavior: GUARD(!c.debug -> return nil)
 
 Request.Context (client/request.go:115-115)
   Context returns the context associated with the Request.
-  behavior: GUARD(r -> context.Background)
+  behavior: GUARD(r.ctx == nil -> return context.Back...)
   called_by: Send
+
+FromContext (middleware/session/middleware.go:179-179)
+  FromContext returns the Middleware from the Fiber context.
+  sig: FromContext(ctx any)
+  behavior: GUARD(m, ok := fiber.ValueFromContext[*Middleware](... -> return m)
+
+FromContext (middleware/requestid/requestid.go:79-79)
+  FromContext returns the request ID from context.
+  sig: FromContext(ctx any)
+  behavior: GUARD(rid, ok := fiber.ValueFromContext[string](ctx... -> return rid)
+
+TokenFromContext (middleware/keyauth/keyauth.go:99-99)
+  TokenFromContext returns the bearer token from the request context.
+  sig: TokenFromContext(ctx any)
+  behavior: GUARD(token, ok := fiber.ValueFromContext[string](c... -> return token)
 
 Request.AddFormDataWithMap (client/request.go:507-507)
   AddFormDataWithMap adds multiple form fields and values to the Request.
@@ -154,8 +169,13 @@ Response.setRequest (client/response.go:33-33)
 
 DefaultCtx.RequestID (ctx.go:311-312)
   RequestID returns the request identifier from the response header or request header.
-  behavior: GUARD(requestID -> pass_through)
+  behavior: GUARD(requestID := c.GetRespHeader(HeaderXRequestID... -> return requestID)
   calls: Get, GetRespHeader
+
+ConvertRequest (middleware/adaptor/adaptor.go:89-89)
+  ConvertRequest converts a fiber.Ctx to a http.Request.
+  sig: ConvertRequest(c fiber.Ctx, forServer bool)
+  behavior: GUARD(err := fasthttpadaptor.ConvertRequest(c.Reque... -> return nil, err)
 
 Request (client/request.go:46-46)
   Request contains all data related to an HTTP request.
@@ -173,7 +193,7 @@ Response.Close (client/response.go:208-208)
 LocalContextFromHTTPRequest (middleware/adaptor/adaptor.go:78-78)
   LocalContextFromHTTPRequest extracts the Fiber user context previously stored into r.Context() by the adaptor.
   sig: LocalContextFromHTTPRequest(r *http.Request)
-  behavior: GUARD(r -> pass_through)
+  behavior: GUARD(r == nil -> return nil, false)
   called_by: HTTPHandlerWithContext
 
 Client.AddRequestHook (client/client.go:146-146)
@@ -192,41 +212,21 @@ Client.RequestHook (client/client.go:141-141)
 Client.ResponseHook (client/client.go:155-155)
   ResponseHook returns the user-defined response hooks.
 
-WithStruct (client/request.go:24-24)
-  WithStruct is implemented by types that allow data to be stored from a struct via reflection.
-
 response (middleware/idempotency/response.go:9-9)
   response is a struct that represents the response of a request.
-
-ConvertRequest (middleware/adaptor/adaptor.go:89-89)
-  ConvertRequest converts a fiber.Ctx to a http.Request.
-  sig: ConvertRequest(c fiber.Ctx, forServer bool)
-  behavior: GUARD(err -> pass_through)
-
-FromContext (middleware/session/middleware.go:179-179)
-  FromContext returns the Middleware from the Fiber context.
-  sig: FromContext(ctx any)
-  behavior: GUARD(m -> pass_through)
-
-FromContext (middleware/requestid/requestid.go:79-79)
-  FromContext returns the request ID from context.
-  sig: FromContext(ctx any)
-  behavior: GUARD(rid -> pass_through)
 
 FromContext (middleware/paginate/paginate.go:92-92)
   FromContext returns the PageInfo from the request context.
   sig: FromContext(ctx any)
 
-TokenFromContext (middleware/keyauth/keyauth.go:99-99)
-  TokenFromContext returns the bearer token from the request context.
-  sig: TokenFromContext(ctx any)
-  behavior: GUARD(token -> pass_through)
-
 parserRequestHeader (client/hooks.go:122-122)
   parserRequestHeader merges client and request headers, and sets headers automatically based on the request data.
   sig: parserRequestHeader(c *Client, req *Request)
-  behavior: PRECEDENCE(c -> req); ACCUMULATE(loop -> result); DISPATCH(req)
+  behavior: PRECEDENCE(c -> req); ACCUMULATE(AddBytesKV loop -> result); DISPATCH(req)
   calls: unsafeRandString
+
+WithStruct (client/request.go:24-24)
+  WithStruct is implemented by types that allow data to be stored from a struct via reflection.
 
 Bind (bind.go:40-40)
   Bind provides helper methods for binding request data to Go values.
@@ -236,7 +236,7 @@ Bind (bind.go:40-40)
 core.execute (client/core.go:209-209)
   execute runs all hooks, applies timeouts, sends the request, and runs response hooks.
   sig: core.execute(ctx context.Context, client *Client, req *Request)
-  behavior: GUARD(err -> pass_through); PRECEDENCE(err -> cancel)
+  behavior: GUARD(err := c.preHooks(); err != nil -> return nil, err); PRECEDENCE(err -> cancel)
   calls: afterHooks, execFunc, preHooks, timeout
 
 core.execFunc (client/core.go:74-74)
@@ -257,7 +257,7 @@ NewWithCustomCtx (app.go:667-667)
 DefaultRes.Render (res.go:691-691)
   Render a template with data and sends a text/html response.
   sig: DefaultRes.Render(name string, bind any, layouts ...string)
-  behavior: PRECEDENCE(bind -> not_rendered); ACCUMULATE(loop -> result); UNWIND(defer)
+  behavior: PRECEDENCE(bind -> not_rendered); ACCUMULATE(Contains loop -> result); UNWIND(defer)
   calls: Get, OriginalURL, renderExtensions
 
 DefaultRes.SendString (res.go:997-997)
@@ -286,17 +286,10 @@ Client.DoDeadline (client/client.go:85-85)
   sig: Client.DoDeadline(req *fasthttp.Request, resp *fasthttp.Response, deadline...)
   behavior: DELEGATE(c.transport.DoDeadline -> result)
 
-Client.DoTimeout (client/client.go:79-79)
-  DoTimeout executes the request and waits for a response up to the provided timeout.
-  sig: Client.DoTimeout(req *fasthttp.Request, resp *fasthttp.Response, timeout ...)
-  behavior: DELEGATE(c.transport.DoTimeout -> result)
-
-DefaultCtx.Reset (ctx.go:662-662)
-  Reset is a method to reset context fields by given request when to use server handlers.
-  sig: DefaultCtx.Reset(fctx *fasthttp.RequestCtx)
-  calls: configDependentPaths
-  called_by: String
-
 -- GAPS
-type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 44 with behavior annotations
+type: MECHANISTIC (body logic needed for full answer)
+coverage: 80 symbols in L3, 47 with behavior annotations
+uncovered: App.next, App.nextCustom, Client.StreamResponseBody, Response.StatusCode
+drill: middleware/adaptor/adaptor.go (~1 lines, CopyContextToFiberContext)
+drill: middleware/adaptor/adaptor.go (~1 lines, HTTPHandlerWithContext)
+drill: helpers.go (~1 lines, StoreInContext)

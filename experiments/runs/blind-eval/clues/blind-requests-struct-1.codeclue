@@ -109,7 +109,7 @@ build_connection_pool_key_attributes M src/requests/adapters.py:374    Build the
 build_response (src/requests/adapters.py:337-372)
   Builds a :class:`Response <requests.Response>` object from a urllib3
   sig: build_response(req, resp)
-  behavior: BRANCH(isinstance_bytes -> result, else -> result)
+  behavior: BRANCH(isinstance(req.url, bytes) -> req.url.decode('utf-8'), else -> req.url)
   called_by: HTTPAdapter
   uses: Response (models), CaseInsensitiveDict (structures)
 
@@ -149,48 +149,6 @@ prepare_request (src/requests/sessions.py:459-500)
   calls: merge_hooks, merge_setting
   called_by: request, Session
   uses: PreparedRequest (models), RequestsCookieJar (cookies)
-
-delete (src/requests/api.py:148-157)
-  Sends a DELETE request.
-  sig: delete(url)
-  behavior: DELEGATE(request -> result)
-  calls: request
-
-get (src/requests/api.py:62-73)
-  Sends a GET request.
-  sig: get(url, params)
-  behavior: DELEGATE(request -> result)
-  calls: request
-
-head (src/requests/api.py:88-100)
-  Sends a HEAD request.
-  sig: head(url)
-  behavior: DELEGATE(request -> result)
-  calls: request
-
-options (src/requests/api.py:76-85)
-  Sends an OPTIONS request.
-  sig: options(url)
-  behavior: DELEGATE(request -> result)
-  calls: request
-
-patch (src/requests/api.py:133-145)
-  Sends a PATCH request.
-  sig: patch(url, data)
-  behavior: DELEGATE(request -> result)
-  calls: request
-
-post (src/requests/api.py:103-115)
-  Sends a POST request.
-  sig: post(url, data, json)
-  behavior: DELEGATE(request -> result)
-  calls: request
-
-put (src/requests/api.py:118-130)
-  Sends a PUT request.
-  sig: put(url, data)
-  behavior: DELEGATE(request -> result)
-  calls: request
 
 session (src/requests/sessions.py:821-833)
   Returns a :class:`Session` for context-management.
@@ -248,6 +206,53 @@ request_url (src/requests/adapters.py:524-554)
   sig: request_url(request, proxies)
   called_by: HTTPAdapter
 
+RequestsWarning (src/requests/exceptions.py:143-144)
+  Base warning for Requests.
+  extends: Warning
+  imports: urllib3.exceptions, compat
+
+delete (src/requests/api.py:148-157)
+  Sends a DELETE request.
+  sig: delete(url)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+get (src/requests/api.py:62-73)
+  Sends a GET request.
+  sig: get(url, params)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+head (src/requests/api.py:88-100)
+  Sends a HEAD request.
+  sig: head(url)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+options (src/requests/api.py:76-85)
+  Sends an OPTIONS request.
+  sig: options(url)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+patch (src/requests/api.py:133-145)
+  Sends a PATCH request.
+  sig: patch(url, data)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+post (src/requests/api.py:103-115)
+  Sends a POST request.
+  sig: post(url, data, json)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
+put (src/requests/api.py:118-130)
+  Sends a PUT request.
+  sig: put(url, data)
+  behavior: DELEGATE(request -> result)
+  calls: request
+
 get (src/requests/sessions.py:595-604)
   Sends a GET request.
   sig: get(url)
@@ -294,7 +299,7 @@ put (src/requests/sessions.py:641-651)
 _encode_files (src/requests/models.py:139-205)
   Build the body for a multipart/form-data request.
   sig: _encode_files(files, data)
-  behavior: ACCUMULATE(loop -> new_fields)
+  behavior: ACCUMULATE(fields loop -> new fields)
   called_by: prepare_body, PreparedRequest
   raises: ValueError
   uses: RequestField (urllib3.fields)
@@ -307,7 +312,7 @@ json (src/requests/models.py:949-982)
 resolve_redirects (src/requests/sessions.py:160-280)
   Receives a Response.
   sig: resolve_redirects(resp, req, stream, timeout, verify...)
-  behavior: ACCUMULATE(loop -> hist)
+  behavior: ACCUMULATE(req.copy loop -> hist, raises TooManyRedirects)
   calls: close, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies
   called_by: send, Session
   raises: TooManyRedirects
@@ -315,4 +320,5 @@ resolve_redirects (src/requests/sessions.py:160-280)
 
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 29 with behavior annotations
+coverage: 80 symbols in L3, 28 with behavior annotations
+uncovered: RequestsDependencyWarning, build_connection_pool_key_attributes, generate, HTTPAdapter

@@ -297,29 +297,30 @@ FileResponse (aiohttp/web_fileresponse.py:79-406)
   raises: ConnectionResetError
   uses: S_ISREG (stat)
 
-ContentCoding (aiohttp/web_response.py:57-64)
-  extends: Enum
-  attrs: deflate='deflate', gzip='gzip', identity='identity'
-  imports: asyncio, enum, math, warnings, concurrent.futures
-
 _FileResponseResult (aiohttp/web_fileresponse.py:61-67)
   The result of the file response.
   extends: Enum
   imports: asyncio, io, enum, mimetypes, stat
 
-ZLibDecompressor (aiohttp/compression_utils.py:258-285)
-  extends: DecompressionBaseHandler
-  imports: asyncio, zlib, concurrent.futures, brotlicffi, compression.zstd
-  calls: ZLibBackendWrapper, encoding_to_mode
+IOBasePayload (aiohttp/payload.py:452-714)
+  extends: Payload
+  imports: asyncio, enum, io, mimetypes, warnings
+  calls: _read_all, _set_or_restore_start_position, _should_stop_writing, set_content_disposition
 
-TimerNoop (aiohttp/helpers.py:657-670)
-  extends: BaseTimerContext
-  imports: asyncio, base64, binascii, enum, inspect
-  called_by: timer, TimeoutHandle
+HTTPNotExtended (aiohttp/web_exceptions.py:495-496)
+  extends: HTTPServerError
+  attrs: status_code=510
+  imports: warnings, http, multidict, yarl, helpers
+
+HTTPRequestEntityTooLarge (aiohttp/web_exceptions.py:366-375)
+  extends: HTTPClientError
+  attrs: status_code=413
+  imports: warnings, http, multidict, yarl, helpers
 
 -- GAPS
 type: RELATIONAL (answerable from L2-L3 structure)
 coverage: 80 symbols in L3, 0 with behavior annotations
+uncovered: _BaseRequestContextManager, BaseConnector, ClientWebSocketResponse, BaseKey
 
 --- CLUE FILE END ---
 

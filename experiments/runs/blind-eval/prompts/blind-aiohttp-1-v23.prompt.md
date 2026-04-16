@@ -128,7 +128,7 @@ _write_chunked_payload              M aiohttp/http_writer.py:124    Write a chun
 _update_body_from_data (aiohttp/client_reqrep.py:1137-1180)
   Update request body from data.
   sig: _update_body_from_data(body)
-  behavior: BRANCH(isinstance_FormData -> result, else -> result); ACCUMULATE(loop -> result)
+  behavior: BRANCH(isinstance(body, FormData) -> body(), else -> result); ACCUMULATE(body.headers.items()... -> result)
   calls: body
   called_by: _update_body, ClientRequest
   uses: FormData (formdata)
@@ -139,7 +139,7 @@ json (aiohttp/multipart.py:467-473)
 
 read (aiohttp/multipart.py:304-322)
   Reads body part data.
-  behavior: ACCUMULATE(loop -> data)
+  behavior: ACCUMULATE(data.extend loop -> data)
   calls: decode_iter, read_chunk
   called_by: _read_chunk_from_length, _read_chunk_from_stream, form, json, read_chunk, text, BodyPartReader
 
@@ -163,10 +163,17 @@ multipart (aiohttp/web_request.py:673-680)
 append_payload (aiohttp/multipart.py:963-999)
   Adds a new body part to multipart writer.
   sig: append_payload(payload)
-  behavior: BRANCH(is_form_data -> result, else -> raise_RuntimeError)
+  behavior: BRANCH(self._is_form_data -> result, else -> raise RuntimeError(f'...)
   calls: append
   called_by: append, append_form, append_json, MultipartWriter
   raises: RuntimeError
+
+_load_json_data (aiohttp/cookiejar.py:164-195)
+  Load cookies from parsed JSON data.
+  sig: _load_json_data(data)
+  behavior: ACCUMULATE(data.items() loop -> result)
+  called_by: load, CookieJar
+  uses: Morsel (http.cookies)
 
 url (aiohttp/web_request.py:423-427)
   The full URL of the request.
@@ -190,13 +197,6 @@ MultipartPayloadWriter (aiohttp/multipart.py:1149-1204)
   imports: base64, binascii, uuid, warnings, types
   called_by: MultipartWriter
 
-_load_json_data (aiohttp/cookiejar.py:164-195)
-  Load cookies from parsed JSON data.
-  sig: _load_json_data(data)
-  behavior: ACCUMULATE(loop -> result)
-  called_by: load, CookieJar
-  uses: Morsel (http.cookies)
-
 JsonBytesPayload (aiohttp/payload.py:943-963)
   JSON payload for encoders that return bytes directly.
   extends: BytesPayload
@@ -219,7 +219,7 @@ handle_json_data (examples/logging_middleware.py:78-84)
 read_chunk (aiohttp/multipart.py:324-366)
   Reads body part content chunk of the specified size.
   sig: read_chunk(size)
-  behavior: BRANCH(length -> result, else -> result)
+  behavior: BRANCH(self._length -> await self._read_chun..., else -> await self._read_ch...)
   calls: _read_chunk_from_length, _read_chunk_from_stream, read, readline
   called_by: read, BodyPartReader, BodyPartReaderPayload, MultipartReader
   raises: ValueError
@@ -230,12 +230,6 @@ MultipartReader (aiohttp/multipart.py:639-854)
   calls: read_chunk, readline, _get_boundary, _get_part_reader, _maybe_release_last_part, _read_boundary, _read_headers, _read_until_first_boundary
   raises: ValueError, StopAsyncIteration, BadHttpMessage, RuntimeError
   uses: HeadersParser (http), BadHttpMessage (http_exceptions), CIMultiDict (multidict)
-
-readline (aiohttp/multipart.py:423-450)
-  Reads body part by line by line.
-  behavior: BRANCH(unread -> result, else -> result)
-  calls: append
-  called_by: read_chunk, BodyPartReader, _read_headers, _readline, MultipartReader
 
 _update_body (aiohttp/client_reqrep.py:1182-1197)
   Update request body after its already been set.
@@ -259,25 +253,9 @@ read (aiohttp/web_request.py:624-643)
 
 _gen_form_data (aiohttp/formdata.py:128-161)
   Encode a list of fields using the multipart/form-data MIME format
-  behavior: ACCUMULATE(loop -> result)
+  behavior: ACCUMULATE(self._fields loop -> result, raises TypeError)
   called_by: __call__, FormData
   raises: TypeError
-
-form (aiohttp/multipart.py:475-493)
-  Like read(), but assumes that body parts contain form urlencoded data.
-  behavior: BRANCH(encoding -> result, else -> result)
-  calls: get_charset, read
-  raises: ValueError
-
-text (aiohttp/multipart.py:459-465)
-  Like read(), but assumes that body part contains text data.
-  calls: get_charset, read
-
-LookupError (aiohttp/payload.py:50-51)
-  Raised when no payload factory is found for the given data type.
-  extends: Exception
-  imports: asyncio, enum, io, mimetypes, warnings
-  called_by: get, PayloadRegistry
 
 strip_auth_from_url (aiohttp/helpers.py:184-190)
   Remove user and password from URL if present and return BasicAuth object.
@@ -294,22 +272,8 @@ _read (aiohttp/payload.py:510-526)
   sig: _read(remaining_content_len)
   behavior: DELEGATE(_value.read -> result)
 
-as_bytes (aiohttp/multipart.py:1067-1092)
-  Return bytes representation of the multipart data.
-  sig: as_bytes(encoding, errors)
-  behavior: ACCUMULATE(loop -> parts)
-
-decode (aiohttp/multipart.py:1052-1065)
-  Return string representation of the multipart data.
-  sig: decode(encoding, errors)
-  behavior: DELEGATE(join -> result)
-
 handler (aiohttp/abc.py:55-56)
   Execute matched request handler
-
-json (aiohttp/_websocket/models.py:70-72)
-  Return parsed JSON data.
-  behavior: DELEGATE(loads -> result)
 
 json (aiohttp/_websocket/models.py:55-59)
   Return parsed JSON data.
@@ -319,25 +283,53 @@ json (aiohttp/_websocket/models.py:81-85)
   Return parsed JSON data.
   behavior: DELEGATE(loads -> result)
 
+json (aiohttp/_websocket/models.py:70-72)
+  Return parsed JSON data.
+  behavior: DELEGATE(loads -> result)
+
 must_be_empty_body (aiohttp/helpers.py:1105-1111)
   Check if a request must return an empty body.
   sig: must_be_empty_body(method, code)
 
-next (aiohttp/multipart.py:705-739)
-  Emits the next multipart body part.
-  behavior: BRANCH(at_bof -> result, else -> result)
-  raises: RuntimeError
+send_json_bytes (aiohttp/client_ws.py:306-318)
+  Send JSON data using a bytes-returning encoder as a binary frame.
+  sig: send_json_bytes(data, compress)
+  calls: send_bytes
 
-next (aiohttp/multipart.py:240-247)
-  Emits next multipart reader object.
+send_json_bytes (aiohttp/web_ws.py:485-499)
+  Send JSON data using a bytes-returning encoder as a binary frame.
+  sig: send_json_bytes(data, compress)
+  calls: send_bytes
+
+readline (aiohttp/multipart.py:423-450)
+  Reads body part by line by line.
+  behavior: BRANCH(self._unread -> self._unread.popleft(), else -> await self._content.r...)
+  calls: append
+  called_by: read_chunk, BodyPartReader, _read_headers, _readline, MultipartReader
+
+form (aiohttp/multipart.py:475-493)
+  Like read(), but assumes that body parts contain form urlencoded data.
+  behavior: BRANCH(encoding is not None -> encoding, else -> self.get_charset(defa...)
+  calls: get_charset, read
+  raises: ValueError
+
+text (aiohttp/multipart.py:459-465)
+  Like read(), but assumes that body part contains text data.
+  calls: get_charset, read
+
+LookupError (aiohttp/payload.py:50-51)
+  Raised when no payload factory is found for the given data type.
+  extends: Exception
+  imports: asyncio, enum, io, mimetypes, warnings
+  called_by: get, PayloadRegistry
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 35 with behavior annotations
+coverage: 80 symbols in L3, 34 with behavior annotations
+uncovered: BufferedReaderPayload, HttpRequestParser, PayloadRegistry, RawRequestMessage
 drill: aiohttp/client_reqrep.py (~41 lines, _update_body_from_data)
 drill: aiohttp/multipart.py (~9 lines, json)
 drill: aiohttp/multipart.py (~17 lines, read)
-drill: aiohttp/client_reqrep.py (~65 lines, update_body)
 
 --- END CLUE FILE ---
 
@@ -419,71 +411,6 @@ drill: aiohttp/client_reqrep.py (~65 lines, update_body)
             if key in headers or (skip_headers is not None and key in skip_headers):
                 continue
             headers[key] = value
-```
-
-## update_body  (aiohttp/client_reqrep.py L1199-1259)
-```
-    async def update_body(self, body: Any) -> None:
-        """
-        Update request body and close previous payload if needed.
-
-        This method safely updates the request body by first closing any existing
-        payload to prevent resource leaks, then setting the new body.
-
-        IMPORTANT: Always use this method instead of setting request.body directly.
-        Direct assignment to request.body will leak resources if the previous body
-        contains file handles, streams, or other resources that need cleanup.
-
-        Args:
-            body: The new body content. Can be:
-                - bytes/bytearray: Raw binary data
-                - str: Text data (will be encoded using charset from Content-Type)
-                - FormData: Form data that will be encoded as multipart/form-data
-                - Payload: A pre-configured payload object
-                - AsyncIterable: An async iterable of bytes chunks
-                - File-like object: Will be read and sent as binary data
-                - None: Clears the body
-
-        Usage:
-            # CORRECT: Use update_body
-            await request.update_body(b"new request data")
-
-            # WRONG: Don't set body directly
-            # request.body = b"new request data"  # This will leak resources!
-
-            # Update with form data
-            form_data = FormData()
-            form_data.add_field('field', 'value')
-            await request.update_body(form_data)
-
-            # Clear body
-            await request.update_body(None)
-
-        Note:
-            This method is async because it may need to close file handles or
-            other resources associated with the previous payload. Always await
-            this method to ensure proper cleanup.
-
-        Warning:
-            Setting request.body directly is highly discouraged and can lead to:
-            - Resource leaks (unclosed file handles, streams)
-            - Memory leaks (unreleased buffers)
-            - Unexpected behavior with streaming payloads
-
-            It is not recommended to change the payload type in middleware. If the
-            body was already set (e.g., as bytes), it's best to keep the same type
-            rather than converting it (e.g., to str) as this may result in unexpected
-            behavior.
-
-        See Also:
-            - update_body_from_data: Synchronous body update without cleanup
-            - body property: Direct body access (STRONGLY DISCOURAGED)
-
-        """
-        # Close existing payload if it exists and needs closing
-        if self._body is not None:
-            await self._body.close()
-        self._update_body(body)
 ```
 
 ## body  (aiohttp/web_response.py L610-633)
@@ -594,6 +521,114 @@ drill: aiohttp/client_reqrep.py (~65 lines, update_body)
         return chunk
 ```
 
+## __init__  (tests/test_worker.py L31-38)
+```
+    def __init__(self) -> None:
+        self.servers: dict[object, object] = {}
+        self.exit_code = 0
+        self._notify_waiter: asyncio.Future[bool] | None = None
+        self.cfg = mock.Mock()
+        self.cfg.graceful_timeout = 100
+        self.pid = "pid"
+        self.wsgi = web.Application()
+```
+
+## _close  (aiohttp/payload.py L307-321)
+```
+    def _close(self) -> None:
+        """
+        Async safe synchronous close operations for backwards compatibility.
+
+        This method exists only for backwards compatibility with code that
+        needs to clean up payloads synchronously. In the future, we will
+        drop this method and only support the async close() method.
+
+        WARNING: This method must be safe to call from within the event loop
+        without blocking. Subclasses should not perform any blocking I/O here.
+
+        WARNING: This method must be called from within an event loop for
+        certain payload types (e.g., IOBasePayload). Calling it outside an
+        event loop may raise RuntimeError.
+        """
+```
+
+## _create_response  (aiohttp/client_reqrep.py L832-844)
+```
+    def _create_response(self, task: asyncio.Task[None] | None) -> ClientResponse:
+        return self.response_class(
+            self.method,
+            self.original_url,
+            writer=task,
+            continue100=None,
+            timer=TimerNoop(),
+            traces=(),
+            loop=self.loop,
+            session=None,
+            request_headers=self.headers,
+            original_url=self.original_url,
+        )
+```
+
+## _create_writer  (aiohttp/client_reqrep.py L846-847)
+```
+    def _create_writer(self, protocol: BaseProtocol) -> StreamWriter:
+        return StreamWriter(protocol, self.loop)
+```
+
+## _on_chunk_request_sent  (aiohttp/client_reqrep.py L1426-1428)
+```
+    async def _on_chunk_request_sent(self, method: str, url: URL, chunk: bytes) -> None:
+        for trace in self._traces:
+            await trace.send_request_chunk_sent(method, url, chunk)
+```
+
+## _on_headers_request_sent  (aiohttp/client_reqrep.py L1430-1434)
+```
+    async def _on_headers_request_sent(
+        self, method: str, url: URL, headers: "CIMultiDict[str]"
+    ) -> None:
+        for trace in self._traces:
+            await trace.send_request_headers(method, url, headers)
+```
+
+## _should_write  (aiohttp/client_reqrep.py L849-850)
+```
+    def _should_write(self, protocol: BaseProtocol) -> bool:
+        return protocol.writing_paused
+```
+
+## _terminate  (aiohttp/client_reqrep.py L1419-1424)
+```
+    def _terminate(self) -> None:
+        if self._writer_task is not None:
+            if not self.loop.is_closed():
+                self._writer_task.cancel()
+            self._writer_task.remove_done_callback(self._reset_writer)
+            self._writer_task = None
+```
+
+## _update_auto_headers  (aiohttp/client_reqrep.py L1066-1083)
+```
+    def _update_auto_headers(self, skip_auto_headers: Iterable[str] | None) -> None:
+        if skip_auto_headers is not None:
+            self._skip_auto_headers = CIMultiDict(
+                (hdr, None) for hdr in sorted(skip_auto_headers)
+            )
+            used_headers = self.headers.copy()
+            used_headers.extend(self._skip_auto_headers)  # type: ignore[arg-type]
+        else:
+            # Fast path when there are no headers to skip
+            # which is the most common case.
+            used_headers = self.headers
+
+        for hdr, val in self.DEFAULT_HEADERS.items():
+            if hdr not in used_headers:
+                self.headers[hdr] = val
+
+        if hdrs.USER_AGENT not in used_headers:
+            self.headers[hdrs.USER_AGENT] = SERVER_SOFTWARE
+```
+
 ## _update_body  (aiohttp/client_reqrep.py L1182-1197)
 ```
     def _update_body(self, body: Any) -> None:
@@ -614,126 +649,84 @@ drill: aiohttp/client_reqrep.py (~65 lines, update_body)
             self._update_transfer_encoding()
 ```
 
-## close  (tests/test_web_functional.py L2071-2074)
+## _update_content_encoding  (aiohttp/client_reqrep.py L1102-1116)
 ```
-        async def close(self) -> None:
-            assert False
+    def _update_content_encoding(self, data: Any, compress: bool | str) -> None:
+        """Set request content encoding."""
+        self.compress = None
+        if not data:
+            return
 
-        async def resolve(
-```
-
-## BadContentDispositionHeader  (aiohttp/multipart.py L66-67)
-```
-class BadContentDispositionHeader(RuntimeWarning):
-    pass
-```
-
-## BadContentDispositionParam  (aiohttp/multipart.py L70-71)
-```
-class BadContentDispositionParam(RuntimeWarning):
-    pass
-```
-
-## __aiter__  (aiohttp/web_ws.py L742-745)
-```
-    def __aiter__(self) -> Self:
-        return self
-
-    @overload
+        if self.headers.get(hdrs.CONTENT_ENCODING):
+            if compress:
+                raise ValueError(
+                    "compress can not be set if Content-Encoding header is set"
+                )
+        elif compress:
+            self.compress = compress if isinstance(compress, str) else "deflate"
+            self.headers[hdrs.CONTENT_ENCODING] = self.compress
+            self.chunked = True  # enable chunked, no need to deal with length
 ```
 
-## __anext__  (aiohttp/web_ws.py L760-766)
+## _update_cookies  (aiohttp/client_reqrep.py L1085-1100)
 ```
-    async def __anext__(self) -> WSMessageDecodeText | WSMessageNoDecodeText:
-        msg = await self.receive()
-        if msg.type in (WSMsgType.CLOSE, WSMsgType.CLOSING, WSMsgType.CLOSED):
-            raise StopAsyncIteration
-        return msg
+    def _update_cookies(self, cookies: BaseCookie[str]) -> None:
+        """Update request cookies header."""
+        if not cookies:
+            return
 
-    def _cancel(self, exc: BaseException) -> None:
-```
+        c = SimpleCookie()
+        if hdrs.COOKIE in self.headers:
+            # parse_cookie_header for RFC 6265 compliant Cookie header parsing
+            c.update(parse_cookie_header(self.headers.get(hdrs.COOKIE, "")))
+            del self.headers[hdrs.COOKIE]
 
-## __init__  (tests/test_worker.py L31-38)
-```
-    def __init__(self) -> None:
-        self.servers: dict[object, object] = {}
-        self.exit_code = 0
-        self._notify_waiter: asyncio.Future[bool] | None = None
-        self.cfg = mock.Mock()
-        self.cfg.graceful_timeout = 100
-        self.pid = "pid"
-        self.wsgi = web.Application()
+        for name, value in cookies.items():
+            # Use helper to preserve coded_value exactly as sent by server
+            c[name] = preserve_morsel_with_coded_value(value)
+
+        self.headers[hdrs.COOKIE] = c.output(header="", sep=";").strip()
 ```
 
-## _apply_content_transfer_decoding  (aiohttp/multipart.py L499-503)
+## _update_expect_continue  (aiohttp/client_reqrep.py L1261-1271)
 ```
-    def _apply_content_transfer_decoding(self, data: bytes) -> bytes:
-        """Apply Content-Transfer-Encoding decoding if header is present."""
-        if CONTENT_TRANSFER_ENCODING in self.headers:
-            return self._decode_content_transfer(data)
-        return data
+    def _update_expect_continue(self, expect: bool = False) -> None:
+        if expect:
+            self.headers[hdrs.EXPECT] = "100-continue"
+        elif (
+            hdrs.EXPECT in self.headers
+            and self.headers[hdrs.EXPECT].lower() == "100-continue"
+        ):
+            expect = True
+
+        if expect:
+            self._continue = self.loop.create_future()
 ```
 
-## _decode_content  (aiohttp/multipart.py L540-550)
+## _update_proxy  (aiohttp/client_reqrep.py L1273-1288)
 ```
-    def _decode_content(self, data: bytes) -> bytes:
-        encoding = self.headers.get(CONTENT_ENCODING, "").lower()
-        if encoding == "identity":
-            return data
-        if encoding in {"deflate", "gzip"}:
-            return ZLibDecompressor(
-                encoding=encoding,
-                suppress_deflate_header=True,
-            ).decompress_sync(data, max_length=self._max_decompress_size)
+    def _update_proxy(
+        self,
+        proxy: URL | None,
+        proxy_auth: BasicAuth | None,
+        proxy_headers: CIMultiDict[str] | None,
+    ) -> None:
+        self.proxy = proxy
+        if proxy is None:
+            self.proxy_auth = None
+            self.proxy_headers = None
+            return
 
-        raise RuntimeError(f"unknown content encoding: {encoding}")
-```
-
-## _decode_content_async  (aiohttp/multipart.py L552-563)
-```
-    async def _decode_content_async(self, data: bytes) -> AsyncIterator[bytes]:
-        encoding = self.headers.get(CONTENT_ENCODING, "").lower()
-        if encoding == "identity":
-            yield data
-        elif encoding in {"deflate", "gzip"}:
-            d = ZLibDecompressor(
-                encoding=encoding,
-                suppress_deflate_header=True,
-            )
-            yield await d.decompress(data, max_length=self._max_decompress_size)
-        else:
-            raise RuntimeError(f"unknown content encoding: {encoding}")
+        if proxy_auth and not isinstance(proxy_auth, BasicAuth):
+            raise ValueError("proxy_auth must be None or BasicAuth() tuple")
+        self.proxy_auth = proxy_auth
+        self.proxy_headers = proxy_headers
 ```
 
-## _decode_content_transfer  (aiohttp/multipart.py L565-575)
+## _update_transfer_encoding  (aiohttp/client_reqrep.py L1118-1135)
 ```
-    def _decode_content_transfer(self, data: bytes) -> bytes:
-        encoding = self.headers.get(CONTENT_TRANSFER_ENCODING, "").lower()
-
-        if encoding == "base64":
-            return base64.b64decode(data)
-        elif encoding == "quoted-printable":
-            return binascii.a2b_qp(data)
-        elif encoding in ("binary", "8bit", "7bit"):
-            return data
-        else:
-            raise RuntimeError(f"unknown content transfer encoding: {encoding}")
-```
-
-## _needs_content_decoding  (aiohttp/multipart.py L505-508)
-```
-    def _needs_content_decoding(self) -> bool:
-        """Check if Content-Encoding decoding should be applied."""
-        # https://datatracker.ietf.org/doc/html/rfc7578#section-4.8
-        return not self._is_form_data and CONTENT_ENCODING in self.headers
-```
-
-## _read_chunk_from_length  (aiohttp/multipart.py L368-376)
-```
-    async def _read_chunk_from_length(self, size: int) -> bytes:
-        # Reads body part content chunk of the specified size.
-        # The body part must has Content-Length header with proper value.
-        assert self._length is not None, "Content-Length required for chunked read"
+    def _update_transfer_encoding(self) -> None:
+        """Analyze transfer-encoding header."""
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

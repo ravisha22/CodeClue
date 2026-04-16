@@ -1,15 +1,14 @@
-# Blind Evaluation Prompt - MRLF v2.1
+# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
 # Task: struct-aiohttp-2
 
-You are a senior software engineer. You have been given a codebase
-comprehension artifact (a "clue file") that summarises a repository's
-structure, symbols, and behavior. This is NOT the full source code - it is
-a compressed representation.
+You are a senior software engineer. You have been given:
+1. A codebase comprehension artifact (clue file) - a compressed representation
+2. Source code snippets for key functions identified as needing deeper analysis
 
-Answer the question below using ONLY the information in the clue file.
+Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
 
---- CLUE FILE START ---
+--- CLUE FILE (File 1) ---
 =CC v2.1 aiohttp@HEAD 166mod 6741sym
 ? What modules handle HTTP request and response processing in aiohttp, and which files contain the core web application logic?
 
@@ -165,18 +164,6 @@ HttpBadRequest (aiohttp/http_exceptions.py:55-57)
   attrs: code=400, message='Bad Request'
   imports: textwrap, multidict
 
-body_exists (aiohttp/web_request.py:612-614)
-  Return True if request has HTTP BODY, False otherwise.
-
-can_read_body (aiohttp/web_request.py:607-609)
-  Return True if request's HTTP BODY can be read, False otherwise.
-
-remote (aiohttp/web_request.py:408-420)
-  Remote IP of client initiated HTTP request.
-
-version (aiohttp/web_request.py:381-386)
-  Read only property for getting HTTP version of request.
-
 request (aiohttp/client.py:464-468)
   Perform HTTP request.
   sig: request(method, url)
@@ -189,15 +176,27 @@ _handle_ping_pong_exception (aiohttp/client_ws.py:213-222)
   called_by: _ping_task_done, _pong_not_received, ClientWebSocketResponse
   uses: WSMessageError (http_websocket)
 
+from_response (aiohttp/multipart.py:688-699)
+  Constructs reader instance from HTTP response.
+  sig: from_response(cls, response)
+
+body_exists (aiohttp/web_request.py:612-614)
+  Return True if request has HTTP BODY, False otherwise.
+
+can_read_body (aiohttp/web_request.py:607-609)
+  Return True if request's HTTP BODY can be read, False otherwise.
+
+remote (aiohttp/web_request.py:408-420)
+  Remote IP of client initiated HTTP request.
+
+version (aiohttp/web_request.py:381-386)
+  Read only property for getting HTTP version of request.
+
 AppRunner (aiohttp/web_runner.py:380-453)
   Web Application runner
   imports: asyncio, signal, socket, yarl, http_parser
   calls: cleanup
   raises: TypeError
-
-from_response (aiohttp/multipart.py:688-699)
-  Constructs reader instance from HTTP response.
-  sig: from_response(cls, response)
 
 delete (aiohttp/client.py:1388-1392)
   Perform HTTP DELETE request.
@@ -248,30 +247,30 @@ DigestAuthMiddleware (aiohttp/client_middleware_digest_auth.py:145-469)
   raises: ValueError, ClientError
   uses: URL (yarl), ClientError (client_exceptions)
 
-LoggingMiddleware (examples/logging_middleware.py:27-56)
-  Middleware that logs request timing and response status.
-  imports: asyncio, logging, aiohttp
-  called_by: run_tests
-
 LoggingMiddleware (examples/combined_middleware.py:38-63)
   Middleware that logs request timing and response status.
   imports: asyncio, base64, binascii, logging, http
   called_by: run_tests
 
+LoggingMiddleware (examples/logging_middleware.py:27-56)
+  Middleware that logs request timing and response status.
+  imports: asyncio, logging, aiohttp
+  called_by: run_tests
+
 __call__ (examples/retry_middleware.py:47-88)
   Execute request with retry logic.
   sig: __call__(request, handler)
-  behavior: ACCUMULATE(loop -> delay)
+  behavior: ACCUMULATE(range(self.max_retrie... -> delay)
 
 __call__ (examples/combined_middleware.py:119-156)
   Execute request with retry logic.
   sig: __call__(request, handler)
-  behavior: ACCUMULATE(loop -> delay)
+  behavior: ACCUMULATE(range(self.max_retrie... -> delay)
 
 handle_error (aiohttp/web_protocol.py:752-812)
   Handle errors.
   sig: handle_error(request, status, exc, message)
-  behavior: BRANCH(request_count_eq_1_and_isinstanc -> result, else -> result)
+  behavior: BRANCH(self._request_count == 1 and... -> self.logger.debug('Er..., else ->...)
   calls: force_close, log_exception
   called_by: _handle_request, handler, _make_error_handler, RequestHandler
   raises: ConnectionError
@@ -300,39 +299,430 @@ _resolve_path_to_response (aiohttp/web_urldispatcher.py:635-668)
   raises: HTTPNotFound, HTTPForbidden
   uses: FileResponse (web_fileresponse), HTTPNotFound (web_exceptions), HTTPForbidden (web_exceptions), Response (web_response)
 
-if_modified_since (aiohttp/web_request.py:479-484)
-  The value of If-Modified-Since HTTP header, or None.
-  behavior: DELEGATE(parse_http_date -> result)
+_handle (aiohttp/web_urldispatcher.py:623-633)
+  sig: _handle(request)
+  raises: HTTPNotFound
+  uses: HTTPNotFound (web_exceptions)
 
-if_range (aiohttp/web_request.py:541-546)
-  The value of If-Range HTTP header, or None.
-  behavior: DELEGATE(parse_http_date -> result)
+RequestHandler (aiohttp/web_protocol.py:119-822)
+  HTTP protocol implementation.
+  extends: BaseProtocol
+  imports: asyncio, asyncio.streams, traceback, html, http
+  calls: log, AccessLoggerWrapper, _handle_request, _make_error_handler, close, connection_lost, connection_made, finish_response
+  raises: ConnectionError
+  uses: Response (web_response), HTTPInternalServerError (web_exceptions), StreamWriter (http)
 
-if_unmodified_since (aiohttp/web_request.py:487-492)
-  The value of If-Unmodified-Since HTTP header, or None.
-  behavior: DELEGATE(parse_http_date -> result)
-
-last_modified (aiohttp/web_response.py:253-258)
-  The value of Last-Modified HTTP header, or None.
-  behavior: DELEGATE(parse_http_date -> result)
-
-scheme (aiohttp/web_request.py:357-370)
-  A string representing the scheme of the request.
-  behavior: BRANCH(transport_sslcontext -> https, else -> http)
-
-read (aiohttp/web_request.py:624-643)
-  Read request body if present.
-  called_by: post, text, BaseRequest
-  raises: HTTPRequestEntityTooLarge
-  uses: HTTPRequestEntityTooLarge (web_exceptions)
+Response (aiohttp/web_response.py:535-740)
+  extends: StreamResponse
+  imports: asyncio, enum, math, warnings, concurrent.futures
+  calls: write
+  called_by: json_bytes_response, json_response
+  raises: RuntimeError, ValueError, TypeError
 
 -- GAPS
-type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 25 with behavior annotations
+type: MECHANISTIC (body logic needed for full answer)
+coverage: 80 symbols in L3, 24 with behavior annotations
+uncovered: TraceRequestHeadersSentParams, TraceRequestRedirectParams, TraceRequestStartParams, TraceResponseChunkReceivedParams
+drill: aiohttp/web_protocol.py (~37 lines, _handle_request)
+drill: aiohttp/web_ws.py (~11 lines, _handle_ping_pong_exception)
 
---- CLUE FILE END ---
+--- END CLUE FILE ---
+
+--- SOURCE SNIPPETS (File 2 Drill-Down) ---
+## _handle_ping_pong_exception  (aiohttp/web_ws.py L240-248)
+```
+    def _handle_ping_pong_exception(self, exc: BaseException) -> None:
+        """Handle exceptions raised during ping/pong processing."""
+        if self._closed:
+            return
+        self._set_closed()
+        self._set_code_close_transport(WSCloseCode.ABNORMAL_CLOSURE)
+        self._exception = exc
+        if self._waiting and not self._closing and self._reader is not None:
+            self._reader.feed_data(WSMessageError(data=exc, extra=None))
+```
+
+## _handle_request  (aiohttp/web_protocol.py L535-570)
+```
+    async def _handle_request(
+        self,
+        request: _Request,
+        start_time: float | None,
+        request_handler: Callable[[_Request], Awaitable[StreamResponse]],
+    ) -> tuple[StreamResponse, bool]:
+        self._request_in_progress = True
+        try:
+            try:
+                self._current_request = request
+                resp = await request_handler(request)
+            finally:
+                self._current_request = None
+        except HTTPException as exc:
+            resp = Response(
+                status=exc.status, reason=exc.reason, text=exc.text, headers=exc.headers
+            )
+            resp._cookies = exc._cookies
+            resp, reset = await self.finish_response(request, resp, start_time)
+        except asyncio.CancelledError:
+            raise
+        except asyncio.TimeoutError as exc:
+            self.log_debug("Request handler timed out.", exc_info=exc)
+            resp = self.handle_error(request, 504)
+            resp, reset = await self.finish_response(request, resp, start_time)
+        except Exception as exc:
+            resp = self.handle_error(request, 500, exc)
+            resp, reset = await self.finish_response(request, resp, start_time)
+        else:
+            resp, reset = await self.finish_response(request, resp, start_time)
+        finally:
+            self._request_in_progress = False
+            if self._handler_waiter is not None:
+                self._handler_waiter.set_result(None)
+
+        return resp, reset
+```
+
+## finish_response  (aiohttp/web_protocol.py L711-750)
+```
+    async def finish_response(
+        self, request: BaseRequest, resp: StreamResponse, start_time: float | None
+    ) -> tuple[StreamResponse, bool]:
+        """Prepare the response and write_eof, then log access.
+
+        This has to
+        be called within the context of any exception so the access logger
+        can get exception information. Returns True if the client disconnects
+        prematurely.
+        """
+        request._finish()
+        if self._request_parser is not None:
+            self._request_parser.set_upgraded(False)
+            self._upgrade = False
+            if self._message_tail:
+                self._request_parser.feed_data(self._message_tail)
+                self._message_tail = b""
+        try:
+            prepare_meth = resp.prepare
+        except AttributeError:
+            if resp is None:
+                self.log_exception("Missing return statement on request handler")  # type: ignore[unreachable]
+            else:
+                self.log_exception(
+                    f"Web-handler should return a response instance, got {resp!r}"
+                )
+            exc = HTTPInternalServerError()
+            resp = Response(
+                status=exc.status, reason=exc.reason, text=exc.text, headers=exc.headers
+            )
+            prepare_meth = resp.prepare
+        try:
+            await prepare_meth(request)
+            await resp.write_eof()
+        except ConnectionError:
+            await self.log_access(request, resp, start_time)
+            return resp, True
+
+        await self.log_access(request, resp, start_time)
+        return resp, False
+```
+
+## handle_error  (examples/logging_middleware.py L73-76)
+```
+    async def handle_error(self, request: web.Request) -> web.Response:
+        """Endpoint that returns an error."""
+        status = int(request.match_info.get("status", 500))
+        return web.Response(status=status, text=f"Error response with status {status}")
+```
+
+## log_debug  (aiohttp/web_protocol.py L511-513)
+```
+    def log_debug(self, *args: Any, **kw: Any) -> None:
+        if self._loop.get_debug():
+            self.logger.debug(*args, **kw)
+```
+
+## _set_closed  (aiohttp/web_ws.py L250-256)
+```
+    def _set_closed(self) -> None:
+        """Set the connection to closed.
+
+        Cancel any heartbeat timers and set the closed flag.
+        """
+        self._closed = True
+        self._cancel_heartbeat()
+```
+
+## close  (tests/test_web_functional.py L2071-2074)
+```
+        async def close(self) -> None:
+            assert False
+
+        async def resolve(
+```
+
+## __bool__  (aiohttp/web_ws.py L74-75)
+```
+    def __bool__(self) -> bool:
+        return self.ok
+```
+
+## WebSocketReady  (aiohttp/web_ws.py L70-75)
+```
+class WebSocketReady:
+    ok: bool
+    protocol: str | None
+
+    def __bool__(self) -> bool:
+        return self.ok
+```
+
+## __aiter__  (aiohttp/web_ws.py L742-745)
+```
+    def __aiter__(self) -> Self:
+        return self
+
+    @overload
+```
+
+## __anext__  (aiohttp/web_ws.py L760-766)
+```
+    async def __anext__(self) -> WSMessageDecodeText | WSMessageNoDecodeText:
+        msg = await self.receive()
+        if msg.type in (WSMsgType.CLOSE, WSMsgType.CLOSING, WSMsgType.CLOSED):
+            raise StopAsyncIteration
+        return msg
+
+    def _cancel(self, exc: BaseException) -> None:
+```
+
+## __init__  (tests/test_worker.py L31-38)
+```
+    def __init__(self) -> None:
+        self.servers: dict[object, object] = {}
+        self.exit_code = 0
+        self._notify_waiter: asyncio.Future[bool] | None = None
+        self.cfg = mock.Mock()
+        self.cfg.graceful_timeout = 100
+        self.pid = "pid"
+        self.wsgi = web.Application()
+```
+
+## _cancel  (aiohttp/web_ws.py L766-773)
+```
+    def _cancel(self, exc: BaseException) -> None:
+        # web_protocol calls this from connection_lost
+        # or when the server is shutting down.
+        self._closing = True
+        self._cancel_heartbeat()
+        if self._reader is not None:
+            set_exception(self._reader, exc)
+```
+
+## _cancel_heartbeat  (aiohttp/web_ws.py L129-140)
+```
+    def _cancel_heartbeat(self) -> None:
+        self._cancel_pong_response_cb()
+        if self._heartbeat_reset_handle is not None:
+            self._heartbeat_reset_handle.cancel()
+            self._heartbeat_reset_handle = None
+        self._need_heartbeat_reset = False
+        if self._heartbeat_cb is not None:
+            self._heartbeat_cb.cancel()
+            self._heartbeat_cb = None
+        if self._ping_task is not None:
+            self._ping_task.cancel()
+            self._ping_task = None
+```
+
+## _cancel_pong_response_cb  (aiohttp/web_ws.py L142-145)
+```
+    def _cancel_pong_response_cb(self) -> None:
+        if self._pong_response_cb is not None:
+            self._pong_response_cb.cancel()
+            self._pong_response_cb = None
+```
+
+## _close_transport  (aiohttp/web_ws.py L574-579)
+```
+    def _close_transport(self) -> None:
+        """Close the transport."""
+        if self._req is not None and self._req.transport is not None:
+            self._req.transport.close()
+
+    @overload
+```
+
+## _flush_heartbeat_reset  (aiohttp/web_ws.py L157-162)
+```
+    def _flush_heartbeat_reset(self) -> None:
+        self._heartbeat_reset_handle = None
+        if not self._need_heartbeat_reset:
+            return
+        self._reset_heartbeat()
+        self._need_heartbeat_reset = False
+```
+
+## _handshake  (aiohttp/web_ws.py L270-354)
+```
+    def _handshake(
+        self, request: BaseRequest
+    ) -> tuple["CIMultiDict[str]", str | None, int, bool]:
+        headers = request.headers
+        if "websocket" != headers.get(hdrs.UPGRADE, "").lower().strip():
+            raise HTTPBadRequest(
+                text=(
+                    f"No WebSocket UPGRADE hdr: {headers.get(hdrs.UPGRADE)}\n Can "
+                    '"Upgrade" only to "WebSocket".'
+                )
+            )
+
+        if "upgrade" not in headers.get(hdrs.CONNECTION, "").lower():
+            raise HTTPBadRequest(
+                text=f"No CONNECTION upgrade hdr: {headers.get(hdrs.CONNECTION)}"
+            )
+
+        # find common sub-protocol between client and server
+        protocol: str | None = None
+        if hdrs.SEC_WEBSOCKET_PROTOCOL in headers:
+            req_protocols = [
+                str(proto.strip())
+                for proto in headers[hdrs.SEC_WEBSOCKET_PROTOCOL].split(",")
+            ]
+
+            for proto in req_protocols:
+                if proto in self._protocols:
+                    protocol = proto
+                    break
+            else:
+                # No overlap found: Return no protocol as per spec
+                ws_logger.warning(
+                    "%s: Client protocols %r don’t overlap server-known ones %r",
+                    request.remote,
+                    req_protocols,
+                    self._protocols,
+                )
+
+        # check supported version
+        version = headers.get(hdrs.SEC_WEBSOCKET_VERSION, "")
+        if version not in ("13", "8", "7"):
+            raise HTTPBadRequest(text=f"Unsupported version: {version}")
+
+        # check client handshake for validity
+        key = headers.get(hdrs.SEC_WEBSOCKET_KEY)
+        try:
+            if not key or len(base64.b64decode(key)) != 16:
+                raise HTTPBadRequest(text=f"Handshake error: {key!r}")
+        except binascii.Error:
+            raise HTTPBadRequest(text=f"Handshake error: {key!r}") from None
+
+        accept_val = base64.b64encode(
+            hashlib.sha1(key.encode() + WS_KEY).digest()
+        ).decode()
+        response_headers = CIMultiDict(
+            {
+                hdrs.UPGRADE: "websocket",
+                hdrs.CONNECTION: "upgrade",
+                hdrs.SEC_WEBSOCKET_ACCEPT: accept_val,
+            }
+        )
+
+        notakeover = False
+        compress = 0
+        if self._compress:
+            extensions = headers.get(hdrs.SEC_WEBSOCKET_EXTENSIONS)
+            # Server side always get return with no exception.
+            # If something happened, just drop compress extension
+            compress, notakeover = ws_ext_parse(extensions, isserver=True)
+            if compress:
+                enabledext = ws_ext_gen(
+                    compress=compress, isserver=True, server_notakeover=notakeover
+                )
+                response_headers[hdrs.SEC_WEBSOCKET_EXTENSIONS] = enabledext
+
+        if protocol:
+            response_headers[hdrs.SEC_WEBSOCKET_PROTOCOL] = protocol
+        return (
+            response_headers,
+            protocol,
+            compress,
+            notakeover,
+        )
+
+    def _pre_start(self, request: BaseRequest) -> tuple[str | None, WebSocketWriter]:
+```
+
+## _on_data_received  (aiohttp/web_ws.py L147-155)
+```
+    def _on_data_received(self) -> None:
+        if self._heartbeat is None or self._need_heartbeat_reset:
+            return
+        loop = self._loop
+        assert loop is not None
+        # Coalesce multiple chunks received in the same loop tick into a single
+        # heartbeat reset. Resetting immediately per chunk increases timer churn.
+        self._need_heartbeat_reset = True
+        self._heartbeat_reset_handle = loop.call_soon(self._flush_heartbeat_reset)
+```
+
+## _ping_task_done  (aiohttp/web_ws.py L226-230)
+```
+    def _ping_task_done(self, task: "asyncio.Task[None]") -> None:
+        """Callback for when the ping task completes."""
+        if not task.cancelled() and (exc := task.exception()):
+            self._handle_ping_pong_exception(exc)
+        self._ping_task = None
+```
+
+## _pong_not_received  (aiohttp/web_ws.py L232-238)
+```
+    def _pong_not_received(self) -> None:
+        if self._req is not None and self._req.transport is not None:
+            self._handle_ping_pong_exception(
+                asyncio.TimeoutError(
+                    f"No PONG received after {self._pong_heartbeat} seconds"
+                )
+            )
+```
+
+## _post_start  (aiohttp/web_ws.py L376-398)
+```
+    def _post_start(
+        self, request: BaseRequest, protocol: str | None, writer: WebSocketWriter
+    ) -> None:
+        self._ws_protocol = protocol
+        self._writer = writer
+
+        self._reset_heartbeat()
+
+        loop = self._loop
+        assert loop is not None
+        self._reader = WebSocketDataQueue(request._protocol, 2**16, loop=loop)
+        parser = WebSocketReader(
+            self._reader,
+            self._max_msg_size,
+            compress=bool(self._compress),
+            decode_text=self._decode_text,
+        )
+        cb = None if self._heartbeat is None else self._on_data_received
+        request.protocol.set_parser(parser, data_received_cb=cb)
+        # disable HTTP keepalive for WebSocket
+        request.protocol.keep_alive(False)
+
+    def can_prepare(self, request: BaseRequest) -> WebSocketReady:
+```
+
+## _pre_start  (aiohttp/web_ws.py L354-376)
+```
+    def _pre_start(self, request: BaseRequest) -> tuple[str | None, WebSocketWriter]:
+        self._loop = request._loop
+
+        headers, protocol, compress, notakeover = self._handshake(request)
+
+... (truncated)
+```
+--- END SOURCE SNIPPETS ---
 
 QUESTION: What modules handle HTTP request and response processing in aiohttp, and which files contain the core web application logic?
 
-Provide a detailed answer based solely on the clue file above.
-For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.
+Provide a detailed answer based on the clue file and source snippets above.
+For each claim you make, cite the specific clue entry or source snippet that supports it.

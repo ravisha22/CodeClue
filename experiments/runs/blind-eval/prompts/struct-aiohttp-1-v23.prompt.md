@@ -128,7 +128,7 @@ _write_chunked_payload              M aiohttp/http_writer.py:124    Write a chun
 -- FOCUS
 main (aiohttp/web.py:501-565)
   sig: main(argv)
-  behavior: BRANCH(args.path_and_args.hostname -> result, else -> result)
+  behavior: BRANCH(args.path and args.hostname i... -> None, else -> args.hostname or 'l...)
   calls: run_app
   uses: ArgumentParser (argparse)
 
@@ -139,38 +139,24 @@ main (examples/fake_server.py:98-117)
 main (examples/digest_auth_qop_auth.py:34-64)
   uses: DigestAuthMiddleware (aiohttp.client_middleware_digest_auth), ClientSession (aiohttp), URL (yarl)
 
-DigestAuthMiddleware (aiohttp/client_middleware_digest_auth.py:145-469)
-  HTTP digest authentication middleware for aiohttp client.
-  imports: hashlib, yarl, client_exceptions, client_middlewares, client_reqrep
-  calls: _authenticate, H, KD, _encode, _in_protection_space, escape_quotes, parse_header_pairs
-  raises: ValueError, ClientError
-  uses: URL (yarl), ClientError (client_exceptions)
-
-basicauth_from_netrc (aiohttp/helpers.py:244-270)
-  Return :py:class:`~aiohttp.BasicAuth` credentials for ``host`` from ``netrc_obj``.
-  sig: basicauth_from_netrc(netrc_obj, host)
-  calls: BasicAuth
-  called_by: proxies_from_env
-  raises: LookupError
-
 main (examples/combined_middleware.py:308-316)
-  calls: run_test_server, run_tests
-
-main (examples/logging_middleware.py:157-166)
-  calls: run_test_server, run_tests
-
-main (examples/retry_middleware.py:234-241)
-  calls: run_test_server, run_tests
-
-main (examples/token_refresh_middleware.py:326-333)
   calls: run_test_server, run_tests
 
 main (examples/basic_auth_middleware.py:179-186)
   calls: run_test_server, run_tests
 
+main (examples/logging_middleware.py:157-166)
+  calls: run_test_server, run_tests
+
+main (examples/token_refresh_middleware.py:326-333)
+  calls: run_test_server, run_tests
+
+main (examples/retry_middleware.py:234-241)
+  calls: run_test_server, run_tests
+
 main (tools/bench-asyncio-write.py:97-126)
   sig: main(loop)
-  behavior: ACCUMULATE(loop -> result)
+  behavior: ACCUMULATE(jobs loop -> result)
   calls: fm_time, bench, time
 
 AiohttpClient (aiohttp/pytest_plugin.py:31-48)
@@ -192,20 +178,92 @@ aiohttp_client_cls (aiohttp/pytest_plugin.py:353-376)
 main (examples/lowlevel_srv.py:10-17)
   sig: main(loop)
 
-main (tools/cleanup_changes.py:27-41)
-  behavior: ACCUMULATE(loop -> delete)
+main (tools/check_changes.py:33-55)
+  sig: main(argv)
+  behavior: BRANCH(failed -> print('', file=sys.st..., else -> print('OK')); ACCUMULATE(changes.iterdir() loop -> result)
+  calls: get_root
 
 main (tools/check_sum.py:15-46)
   sig: main(argv)
-  behavior: BRANCH(dst.exists -> result, else -> result)
+  behavior: BRANCH(dst.exists() -> dst.read_text(), else -> '')
 
-main (tools/check_changes.py:33-55)
-  sig: main(argv)
-  behavior: BRANCH(failed -> result, else -> result); ACCUMULATE(loop -> result)
-  calls: get_root
+main (tools/cleanup_changes.py:27-41)
+  behavior: ACCUMULATE((root / 'CHANGES').it... -> delete)
+
+DigestAuthMiddleware (aiohttp/client_middleware_digest_auth.py:145-469)
+  HTTP digest authentication middleware for aiohttp client.
+  imports: hashlib, yarl, client_exceptions, client_middlewares, client_reqrep
+  calls: _authenticate, H, KD, _encode, _in_protection_space, escape_quotes, parse_header_pairs
+  raises: ValueError, ClientError
+  uses: URL (yarl), ClientError (client_exceptions)
+
+basicauth_from_netrc (aiohttp/helpers.py:244-270)
+  Return :py:class:`~aiohttp.BasicAuth` credentials for ``host`` from ``netrc_obj``.
+  sig: basicauth_from_netrc(netrc_obj, host)
+  calls: BasicAuth
+  called_by: proxies_from_env
+  raises: LookupError
+
+aiohttp_client (aiohttp/pytest_plugin.py:380-431)
+  Factory to create a TestClient instance.
+  sig: aiohttp_client(loop, aiohttp_client_cls)
+  calls: aiohttp_client_cls
+  raises: ValueError
+  uses: TestServer (test_utils)
+
+aiohttp_raw_server (aiohttp/pytest_plugin.py:325-349)
+  Factory to create a RawTestServer instance, given a web handler.
+  sig: aiohttp_raw_server(loop)
+  uses: RawTestServer (test_utils)
+
+aiohttp_server (aiohttp/pytest_plugin.py:296-321)
+  Factory to create a TestServer instance, given an app.
+  sig: aiohttp_server(loop)
+  uses: TestServer (test_utils)
+
+aiohttp_unused_port (aiohttp/pytest_plugin.py:290-292)
+  Return a port that is unused on the current host.
+
+Domain (aiohttp/web_urldispatcher.py:766-803)
+  extends: AbstractRuleMatching
+  imports: asyncio, base64, hashlib, html, inspect
+  calls: validation
+  raises: TypeError, ValueError
+  uses: URL (yarl)
+
+MaskDomain (aiohttp/web_urldispatcher.py:806-819)
+  extends: Domain
+  imports: asyncio, base64, hashlib, html, inspect
+
+_is_domain_match (aiohttp/cookiejar.py:470-483)
+  Implements domain matching adhering to RFC 6265.
+  sig: _is_domain_match(domain, hostname)
+  called_by: CookieJar
+
+add_domain (aiohttp/web_app.py:296-304)
+  sig: add_domain(domain, subapp)
+  calls: _add_subapp
+  raises: TypeError
+  uses: MaskDomain (web_urldispatcher), Domain (web_urldispatcher)
+
+clear_domain (aiohttp/cookiejar.py:220-221)
+  sig: clear_domain(domain)
+
+clear_domain (aiohttp/cookiejar.py:574-575)
+  sig: clear_domain(domain)
+
+clear_domain (aiohttp/abc.py:171-172)
+  Clear all cookies for domain and all subdomains.
+  sig: clear_domain(domain)
+
+match_domain (aiohttp/web_urldispatcher.py:799-800)
+  sig: match_domain(host)
+
+match_domain (aiohttp/web_urldispatcher.py:818-819)
+  sig: match_domain(host)
 
 proxies_from_env (aiohttp/helpers.py:273-296)
-  behavior: ACCUMULATE(loop -> result)
+  behavior: ACCUMULATE(stripped.items() loop -> result)
   calls: ProxyInfo, basicauth_from_netrc, netrc_from_env, strip_auth_from_url
   called_by: get_env_proxy_for_url
   uses: URL (yarl)
@@ -226,7 +284,7 @@ parse_header_pairs (aiohttp/client_middleware_digest_auth.py:118-142)
 _encode (aiohttp/client_middleware_digest_auth.py:202-361)
   Build digest authorization header for the current challenge.
   sig: _encode(method, url, body)
-  behavior: BRANCH(nonce_bytes_eq_last_nonce -> result, else -> result); ACCUMULATE(loop -> pairs)
+  behavior: BRANCH(nonce_bytes == self._last_non... -> result, else -> 1); ACCUMULATE(header_fields.items()... -> pairs)
   calls: H, KD, escape_quotes
   called_by: __call__, DigestAuthMiddleware
   raises: ClientError
@@ -241,7 +299,7 @@ run_app (aiohttp/web.py:426-498)
 _authenticate (aiohttp/client_middleware_digest_auth.py:383-440)
   Takes the given response and tries digest-auth, if needed.
   sig: _authenticate(response)
-  behavior: BRANCH(namedexpr -> result, else -> result); ACCUMULATE(loop -> result)
+  behavior: BRANCH((domain := self._challenge.ge... -> [], else -> [str(origin)]); ACCUMULATE(CHALLENGE_FIELDS loop -> result)
   calls: parse_header_pairs
   called_by: __call__, DigestAuthMiddleware
   uses: URL (yarl)
@@ -249,7 +307,7 @@ _authenticate (aiohttp/client_middleware_digest_auth.py:383-440)
 _in_protection_space (aiohttp/client_middleware_digest_auth.py:363-381)
   Check if the given URL is within the current protection space.
   sig: _in_protection_space(url)
-  behavior: ACCUMULATE(loop -> result)
+  behavior: ACCUMULATE(self._protection_spac... -> result)
   called_by: __call__, DigestAuthMiddleware
 
 H (aiohttp/client_middleware_digest_auth.py:273-275)
@@ -265,79 +323,16 @@ KD (aiohttp/client_middleware_digest_auth.py:277-279)
   calls: H
   called_by: _encode, DigestAuthMiddleware
 
-aiohttp_client (aiohttp/pytest_plugin.py:380-431)
-  Factory to create a TestClient instance.
-  sig: aiohttp_client(loop, aiohttp_client_cls)
-  calls: aiohttp_client_cls
-  raises: ValueError
-  uses: TestServer (test_utils)
-
 escape_quotes (aiohttp/client_middleware_digest_auth.py:108-110)
   Escape double quotes for HTTP header values.
   sig: escape_quotes(value)
   behavior: DELEGATE(replace -> result)
   called_by: _encode, DigestAuthMiddleware
 
-AbstractAccessLogger (aiohttp/abc.py:233-249)
-  Abstract writer to access log.
-  extends: ABC
-  imports: logging, socket, http.cookies, multidict, yarl
-
-AbstractAsyncAccessLogger (aiohttp/abc.py:252-266)
-  Abstract asynchronous writer to access log.
-  extends: ABC
-  imports: logging, socket, http.cookies, multidict, yarl
-
-AbstractCookieJar (aiohttp/abc.py:153-187)
-  Abstract Cookie Jar.
-  extends: Sized
-  imports: logging, socket, http.cookies, multidict, yarl
-  calls: update_cookies
-  uses: URL (yarl)
-
-AbstractMatchInfo (aiohttp/abc.py:49-95)
-  extends: ABC
-  imports: logging, socket, http.cookies, multidict, yarl
-
-AbstractResolver (aiohttp/abc.py:136-147)
-  Abstract DNS resolver.
-  extends: ABC
-  imports: logging, socket, http.cookies, multidict, yarl
-
-AbstractResource (aiohttp/web_urldispatcher.py:101-145)
-  extends: Sized
-  imports: asyncio, base64, hashlib, html, inspect
-
-AbstractRoute (aiohttp/web_urldispatcher.py:148-210)
-  extends: ABC
-  imports: asyncio, base64, hashlib, html, inspect
-  raises: ValueError, TypeError
-
-AbstractRouteDef (aiohttp/web_routedef.py:36-39)
-  extends: ABC
-  imports: typedefs, web_request, web_response, web_urldispatcher
-
-AbstractRouter (aiohttp/abc.py:24-46)
-  extends: ABC
-  imports: logging, socket, http.cookies, multidict, yarl
-
-AbstractRuleMatching (aiohttp/web_urldispatcher.py:751-763)
-  extends: ABC
-  imports: asyncio, base64, hashlib, html, inspect
-
-AbstractStreamWriter (aiohttp/abc.py:190-230)
-  Abstract stream writer.
-  extends: ABC
-  imports: logging, socket, http.cookies, multidict, yarl
-
-AbstractView (aiohttp/abc.py:98-111)
-  Abstract class based view.
-  extends: ABC
-  imports: logging, socket, http.cookies, multidict, yarl
-
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
 coverage: 80 symbols in L3, 20 with behavior annotations
+uncovered: LoggingMiddleware, LoggingMiddleware, RetryMiddleware, RetryMiddleware
 
 --- CLUE FILE END ---
 

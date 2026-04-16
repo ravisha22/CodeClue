@@ -146,152 +146,6 @@ applyMiddleware (echo.go:785-785)
   behavior: ACCUMULATE(loop -> result)
   called_by: serveHTTP
 
-AddTrailingSlashWithConfig (middleware/slash.go:34-34)
-  AddTrailingSlashWithConfig returns an AddTrailingSlash middleware with config or panics on invalid configuration.
-  sig: AddTrailingSlashWithConfig(config AddTrailingSlashConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: AddTrailingSlash
-
-BasicAuthWithConfig (middleware/basic_auth.go:92-92)
-  BasicAuthWithConfig returns an BasicAuthWithConfig middleware with config.
-  sig: BasicAuthWithConfig(config BasicAuthConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: BasicAuth
-
-BodyDumpWithConfig (middleware/body_dump.go:68-68)
-  BodyDumpWithConfig returns a BodyDump middleware with config.
-  sig: BodyDumpWithConfig(config BodyDumpConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: BodyDump
-
-BodyLimitWithConfig (middleware/body_limit.go:42-42)
-  BodyLimitWithConfig returns a BodyLimitWithConfig middleware.
-  sig: BodyLimitWithConfig(config BodyLimitConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: BodyLimit
-
-CORSWithConfig (middleware/cors.go:140-140)
-  CORSWithConfig returns a CORS middleware with config or panics on invalid configuration.
-  sig: CORSWithConfig(config CORSConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: CORS
-
-CSRFWithConfig (middleware/csrf.go:121-121)
-  CSRFWithConfig returns a CSRF middleware with config or panics on invalid configuration.
-  sig: CSRFWithConfig(config CSRFConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: CSRF
-
-ContextTimeoutWithConfig (middleware/context_timeout.go:33-33)
-  ContextTimeoutWithConfig returns a Timeout middleware with config.
-  sig: ContextTimeoutWithConfig(config ContextTimeoutConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: ContextTimeout
-
-GzipWithConfig (middleware/compress.go:64-64)
-  GzipWithConfig returns a middleware which compresses HTTP response using gzip compression scheme.
-  sig: GzipWithConfig(config GzipConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: Gzip
-
-KeyAuthWithConfig (middleware/key_auth.go:133-133)
-  KeyAuthWithConfig returns an KeyAuth middleware or panics if configuration is invalid.
-  sig: KeyAuthWithConfig(config KeyAuthConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: KeyAuth
-
-MethodOverrideWithConfig (middleware/method_override.go:41-41)
-  MethodOverrideWithConfig returns a Method Override middleware with config or panics on invalid configuration.
-  sig: MethodOverrideWithConfig(config MethodOverrideConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: MethodOverride
-
-ProxyWithConfig (middleware/proxy.go:300-300)
-  ProxyWithConfig returns a Proxy middleware or panics if configuration is invalid.
-  sig: ProxyWithConfig(config ProxyConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: Proxy
-
-RecoverWithConfig (middleware/recover.go:48-48)
-  RecoverWithConfig returns a Recovery middleware with config or panics on invalid configuration.
-  sig: RecoverWithConfig(config RecoverConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: Recover
-
-RemoveTrailingSlashWithConfig (middleware/slash.go:98-98)
-  RemoveTrailingSlashWithConfig returns a RemoveTrailingSlash middleware with config or panics on invalid configuration.
-  sig: RemoveTrailingSlashWithConfig(config RemoveTrailingSlashConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: RemoveTrailingSlash
-
-RequestIDWithConfig (middleware/request_id.go:37-37)
-  RequestIDWithConfig returns a middleware with given valid config or panics on invalid configuration.
-  sig: RequestIDWithConfig(config RequestIDConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: RequestID
-
-RewriteWithConfig (middleware/rewrite.go:48-48)
-  RewriteWithConfig returns a Rewrite middleware or panics on invalid configuration.
-  sig: RewriteWithConfig(config RewriteConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: Rewrite
-
-SecureWithConfig (middleware/secure.go:96-96)
-  SecureWithConfig returns a Secure middleware with config or panics on invalid configuration.
-  sig: SecureWithConfig(config SecureConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: Secure
-
-StaticWithConfig (middleware/static.go:151-151)
-  StaticWithConfig returns a Static middleware to serves static content or panics on invalid configuration.
-  sig: StaticWithConfig(config StaticConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: Static
-
-DecompressWithConfig (middleware/decompress.go:60-60)
-  DecompressWithConfig returns a decompress middleware with config or panics on invalid configuration.
-  sig: DecompressWithConfig(config DecompressConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: Decompress
-
-HTTPSNonWWWRedirectWithConfig (middleware/redirect.go:85-85)
-  HTTPSNonWWWRedirectWithConfig returns a HTTPS Non-WWW redirect middleware with config or panics on invalid configuration
-  sig: HTTPSNonWWWRedirectWithConfig(config RedirectConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: HTTPSNonWWWRedirect
-
-HTTPSRedirectWithConfig (middleware/redirect.go:57-57)
-  HTTPSRedirectWithConfig returns a HTTPS redirect middleware with config or panics on invalid configuration.
-  sig: HTTPSRedirectWithConfig(config RedirectConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: HTTPSRedirect
-
-HTTPSWWWRedirectWithConfig (middleware/redirect.go:71-71)
-  HTTPSWWWRedirectWithConfig returns a HTTPS WWW redirect middleware with config or panics on invalid configuration.
-  sig: HTTPSWWWRedirectWithConfig(config RedirectConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: HTTPSWWWRedirect
-
-NonWWWRedirectWithConfig (middleware/redirect.go:113-113)
-  NonWWWRedirectWithConfig returns a Non-WWW redirect middleware with config or panics on invalid configuration.
-  sig: NonWWWRedirectWithConfig(config RedirectConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: NonWWWRedirect
-
-WWWRedirectWithConfig (middleware/redirect.go:99-99)
-  WWWRedirectWithConfig returns a WWW redirect middleware with config or panics on invalid configuration.
-  sig: WWWRedirectWithConfig(config RedirectConfig)
-  behavior: DELEGATE(toMiddlewareOrPanic -> result)
-  called_by: WWWRedirect
-
-RequestLoggerWithConfig (middleware/request_logger.go:237-237)
-  RequestLoggerWithConfig returns a RequestLogger middleware with config.
-  sig: RequestLoggerWithConfig(config RequestLoggerConfig)
-  behavior: GUARD(err -> raise_panic)
-  calls: ToMiddleware
-  called_by: RequestLogger
-  raises: panic
-
 Echo.Use (echo.go:431-431)
   Use adds middleware to the chain which is run after router has found matching route and before route/request handler met
   sig: Echo.Use(middleware ...MiddlewareFunc)
@@ -299,7 +153,7 @@ Echo.Use (echo.go:431-431)
 
 RequestLoggerConfig.ToMiddleware (middleware/request_logger.go:246-246)
   ToMiddleware converts RequestLoggerConfig into middleware or returns an error for invalid configuration.
-  behavior: PRECEDENCE(config); ACCUMULATE(loop -> result)
+  behavior: PRECEDENCE(config); ACCUMULATE(CanonicalHeaderKey loop -> result)
   called_by: RequestLoggerWithConfig
 
 Echo.Group (echo.go:659-659)
@@ -307,14 +161,163 @@ Echo.Group (echo.go:659-659)
   sig: Echo.Group(prefix string, m ...MiddlewareFunc)
   calls: Use
 
-New (echo.go:333-333)
-  New creates an instance of Echo.
-  calls: DefaultHTTPErrorHandler, NewDefaultFS
-  called_by: NewWithConfig, main
+Echo.GET (echo.go:449-449)
+  GET registers a new GET route for a path with matching handler in the router with optional route-level middleware.
+  sig: Echo.GET(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(e.Add -> result)
+  calls: Add
+  called_by: FileFS, main
+
+Echo.Start (echo.go:744-744)
+  Start stars HTTP server on given address with Echo as a handler serving requests.
+  sig: Echo.Start(address string)
+  behavior: DELEGATE(sc.Start -> result); UNWIND(defer)
+  called_by: main
+
+GzipConfig.ToMiddleware (middleware/compress.go:69-69)
+  ToMiddleware converts GzipConfig to middleware or returns an error for invalid configuration
+  behavior: PRECEDENCE(config)
+  calls: bufferPool, gzipCompressPool, WriteHeader
+
+ProxyConfig.ToMiddleware (middleware/proxy.go:305-305)
+  ToMiddleware converts ProxyConfig to middleware or returns an error for invalid configuration
+  behavior: PRECEDENCE(config)
+  calls: proxyHTTP, proxyRaw, Next
+
+DecompressConfig.ToMiddleware (middleware/decompress.go:65-65)
+  ToMiddleware converts DecompressConfig to middleware or returns an error for invalid configuration
+  behavior: PRECEDENCE(config)
+  calls: gzipDecompressPool, Close
+
+StaticConfig.ToMiddleware (middleware/static.go:156-156)
+  ToMiddleware converts StaticConfig to middleware or returns an error for invalid configuration
+  behavior: PRECEDENCE(config)
+  calls: listDir, serveFile
+
+AddTrailingSlashConfig.ToMiddleware (middleware/slash.go:39-39)
+  ToMiddleware converts AddTrailingSlashConfig to middleware or returns an error for invalid configuration
+  behavior: PRECEDENCE(config)
+  calls: sanitizeURI
+
+RemoveTrailingSlashConfig.ToMiddleware (middleware/slash.go:103-103)
+  ToMiddleware converts RemoveTrailingSlashConfig to middleware or returns an error for invalid configuration
+  behavior: PRECEDENCE(config)
+  calls: sanitizeURI
+
+CSRFConfig.ToMiddleware (middleware/csrf.go:126-126)
+  ToMiddleware converts CSRFConfig to middleware or returns an error for invalid configuration
+  behavior: PRECEDENCE(config)
+  calls: checkSecFetchSiteRequest, validateCSRFToken
+
+BodyLimitConfig.ToMiddleware (middleware/body_limit.go:47-47)
+  ToMiddleware converts BodyLimitConfig to middleware or returns an error for invalid configuration
+  calls: Reset
+
+Echo.add (echo.go:621-621)
+  sig: Echo.add(route Route)
+  behavior: GUARD(e.OnAddRoute != nil -> return RouteInfo{},...); PRECEDENCE(e -> err -> paramsCount)
+  calls: Add
+  called_by: Add, AddRoute
+
+BasicAuthConfig.ToMiddleware (middleware/basic_auth.go:97-97)
+  ToMiddleware converts BasicAuthConfig to middleware or returns an error for invalid configuration
+  behavior: GUARD(config.Validator == nil -> return nil, errors....); PRECEDENCE(config)
+
+BodyDumpConfig.ToMiddleware (middleware/body_dump.go:73-73)
+  ToMiddleware converts BodyDumpConfig to middleware or returns an error for invalid configuration
+  behavior: GUARD(config.Handler == nil -> return nil, errors....); PRECEDENCE(config)
+
+CORSConfig.ToMiddleware (middleware/cors.go:145-145)
+  ToMiddleware converts CORSConfig to middleware or returns an error for invalid configuration
+  behavior: PRECEDENCE(config -> len)
+
+ContextTimeoutConfig.ToMiddleware (middleware/context_timeout.go:38-38)
+  ToMiddleware converts Config to middleware.
+  behavior: GUARD(config.Timeout == 0 -> return nil, errors....); PRECEDENCE(config)
+
+Echo.Any (echo.go:504-504)
+  Any registers a new route for all HTTP methods (supported by Echo) and path with matching handler in the router with opt
+  sig: Echo.Any(path string, handler HandlerFunc, middleware ...Middlewa...)
+  behavior: DELEGATE(e.Add -> result)
+  calls: Add
+
+Echo.DELETE (echo.go:443-443)
+  DELETE registers a new DELETE route for a path with matching handler in the router with optional route-level middleware.
+  sig: Echo.DELETE(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(e.Add -> result)
+  calls: Add
+
+Echo.File (echo.go:609-609)
+  File registers a new route with path to serve a static file with optional route-level middleware.
+  sig: Echo.File(path, file string, middleware ...MiddlewareFunc)
+  calls: Add
+
+Echo.HEAD (echo.go:455-455)
+  HEAD registers a new HEAD route for a path with matching handler in the router with optional route-level middleware.
+  sig: Echo.HEAD(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(e.Add -> result)
+  calls: Add
+
+Echo.PATCH (echo.go:467-467)
+  PATCH registers a new PATCH route for a path with matching handler in the router with optional route-level middleware.
+  sig: Echo.PATCH(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(e.Add -> result)
+  calls: Add
+
+Echo.POST (echo.go:473-473)
+  POST registers a new POST route for a path with matching handler in the router with optional route-level middleware.
+  sig: Echo.POST(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(e.Add -> result)
+  calls: Add
+
+Echo.PUT (echo.go:479-479)
+  PUT registers a new PUT route for a path with matching handler in the router with optional route-level middleware.
+  sig: Echo.PUT(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(e.Add -> result)
+  calls: Add
+
+Echo.Pre (echo.go:426-426)
+  Pre adds middleware to the chain which is run before router tries to find matching route.
+  sig: Echo.Pre(middleware ...MiddlewareFunc)
+
+Echo.TRACE (echo.go:485-485)
+  TRACE registers a new TRACE route for a path with matching handler in the router with optional route-level middleware.
+  sig: Echo.TRACE(path string, h HandlerFunc, m ...MiddlewareFunc)
+  behavior: DELEGATE(e.Add -> result)
+  calls: Add
+
+KeyAuthConfig.ToMiddleware (middleware/key_auth.go:138-138)
+  ToMiddleware converts KeyAuthConfig to middleware or returns an error for invalid configuration
+  behavior: PRECEDENCE(config)
+
+MethodOverrideConfig.ToMiddleware (middleware/method_override.go:46-46)
+  ToMiddleware converts MethodOverrideConfig to middleware or returns an error for invalid configuration
+  behavior: PRECEDENCE(config)
+
+RecoverConfig.ToMiddleware (middleware/recover.go:53-53)
+  ToMiddleware converts RecoverConfig to middleware or returns an error for invalid configuration
+  behavior: PRECEDENCE(config)
+  raises: panic
+
+RedirectConfig.ToMiddleware (middleware/redirect.go:119-119)
+  ToMiddleware converts RedirectConfig to middleware or returns an error for invalid configuration
+  behavior: PRECEDENCE(config)
+
+RequestIDConfig.ToMiddleware (middleware/request_id.go:42-42)
+  ToMiddleware converts RequestIDConfig to middleware or returns an error for invalid configuration
+  behavior: PRECEDENCE(config)
+
+RewriteConfig.ToMiddleware (middleware/rewrite.go:53-53)
+  ToMiddleware converts RewriteConfig to middleware or returns an error for invalid configuration
+  behavior: PRECEDENCE(config); ACCUMULATE(loop -> result)
+
+SecureConfig.ToMiddleware (middleware/secure.go:101-101)
+  ToMiddleware converts SecureConfig to middleware or returns an error for invalid configuration
 
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 53 with behavior annotations
+coverage: 80 symbols in L3, 67 with behavior annotations
+uncovered: Echo.Add, Echo.ServeHTTP, Echo.FileFS, Echo.serveHTTP
 
 --- CLUE FILE END ---
 

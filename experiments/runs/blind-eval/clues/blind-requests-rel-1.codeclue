@@ -130,6 +130,11 @@ Request (src/requests/models.py:232-312)
   imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
   calls: PreparedRequest, register_hook
 
+RequestsWarning (src/requests/exceptions.py:143-144)
+  Base warning for Requests.
+  extends: Warning
+  imports: urllib3.exceptions, compat
+
 ContentDecodingError (src/requests/exceptions.py:124-125)
   Failed to decode response content.
   extends: RequestException, BaseHTTPError
@@ -188,22 +193,35 @@ ReadTimeout (src/requests/exceptions.py:88-89)
   extends: Timeout
   imports: urllib3.exceptions, compat
 
-RequestsWarning (src/requests/exceptions.py:143-144)
-  Base warning for Requests.
-  extends: Warning
+RequestException (src/requests/exceptions.py:13-25)
+  There was an ambiguous exception that occurred while handling your
+  extends: IOError
   imports: urllib3.exceptions, compat
+
+RequestsDependencyWarning (src/requests/exceptions.py:151-152)
+  An imported dependency doesn't match the expected version range.
+  extends: RequestsWarning
+  imports: urllib3.exceptions, compat
+
+RequestsCookieJar (src/requests/cookies.py:176-437)
+  Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
+  extends: CookieJar, MutableMapping
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: CookieConflictError, __contains__, _find_no_duplicates, copy, get, get_policy, iteritems, iterkeys
+  called_by: copy, cookiejar_from_dict
+  raises: KeyError, CookieConflictError
 
 build_response (src/requests/adapters.py:337-372)
   Builds a :class:`Response <requests.Response>` object from a urllib3
   sig: build_response(req, resp)
-  behavior: BRANCH(isinstance_bytes -> result, else -> result)
+  behavior: BRANCH(isinstance(req.url, bytes) -> req.url.decode('utf-8'), else -> req.url)
   called_by: HTTPAdapter
   uses: Response (models), CaseInsensitiveDict (structures)
 
 send (src/requests/sessions.py:675-750)
   Send a given PreparedRequest.
   sig: send(request)
-  behavior: BRANCH(allow_redirects -> result, else -> result)
+  behavior: BRANCH(allow_redirects -> self.resolve_redirect..., else -> [])
   calls: get, get_adapter, resolve_redirects
   called_by: request, Session, resolve_redirects, SessionRedirectMixin
   raises: ValueError
@@ -277,30 +295,7 @@ request_url (src/requests/adapters.py:524-554)
   sig: request_url(request, proxies)
   called_by: HTTPAdapter
 
-send (src/requests/adapters.py:120-137)
-  Sends PreparedRequest object.
-  sig: send(request, stream, timeout, verify, cert...)
-  raises: NotImplementedError
-
-send (src/requests/adapters.py:591-697)
-  Sends PreparedRequest object.
-  sig: send(request, stream, timeout, verify, cert...)
-  raises: InvalidURL, ConnectionError, ProxyError, ValueError
-  uses: InvalidURL (exceptions), TimeoutSauce (urllib3.util), ConnectionError (exceptions), ProxyError (exceptions)
-
-get (src/requests/sessions.py:595-604)
-  Sends a GET request.
-  sig: get(url)
-  behavior: DELEGATE(request -> result)
-  calls: request
-  called_by: merge_environment_settings, send, Session, should_strip_auth, SessionRedirectMixin, merge_hooks
-
-delete (src/requests/api.py:148-157)
-  Sends a DELETE request.
-  sig: delete(url)
-  behavior: DELEGATE(request -> result)
-  calls: request
-
 -- GAPS
 type: RELATIONAL (answerable from L2-L3 structure)
 coverage: 80 symbols in L3, 27 with behavior annotations
+uncovered: get_unicode_from_response, stream_decode_response_unicode, ChunkedEncodingError, ConnectionError

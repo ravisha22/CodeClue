@@ -120,12 +120,9 @@ build_connection_pool_key_attributes M src/requests/adapters.py:374    Build the
 build_response (src/requests/adapters.py:337-372)
   Builds a :class:`Response <requests.Response>` object from a urllib3
   sig: build_response(req, resp)
-  behavior: BRANCH(isinstance_bytes -> result, else -> result)
+  behavior: BRANCH(isinstance(req.url, bytes) -> req.url.decode('utf-8'), else -> req.url)
   called_by: HTTPAdapter
   uses: Response (models), CaseInsensitiveDict (structures)
-
-__init__ (src/requests/exceptions.py:18-25)
-  Initialize RequestException with `request` and `response` objects.
 
 Response (src/requests/models.py:642-1041)
   The :class:`Response <Response>` object, which contains a
@@ -144,6 +141,51 @@ handle_401 (src/requests/auth.py:241-283)
   sig: handle_401(r)
   calls: build_digest_header
 
+RequestsWarning (src/requests/exceptions.py:143-144)
+  Base warning for Requests.
+  extends: Warning
+  imports: urllib3.exceptions, compat
+
+MockResponse (src/requests/cookies.py:103-121)
+  Wraps a `httplib.HTTPMessage` to mimic a `urllib.addinfourl`.
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: getheaders
+  called_by: extract_cookies_to_jar
+
+get_unicode_from_response (src/requests/utils.py:578-614)
+  Returns the requested content back in unicode.
+  sig: get_unicode_from_response(r)
+  calls: get_encoding_from_headers
+
+handle_redirect (src/requests/auth.py:236-239)
+  Reset num_401_calls counter on redirects.
+  sig: handle_redirect(r)
+
+stream_decode_response_unicode (src/requests/utils.py:551-565)
+  Stream decodes an iterator.
+  sig: stream_decode_response_unicode(iterator, r)
+  behavior: ACCUMULATE(iterator loop -> result)
+
+RequestsCookieJar (src/requests/cookies.py:176-437)
+  Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
+  extends: CookieJar, MutableMapping
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: CookieConflictError, __contains__, _find_no_duplicates, copy, get, get_policy, iteritems, iterkeys
+  called_by: copy, cookiejar_from_dict
+  raises: KeyError, CookieConflictError
+
+CaseInsensitiveDict (src/requests/structures.py:13-80)
+  A case-insensitive ``dict``-like object.
+  extends: MutableMapping
+  imports: compat
+  calls: lower_items
+  called_by: __eq__, copy
+
+RequestsDependencyWarning (src/requests/exceptions.py:151-152)
+  An imported dependency doesn't match the expected version range.
+  extends: RequestsWarning
+  imports: urllib3.exceptions, compat
+
 iter_content (src/requests/models.py:801-857)
   Iterates over the response data.
   sig: iter_content(chunk_size, decode_unicode)
@@ -151,6 +193,19 @@ iter_content (src/requests/models.py:801-857)
   called_by: __iter__, content, iter_lines, Response
   raises: StreamConsumedError, TypeError, ChunkedEncodingError, ContentDecodingError
   uses: StreamConsumedError (exceptions), ChunkedEncodingError (exceptions), ContentDecodingError (exceptions), ConnectionError (exceptions)
+
+extract_cookies_to_jar (src/requests/cookies.py:124-137)
+  Extract the cookies from the response into a CookieJar.
+  sig: extract_cookies_to_jar(jar, request, response)
+  calls: MockRequest, MockResponse
+
+copy (src/requests/cookies.py:428-433)
+  Return a copy of this RequestsCookieJar.
+  calls: get_policy, update, RequestsCookieJar
+  called_by: __getstate__, update, RequestsCookieJar, _copy_cookie_jar
+
+__init__ (src/requests/exceptions.py:18-25)
+  Initialize RequestException with `request` and `response` objects.
 
 json (src/requests/models.py:949-982)
   Decodes the JSON response body (if any) as a Python object.
@@ -169,7 +224,7 @@ Session (src/requests/sessions.py:356-818)
 resolve_redirects (src/requests/sessions.py:160-280)
   Receives a Response.
   sig: resolve_redirects(resp, req, stream, timeout, verify...)
-  behavior: ACCUMULATE(loop -> hist)
+  behavior: ACCUMULATE(req.copy loop -> hist, raises TooManyRedirects)
   calls: close, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies
   called_by: send, Session
   raises: TooManyRedirects
@@ -181,11 +236,6 @@ MockRequest (src/requests/cookies.py:23-100)
   calls: get_host, get_origin_req_host, is_unverifiable, get
   called_by: extract_cookies_to_jar, get_cookie_header
   raises: NotImplementedError
-
-extract_cookies_to_jar (src/requests/cookies.py:124-137)
-  Extract the cookies from the response into a CookieJar.
-  sig: extract_cookies_to_jar(jar, request, response)
-  calls: MockRequest, MockResponse
 
 merge_hooks (src/requests/sessions.py:92-104)
   Properly merges both requests and session hooks.
@@ -211,22 +261,12 @@ content (src/requests/models.py:893-909)
 iter_lines (src/requests/models.py:859-890)
   Iterates over the response data, one line at a time.
   sig: iter_lines(chunk_size, decode_unicode, delimiter)
-  behavior: ACCUMULATE(loop -> chunk)
+  behavior: ACCUMULATE(self.iter_content(chu... -> chunk)
   calls: iter_content
-
-copy (src/requests/cookies.py:428-433)
-  Return a copy of this RequestsCookieJar.
-  calls: get_policy, update, RequestsCookieJar
-  called_by: __getstate__, update, RequestsCookieJar, _copy_cookie_jar
 
 FileModeWarning (src/requests/exceptions.py:147-148)
   A file was opened in text mode, but Requests determined its binary length.
   extends: RequestsWarning, DeprecationWarning
-  imports: urllib3.exceptions, compat
-
-RequestsWarning (src/requests/exceptions.py:143-144)
-  Base warning for Requests.
-  extends: Warning
   imports: urllib3.exceptions, compat
 
 StreamConsumedError (src/requests/exceptions.py:128-129)
@@ -246,7 +286,7 @@ __init__ (src/requests/cookies.py:110-115)
 _find (src/requests/cookies.py:366-384)
   Requests uses this method internally to get cookie values.
   sig: _find(name, domain, path)
-  behavior: ACCUMULATE(loop -> result)
+  behavior: ACCUMULATE(iter(self) loop -> result)
   raises: KeyError
 
 default_headers (src/requests/utils.py:887-898)
@@ -258,7 +298,7 @@ default_headers (src/requests/utils.py:887-898)
 get_netrc_auth (src/requests/utils.py:206-247)
   Returns the Requests tuple auth for a given url from netrc.
   sig: get_netrc_auth(url, raise_errors)
-  behavior: BRANCH(netrc_file -> result, else -> result)
+  behavior: BRANCH(netrc_file is not None -> (netrc_file,), else -> (f'~/{f}' for f in N...)
 
 is_permanent_redirect (src/requests/models.py:779-784)
   True if this Response one of the permanent versions of redirect.
@@ -272,61 +312,13 @@ links (src/requests/models.py:985-999)
 text (src/requests/models.py:912-947)
   Content of the response, in unicode.
 
-MockResponse (src/requests/cookies.py:103-121)
-  Wraps a `httplib.HTTPMessage` to mimic a `urllib.addinfourl`.
-  imports: calendar, copy, compat, threading, dummy_threading
-  calls: getheaders
-  called_by: extract_cookies_to_jar
-
-get_unicode_from_response (src/requests/utils.py:578-614)
-  Returns the requested content back in unicode.
-  sig: get_unicode_from_response(r)
-  calls: get_encoding_from_headers
-
-handle_redirect (src/requests/auth.py:236-239)
-  Reset num_401_calls counter on redirects.
-  sig: handle_redirect(r)
-
-stream_decode_response_unicode (src/requests/utils.py:551-565)
-  Stream decodes an iterator.
-  sig: stream_decode_response_unicode(iterator, r)
-  behavior: ACCUMULATE(loop -> result)
-
-generate (src/requests/models.py:818-839)
-  behavior: BRANCH(hasattr_stream -> result, else -> result)
-  called_by: iter_content, Response
-  raises: ChunkedEncodingError, ContentDecodingError, ConnectionError, RequestsSSLError
-  uses: ChunkedEncodingError (exceptions), ContentDecodingError (exceptions), ConnectionError (exceptions), RequestsSSLError (exceptions)
-
-prepare_request (src/requests/sessions.py:459-500)
-  Constructs a :class:`PreparedRequest <PreparedRequest>` for
-  sig: prepare_request(request)
-  calls: merge_hooks, merge_setting
-  called_by: request, Session
-  uses: PreparedRequest (models), RequestsCookieJar (cookies)
-
-get (src/requests/sessions.py:595-604)
-  Sends a GET request.
-  sig: get(url)
-  behavior: DELEGATE(request -> result)
-  calls: request
-  called_by: merge_environment_settings, send, Session, should_strip_auth, SessionRedirectMixin, merge_hooks
-
-send (src/requests/sessions.py:675-750)
-  Send a given PreparedRequest.
-  sig: send(request)
-  behavior: BRANCH(allow_redirects -> result, else -> result)
-  calls: get, get_adapter, resolve_redirects
-  called_by: request, Session, resolve_redirects, SessionRedirectMixin
-  raises: ValueError
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
 coverage: 80 symbols in L3, 23 with behavior annotations
+uncovered: lower_items, set, set_cookie, cookiejar_from_dict
 drill: src/requests/adapters.py (~33 lines, build_response)
 drill: src/requests/exceptions.py (~10 lines, __init__)
 drill: src/requests/auth.py (~39 lines, handle_401)
-drill: src/requests/sessions.py (~117 lines, resolve_redirects)
 
 --- END CLUE FILE ---
 
@@ -423,131 +415,6 @@ drill: src/requests/sessions.py (~117 lines, resolve_redirects)
 
         self._thread_local.num_401_calls = 1
         return r
-```
-
-## resolve_redirects  (src/requests/sessions.py L160-280)
-```
-    def resolve_redirects(
-        self,
-        resp,
-        req,
-        stream=False,
-        timeout=None,
-        verify=True,
-        cert=None,
-        proxies=None,
-        yield_requests=False,
-        **adapter_kwargs,
-    ):
-        """Receives a Response. Returns a generator of Responses or Requests."""
-
-        hist = []  # keep track of history
-
-        url = self.get_redirect_target(resp)
-        previous_fragment = urlparse(req.url).fragment
-        while url:
-            prepared_request = req.copy()
-
-            # Update history and keep track of redirects.
-            resp.history = hist[:]
-            hist.append(resp)
-
-            try:
-                resp.content  # Consume socket so it can be released
-            except (ChunkedEncodingError, ContentDecodingError, RuntimeError):
-                resp.raw.read(decode_content=False)
-
-            if len(resp.history) >= self.max_redirects:
-                raise TooManyRedirects(
-                    f"Exceeded {self.max_redirects} redirects.", response=resp
-                )
-
-            # Release the connection back into the pool.
-            resp.close()
-
-            # Handle redirection without scheme (see: RFC 1808 Section 4)
-            if url.startswith("//"):
-                parsed_rurl = urlparse(resp.url)
-                url = ":".join([to_native_string(parsed_rurl.scheme), url])
-
-            # Normalize url case and attach previous fragment if needed (RFC 7231 7.1.2)
-            parsed = urlparse(url)
-            if parsed.fragment == "" and previous_fragment:
-                parsed = parsed._replace(fragment=previous_fragment)
-            elif parsed.fragment:
-                previous_fragment = parsed.fragment
-            url = parsed.geturl()
-
-            # Facilitate relative 'location' headers, as allowed by RFC 7231.
-            # (e.g. '/path/to/resource' instead of 'http://domain.tld/path/to/resource')
-            # Compliant with RFC3986, we percent encode the url.
-            if not parsed.netloc:
-                url = urljoin(resp.url, requote_uri(url))
-            else:
-                url = requote_uri(url)
-
-            prepared_request.url = to_native_string(url)
-
-            self.rebuild_method(prepared_request, resp)
-
-            # https://github.com/psf/requests/issues/1084
-            if resp.status_code not in (
-                codes.temporary_redirect,
-                codes.permanent_redirect,
-            ):
-                # https://github.com/psf/requests/issues/3490
-                purged_headers = ("Content-Length", "Content-Type", "Transfer-Encoding")
-                for header in purged_headers:
-                    prepared_request.headers.pop(header, None)
-                prepared_request.body = None
-
-            headers = prepared_request.headers
-            headers.pop("Cookie", None)
-
-            # Extract any cookies sent on the response to the cookiejar
-            # in the new request. Because we've mutated our copied prepared
-            # request, use the old one that we haven't yet touched.
-            extract_cookies_to_jar(prepared_request._cookies, req, resp.raw)
-            merge_cookies(prepared_request._cookies, self.cookies)
-            prepared_request.prepare_cookies(prepared_request._cookies)
-
-            # Rebuild auth and proxy information.
-            proxies = self.rebuild_proxies(prepared_request, proxies)
-            self.rebuild_auth(prepared_request, resp)
-
-            # A failed tell() sets `_body_position` to `object()`. This non-None
-            # value ensures `rewindable` will be True, allowing us to raise an
-            # UnrewindableBodyError, instead of hanging the connection.
-            rewindable = prepared_request._body_position is not None and (
-                "Content-Length" in headers or "Transfer-Encoding" in headers
-            )
-
-            # Attempt to rewind consumed file-like object.
-            if rewindable:
-                rewind_body(prepared_request)
-
-            # Override the original request.
-            req = prepared_request
-
-            if yield_requests:
-                yield req
-            else:
-                resp = self.send(
-                    req,
-                    stream=stream,
-                    timeout=timeout,
-                    verify=verify,
-                    cert=cert,
-                    proxies=proxies,
-                    allow_redirects=False,
-                    **adapter_kwargs,
-                )
-
-                extract_cookies_to_jar(self.cookies, prepared_request, resp.raw)
-
-                # extract redirect url, if any, for the next loop
-                url = self.get_redirect_target(resp)
-                yield resp
 ```
 
 ## build_digest_header  (src/requests/auth.py L126-234)
@@ -663,72 +530,206 @@ drill: src/requests/sessions.py (~117 lines, resolve_redirects)
         return f"Digest {base}"
 ```
 
-## close  (src/requests/sessions.py L796-799)
+## __call__  (tests/test_requests.py L1216-1219)
 ```
-    def close(self):
-        """Closes all adapters and as such the session"""
-        for v in self.adapters.values():
-            v.close()
+                r.headers["Dummy-Auth-Test"] = "dummy-auth-test-ok"
+                return r
+
+        req = requests.Request("GET", httpbin("headers"))
 ```
 
-## send  (tests/test_requests.py L2576-2580)
+## AuthBase  (src/requests/auth.py L69-73)
 ```
-        self.calls.append(SendCall(args, kwargs))
-        return self.build_response()
+class AuthBase:
+    """Base class that all auth implementations derive from"""
 
-    def build_response(self):
-        request = self.calls[-1].args[0]
-```
-
-## get_redirect_target  (tests/test_requests.py L2270-2279)
-```
-                # default behavior
-                if resp.is_redirect:
-                    return resp.headers["location"]
-                # edge case - check to see if 'location' is in headers anyways
-                location = resp.headers.get("location")
-                if location and (location != resp.url):
-                    return location
-                return None
-
-        session = CustomRedirectSession()
+    def __call__(self, r):
+        raise NotImplementedError("Auth hooks must be callable.")
 ```
 
-## rebuild_auth  (src/requests/sessions.py L282-300)
+## __eq__  (src/requests/structures.py L67-73)
 ```
-    def rebuild_auth(self, prepared_request, response):
-        """When being redirected we may want to strip authentication from the
-        request to avoid leaking credentials. This method intelligently removes
-        and reapplies authentication where possible to avoid credential loss.
+    def __eq__(self, other):
+        if isinstance(other, Mapping):
+            other = CaseInsensitiveDict(other)
+        else:
+            return NotImplemented
+        # Compare insensitively
+        return dict(self.lower_items()) == dict(other.lower_items())
+```
+
+## __ne__  (src/requests/auth.py L313-314)
+```
+    def __ne__(self, other):
+        return not self == other
+```
+
+## HTTPBasicAuth  (src/requests/auth.py L76-96)
+```
+class HTTPBasicAuth(AuthBase):
+    """Attaches HTTP Basic Authentication to the given Request object."""
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+    def __eq__(self, other):
+        return all(
+            [
+                self.username == getattr(other, "username", None),
+                self.password == getattr(other, "password", None),
+            ]
+        )
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __call__(self, r):
+        r.headers["Authorization"] = _basic_auth_str(self.username, self.password)
+        return r
+```
+
+## md5_utf8  (src/requests/auth.py L145-148)
+```
+            def md5_utf8(x):
+                if isinstance(x, str):
+                    x = x.encode("utf-8")
+                return hashlib.md5(x).hexdigest()
+```
+
+## sha256_utf8  (src/requests/auth.py L161-164)
+```
+            def sha256_utf8(x):
+                if isinstance(x, str):
+                    x = x.encode("utf-8")
+                return hashlib.sha256(x).hexdigest()
+```
+
+## sha512_utf8  (src/requests/auth.py L169-172)
+```
+            def sha512_utf8(x):
+                if isinstance(x, str):
+                    x = x.encode("utf-8")
+                return hashlib.sha512(x).hexdigest()
+```
+
+## sha_utf8  (src/requests/auth.py L153-156)
+```
+            def sha_utf8(x):
+                if isinstance(x, str):
+                    x = x.encode("utf-8")
+                return hashlib.sha1(x).hexdigest()
+```
+
+## handle_redirect  (src/requests/auth.py L236-239)
+```
+    def handle_redirect(self, r, **kwargs):
+        """Reset num_401_calls counter on redirects."""
+        if r.is_redirect:
+            self._thread_local.num_401_calls = 1
+```
+
+## init_per_thread_state  (src/requests/auth.py L116-124)
+```
+    def init_per_thread_state(self):
+        # Ensure state is initialized just once per-thread
+        if not hasattr(self._thread_local, "init"):
+            self._thread_local.init = True
+            self._thread_local.last_nonce = ""
+            self._thread_local.nonce_count = 0
+            self._thread_local.chal = {}
+            self._thread_local.pos = None
+            self._thread_local.num_401_calls = None
+```
+
+## HTTPDigestAuth  (src/requests/auth.py L107-314)
+```
+class HTTPDigestAuth(AuthBase):
+    """Attaches HTTP Digest Authentication to the given Request object."""
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+        # Keep state in per-thread local storage
+        self._thread_local = threading.local()
+
+    def init_per_thread_state(self):
+        # Ensure state is initialized just once per-thread
+        if not hasattr(self._thread_local, "init"):
+            self._thread_local.init = True
+            self._thread_local.last_nonce = ""
+            self._thread_local.nonce_count = 0
+            self._thread_local.chal = {}
+            self._thread_local.pos = None
+            self._thread_local.num_401_calls = None
+
+    def build_digest_header(self, method, url):
         """
-        headers = prepared_request.headers
-        url = prepared_request.url
-
-        if "Authorization" in headers and self.should_strip_auth(
-            response.request.url, url
-        ):
-            # If we get redirected to a new host, we should strip out any
-            # authentication headers.
-            del headers["Authorization"]
-
-        # .netrc might have more auth for us on our new host.
-        new_auth = get_netrc_auth(url) if self.trust_env else None
-        if new_auth is not None:
-            prepared_request.prepare_auth(new_auth)
-```
-
-## rebuild_method  (src/requests/sessions.py L333-353)
-```
-    def rebuild_method(self, prepared_request, response):
-        """When being redirected we may want to change the method of the request
-        based on certain specs or browser behavior.
+        :rtype: str
         """
-        method = prepared_request.method
 
-        # https://tools.ietf.org/html/rfc7231#section-6.4.4
-        if response.status_code == codes.see_other and method != "HEAD":
-            method = "GET"
+        realm = self._thread_local.chal["realm"]
+        nonce = self._thread_local.chal["nonce"]
+        qop = self._thread_local.chal.get("qop")
+        algorithm = self._thread_local.chal.get("algorithm")
+        opaque = self._thread_local.chal.get("opaque")
+        hash_utf8 = None
 
+        if algorithm is None:
+            _algorithm = "MD5"
+        else:
+            _algorithm = algorithm.upper()
+        # lambdas assume digest modules are imported at the top level
+        if _algorithm == "MD5" or _algorithm == "MD5-SESS":
+
+            def md5_utf8(x):
+                if isinstance(x, str):
+                    x = x.encode("utf-8")
+                return hashlib.md5(x).hexdigest()
+
+            hash_utf8 = md5_utf8
+        elif _algorithm == "SHA":
+
+            def sha_utf8(x):
+                if isinstance(x, str):
+                    x = x.encode("utf-8")
+                return hashlib.sha1(x).hexdigest()
+
+            hash_utf8 = sha_utf8
+        elif _algorithm == "SHA-256":
+
+            def sha256_utf8(x):
+                if isinstance(x, str):
+                    x = x.encode("utf-8")
+                return hashlib.sha256(x).hexdigest()
+
+            hash_utf8 = sha256_utf8
+        elif _algorithm == "SHA-512":
+
+            def sha512_utf8(x):
+                if isinstance(x, str):
+                    x = x.encode("utf-8")
+                return hashlib.sha512(x).hexdigest()
+
+            hash_utf8 = sha512_utf8
+
+        KD = lambda s, d: hash_utf8(f"{s}:{d}")  # noqa:E731
+
+        if hash_utf8 is None:
+            return None
+
+        # XXX not implemented yet
+        entdig = None
+        p_parsed = urlparse(url)
+        #: path is request-uri defined in RFC 2616 which should not be empty
+        path = p_parsed.path or "/"
+        if p_parsed.query:
+            path += f"?{p_parsed.query}"
+
+        A1 = f"{self.username}:{realm}:{self.password}"
+        A2 = f"{method}:{path}"
+
+        HA1 = hash_utf8(A1)
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

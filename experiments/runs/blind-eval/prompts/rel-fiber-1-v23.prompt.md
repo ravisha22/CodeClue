@@ -88,8 +88,8 @@ Bind.validateStruct                 M bind.go:183    Struct validation.
 SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
 domainMatcher.match                 M domain.go:139    match checks if a hostname matches the domain p...
 Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
-manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
+manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
 isUnixNetwork                       M middleware/adaptor/adaptor.go:208    function isUnixNetwork
 Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...
@@ -123,7 +123,7 @@ Colors (color.go:8-9)
 
 App.deleteRoute (router.go:443-443)
   sig: App.deleteRoute(methods []string, matchFunc func(r *Route)
-  behavior: ACCUMULATE(loop -> result); UNWIND(defer)
+  behavior: ACCUMULATE(ToUpper loop -> result); UNWIND(defer)
   calls: pruneAutoHeadRouteLocked
   called_by: RemoveRoute, RemoveRouteByName, RemoveRouteFunc
 
@@ -164,9 +164,17 @@ FiberApp (middleware/adaptor/adaptor.go:204-204)
   behavior: DELEGATE(handlerFunc -> result)
   calls: handlerFunc
 
+domainRouter.mount (domain.go:403-403)
+  mount attaches a sub-app instance to the domain router at the specified prefix.
+  sig: domainRouter.mount(prefix string, subApp *App)
+  behavior: PRECEDENCE(d -> mountPath -> err); ACCUMULATE(copyRoute loop -> result); UNWIND(defer)
+  calls: Name, wrapHandlers
+  called_by: Use
+  raises: panic
+
 DefaultCtx.Route (ctx.go:355-356)
   Route returns the matched Route struct.
-  behavior: GUARD(c -> Route)
+  behavior: GUARD(c.route == nil -> return &Route{)
   called_by: FullPath
 
 DefaultReq.Route (req.go:1002-1002)
@@ -183,14 +191,6 @@ RoutePatternMatch (path.go:155-155)
   sig: RoutePatternMatch(path, pattern string, cfg ...Config)
   behavior: PRECEDENCE(len -> path -> pattern); UNWIND(defer)
   calls: RemoveEscapeCharBytes, parseRoute, getMatch, reset
-
-domainRouter.mount (domain.go:403-403)
-  mount attaches a sub-app instance to the domain router at the specified prefix.
-  sig: domainRouter.mount(prefix string, subApp *App)
-  behavior: PRECEDENCE(d -> mountPath -> err); ACCUMULATE(loop -> result); UNWIND(defer)
-  calls: Name, wrapHandlers
-  called_by: Use
-  raises: panic
 
 Registering.Connect (register.go:87-87)
   Connect registers a route for CONNECT methods that establishes a tunnel to the server identified by the target resource.
@@ -222,7 +222,7 @@ App.MountPath (mount.go:103-104)
 App.mount (mount.go:42-42)
   Mount attaches another app instance as a sub-router along a routing path.
   sig: App.mount(prefix string, subApp *App)
-  behavior: PRECEDENCE(prefix -> err); ACCUMULATE(loop -> result)
+  behavior: PRECEDENCE(prefix -> err); ACCUMULATE(getGroupPath loop -> result)
   raises: panic
 
 DefaultCtx.App (ctx.go:102-102)
@@ -234,6 +234,12 @@ DefaultReq.App (req.go:83-83)
 DefaultRes.App (res.go:134-134)
   App returns the *App reference to the instance of the Fiber application
 
+Bind.URI (bind.go:352-352)
+  URI binds the route parameters into the struct, map[string]string and map[string][]string.
+  sig: Bind.URI(out any)
+  behavior: GUARD(err := b.returnBindErr(bind.Bind(b.ctx.Route(... -> return err); UNWIND(defer)
+  calls: returnBindErr, validateStruct, Bind
+
 Hooks (hooks.go:35-35)
   Hooks is a struct to use it with App.
   methods: OnFork, OnGroup, OnGroupName, OnListen, OnMount, OnName
@@ -241,12 +247,6 @@ Hooks (hooks.go:35-35)
 domainRegistering (domain.go:623-624)
   domainRegistering provides route registration helpers for a specific path on a domain router, implementing the [Register
   methods: Add, All, Connect, Delete, Get, Head
-
-Bind.URI (bind.go:352-352)
-  URI binds the route parameters into the struct, map[string]string and map[string][]string.
-  sig: Bind.URI(out any)
-  behavior: GUARD(err -> pass_through); UNWIND(defer)
-  calls: returnBindErr, validateStruct, Bind
 
 Registering.All (register.go:50-50)
   All registers a middleware route that will match requests with the provided path which is stored in register struct.
@@ -265,13 +265,25 @@ Register (register.go:8-9)
 Group.mount (mount.go:73-73)
   Mount attaches another app instance as a sub-router along a routing path.
   sig: Group.mount(prefix string, subApp *App)
-  behavior: PRECEDENCE(groupPath -> err); ACCUMULATE(loop -> result)
+  behavior: PRECEDENCE(groupPath -> err); ACCUMULATE(getGroupPath loop -> result)
   raises: panic
+
+App.next (router.go:115-115)
+  sig: App.next(c *DefaultCtx)
+  behavior: PRECEDENCE(not_ok -> c -> exists); ACCUMULATE(match loop -> result)
+  calls: match
+  called_by: requestHandler
+
+App.nextCustom (router.go:216-216)
+  sig: App.nextCustom(c CustomCtx)
+  behavior: PRECEDENCE(not_ok -> c -> exists); ACCUMULATE(match loop -> result)
+  calls: match
+  called_by: requestHandler
 
 App.pruneAutoHeadRouteLocked (router.go:491-491)
   pruneAutoHeadRouteLocked removes an automatically generated HEAD route so a later explicit registration can take its pla
   sig: App.pruneAutoHeadRouteLocked(path string)
-  behavior: GUARD(headIndex -> none); ACCUMULATE(loop -> result)
+  behavior: GUARD(headIndex == -1 -> return); ACCUMULATE(append loop -> result)
   calls: normalizePath
   called_by: addRoute, deleteRoute
 
@@ -290,38 +302,24 @@ App.RemoveRouteFunc (router.go:439-439)
   sig: App.RemoveRouteFunc(matchFunc func(r *Route)
   calls: deleteRoute
 
-App.ensureAutoHeadRoutesLocked (router.go:629-630)
-  behavior: GUARD(app -> none); PRECEDENCE(app -> headIndex -> len); ACCUMULATE(loop -> result)
-  called_by: ensureAutoHeadRoutes
-  raises: panic
-
-Route.match (router.go:68-68)
-  sig: Route.match(detectionPath, path string, params *[maxParams]string)
-  behavior: GUARD(r -> value); PRECEDENCE(r -> len)
-  called_by: next, nextCustom
-
 App.Route (app.go:1024-1024)
   Route is used to define routes with a common prefix inside the supplied function.
   sig: App.Route(prefix string, fn func(router Router)
-  behavior: GUARD(fn -> raise_panic); PRECEDENCE(fn -> len)
+  behavior: GUARD(fn == nil -> panic("route handle...); PRECEDENCE(fn -> len)
   calls: Group, Name
   raises: panic
 
 domainRouter.Route (domain.go:584-584)
   Route defines routes with a common prefix inside the supplied function, scoped to the domain pattern.
   sig: domainRouter.Route(prefix string, fn func(router Router)
-  behavior: GUARD(fn -> raise_panic); PRECEDENCE(fn -> len)
+  behavior: GUARD(fn == nil -> panic("route handle...); PRECEDENCE(fn -> len)
   calls: Group, Name
   raises: panic
 
-App.normalizePath (router.go:398-398)
-  sig: App.normalizePath(path string)
-  behavior: DELEGATE(RemoveEscapeChar -> result)
-  called_by: RemoveRoute, pruneAutoHeadRouteLocked
-
 -- GAPS
 type: RELATIONAL (answerable from L2-L3 structure)
-coverage: 80 symbols in L3, 48 with behavior annotations
+coverage: 80 symbols in L3, 50 with behavior annotations
+uncovered: DefaultCtx.RestartRouting, routeParser.analyseParameterPart, App.setCtxFunc, routeParser.parseRoute
 
 --- CLUE FILE END ---
 

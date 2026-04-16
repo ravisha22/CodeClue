@@ -1074,6 +1074,8 @@ def _classify_question_type(
         phrase in q
         for phrase in (
             "what happens",
+            "what does",
+            "actually do",
             "when ",
             "error",
             "default behavior",

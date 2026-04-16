@@ -1,15 +1,14 @@
-# Blind Evaluation Prompt - MRLF v2.1
+# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
 # Task: struct-fiber-2
 
-You are a senior software engineer. You have been given a codebase
-comprehension artifact (a "clue file") that summarises a repository's
-structure, symbols, and behavior. This is NOT the full source code - it is
-a compressed representation.
+You are a senior software engineer. You have been given:
+1. A codebase comprehension artifact (clue file) - a compressed representation
+2. Source code snippets for key functions identified as needing deeper analysis
 
-Answer the question below using ONLY the information in the clue file.
+Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
 
---- CLUE FILE START ---
+--- CLUE FILE (File 1) ---
 =CC v2.1 fiber@HEAD 148mod 1472sym
 ? What modules handle request context and routing in Fiber, and where are the data types for request and response defined?
 
@@ -88,8 +87,8 @@ Bind.validateStruct                 M bind.go:183    Struct validation.
 SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
 domainMatcher.match                 M domain.go:139    match checks if a hostname matches the domain p...
 Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
-manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
+manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
 isUnixNetwork                       M middleware/adaptor/adaptor.go:208    function isUnixNetwork
 Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...
@@ -121,7 +120,7 @@ redirectionMsg.Msgsize              M redirect_msgp.go:196    Msgsize returns an
 CopyContextToFiberContext (middleware/adaptor/adaptor.go:101-101)
   CopyContextToFiberContext copies the values of context.Context to a fasthttp.RequestCtx.
   sig: CopyContextToFiberContext(src any, requestContext *fasthttp.RequestCtx)
-  behavior: GUARD(requestContext -> none); PRECEDENCE(requestContext -> not_v.IsValid -> t); ACCUMULATE(loop -> result)
+  behavior: GUARD(requestContext == nil -> return); PRECEDENCE(requestContext -> not_v.IsValid -> t); ACCUMULATE(IsNil loop -> result)
   called_by: HTTPMiddleware
 
 HTTPHandlerWithContext (middleware/adaptor/adaptor.go:65-65)
@@ -139,12 +138,27 @@ Ctx (ctx_interface_gen.go:18-18)
 logger (client/hooks.go:345-345)
   logger is a response hook that logs request and response data if debug mode is enabled.
   sig: logger(c *Client, resp *Response, req *Request)
-  behavior: GUARD(not_c.debug -> none)
+  behavior: GUARD(!c.debug -> return nil)
 
 Request.Context (client/request.go:115-115)
   Context returns the context associated with the Request.
-  behavior: GUARD(r -> context.Background)
+  behavior: GUARD(r.ctx == nil -> return context.Back...)
   called_by: Send
+
+FromContext (middleware/session/middleware.go:179-179)
+  FromContext returns the Middleware from the Fiber context.
+  sig: FromContext(ctx any)
+  behavior: GUARD(m, ok := fiber.ValueFromContext[*Middleware](... -> return m)
+
+FromContext (middleware/requestid/requestid.go:79-79)
+  FromContext returns the request ID from context.
+  sig: FromContext(ctx any)
+  behavior: GUARD(rid, ok := fiber.ValueFromContext[string](ctx... -> return rid)
+
+TokenFromContext (middleware/keyauth/keyauth.go:99-99)
+  TokenFromContext returns the bearer token from the request context.
+  sig: TokenFromContext(ctx any)
+  behavior: GUARD(token, ok := fiber.ValueFromContext[string](c... -> return token)
 
 Request.AddFormDataWithMap (client/request.go:507-507)
   AddFormDataWithMap adds multiple form fields and values to the Request.
@@ -166,8 +180,13 @@ Response.setRequest (client/response.go:33-33)
 
 DefaultCtx.RequestID (ctx.go:311-312)
   RequestID returns the request identifier from the response header or request header.
-  behavior: GUARD(requestID -> pass_through)
+  behavior: GUARD(requestID := c.GetRespHeader(HeaderXRequestID... -> return requestID)
   calls: Get, GetRespHeader
+
+ConvertRequest (middleware/adaptor/adaptor.go:89-89)
+  ConvertRequest converts a fiber.Ctx to a http.Request.
+  sig: ConvertRequest(c fiber.Ctx, forServer bool)
+  behavior: GUARD(err := fasthttpadaptor.ConvertRequest(c.Reque... -> return nil, err)
 
 Request (client/request.go:46-46)
   Request contains all data related to an HTTP request.
@@ -185,7 +204,7 @@ Response.Close (client/response.go:208-208)
 LocalContextFromHTTPRequest (middleware/adaptor/adaptor.go:78-78)
   LocalContextFromHTTPRequest extracts the Fiber user context previously stored into r.Context() by the adaptor.
   sig: LocalContextFromHTTPRequest(r *http.Request)
-  behavior: GUARD(r -> pass_through)
+  behavior: GUARD(r == nil -> return nil, false)
   called_by: HTTPHandlerWithContext
 
 Client.AddRequestHook (client/client.go:146-146)
@@ -204,41 +223,21 @@ Client.RequestHook (client/client.go:141-141)
 Client.ResponseHook (client/client.go:155-155)
   ResponseHook returns the user-defined response hooks.
 
-WithStruct (client/request.go:24-24)
-  WithStruct is implemented by types that allow data to be stored from a struct via reflection.
-
 response (middleware/idempotency/response.go:9-9)
   response is a struct that represents the response of a request.
-
-ConvertRequest (middleware/adaptor/adaptor.go:89-89)
-  ConvertRequest converts a fiber.Ctx to a http.Request.
-  sig: ConvertRequest(c fiber.Ctx, forServer bool)
-  behavior: GUARD(err -> pass_through)
-
-FromContext (middleware/session/middleware.go:179-179)
-  FromContext returns the Middleware from the Fiber context.
-  sig: FromContext(ctx any)
-  behavior: GUARD(m -> pass_through)
-
-FromContext (middleware/requestid/requestid.go:79-79)
-  FromContext returns the request ID from context.
-  sig: FromContext(ctx any)
-  behavior: GUARD(rid -> pass_through)
 
 FromContext (middleware/paginate/paginate.go:92-92)
   FromContext returns the PageInfo from the request context.
   sig: FromContext(ctx any)
 
-TokenFromContext (middleware/keyauth/keyauth.go:99-99)
-  TokenFromContext returns the bearer token from the request context.
-  sig: TokenFromContext(ctx any)
-  behavior: GUARD(token -> pass_through)
-
 parserRequestHeader (client/hooks.go:122-122)
   parserRequestHeader merges client and request headers, and sets headers automatically based on the request data.
   sig: parserRequestHeader(c *Client, req *Request)
-  behavior: PRECEDENCE(c -> req); ACCUMULATE(loop -> result); DISPATCH(req)
+  behavior: PRECEDENCE(c -> req); ACCUMULATE(AddBytesKV loop -> result); DISPATCH(req)
   calls: unsafeRandString
+
+WithStruct (client/request.go:24-24)
+  WithStruct is implemented by types that allow data to be stored from a struct via reflection.
 
 Bind (bind.go:40-40)
   Bind provides helper methods for binding request data to Go values.
@@ -248,7 +247,7 @@ Bind (bind.go:40-40)
 core.execute (client/core.go:209-209)
   execute runs all hooks, applies timeouts, sends the request, and runs response hooks.
   sig: core.execute(ctx context.Context, client *Client, req *Request)
-  behavior: GUARD(err -> pass_through); PRECEDENCE(err -> cancel)
+  behavior: GUARD(err := c.preHooks(); err != nil -> return nil, err); PRECEDENCE(err -> cancel)
   calls: afterHooks, execFunc, preHooks, timeout
 
 core.execFunc (client/core.go:74-74)
@@ -269,7 +268,7 @@ NewWithCustomCtx (app.go:667-667)
 DefaultRes.Render (res.go:691-691)
   Render a template with data and sends a text/html response.
   sig: DefaultRes.Render(name string, bind any, layouts ...string)
-  behavior: PRECEDENCE(bind -> not_rendered); ACCUMULATE(loop -> result); UNWIND(defer)
+  behavior: PRECEDENCE(bind -> not_rendered); ACCUMULATE(Contains loop -> result); UNWIND(defer)
   calls: Get, OriginalURL, renderExtensions
 
 DefaultRes.SendString (res.go:997-997)
@@ -298,24 +297,329 @@ Client.DoDeadline (client/client.go:85-85)
   sig: Client.DoDeadline(req *fasthttp.Request, resp *fasthttp.Response, deadline...)
   behavior: DELEGATE(c.transport.DoDeadline -> result)
 
-Client.DoTimeout (client/client.go:79-79)
-  DoTimeout executes the request and waits for a response up to the provided timeout.
-  sig: Client.DoTimeout(req *fasthttp.Request, resp *fasthttp.Response, timeout ...)
-  behavior: DELEGATE(c.transport.DoTimeout -> result)
-
-DefaultCtx.Reset (ctx.go:662-662)
-  Reset is a method to reset context fields by given request when to use server handlers.
-  sig: DefaultCtx.Reset(fctx *fasthttp.RequestCtx)
-  calls: configDependentPaths
-  called_by: String
-
 -- GAPS
-type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 44 with behavior annotations
+type: MECHANISTIC (body logic needed for full answer)
+coverage: 80 symbols in L3, 47 with behavior annotations
+uncovered: App.next, App.nextCustom, Client.StreamResponseBody, Response.StatusCode
+drill: middleware/adaptor/adaptor.go (~1 lines, CopyContextToFiberContext)
+drill: middleware/adaptor/adaptor.go (~1 lines, HTTPHandlerWithContext)
+drill: helpers.go (~1 lines, StoreInContext)
 
---- CLUE FILE END ---
+--- END CLUE FILE ---
+
+--- SOURCE SNIPPETS (File 2 Drill-Down) ---
+## CopyContextToFiberContext  (middleware/adaptor/adaptor.go L101-101)
+```
+func CopyContextToFiberContext(src any, requestContext *fasthttp.RequestCtx) {
+```
+
+## HTTPHandlerWithContext  (middleware/adaptor/adaptor.go L65-65)
+```
+func HTTPHandlerWithContext(h http.Handler) fiber.Handler {
+```
+
+## StoreInContext  (helpers.go L83-83)
+```
+func StoreInContext(c Ctx, key, value any) {
+```
+
+## LocalContextFromHTTPRequest  (middleware/adaptor/adaptor.go L78-78)
+```
+func LocalContextFromHTTPRequest(r *http.Request) (context.Context, bool) {
+```
+
+## ConvertRequest  (middleware/adaptor/adaptor.go L89-89)
+```
+func ConvertRequest(c fiber.Ctx, forServer bool) (*http.Request, error) {
+```
+
+## FiberApp  (middleware/adaptor/adaptor.go L204-204)
+```
+func FiberApp(app *fiber.App) http.HandlerFunc {
+```
+
+## FiberHandler  (middleware/adaptor/adaptor.go L194-194)
+```
+func FiberHandler(h fiber.Handler) http.Handler {
+```
+
+## FiberHandlerFunc  (middleware/adaptor/adaptor.go L199-199)
+```
+func FiberHandlerFunc(h fiber.Handler) http.HandlerFunc {
+```
+
+## HTTPHandler  (middleware/adaptor/adaptor.go L56-56)
+```
+func HTTPHandler(h http.Handler) fiber.Handler {
+```
+
+## HTTPHandlerFunc  (middleware/adaptor/adaptor.go L51-51)
+```
+func HTTPHandlerFunc(h http.HandlerFunc) fiber.Handler {
+```
+
+## HTTPMiddleware  (middleware/adaptor/adaptor.go L162-162)
+```
+func HTTPMiddleware(mw func(http.Handler) http.Handler) fiber.Handler {
+```
+
+## disableLogger  (middleware/adaptor/adaptor.go L21-21)
+```
+type disableLogger struct{}
+```
+
+## handlerFunc  (middleware/adaptor/adaptor.go L242-242)
+```
+func handlerFunc(app *fiber.App, h ...fiber.Handler) http.HandlerFunc {
+```
+
+## isUnixNetwork  (middleware/adaptor/adaptor.go L208-208)
+```
+func isUnixNetwork(network string) bool {
+```
+
+## resolveRemoteAddr  (middleware/adaptor/adaptor.go L212-212)
+```
+func resolveRemoteAddr(remoteAddr string, localAddr any) (net.Addr, error) {
+```
+
+## App.isEtagStale  (helpers.go L740-740)
+```
+func (app *App) isEtagStale(etag string, noneMatchBytes []byte) bool {
+```
+
+## App.method  (helpers.go L953-953)
+```
+func (app *App) method(methodInt int) string {
+```
+
+## App.methodInt  (helpers.go L923-924)
+```
+func (app *App) methodInt(s string) int {
+	// For better performance
+```
+
+## App.quoteRawString  (helpers.go L188-188)
+```
+func (app *App) quoteRawString(raw string) string {
+```
+
+## App.quoteString  (helpers.go L178-178)
+```
+func (app *App) quoteString(raw string) string {
+```
+
+## GenericType  (helpers.go L1104-1105)
+```
+type GenericType interface {
+	GenericTypeInteger | GenericTypeFloat | bool | string | []byte
+```
+
+## GenericTypeFloat  (helpers.go L1124-1125)
+```
+type GenericTypeFloat interface {
+	float32 | float64
+```
+
+## GenericTypeInteger  (helpers.go L1109-1110)
+```
+type GenericTypeInteger interface {
+	GenericTypeIntegerSigned | GenericTypeIntegerUnsigned
+```
+
+## GenericTypeIntegerSigned  (helpers.go L1114-1115)
+```
+type GenericTypeIntegerSigned interface {
+	int | int8 | int16 | int32 | int64
+```
+
+## GenericTypeIntegerUnsigned  (helpers.go L1119-1120)
+```
+type GenericTypeIntegerUnsigned interface {
+	uint | uint8 | uint16 | uint32 | uint64
+```
+
+## IsMethodIdempotent  (helpers.go L973-974)
+```
+func IsMethodIdempotent(m string) bool {
+	if IsMethodSafe(m) {
+```
+
+## IsMethodSafe  (helpers.go L959-960)
+```
+func IsMethodSafe(m string) bool {
+	switch m {
+```
+
+## acceptedType  (helpers.go L37-38)
+```
+type acceptedType struct {
+	params      headerParams
+```
+
+## acceptsLanguageOfferBasic  (helpers.go L284-284)
+```
+func acceptsLanguageOfferBasic(spec, offer string, _ headerParams) bool {
+```
+
+## acceptsLanguageOfferExtended  (helpers.go L305-305)
+```
+func acceptsLanguageOfferExtended(spec, offer string, _ headerParams) bool {
+```
+
+## acceptsOffer  (helpers.go L266-266)
+```
+func acceptsOffer(spec, offer string, _ headerParams) bool {
+```
+
+## acceptsOfferType  (helpers.go L363-363)
+```
+func acceptsOfferType(spec, offerType string, specParams headerParams) bool {
+```
+
+## configProvider  (helpers.go L101-102)
+```
+	type configProvider interface {
+		Config() *tls.Config
+```
+
+## defaultString  (helpers.go L244-244)
+```
+func defaultString(value string, defaultValue []string) string {
+```
+
+## forEachMediaRange  (helpers.go L506-506)
+```
+func forEachMediaRange(header []byte, functor func([]byte)) {
+```
+
+## getGroupPath  (helpers.go L251-251)
+```
+func getGroupPath(prefix, path string) string {
+```
+
+## getOffer  (helpers.go L562-562)
+```
+func getOffer(header []byte, isAccepted func(spec, offer string, specParams headerParams) bool, offers ...string) string {
+```
+
+## getSplicedStrList  (helpers.go L446-446)
+```
+func getSplicedStrList(headerValue string, dst []string) []string {
+```
+
+## getTLSConfig  (helpers.go L92-92)
+```
+func getTLSConfig(ln net.Listener) *tls.Config {
+```
+
+## isNoCache  (helpers.go L812-812)
+```
+func isNoCache(cacheControl string) bool {
+```
+
+## isNoCacheDelimiter  (helpers.go L843-844)
+```
+func isNoCacheDelimiter(c byte) bool {
+	return c == ' ' || c == '\t' || c == ','
+```
+
+## joinHeaderValues  (helpers.go L464-464)
+```
+func joinHeaderValues(headers [][]byte) []byte {
+```
+
+## matchEtag  (helpers.go L714-714)
+```
+func matchEtag(s, etag string) bool {
+```
+
+## matchEtagStrong  (helpers.go L727-727)
+```
+func matchEtagStrong(s, etag string) bool {
+```
+
+## matchNoCacheToken  (helpers.go L847-847)
+```
+func matchNoCacheToken(s string, i int) bool {
+```
+
+## normalizeEtag  (helpers.go L699-699)
+```
+func normalizeEtag(t string) (value string, weak, ok bool) { //nolint:nonamedreturns // gocritic unnamedResult requires naming the parsed ETag components
+```
+
+## paramsMatch  (helpers.go L412-412)
+```
+func paramsMatch(specParamStr headerParams, offerParams string) bool {
+```
+
+## parseAddr  (helpers.go L772-772)
+```
+func parseAddr(raw string) (host, port string) { //nolint:nonamedreturns // gocritic unnamedResult requires naming host and port parts for clarity
+```
+
+## readContent  (helpers.go L158-158)
+```
+func readContent(rf io.ReaderFrom, name string) (int64, error) {
+```
+
+## sortAcceptedTypes  (helpers.go L677-677)
+```
+func sortAcceptedTypes(at []acceptedType) {
+```
+
+## testConn.Close  (helpers.go L892-893)
+```
+	c.Lock()
+	defer c.Unlock()
+```
+
+## testConn.Read  (helpers.go L872-872)
+```
+func (c *testConn) Read(b []byte) (int, error) {
+```
+
+## testConn.Write  (helpers.go L880-880)
+```
+func (c *testConn) Write(b []byte) (int, error) {
+```
+
+## testConn  (helpers.go L865-865)
+```
+	r        bytes.Buffer
+```
+
+## tlsConfigProvider  (helpers.go L97-98)
+```
+	type tlsConfigProvider interface {
+		TLSConfig() *tls.Config
+```
+
+## toBytesImmutable  (helpers.go L918-919)
+```
+func toBytesImmutable(s string) []byte {
+	return []byte(s)
+```
+
+## toStringImmutable  (helpers.go L914-915)
+```
+func toStringImmutable(b []byte) string {
+	return string(b)
+```
+
+## unescapeHeaderValue  (helpers.go L475-475)
+```
+func unescapeHeaderValue(v []byte) ([]byte, error) {
+```
+
+## uniqueRouteStack  (helpers.go L230-230)
+```
+func uniqueRouteStack(stack []*Route) []*Route {
+```
+--- END SOURCE SNIPPETS ---
 
 QUESTION: What modules handle request context and routing in Fiber, and where are the data types for request and response defined?
 
-Provide a detailed answer based solely on the clue file above.
-For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.
+Provide a detailed answer based on the clue file and source snippets above.
+For each claim you make, cite the specific clue entry or source snippet that supports it.

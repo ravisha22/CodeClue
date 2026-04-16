@@ -158,6 +158,37 @@ ServerTimeoutError (aiohttp/client_exceptions.py:227-228)
   extends: ServerConnectionError, TimeoutError
   imports: asyncio, multidict, typedefs, ssl, client_reqrep
 
+ServerConnectionError (aiohttp/client_exceptions.py:212-213)
+  Server connection errors.
+  extends: ClientConnectionError
+  imports: asyncio, multidict, typedefs, ssl, client_reqrep
+
+WebSocketError (aiohttp/_websocket/models.py:155-163)
+  WebSocket protocol parser error.
+  extends: Exception
+  imports: enum
+  calls: __init__
+
+Domain (aiohttp/web_urldispatcher.py:766-803)
+  extends: AbstractRuleMatching
+  imports: asyncio, base64, hashlib, html, inspect
+  calls: validation
+  raises: TypeError, ValueError
+  uses: URL (yarl)
+
+HTTPServerError (aiohttp/web_exceptions.py:459-460)
+  extends: HTTPError
+  imports: warnings, http, multidict, yarl, helpers
+
+MaskDomain (aiohttp/web_urldispatcher.py:806-819)
+  extends: Domain
+  imports: asyncio, base64, hashlib, html, inspect
+
+WSServerHandshakeError (aiohttp/client_exceptions.py:106-107)
+  websocket server handshake error.
+  extends: ClientResponseError
+  imports: asyncio, multidict, typedefs, ssl, client_reqrep
+
 UrlDispatcher (aiohttp/web_urldispatcher.py:965-1227)
   extends: AbstractRouter
   imports: asyncio, base64, hashlib, html, inspect
@@ -277,38 +308,7 @@ AbstractRoute (aiohttp/web_urldispatcher.py:148-210)
   imports: asyncio, base64, hashlib, html, inspect
   raises: ValueError, TypeError
 
-AbstractRouteDef (aiohttp/web_routedef.py:36-39)
-  extends: ABC
-  imports: typedefs, web_request, web_response, web_urldispatcher
-
-AbstractRuleMatching (aiohttp/web_urldispatcher.py:751-763)
-  extends: ABC
-  imports: asyncio, base64, hashlib, html, inspect
-
-BaseRunner (aiohttp/web_runner.py:252-352)
-  extends: ABC
-  imports: asyncio, signal, socket, yarl, http_parser
-  calls: stop
-  raises: RuntimeError
-
-ContentCoding (aiohttp/web_response.py:57-64)
-  extends: Enum
-  attrs: deflate='deflate', gzip='gzip', identity='identity'
-  imports: asyncio, enum, math, warnings, concurrent.futures
-
-Domain (aiohttp/web_urldispatcher.py:766-803)
-  extends: AbstractRuleMatching
-  imports: asyncio, base64, hashlib, html, inspect
-  calls: validation
-  raises: TypeError, ValueError
-  uses: URL (yarl)
-
-GracefulExit (aiohttp/web_runner.py:39-40)
-  extends: SystemExit
-  attrs: code=1
-  imports: asyncio, signal, socket, yarl, http_parser
-  called_by: _raise_graceful_exit
-
 -- GAPS
 type: RELATIONAL (answerable from L2-L3 structure)
 coverage: 80 symbols in L3, 0 with behavior annotations
+uncovered: Application, Server, ServerRunner, aiohttp_raw_server

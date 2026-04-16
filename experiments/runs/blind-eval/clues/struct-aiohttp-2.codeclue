@@ -153,18 +153,6 @@ HttpBadRequest (aiohttp/http_exceptions.py:55-57)
   attrs: code=400, message='Bad Request'
   imports: textwrap, multidict
 
-body_exists (aiohttp/web_request.py:612-614)
-  Return True if request has HTTP BODY, False otherwise.
-
-can_read_body (aiohttp/web_request.py:607-609)
-  Return True if request's HTTP BODY can be read, False otherwise.
-
-remote (aiohttp/web_request.py:408-420)
-  Remote IP of client initiated HTTP request.
-
-version (aiohttp/web_request.py:381-386)
-  Read only property for getting HTTP version of request.
-
 request (aiohttp/client.py:464-468)
   Perform HTTP request.
   sig: request(method, url)
@@ -177,15 +165,27 @@ _handle_ping_pong_exception (aiohttp/client_ws.py:213-222)
   called_by: _ping_task_done, _pong_not_received, ClientWebSocketResponse
   uses: WSMessageError (http_websocket)
 
+from_response (aiohttp/multipart.py:688-699)
+  Constructs reader instance from HTTP response.
+  sig: from_response(cls, response)
+
+body_exists (aiohttp/web_request.py:612-614)
+  Return True if request has HTTP BODY, False otherwise.
+
+can_read_body (aiohttp/web_request.py:607-609)
+  Return True if request's HTTP BODY can be read, False otherwise.
+
+remote (aiohttp/web_request.py:408-420)
+  Remote IP of client initiated HTTP request.
+
+version (aiohttp/web_request.py:381-386)
+  Read only property for getting HTTP version of request.
+
 AppRunner (aiohttp/web_runner.py:380-453)
   Web Application runner
   imports: asyncio, signal, socket, yarl, http_parser
   calls: cleanup
   raises: TypeError
-
-from_response (aiohttp/multipart.py:688-699)
-  Constructs reader instance from HTTP response.
-  sig: from_response(cls, response)
 
 delete (aiohttp/client.py:1388-1392)
   Perform HTTP DELETE request.
@@ -236,30 +236,30 @@ DigestAuthMiddleware (aiohttp/client_middleware_digest_auth.py:145-469)
   raises: ValueError, ClientError
   uses: URL (yarl), ClientError (client_exceptions)
 
-LoggingMiddleware (examples/logging_middleware.py:27-56)
-  Middleware that logs request timing and response status.
-  imports: asyncio, logging, aiohttp
-  called_by: run_tests
-
 LoggingMiddleware (examples/combined_middleware.py:38-63)
   Middleware that logs request timing and response status.
   imports: asyncio, base64, binascii, logging, http
   called_by: run_tests
 
+LoggingMiddleware (examples/logging_middleware.py:27-56)
+  Middleware that logs request timing and response status.
+  imports: asyncio, logging, aiohttp
+  called_by: run_tests
+
 __call__ (examples/retry_middleware.py:47-88)
   Execute request with retry logic.
   sig: __call__(request, handler)
-  behavior: ACCUMULATE(loop -> delay)
+  behavior: ACCUMULATE(range(self.max_retrie... -> delay)
 
 __call__ (examples/combined_middleware.py:119-156)
   Execute request with retry logic.
   sig: __call__(request, handler)
-  behavior: ACCUMULATE(loop -> delay)
+  behavior: ACCUMULATE(range(self.max_retrie... -> delay)
 
 handle_error (aiohttp/web_protocol.py:752-812)
   Handle errors.
   sig: handle_error(request, status, exc, message)
-  behavior: BRANCH(request_count_eq_1_and_isinstanc -> result, else -> result)
+  behavior: BRANCH(self._request_count == 1 and... -> self.logger.debug('Er..., else ->...)
   calls: force_close, log_exception
   called_by: _handle_request, handler, _make_error_handler, RequestHandler
   raises: ConnectionError
@@ -288,32 +288,29 @@ _resolve_path_to_response (aiohttp/web_urldispatcher.py:635-668)
   raises: HTTPNotFound, HTTPForbidden
   uses: FileResponse (web_fileresponse), HTTPNotFound (web_exceptions), HTTPForbidden (web_exceptions), Response (web_response)
 
-if_modified_since (aiohttp/web_request.py:479-484)
-  The value of If-Modified-Since HTTP header, or None.
-  behavior: DELEGATE(parse_http_date -> result)
+_handle (aiohttp/web_urldispatcher.py:623-633)
+  sig: _handle(request)
+  raises: HTTPNotFound
+  uses: HTTPNotFound (web_exceptions)
 
-if_range (aiohttp/web_request.py:541-546)
-  The value of If-Range HTTP header, or None.
-  behavior: DELEGATE(parse_http_date -> result)
+RequestHandler (aiohttp/web_protocol.py:119-822)
+  HTTP protocol implementation.
+  extends: BaseProtocol
+  imports: asyncio, asyncio.streams, traceback, html, http
+  calls: log, AccessLoggerWrapper, _handle_request, _make_error_handler, close, connection_lost, connection_made, finish_response
+  raises: ConnectionError
+  uses: Response (web_response), HTTPInternalServerError (web_exceptions), StreamWriter (http)
 
-if_unmodified_since (aiohttp/web_request.py:487-492)
-  The value of If-Unmodified-Since HTTP header, or None.
-  behavior: DELEGATE(parse_http_date -> result)
-
-last_modified (aiohttp/web_response.py:253-258)
-  The value of Last-Modified HTTP header, or None.
-  behavior: DELEGATE(parse_http_date -> result)
-
-scheme (aiohttp/web_request.py:357-370)
-  A string representing the scheme of the request.
-  behavior: BRANCH(transport_sslcontext -> https, else -> http)
-
-read (aiohttp/web_request.py:624-643)
-  Read request body if present.
-  called_by: post, text, BaseRequest
-  raises: HTTPRequestEntityTooLarge
-  uses: HTTPRequestEntityTooLarge (web_exceptions)
+Response (aiohttp/web_response.py:535-740)
+  extends: StreamResponse
+  imports: asyncio, enum, math, warnings, concurrent.futures
+  calls: write
+  called_by: json_bytes_response, json_response
+  raises: RuntimeError, ValueError, TypeError
 
 -- GAPS
-type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 25 with behavior annotations
+type: MECHANISTIC (body logic needed for full answer)
+coverage: 80 symbols in L3, 24 with behavior annotations
+uncovered: TraceRequestHeadersSentParams, TraceRequestRedirectParams, TraceRequestStartParams, TraceResponseChunkReceivedParams
+drill: aiohttp/web_protocol.py (~37 lines, _handle_request)
+drill: aiohttp/web_ws.py (~11 lines, _handle_ping_pong_exception)

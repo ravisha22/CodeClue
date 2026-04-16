@@ -121,16 +121,99 @@ get_best_encoding                   M src/click/_compat.py:48     Returns the de
   ...and 579 more symbols
 
 -- FOCUS
+_check_nested_chain (src/click/core.py:73-90)
+  sig: _check_nested_chain(base_command, cmd_name, cmd, register)
+  behavior: GUARD(not base_command.chain or not isinstance(cmd, Group) -> return); BRANCH(register -> f'It is not possible..., else -> f'Found the group {cm...)
+  called_by: CommandCollection, add_command, Group
+  raises: RuntimeError
+
+ClickException (src/click/exceptions.py:26-53)
+  An exception that Click can handle and show to the user.
+  extends: Exception
+  attrs: exit_code=1
+  imports: gettext, globals, utils, core
+
+ComplexCLI (examples/complex/complex/cli.py:31-45)
+  extends: Group
+  imports: click
+
+cli (examples/completion/completion.py:8-9)
+  calls: group
+
+cli (examples/termui/termui.py:9-11)
+  This script showcases different terminal UI helpers in Click.
+
+cli (examples/repo/repo.py:44-57)
+  Repo is a command line tool that showcases how to build complex
+  sig: cli(ctx, repo_home, config, verbose)
+  behavior: ACCUMULATE(config loop -> result)
+  calls: set_config, Repo
+
+_match_short_opt (src/click/parser.py:389-427)
+  sig: _match_short_opt(arg, state)
+  behavior: ACCUMULATE(arg[1:] loop -> i, raises NoSuchOption)
+  calls: _get_value_from_state, _normalize_opt
+  called_by: _process_opts, _OptionParser
+  raises: NoSuchOption
+  uses: NoSuchOption (exceptions)
+
+_match_long_opt (src/click/parser.py:359-387)
+  sig: _match_long_opt(opt, explicit_value, state)
+  behavior: GUARD(opt not in self._long_opt -> raise NoSuchOption(opt, p...)
+  calls: _get_value_from_state
+  called_by: _process_opts, _OptionParser
+  raises: NoSuchOption, BadOptionUsage
+  uses: NoSuchOption (exceptions), BadOptionUsage (exceptions)
+
+__next__ (src/click/_termui_impl.py:134-140)
+  behavior: DELEGATE(next -> result)
+
+cli (examples/complex/complex/cli.py:56-60)
+  A complex command line interface.
+  sig: cli(ctx, verbose, home)
+
+cli (examples/inout/inout.py:7-30)
+  This script works similar to the Unix `cat` command but it writes
+  sig: cli(input, output)
+  behavior: ACCUMULATE(input loop -> output)
+
+cli (examples/imagepipe/imagepipe.py:11-20)
+  This script processes a bunch of images through pillow in a unix
+
+cli (examples/validation/validation.py:34-48)
+  Validation.
+  sig: cli(count, foo, url)
+  calls: URL
+  raises: BadParameter
+
+cli (examples/complex/complex/commands/cmd_init.py:9-13)
+  Initializes a repository.
+  sig: cli(ctx, path)
+
+cli (examples/aliases/aliases.py:97-98)
+  An example application that supports aliases.
+
+cli (examples/colors/colors.py:25-39)
+  This script prints some colors.
+  behavior: ACCUMULATE(all_colors loop -> result)
+
+cli (examples/naval/naval.py:6-12)
+  Naval Fate.
+
+cli (examples/complex/complex/commands/cmd_status.py:8-11)
+  Shows file changes in the current working directory.
+  sig: cli(ctx)
+
+smoothen_cmd (examples/imagepipe/imagepipe.py:229-238)
+  Applies a smoothening filter.
+  sig: smoothen_cmd(images, iterations)
+  behavior: ACCUMULATE(images loop -> result)
+  calls: copy_filename
+
 _expand_args (src/click/utils.py:578-628)
   Simulate Unix shell expansion with Python functions.
   sig: _expand_args(args)
-  behavior: ACCUMULATE(loop -> out)
-
-_check_nested_chain (src/click/core.py:73-90)
-  sig: _check_nested_chain(base_command, cmd_name, cmd, register)
-  behavior: GUARD(not_base_command.chain_or_not_is -> none); BRANCH(register -> result, else -> result)
-  called_by: CommandCollection, add_command, Group
-  raises: RuntimeError
+  behavior: ACCUMULATE(args loop -> out)
 
 convert_type (src/click/types.py:1112-1169)
   Find the most appropriate :class:`ParamType` for the given Python
@@ -150,7 +233,7 @@ Tuple (src/click/types.py:1060-1109)
 _resolve_incomplete (src/click/shell_completion.py:623-667)
   Find the Click object that will handle the completion of the
   sig: _resolve_incomplete(ctx, args, incomplete)
-  behavior: ACCUMULATE(loop -> result)
+  behavior: ACCUMULATE(params loop -> result)
   calls: _is_incomplete_argument, _is_incomplete_option, _start_of_option
   called_by: get_completions, ShellComplete
 
@@ -164,16 +247,6 @@ Abort (src/click/exceptions.py:294-295)
   An internal signalling exception that signals Click to abort.
   extends: RuntimeError
   imports: gettext, globals, utils, core
-
-ClickException (src/click/exceptions.py:26-53)
-  An exception that Click can handle and show to the user.
-  extends: Exception
-  attrs: exit_code=1
-  imports: gettext, globals, utils, core
-
-ComplexCLI (examples/complex/complex/cli.py:31-45)
-  extends: Group
-  imports: click
 
 FloatRange (src/click/types.py:618-658)
   Restrict a :data:`click.FLOAT` value to a range of accepted
@@ -199,12 +272,6 @@ NoSuchOption (src/click/exceptions.py:208-239)
   extends: UsageError
   imports: gettext, globals, utils, core
 
-cli (examples/termui/termui.py:9-11)
-  This script showcases different terminal UI helpers in Click.
-
-cli (examples/completion/completion.py:8-9)
-  calls: group
-
 command (src/click/decorators.py:168-255)
   Creates a new :class:`Command` and uses the decorated function as
   sig: command(name, cls)
@@ -226,6 +293,31 @@ make_formatter (src/click/core.py:561-573)
   behavior: DELEGATE(formatter_class -> result)
   called_by: Command
 
+Group (src/click/core.py:1503-1951)
+  A group is a command that nests other commands (or more groups).
+  extends: Command
+  attrs: allow_extra_args=True, allow_interspersed_args=False
+  imports: enum, errno, inspect, gettext, itertools
+  calls: get_short_help_str, make_context, _make_sub_context, fail, scope, add_command, format_commands, _process_result
+  raises: TypeError, NoArgsIsHelpError, RuntimeError
+  uses: UsageError (exceptions)
+
+CommandCollection (src/click/core.py:1961-2014)
+  A :class:`Group` that looks up subcommands on other groups.
+  extends: Group
+  imports: enum, errno, inspect, gettext, itertools
+  calls: _check_nested_chain
+
+add_command (src/click/core.py:1622-1630)
+  Registers another :class:`Command` with this group.
+  sig: add_command(cmd, name)
+  calls: _check_nested_chain
+  called_by: Group
+  raises: TypeError
+
+group (examples/completion/completion.py:32-33)
+  called_by: cli
+
 ShellComplete (src/click/shell_completion.py:200-301)
   Base class for providing shell completion support.
   imports: gettext, core, utils, shlex, shutil
@@ -238,98 +330,13 @@ get_completions (src/click/shell_completion.py:271-281)
   calls: _resolve_context, _resolve_incomplete, shell_complete
   called_by: complete, ShellComplete
 
-Command (src/click/core.py:873-1485)
-  Commands are the basic building block of command line interfaces in
-  attrs: allow_extra_args=False, allow_interspersed_args=True, ignore_unknown_options=False
-  imports: enum, errno, inspect, gettext, itertools
-  calls: _main_shell_completion, format_epilog, format_help, format_help_text, format_usage, get_help_option, get_help_option_names, get_params
-  raises: NoArgsIsHelpError, Abort
-  uses: Exit (exceptions), UsageError (exceptions)
-
-Group (src/click/core.py:1503-1951)
-  A group is a command that nests other commands (or more groups).
-  extends: Command
-  attrs: allow_extra_args=True, allow_interspersed_args=False
-  imports: enum, errno, inspect, gettext, itertools
-  calls: get_short_help_str, make_context, _make_sub_context, fail, scope, add_command, format_commands, _process_result
-  raises: TypeError, NoArgsIsHelpError, RuntimeError
-  uses: UsageError (exceptions)
-
-fail (src/click/types.py:136-143)
-  Helper method to fail with an invalid value message.
-  sig: fail(message, param, ctx)
-  called_by: BoolParamType, Choice, DateTime, File, FuncParamType, Path, Tuple, UUIDParameterType
-  raises: BadParameter
-  uses: BadParameter (exceptions)
-
-Choice (src/click/types.py:233-398)
-  The choice type allows a value to be checked against a fixed set
-  extends: ParamType
-  attrs: name='choice'
-  imports: enum, stat, gettext, exceptions, utils
-  calls: _normalized_mapping, get_invalid_choice_message, normalize_choice, fail, convert_type
-  uses: BadParameter (exceptions)
-
-FuncParamType (src/click/types.py:171-192)
-  extends: ParamType
-  imports: enum, stat, gettext, exceptions, utils
-  calls: fail
-  called_by: convert_type
-  uses: BadParameter (exceptions)
-
-_join_param_hints (src/click/exceptions.py:19-23)
-  sig: _join_param_hints(param_hint)
-  behavior: GUARD(param_hint_and_not_isinstance_st -> /_join)
-  called_by: BadParameter, MissingParameter
-
-CommandCollection (src/click/core.py:1961-2014)
-  A :class:`Group` that looks up subcommands on other groups.
-  extends: Group
-  imports: enum, errno, inspect, gettext, itertools
-  calls: _check_nested_chain
-
-_is_incomplete_argument (src/click/shell_completion.py:503-525)
-  Determine if the given parameter is an argument that can still
-  sig: _is_incomplete_argument(ctx, param)
-  called_by: _resolve_incomplete
-
-_is_incomplete_option (src/click/shell_completion.py:537-559)
-  Determine if the given parameter is an option that needs a value.
-  sig: _is_incomplete_option(ctx, args, param)
-  behavior: ACCUMULATE(loop -> result); UNWIND(reversed)
-  calls: _start_of_option
-  called_by: _resolve_incomplete
-
-_start_of_option (src/click/shell_completion.py:528-534)
-  Check if the value looks like the start of an option.
-  sig: _start_of_option(ctx, value)
-  called_by: _is_incomplete_option, _resolve_incomplete
-
-add_command (src/click/core.py:1622-1630)
-  Registers another :class:`Command` with this group.
-  sig: add_command(cmd, name)
-  calls: _check_nested_chain
-  called_by: Group
-  raises: TypeError
-
-complete (src/click/shell_completion.py:291-301)
-  Produce the completion data to send back to the shell.
-  calls: get_completions
-  called_by: shell_complete
-
-get_completion_class (src/click/shell_completion.py:456-463)
-  Look up a registered :class:`ShellComplete` subclass by the name
-  sig: get_completion_class(shell)
-  behavior: DELEGATE(_available_shells.get -> result)
-  called_by: shell_complete
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 17 with behavior annotations
+coverage: 80 symbols in L3, 21 with behavior annotations
+uncovered: exit, format_commands, format_epilog, format_help_text
 drill: src/click/utils.py (~31 lines, _expand_args)
 drill: src/click/core.py (~15 lines, _check_nested_chain)
 drill: src/click/shell_completion.py (~49 lines, _resolve_incomplete)
-drill: src/click/types.py (~40 lines, convert_type)
 
 --- END CLUE FILE ---
 
@@ -408,68 +415,6 @@ def _expand_args(
             out.extend(matches)
 
     return out
-```
-
-## convert_type  (src/click/types.py L1112-1169)
-```
-def convert_type(ty: t.Any | None, default: t.Any | None = None) -> ParamType:
-    """Find the most appropriate :class:`ParamType` for the given Python
-    type. If the type isn't provided, it can be inferred from a default
-    value.
-    """
-    guessed_type = False
-
-    if ty is None and default is not None:
-        if isinstance(default, (tuple, list)):
-            # If the default is empty, ty will remain None and will
-            # return STRING.
-            if default:
-                item = default[0]
-
-                # A tuple of tuples needs to detect the inner types.
-                # Can't call convert recursively because that would
-                # incorrectly unwind the tuple to a single type.
-                if isinstance(item, (tuple, list)):
-                    ty = tuple(map(type, item))
-                else:
-                    ty = type(item)
-        else:
-            ty = type(default)
-
-        guessed_type = True
-
-    if isinstance(ty, tuple):
-        return Tuple(ty)
-
-    if isinstance(ty, ParamType):
-        return ty
-
-    if ty is str or ty is None:
-        return STRING
-
-    if ty is int:
-        return INT
-
-    if ty is float:
-        return FLOAT
-
-    if ty is bool:
-        return BOOL
-
-    if guessed_type:
-        return STRING
-
-    if __debug__:
-        try:
-            if issubclass(ty, ParamType):
-                raise AssertionError(
-                    f"Attempted to use an uninstantiated parameter type ({ty})."
-                )
-        except TypeError:
-            # ty is an instance (correct), so issubclass fails.
-            pass
-
-    return FuncParamType(ty)
 ```
 
 ## _resolve_incomplete  (src/click/shell_completion.py L623-667)
@@ -586,117 +531,6 @@ def _start_of_option(ctx: Context, value: str) -> bool:
     return c in ctx._opt_prefixes
 ```
 
-## FuncParamType  (src/click/types.py L171-192)
-```
-class FuncParamType(ParamType):
-    def __init__(self, func: t.Callable[[t.Any], t.Any]) -> None:
-        self.name: str = func.__name__
-        self.func = func
-
-    def to_info_dict(self) -> dict[str, t.Any]:
-        info_dict = super().to_info_dict()
-        info_dict["func"] = self.func
-        return info_dict
-
-    def convert(
-        self, value: t.Any, param: Parameter | None, ctx: Context | None
-    ) -> t.Any:
-        try:
-            return self.func(value)
-        except ValueError:
-            try:
-                value = str(value)
-            except UnicodeError:
-                value = value.decode("utf-8", "replace")
-
-            self.fail(value, param, ctx)
-```
-
-## Tuple  (src/click/types.py L1060-1109)
-```
-class Tuple(CompositeParamType):
-    """The default behavior of Click is to apply a type on a value directly.
-    This works well in most cases, except for when `nargs` is set to a fixed
-    count and different types should be used for different items.  In this
-    case the :class:`Tuple` type can be used.  This type can only be used
-    if `nargs` is set to a fixed number.
-
-    For more information see :ref:`tuple-type`.
-
-    This can be selected by using a Python tuple literal as a type.
-
-    :param types: a list of types that should be used for the tuple items.
-    """
-
-    def __init__(self, types: cabc.Sequence[type[t.Any] | ParamType]) -> None:
-        self.types: cabc.Sequence[ParamType] = [convert_type(ty) for ty in types]
-
-    def to_info_dict(self) -> dict[str, t.Any]:
-        info_dict = super().to_info_dict()
-        info_dict["types"] = [t.to_info_dict() for t in self.types]
-        return info_dict
-
-    @property
-    def name(self) -> str:  # type: ignore
-        return f"<{' '.join(ty.name for ty in self.types)}>"
-
-    @property
-    def arity(self) -> int:  # type: ignore
-        return len(self.types)
-
-    def convert(
-        self, value: t.Any, param: Parameter | None, ctx: Context | None
-    ) -> t.Any:
-        len_type = len(self.types)
-        len_value = len(value)
-
-        if len_value != len_type:
-            self.fail(
-                ngettext(
-                    "{len_type} values are required, but {len_value} was given.",
-                    "{len_type} values are required, but {len_value} were given.",
-                    len_value,
-                ).format(len_type=len_type, len_value=len_value),
-                param=param,
-                ctx=ctx,
-            )
-
-        return tuple(
-            ty(x, param, ctx) for ty, x in zip(self.types, value, strict=False)
-        )
-```
-
-## __enter__  (tests/test_context.py L602-604)
-```
-        def __enter__(self) -> list[int]:
-            self.val = [self._base_val]
-            return self.val
-```
-
-## __exit__  (tests/test_context.py L606-617)
-```
-        def __exit__(
-            self,
-            exc_type: type[BaseException] | None,
-            exc_value: BaseException | None,
-            traceback: TracebackType | None,
-        ) -> bool | None:
-            if not exc_type:
-                self.val[0] = self._base_val - 1
-                return None
-
-            self.val[0] = self._base_val + 1
-            return self._handle_exception
-```
-
-## __getattr__  (src/click/utils.py L519-522)
-```
-    def __getattr__(self, attr: str) -> t.Any:
-        return getattr(self.wrapped, attr)
-
-
-```
-
 ## __init__  (tests/test_utils.py L682-685)
 ```
     def __init__(self, package_name):
@@ -705,10 +539,146 @@ class Tuple(CompositeParamType):
 
 ```
 
-## __iter__  (tests/test_termui.py L55-56)
+## _parse_decls  (src/click/core.py L2222-2225)
 ```
-        def __iter__(self):
-            return self
+    def _parse_decls(
+        self, decls: cabc.Sequence[str], expose_value: bool
+    ) -> tuple[str | None, list[str], list[str]]:
+        raise NotImplementedError()
+```
+
+## add_to_parser  (src/click/core.py L2294-2295)
+```
+    def add_to_parser(self, parser: _OptionParser, ctx: Context) -> None:
+        raise NotImplementedError()
+```
+
+## get_error_hint  (src/click/core.py L2615-2620)
+```
+    def get_error_hint(self, ctx: Context) -> str:
+        """Get a stringified version of the param for use in error messages to
+        indicate which param caused the error.
+        """
+        hint_list = self.opts or [self.human_readable_name]
+        return " / ".join(f"'{x}'" for x in hint_list)
+```
+
+## get_usage_pieces  (src/click/core.py L2612-2613)
+```
+    def get_usage_pieces(self, ctx: Context) -> list[str]:
+        return []
+```
+
+## human_readable_name  (src/click/core.py L2228-2232)
+```
+    def human_readable_name(self) -> str:
+        """Returns the human readable name of this parameter.  This is the
+        same as the name for options, but the metavar for arguments.
+        """
+        return self.name  # type: ignore
+```
+
+## make_metavar  (src/click/core.py L2234-2246)
+```
+    def make_metavar(self, ctx: Context) -> str:
+        if self.metavar is not None:
+            return self.metavar
+
+        metavar = self.type.get_metavar(param=self, ctx=ctx)
+
+        if metavar is None:
+            metavar = self.type.name.upper()
+
+        if self.nargs != 1:
+            metavar += "..."
+
+        return metavar
+```
+
+## Argument  (src/click/core.py L3338-3413)
+```
+class Argument(Parameter):
+    """Arguments are positional parameters to a command.  They generally
+    provide fewer features than options but can have infinite ``nargs``
+    and are required by default.
+
+    All parameters are passed onwards to the constructor of :class:`Parameter`.
+    """
+
+    param_type_name = "argument"
+
+    def __init__(
+        self,
+        param_decls: cabc.Sequence[str],
+        required: bool | None = None,
+        **attrs: t.Any,
+    ) -> None:
+        # Auto-detect the requirement status of the argument if not explicitly set.
+        if required is None:
+            # The argument gets automatically required if it has no explicit default
+            # value set and is setup to match at least one value.
+            if attrs.get("default", UNSET) is UNSET:
+                required = attrs.get("nargs", 1) > 0
+            # If the argument has a default value, it is not required.
+            else:
+                required = False
+
+        if "multiple" in attrs:
+            raise TypeError("__init__() got an unexpected keyword argument 'multiple'.")
+
+        super().__init__(param_decls, required=required, **attrs)
+
+    @property
+    def human_readable_name(self) -> str:
+        if self.metavar is not None:
+            return self.metavar
+        return self.name.upper()  # type: ignore
+
+    def make_metavar(self, ctx: Context) -> str:
+        if self.metavar is not None:
+            return self.metavar
+        var = self.type.get_metavar(param=self, ctx=ctx)
+        if not var:
+            var = self.name.upper()  # type: ignore
+        if self.deprecated:
+            var += "!"
+        if not self.required:
+            var = f"[{var}]"
+        if self.nargs != 1:
+            var += "..."
+        return var
+
+    def _parse_decls(
+        self, decls: cabc.Sequence[str], expose_value: bool
+    ) -> tuple[str | None, list[str], list[str]]:
+        if not decls:
+            if not expose_value:
+                return None, [], []
+            raise TypeError("Argument is marked as exposed, but does not have a name.")
+        if len(decls) == 1:
+            name = arg = decls[0]
+            name = name.replace("-", "_").lower()
+        else:
+            raise TypeError(
+                "Arguments take exactly one parameter declaration, got"
+                f" {len(decls)}: {decls}."
+            )
+        return name, [arg], []
+
+    def get_usage_pieces(self, ctx: Context) -> list[str]:
+        return [self.make_metavar(ctx)]
+
+    def get_error_hint(self, ctx: Context) -> str:
+        return f"'{self.make_metavar(ctx)}'"
+
+    def add_to_parser(self, parser: _OptionParser, ctx: Context) -> None:
+        parser.add_argument(dest=self.name, nargs=self.nargs, obj=self)
+```
+
+## __call__  (tests/test_options.py L654-655)
+```
+        def __call__(self):
+            return 42
 ```
 
 ## __repr__  (src/click/utils.py L146-149)
@@ -719,45 +689,64 @@ class Tuple(CompositeParamType):
         return f"<unopened file '{format_filename(self.name)}' {self.mode}>"
 ```
 
-## KeepOpenFile  (src/click/utils.py L197-219)
+## _main_shell_completion  (src/click/core.py L1451-1481)
 ```
-class KeepOpenFile:
-    def __init__(self, file: t.IO[t.Any]) -> None:
-        self._file: t.IO[t.Any] = file
-
-    def __getattr__(self, name: str) -> t.Any:
-        return getattr(self._file, name)
-
-    def __enter__(self) -> KeepOpenFile:
-        return self
-
-    def __exit__(
+    def _main_shell_completion(
         self,
-        exc_type: type[BaseException] | None,
-        exc_value: BaseException | None,
-        tb: TracebackType | None,
+        ctx_args: cabc.MutableMapping[str, t.Any],
+        prog_name: str,
+        complete_var: str | None = None,
     ) -> None:
-        pass
+        """Check if the shell is asking for tab completion, process
+        that, then exit early. Called from :meth:`main` before the
+        program is invoked.
 
-    def __repr__(self) -> str:
-        return repr(self._file)
+        :param prog_name: Name of the executable in the shell.
+        :param complete_var: Name of the environment variable that holds
+            the completion instruction. Defaults to
+            ``_{PROG_NAME}_COMPLETE``.
 
-    def __iter__(self) -> cabc.Iterator[t.AnyStr]:
-        return iter(self._file)
+        .. versionchanged:: 8.2.0
+            Dots (``.``) in ``prog_name`` are replaced with underscores (``_``).
+        """
+        if complete_var is None:
+            complete_name = prog_name.replace("-", "_").replace(".", "_")
+            complete_var = f"_{complete_name}_COMPLETE".upper()
+
+        instruction = os.environ.get(complete_var)
+
+        if not instruction:
+            return
+
+        from .shell_completion import shell_complete
+
+        rv = shell_complete(self, ctx_args, prog_name, complete_var, instruction)
+        sys.exit(rv)
 ```
 
-## close  (src/click/utils.py L169-172)
+## collect_usage_pieces  (src/click/core.py L1788-1791)
 ```
-    def close(self) -> None:
-        """Closes the underlying file, no matter what."""
-        if self._f is not None:
-            self._f.close()
+    def collect_usage_pieces(self, ctx: Context) -> list[str]:
+        rv = super().collect_usage_pieces(ctx)
+        rv.append(self.subcommand_metavar)
+        return rv
 ```
 
-## close_intelligently  (src/click/utils.py L174-179)
+## format_epilog  (src/click/core.py L1173-1180)
 ```
-    def close_intelligently(self) -> None:
-        """This function only closes the file if it was opened by the lazy
+    def format_epilog(self, ctx: Context, formatter: HelpFormatter) -> None:
+        """Writes the epilog into the formatter if it exists."""
+        if self.epilog:
+            epilog = inspect.cleandoc(self.epilog)
+            formatter.write_paragraph()
+
+            with formatter.indentation():
+                formatter.write_text(epilog)
+```
+
+## get_help  (tests/test_commands.py L168-169)
+```
+        def get_help(self, ctx):
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

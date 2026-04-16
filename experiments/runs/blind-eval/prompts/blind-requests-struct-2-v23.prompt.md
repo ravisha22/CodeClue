@@ -118,6 +118,11 @@ build_connection_pool_key_attributes M src/requests/adapters.py:374    Build the
   ...and 217 more symbols
 
 -- FOCUS
+RequestsWarning (src/requests/exceptions.py:143-144)
+  Base warning for Requests.
+  extends: Warning
+  imports: urllib3.exceptions, compat
+
 Session (src/requests/sessions.py:356-818)
   A Requests session.
   extends: SessionRedirectMixin
@@ -150,11 +155,6 @@ FileModeWarning (src/requests/exceptions.py:147-148)
   extends: RequestsWarning, DeprecationWarning
   imports: urllib3.exceptions, compat
 
-RequestsWarning (src/requests/exceptions.py:143-144)
-  Base warning for Requests.
-  extends: Warning
-  imports: urllib3.exceptions, compat
-
 UnrewindableBodyError (src/requests/exceptions.py:136-137)
   Requests encountered an error when trying to rewind a body.
   extends: RequestException
@@ -166,13 +166,13 @@ __init__ (src/requests/exceptions.py:18-25)
 _find (src/requests/cookies.py:366-384)
   Requests uses this method internally to get cookie values.
   sig: _find(name, domain, path)
-  behavior: ACCUMULATE(loop -> result)
+  behavior: ACCUMULATE(iter(self) loop -> result)
   raises: KeyError
 
 build_response (src/requests/adapters.py:337-372)
   Builds a :class:`Response <requests.Response>` object from a urllib3
   sig: build_response(req, resp)
-  behavior: BRANCH(isinstance_bytes -> result, else -> result)
+  behavior: BRANCH(isinstance(req.url, bytes) -> req.url.decode('utf-8'), else -> req.url)
   called_by: HTTPAdapter
   uses: Response (models), CaseInsensitiveDict (structures)
 
@@ -185,7 +185,20 @@ default_headers (src/requests/utils.py:887-898)
 get_netrc_auth (src/requests/utils.py:206-247)
   Returns the Requests tuple auth for a given url from netrc.
   sig: get_netrc_auth(url, raise_errors)
-  behavior: BRANCH(netrc_file -> result, else -> result)
+  behavior: BRANCH(netrc_file is not None -> (netrc_file,), else -> (f'~/{f}' for f in N...)
+
+RequestsCookieJar (src/requests/cookies.py:176-437)
+  Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
+  extends: CookieJar, MutableMapping
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: CookieConflictError, __contains__, _find_no_duplicates, copy, get, get_policy, iteritems, iterkeys
+  called_by: copy, cookiejar_from_dict
+  raises: KeyError, CookieConflictError
+
+RequestsDependencyWarning (src/requests/exceptions.py:151-152)
+  An imported dependency doesn't match the expected version range.
+  extends: RequestsWarning
+  imports: urllib3.exceptions, compat
 
 request (src/requests/api.py:14-59)
   Constructs and sends a :class:`Request <Request>`.
@@ -251,16 +264,8 @@ get (src/requests/sessions.py:595-604)
 merge_setting (src/requests/sessions.py:62-89)
   Determines appropriate setting for a given request, taking into account
   sig: merge_setting(request_setting, session_setting, dict_class)
-  behavior: ACCUMULATE(loop -> result)
+  behavior: ACCUMULATE(none_keys loop -> result)
   called_by: merge_environment_settings, prepare_request, Session, merge_hooks
-
-RequestsCookieJar (src/requests/cookies.py:176-437)
-  Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
-  extends: CookieJar, MutableMapping
-  imports: calendar, copy, compat, threading, dummy_threading
-  calls: CookieConflictError, __contains__, _find_no_duplicates, copy, get, get_policy, iteritems, iterkeys
-  called_by: copy, cookiejar_from_dict
-  raises: KeyError, CookieConflictError
 
 get (src/requests/cookies.py:194-204)
   Dict-like get() that also supports optional domain and path args in
@@ -278,7 +283,7 @@ request (src/requests/sessions.py:502-593)
 resolve_redirects (src/requests/sessions.py:160-280)
   Receives a Response.
   sig: resolve_redirects(resp, req, stream, timeout, verify...)
-  behavior: ACCUMULATE(loop -> hist)
+  behavior: ACCUMULATE(req.copy loop -> hist, raises TooManyRedirects)
   calls: close, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies
   called_by: send, Session
   raises: TooManyRedirects
@@ -295,7 +300,7 @@ HTTPAdapter (src/requests/adapters.py:144-697)
 update (src/requests/cookies.py:358-364)
   Updates this jar with cookies from another CookieJar or dict-like
   sig: update(other)
-  behavior: BRANCH(isinstance_cookielib.CookieJ -> result, else -> result)
+  behavior: BRANCH(isinstance(other, cookielib.C... -> result, else -> super().update(ot...)
   calls: copy, set_cookie
   called_by: __setstate__, copy, RequestsCookieJar, create_cookie, merge_cookies
 
@@ -309,20 +314,10 @@ get_cookie_header (src/requests/cookies.py:140-148)
   sig: get_cookie_header(jar, request)
   calls: get_new_headers, MockRequest, get
 
-get_host (src/requests/cookies.py:43-44)
-  called_by: get_origin_req_host, host, MockRequest
-
-get_origin_req_host (src/requests/cookies.py:46-47)
-  behavior: DELEGATE(get_host -> result)
-  calls: get_host
-  called_by: origin_req_host, MockRequest
-
-is_unverifiable (src/requests/cookies.py:69-70)
-  called_by: unverifiable, MockRequest
-
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 30 with behavior annotations
+coverage: 80 symbols in L3, 29 with behavior annotations
+uncovered: get_header, get_new_headers, head, host
 
 --- CLUE FILE END ---
 

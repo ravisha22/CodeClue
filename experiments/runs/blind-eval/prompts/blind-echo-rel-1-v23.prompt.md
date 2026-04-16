@@ -1,15 +1,14 @@
-# Blind Evaluation Prompt - MRLF v2.1
+# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
 # Task: blind-echo-rel-1
 
-You are a senior software engineer. You have been given a codebase
-comprehension artifact (a "clue file") that summarises a repository's
-structure, symbols, and behavior. This is NOT the full source code - it is
-a compressed representation.
+You are a senior software engineer. You have been given:
+1. A codebase comprehension artifact (clue file) - a compressed representation
+2. Source code snippets for key functions identified as needing deeper analysis
 
-Answer the question below using ONLY the information in the clue file.
+Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
 
---- CLUE FILE START ---
+--- CLUE FILE (File 1) ---
 =CC v2.1 echo@HEAD 44mod 565sym
 ? What are the main relationships among `Echo`, `Group`, `Context`, and handlers during normal request dispatch?
 
@@ -136,7 +135,7 @@ Context (context.go:40-40)
 Group.Add (group.go:158-158)
   Add implements `Echo#Add()` for sub-routes within the Group.
   sig: Group.Add(method, path string, handler HandlerFunc, middleware ......)
-  behavior: GUARD(err -> raise_panic)
+  behavior: GUARD(err != nil -> panic(err))
   calls: AddRoute
   called_by: Any, CONNECT, DELETE, File, GET, HEAD, OPTIONS, PATCH
   raises: panic
@@ -258,7 +257,7 @@ Context.Reset (context.go:107-107)
 Group.Match (group.go:77-77)
   Match implements `Echo#Match()` for sub-routes within the Group.
   sig: Group.Match(methods []string, path string, handler HandlerFunc, midd...)
-  behavior: GUARD(len -> raise_panic); ACCUMULATE(loop -> errs)
+  behavior: GUARD(len(errs) > 0 -> panic(errs)); ACCUMULATE(AddRoute loop -> errs)
   calls: AddRoute
   raises: panic
 
@@ -313,25 +312,192 @@ Context.json (context.go:464-464)
   calls: Response, SetResponse, writeContentType
   called_by: JSON, JSONPretty
 
+Context.SetPathValues (context.go:255-255)
+  SetPathValues sets path parameters for current request.
+  sig: Context.SetPathValues(pathValues PathValues)
+  behavior: GUARD(pathValues == nil -> panic("context SetP...)
+  calls: setPathValues
+  raises: panic
+
 ContextTimeout (middleware/context_timeout.go:28-28)
   ContextTimeout returns a middleware which returns error (503 Service Unavailable error) to client when underlying method
   sig: ContextTimeout(timeout time.Duration)
   behavior: DELEGATE(ContextTimeoutWithConfig -> result)
   calls: ContextTimeoutWithConfig
 
-NewContext (context.go:64-64)
-  NewContext returns a new Context instance.
-  sig: NewContext(r *http.Request, w http.ResponseWriter, opts ...any)
-  behavior: DELEGATE(newContext -> result); ACCUMULATE(loop -> result)
-  calls: newContext
-
 -- GAPS
-type: RELATIONAL (answerable from L2-L3 structure)
-coverage: 80 symbols in L3, 45 with behavior annotations
+type: MECHANISTIC (body logic needed for full answer)
+coverage: 80 symbols in L3, 46 with behavior annotations
+uncovered: Group.AddRoute, Context.FormValues, Context.FormValue, Context.RealIP
+drill: middleware/request_logger.go (~1 lines, RequestLogger)
+drill: group.go (~1 lines, Group.Add)
+drill: echotest/context.go (~1 lines, ContextConfig.ToContextRecorder)
 
---- CLUE FILE END ---
+--- END CLUE FILE ---
+
+--- SOURCE SNIPPETS (File 2 Drill-Down) ---
+## RequestLogger  (middleware/request_logger.go L395-395)
+```
+func RequestLogger() echo.MiddlewareFunc {
+```
+
+## Group.Add  (group.go L158-158)
+```
+func (g *Group) Add(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## ContextConfig.ToContextRecorder  (echotest/context.go L81-81)
+```
+func (conf ContextConfig) ToContextRecorder(t *testing.T) (*echo.Context, *httptest.ResponseRecorder) {
+```
+
+## RequestLoggerWithConfig  (middleware/request_logger.go L237-237)
+```
+func RequestLoggerWithConfig(config RequestLoggerConfig) echo.MiddlewareFunc {
+```
+
+## RequestLoggerConfig.ToMiddleware  (middleware/request_logger.go L246-246)
+```
+func (config RequestLoggerConfig) ToMiddleware() (echo.MiddlewareFunc, error) {
+```
+
+## RequestLoggerConfig  (middleware/request_logger.go L124-124)
+```
+type RequestLoggerConfig struct {
+```
+
+## RequestLoggerValues  (middleware/request_logger.go L189-189)
+```
+type RequestLoggerValues struct {
+```
+
+## ContextConfig.ServeWithHandler  (echotest/context.go L167-167)
+```
+func (conf ContextConfig) ServeWithHandler(t *testing.T, handler echo.HandlerFunc, opts ...any) *httptest.ResponseRecorder {
+```
+
+## ContextConfig.ToContext  (echotest/context.go L75-75)
+```
+func (conf ContextConfig) ToContext(t *testing.T) *echo.Context {
+```
+
+## ContextConfig  (echotest/context.go L20-20)
+```
+type ContextConfig struct {
+```
+
+## MultipartForm  (echotest/context.go L62-62)
+```
+type MultipartForm struct {
+```
+
+## MultipartFormFile  (echotest/context.go L68-68)
+```
+type MultipartFormFile struct {
+```
+
+## Group.AddRoute  (group.go L172-172)
+```
+func (g *Group) AddRoute(route Route) (RouteInfo, error) {
+```
+
+## Group.Any  (group.go L72-72)
+```
+func (g *Group) Any(path string, handler HandlerFunc, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.CONNECT  (group.go L27-27)
+```
+func (g *Group) CONNECT(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.DELETE  (group.go L32-32)
+```
+func (g *Group) DELETE(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.File  (group.go L143-143)
+```
+func (g *Group) File(path, file string, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.FileFS  (group.go L135-135)
+```
+func (g *Group) FileFS(path, file string, filesystem fs.FS, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.GET  (group.go L37-37)
+```
+func (g *Group) GET(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.Group  (group.go L103-103)
+```
+func (g *Group) Group(prefix string, middleware ...MiddlewareFunc) (sg *Group) {
+```
+
+## Group.HEAD  (group.go L42-42)
+```
+func (g *Group) HEAD(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.Match  (group.go L77-77)
+```
+func (g *Group) Match(methods []string, path string, handler HandlerFunc, middleware ...MiddlewareFunc) Routes {
+```
+
+## Group.OPTIONS  (group.go L47-47)
+```
+func (g *Group) OPTIONS(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.PATCH  (group.go L52-52)
+```
+func (g *Group) PATCH(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.POST  (group.go L57-57)
+```
+func (g *Group) POST(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.PUT  (group.go L62-62)
+```
+func (g *Group) PUT(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.RouteNotFound  (group.go L153-153)
+```
+func (g *Group) RouteNotFound(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.Static  (group.go L112-112)
+```
+func (g *Group) Static(pathPrefix, fsRoot string, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.StaticFS  (group.go L122-122)
+```
+func (g *Group) StaticFS(pathPrefix string, filesystem fs.FS, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.TRACE  (group.go L67-67)
+```
+func (g *Group) TRACE(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.Use  (group.go L22-22)
+```
+func (g *Group) Use(middleware ...MiddlewareFunc) {
+```
+
+## Group  (group.go L14-14)
+```
+type Group struct {
+```
+--- END SOURCE SNIPPETS ---
 
 QUESTION: What are the main relationships among `Echo`, `Group`, `Context`, and handlers during normal request dispatch?
 
-Provide a detailed answer based solely on the clue file above.
-For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.
+Provide a detailed answer based on the clue file and source snippets above.
+For each claim you make, cite the specific clue entry or source snippet that supports it.

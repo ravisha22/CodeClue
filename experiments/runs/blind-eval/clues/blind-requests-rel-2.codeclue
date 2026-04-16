@@ -117,7 +117,7 @@ Session (src/requests/sessions.py:356-818)
 
 close (src/requests/sessions.py:796-799)
   Closes all adapters and as such the session
-  behavior: ACCUMULATE(loop -> result)
+  behavior: ACCUMULATE(self.adapters.values(... -> result)
   called_by: __exit__, Session, resolve_redirects, SessionRedirectMixin
 
 merge_hooks (src/requests/sessions.py:92-104)
@@ -129,36 +129,35 @@ merge_hooks (src/requests/sessions.py:92-104)
 get_netrc_auth (src/requests/utils.py:206-247)
   Returns the Requests tuple auth for a given url from netrc.
   sig: get_netrc_auth(url, raise_errors)
-  behavior: BRANCH(netrc_file -> result, else -> result)
+  behavior: BRANCH(netrc_file is not None -> (netrc_file,), else -> (f'~/{f}' for f in N...)
 
 request_url (src/requests/adapters.py:524-554)
   Obtain the url to use when making the final request.
   sig: request_url(request, proxies)
   called_by: HTTPAdapter
 
-session (src/requests/sessions.py:821-833)
-  Returns a :class:`Session` for context-management.
-  behavior: DELEGATE(Session -> result)
-  calls: Session
-
 prepare_url (src/requests/models.py:411-483)
   Prepares the given HTTP URL.
   sig: prepare_url(url, params)
-  behavior: BRANCH(isinstance_bytes -> result, else -> result)
+  behavior: BRANCH(isinstance(url, bytes) -> url.decode('utf8'), else -> str(url))
   calls: _get_idna_encoded_host, _encode_params
   called_by: PreparedRequest
   raises: MissingSchema, InvalidURL
   uses: MissingSchema (exceptions), InvalidURL (exceptions)
 
+session (src/requests/sessions.py:821-833)
+  Returns a :class:`Session` for context-management.
+  behavior: DELEGATE(Session -> result)
+  calls: Session
+
+get_full_url (src/requests/cookies.py:49-67)
+  behavior: GUARD(not self._r.headers.get('Host') -> return self._r.url)
+  calls: get
+
 SessionRedirectMixin (src/requests/sessions.py:107-353)
   imports: adapters, auth, compat, cookies, exceptions
   calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
   raises: TooManyRedirects
-
-BaseAdapter (src/requests/adapters.py:114-141)
-  The Base Transport Adapter
-  imports: socket, warnings, urllib3.exceptions, urllib3.poolmanager, urllib3.util
-  raises: NotImplementedError
 
 InvalidProxyURL (src/requests/exceptions.py:116-117)
   The proxy URL provided is invalid.
@@ -170,23 +169,46 @@ InvalidURL (src/requests/exceptions.py:108-109)
   extends: RequestException, ValueError
   imports: urllib3.exceptions, compat
 
-build_response (src/requests/adapters.py:337-372)
-  Builds a :class:`Response <requests.Response>` object from a urllib3
-  sig: build_response(req, resp)
-  behavior: BRANCH(isinstance_bytes -> result, else -> result)
-  called_by: HTTPAdapter
-  uses: Response (models), CaseInsensitiveDict (structures)
-
 get_auth_from_url (src/requests/utils.py:1005-1018)
   Given a url with authentication components, extract them into a tuple of
   sig: get_auth_from_url(url)
 
-get_full_url (src/requests/cookies.py:49-67)
-  behavior: GUARD(not_r.headers.get -> pass_through)
-  calls: get
-
 path_url (src/requests/models.py:88-106)
   Build the path URL to use.
+
+RequestsWarning (src/requests/exceptions.py:143-144)
+  Base warning for Requests.
+  extends: Warning
+  imports: urllib3.exceptions, compat
+
+URLRequired (src/requests/exceptions.py:92-93)
+  A valid URL is required to make a request.
+  extends: RequestException
+  imports: urllib3.exceptions, compat
+
+urldefragauth (src/requests/utils.py:1051-1065)
+  Given a url remove the fragment and the authentication part.
+  sig: urldefragauth(url)
+
+build_response (src/requests/adapters.py:337-372)
+  Builds a :class:`Response <requests.Response>` object from a urllib3
+  sig: build_response(req, resp)
+  behavior: BRANCH(isinstance(req.url, bytes) -> req.url.decode('utf-8'), else -> req.url)
+  called_by: HTTPAdapter
+  uses: Response (models), CaseInsensitiveDict (structures)
+
+BaseAdapter (src/requests/adapters.py:114-141)
+  The Base Transport Adapter
+  imports: socket, warnings, urllib3.exceptions, urllib3.poolmanager, urllib3.util
+  raises: NotImplementedError
+
+get_adapter (src/requests/sessions.py:783-794)
+  Returns the appropriate connection adapter for the given URL.
+  sig: get_adapter(url)
+  behavior: ACCUMULATE(self.adapters.items()... -> result)
+  called_by: send, Session
+  raises: InvalidSchema
+  uses: InvalidSchema (exceptions)
 
 copy (src/requests/cookies.py:428-433)
   Return a copy of this RequestsCookieJar.
@@ -196,17 +218,9 @@ copy (src/requests/cookies.py:428-433)
 update (src/requests/cookies.py:358-364)
   Updates this jar with cookies from another CookieJar or dict-like
   sig: update(other)
-  behavior: BRANCH(isinstance_cookielib.CookieJ -> result, else -> result)
+  behavior: BRANCH(isinstance(other, cookielib.C... -> result, else -> super().update(ot...)
   calls: copy, set_cookie
   called_by: __setstate__, copy, RequestsCookieJar, create_cookie, merge_cookies
-
-get_adapter (src/requests/sessions.py:783-794)
-  Returns the appropriate connection adapter for the given URL.
-  sig: get_adapter(url)
-  behavior: ACCUMULATE(loop -> result)
-  called_by: send, Session
-  raises: InvalidSchema
-  uses: InvalidSchema (exceptions)
 
 MockRequest (src/requests/cookies.py:23-100)
   Wraps a `requests.Request` to mimic a `urllib2.Request`.
@@ -217,7 +231,7 @@ MockRequest (src/requests/cookies.py:23-100)
 
 raise_for_status (src/requests/models.py:1001-1028)
   Raises :class:`HTTPError`, if one occurred.
-  behavior: BRANCH(isinstance_bytes -> result, else -> result)
+  behavior: BRANCH(isinstance(self.reason, bytes) -> result, else -> self.reason)
   called_by: ok, Response
   raises: HTTPError
   uses: HTTPError (exceptions)
@@ -237,16 +251,6 @@ MissingSchema (src/requests/exceptions.py:100-101)
   extends: RequestException, ValueError
   imports: urllib3.exceptions, compat
 
-RequestsWarning (src/requests/exceptions.py:143-144)
-  Base warning for Requests.
-  extends: Warning
-  imports: urllib3.exceptions, compat
-
-URLRequired (src/requests/exceptions.py:92-93)
-  A valid URL is required to make a request.
-  extends: RequestException
-  imports: urllib3.exceptions, compat
-
 UnrewindableBodyError (src/requests/exceptions.py:136-137)
   Requests encountered an error when trying to rewind a body.
   extends: RequestException
@@ -255,7 +259,7 @@ UnrewindableBodyError (src/requests/exceptions.py:136-137)
 _find (src/requests/cookies.py:366-384)
   Requests uses this method internally to get cookie values.
   sig: _find(name, domain, path)
-  behavior: ACCUMULATE(loop -> result)
+  behavior: ACCUMULATE(iter(self) loop -> result)
   raises: KeyError
 
 add_header (src/requests/cookies.py:78-82)
@@ -275,7 +279,7 @@ is_permanent_redirect (src/requests/models.py:779-784)
 iter_lines (src/requests/models.py:859-890)
   Iterates over the response data, one line at a time.
   sig: iter_lines(chunk_size, decode_unicode, delimiter)
-  behavior: ACCUMULATE(loop -> chunk)
+  behavior: ACCUMULATE(self.iter_content(chu... -> chunk)
   calls: iter_content
 
 morsel_to_cookie (src/requests/cookies.py:492-518)
@@ -295,21 +299,12 @@ prepend_scheme_if_needed (src/requests/utils.py:976-1002)
 select_proxy (src/requests/utils.py:825-848)
   Select a proxy for the url, if applicable.
   sig: select_proxy(url, proxies)
-  behavior: ACCUMULATE(loop -> result)
-
-urldefragauth (src/requests/utils.py:1051-1065)
-  Given a url remove the fragment and the authentication part.
-  sig: urldefragauth(url)
-
-get_connection_with_tls_context (src/requests/adapters.py:424-471)
-  Returns a urllib3 connection for the given request and TLS settings.
-  sig: get_connection_with_tls_context(request, verify, proxies, cert)
-  behavior: BRANCH(proxy -> raise_InvalidProxyURL, else -> result)
-  calls: build_connection_pool_key_attributes, proxy_manager_for
-  called_by: HTTPAdapter
-  raises: InvalidURL, InvalidProxyURL
-  uses: InvalidURL (exceptions), InvalidProxyURL (exceptions)
+  behavior: ACCUMULATE(proxy_keys loop -> result)
 
 -- GAPS
-type: STRUCTURAL (answerable from L0-L2)
+type: MECHANISTIC (body logic needed for full answer)
 coverage: 80 symbols in L3, 28 with behavior annotations
+uncovered: proxy_manager_for, merge_cookies, get_redirect_target, rebuild_method
+drill: src/requests/sessions.py (~12 lines, merge_hooks)
+drill: src/requests/sessions.py (~3 lines, close)
+drill: src/requests/utils.py (~32 lines, get_netrc_auth)

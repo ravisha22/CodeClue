@@ -109,12 +109,9 @@ build_connection_pool_key_attributes M src/requests/adapters.py:374    Build the
 build_response (src/requests/adapters.py:337-372)
   Builds a :class:`Response <requests.Response>` object from a urllib3
   sig: build_response(req, resp)
-  behavior: BRANCH(isinstance_bytes -> result, else -> result)
+  behavior: BRANCH(isinstance(req.url, bytes) -> req.url.decode('utf-8'), else -> req.url)
   called_by: HTTPAdapter
   uses: Response (models), CaseInsensitiveDict (structures)
-
-__init__ (src/requests/exceptions.py:18-25)
-  Initialize RequestException with `request` and `response` objects.
 
 Response (src/requests/models.py:642-1041)
   The :class:`Response <Response>` object, which contains a
@@ -133,6 +130,51 @@ handle_401 (src/requests/auth.py:241-283)
   sig: handle_401(r)
   calls: build_digest_header
 
+RequestsWarning (src/requests/exceptions.py:143-144)
+  Base warning for Requests.
+  extends: Warning
+  imports: urllib3.exceptions, compat
+
+MockResponse (src/requests/cookies.py:103-121)
+  Wraps a `httplib.HTTPMessage` to mimic a `urllib.addinfourl`.
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: getheaders
+  called_by: extract_cookies_to_jar
+
+get_unicode_from_response (src/requests/utils.py:578-614)
+  Returns the requested content back in unicode.
+  sig: get_unicode_from_response(r)
+  calls: get_encoding_from_headers
+
+handle_redirect (src/requests/auth.py:236-239)
+  Reset num_401_calls counter on redirects.
+  sig: handle_redirect(r)
+
+stream_decode_response_unicode (src/requests/utils.py:551-565)
+  Stream decodes an iterator.
+  sig: stream_decode_response_unicode(iterator, r)
+  behavior: ACCUMULATE(iterator loop -> result)
+
+RequestsCookieJar (src/requests/cookies.py:176-437)
+  Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
+  extends: CookieJar, MutableMapping
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: CookieConflictError, __contains__, _find_no_duplicates, copy, get, get_policy, iteritems, iterkeys
+  called_by: copy, cookiejar_from_dict
+  raises: KeyError, CookieConflictError
+
+CaseInsensitiveDict (src/requests/structures.py:13-80)
+  A case-insensitive ``dict``-like object.
+  extends: MutableMapping
+  imports: compat
+  calls: lower_items
+  called_by: __eq__, copy
+
+RequestsDependencyWarning (src/requests/exceptions.py:151-152)
+  An imported dependency doesn't match the expected version range.
+  extends: RequestsWarning
+  imports: urllib3.exceptions, compat
+
 iter_content (src/requests/models.py:801-857)
   Iterates over the response data.
   sig: iter_content(chunk_size, decode_unicode)
@@ -140,6 +182,19 @@ iter_content (src/requests/models.py:801-857)
   called_by: __iter__, content, iter_lines, Response
   raises: StreamConsumedError, TypeError, ChunkedEncodingError, ContentDecodingError
   uses: StreamConsumedError (exceptions), ChunkedEncodingError (exceptions), ContentDecodingError (exceptions), ConnectionError (exceptions)
+
+extract_cookies_to_jar (src/requests/cookies.py:124-137)
+  Extract the cookies from the response into a CookieJar.
+  sig: extract_cookies_to_jar(jar, request, response)
+  calls: MockRequest, MockResponse
+
+copy (src/requests/cookies.py:428-433)
+  Return a copy of this RequestsCookieJar.
+  calls: get_policy, update, RequestsCookieJar
+  called_by: __getstate__, update, RequestsCookieJar, _copy_cookie_jar
+
+__init__ (src/requests/exceptions.py:18-25)
+  Initialize RequestException with `request` and `response` objects.
 
 json (src/requests/models.py:949-982)
   Decodes the JSON response body (if any) as a Python object.
@@ -158,7 +213,7 @@ Session (src/requests/sessions.py:356-818)
 resolve_redirects (src/requests/sessions.py:160-280)
   Receives a Response.
   sig: resolve_redirects(resp, req, stream, timeout, verify...)
-  behavior: ACCUMULATE(loop -> hist)
+  behavior: ACCUMULATE(req.copy loop -> hist, raises TooManyRedirects)
   calls: close, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies
   called_by: send, Session
   raises: TooManyRedirects
@@ -170,11 +225,6 @@ MockRequest (src/requests/cookies.py:23-100)
   calls: get_host, get_origin_req_host, is_unverifiable, get
   called_by: extract_cookies_to_jar, get_cookie_header
   raises: NotImplementedError
-
-extract_cookies_to_jar (src/requests/cookies.py:124-137)
-  Extract the cookies from the response into a CookieJar.
-  sig: extract_cookies_to_jar(jar, request, response)
-  calls: MockRequest, MockResponse
 
 merge_hooks (src/requests/sessions.py:92-104)
   Properly merges both requests and session hooks.
@@ -200,22 +250,12 @@ content (src/requests/models.py:893-909)
 iter_lines (src/requests/models.py:859-890)
   Iterates over the response data, one line at a time.
   sig: iter_lines(chunk_size, decode_unicode, delimiter)
-  behavior: ACCUMULATE(loop -> chunk)
+  behavior: ACCUMULATE(self.iter_content(chu... -> chunk)
   calls: iter_content
-
-copy (src/requests/cookies.py:428-433)
-  Return a copy of this RequestsCookieJar.
-  calls: get_policy, update, RequestsCookieJar
-  called_by: __getstate__, update, RequestsCookieJar, _copy_cookie_jar
 
 FileModeWarning (src/requests/exceptions.py:147-148)
   A file was opened in text mode, but Requests determined its binary length.
   extends: RequestsWarning, DeprecationWarning
-  imports: urllib3.exceptions, compat
-
-RequestsWarning (src/requests/exceptions.py:143-144)
-  Base warning for Requests.
-  extends: Warning
   imports: urllib3.exceptions, compat
 
 StreamConsumedError (src/requests/exceptions.py:128-129)
@@ -235,7 +275,7 @@ __init__ (src/requests/cookies.py:110-115)
 _find (src/requests/cookies.py:366-384)
   Requests uses this method internally to get cookie values.
   sig: _find(name, domain, path)
-  behavior: ACCUMULATE(loop -> result)
+  behavior: ACCUMULATE(iter(self) loop -> result)
   raises: KeyError
 
 default_headers (src/requests/utils.py:887-898)
@@ -247,7 +287,7 @@ default_headers (src/requests/utils.py:887-898)
 get_netrc_auth (src/requests/utils.py:206-247)
   Returns the Requests tuple auth for a given url from netrc.
   sig: get_netrc_auth(url, raise_errors)
-  behavior: BRANCH(netrc_file -> result, else -> result)
+  behavior: BRANCH(netrc_file is not None -> (netrc_file,), else -> (f'~/{f}' for f in N...)
 
 is_permanent_redirect (src/requests/models.py:779-784)
   True if this Response one of the permanent versions of redirect.
@@ -261,58 +301,10 @@ links (src/requests/models.py:985-999)
 text (src/requests/models.py:912-947)
   Content of the response, in unicode.
 
-MockResponse (src/requests/cookies.py:103-121)
-  Wraps a `httplib.HTTPMessage` to mimic a `urllib.addinfourl`.
-  imports: calendar, copy, compat, threading, dummy_threading
-  calls: getheaders
-  called_by: extract_cookies_to_jar
-
-get_unicode_from_response (src/requests/utils.py:578-614)
-  Returns the requested content back in unicode.
-  sig: get_unicode_from_response(r)
-  calls: get_encoding_from_headers
-
-handle_redirect (src/requests/auth.py:236-239)
-  Reset num_401_calls counter on redirects.
-  sig: handle_redirect(r)
-
-stream_decode_response_unicode (src/requests/utils.py:551-565)
-  Stream decodes an iterator.
-  sig: stream_decode_response_unicode(iterator, r)
-  behavior: ACCUMULATE(loop -> result)
-
-generate (src/requests/models.py:818-839)
-  behavior: BRANCH(hasattr_stream -> result, else -> result)
-  called_by: iter_content, Response
-  raises: ChunkedEncodingError, ContentDecodingError, ConnectionError, RequestsSSLError
-  uses: ChunkedEncodingError (exceptions), ContentDecodingError (exceptions), ConnectionError (exceptions), RequestsSSLError (exceptions)
-
-prepare_request (src/requests/sessions.py:459-500)
-  Constructs a :class:`PreparedRequest <PreparedRequest>` for
-  sig: prepare_request(request)
-  calls: merge_hooks, merge_setting
-  called_by: request, Session
-  uses: PreparedRequest (models), RequestsCookieJar (cookies)
-
-get (src/requests/sessions.py:595-604)
-  Sends a GET request.
-  sig: get(url)
-  behavior: DELEGATE(request -> result)
-  calls: request
-  called_by: merge_environment_settings, send, Session, should_strip_auth, SessionRedirectMixin, merge_hooks
-
-send (src/requests/sessions.py:675-750)
-  Send a given PreparedRequest.
-  sig: send(request)
-  behavior: BRANCH(allow_redirects -> result, else -> result)
-  calls: get, get_adapter, resolve_redirects
-  called_by: request, Session, resolve_redirects, SessionRedirectMixin
-  raises: ValueError
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
 coverage: 80 symbols in L3, 23 with behavior annotations
+uncovered: lower_items, set, set_cookie, cookiejar_from_dict
 drill: src/requests/adapters.py (~33 lines, build_response)
 drill: src/requests/exceptions.py (~10 lines, __init__)
 drill: src/requests/auth.py (~39 lines, handle_401)
-drill: src/requests/sessions.py (~117 lines, resolve_redirects)

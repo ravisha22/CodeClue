@@ -88,8 +88,8 @@ Bind.validateStruct                 M bind.go:183    Struct validation.
 SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
 domainMatcher.match                 M domain.go:139    match checks if a hostname matches the domain p...
 Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
-manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
+manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
 isUnixNetwork                       M middleware/adaptor/adaptor.go:208    function isUnixNetwork
 Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...
@@ -121,39 +121,39 @@ redirectionMsg.Msgsize              M redirect_msgp.go:196    Msgsize returns an
 CopyContextToFiberContext (middleware/adaptor/adaptor.go:101-101)
   CopyContextToFiberContext copies the values of context.Context to a fasthttp.RequestCtx.
   sig: CopyContextToFiberContext(src any, requestContext *fasthttp.RequestCtx)
-  behavior: GUARD(requestContext -> none); PRECEDENCE(requestContext -> not_v.IsValid -> t); ACCUMULATE(loop -> result)
+  behavior: GUARD(requestContext == nil -> return); PRECEDENCE(requestContext -> not_v.IsValid -> t); ACCUMULATE(IsNil loop -> result)
   called_by: HTTPMiddleware
 
 ConvertRequest (middleware/adaptor/adaptor.go:89-89)
   ConvertRequest converts a fiber.Ctx to a http.Request.
   sig: ConvertRequest(c fiber.Ctx, forServer bool)
-  behavior: GUARD(err -> pass_through)
+  behavior: GUARD(err := fasthttpadaptor.ConvertRequest(c.Reque... -> return nil, err)
+
+Middleware.initialize (middleware/session/middleware.go:111-111)
+  initialize sets up middleware for the request.
+  sig: Middleware.initialize(c fiber.Ctx, cfg *Config)
+  behavior: GUARD(err != nil -> panic(err)); UNWIND(defer)
+  called_by: NewWithStore
+  raises: panic
+
+DefaultCtx.IsMiddleware (ctx.go:380-381)
+  IsMiddleware returns true if the current request handler was registered as middleware.
+  behavior: GUARD(c.route == nil -> return false); PRECEDENCE(c)
 
 HTTPMiddleware (middleware/adaptor/adaptor.go:162-162)
   HTTPMiddleware wraps net/http middleware to fiber middleware
   sig: HTTPMiddleware(mw func(http.Handler)
   calls: CopyContextToFiberContext, HTTPHandler
 
-Middleware.initialize (middleware/session/middleware.go:111-111)
-  initialize sets up middleware for the request.
-  sig: Middleware.initialize(c fiber.Ctx, cfg *Config)
-  behavior: GUARD(err -> raise_panic); UNWIND(defer)
-  called_by: NewWithStore
-  raises: panic
+FromContext (middleware/session/middleware.go:179-179)
+  FromContext returns the Middleware from the Fiber context.
+  sig: FromContext(ctx any)
+  behavior: GUARD(m, ok := fiber.ValueFromContext[*Middleware](... -> return m)
 
 HTTPHandlerWithContext (middleware/adaptor/adaptor.go:65-65)
   HTTPHandlerWithContext is like HTTPHandler, but additionally stores Fiber’s user context in the request context
   sig: HTTPHandlerWithContext(h http.Handler)
   calls: LocalContextFromHTTPRequest
-
-DefaultCtx.IsMiddleware (ctx.go:380-381)
-  IsMiddleware returns true if the current request handler was registered as middleware.
-  behavior: GUARD(c -> value); PRECEDENCE(c)
-
-FromContext (middleware/session/middleware.go:179-179)
-  FromContext returns the Middleware from the Fiber context.
-  sig: FromContext(ctx any)
-  behavior: GUARD(m -> pass_through)
 
 IsEarly (middleware/earlydata/earlydata.go:16-16)
   IsEarly returns true if the request used early data and was accepted by the middleware.
@@ -168,12 +168,12 @@ IsFromCache (middleware/idempotency/idempotency.go:29-29)
 New (middleware/skip/skip.go:10-10)
   New returns a middleware that calls the provided predicate for each request.
   sig: New(handler fiber.Handler, exclude func(c fiber.Ctx)
-  behavior: GUARD(exclude -> handler)
+  behavior: GUARD(exclude == nil -> return handler)
 
 WasPutToCache (middleware/idempotency/idempotency.go:35-35)
   WasPutToCache reports whether the middleware stored the response produced by the current request in the cache.
   sig: WasPutToCache(c fiber.Ctx)
-  behavior: GUARD(wasPut -> pass_through)
+  behavior: GUARD(wasPut, ok := val.(bool); ok -> return wasPut)
 
 core (client/core.go:48-48)
   core stores middleware and plugin definitions and defines the request execution process.
@@ -194,7 +194,7 @@ StoreInContext (helpers.go:83-83)
 sanitizeRequestID (middleware/requestid/requestid.go:43-43)
   sanitizeRequestID returns the provided request ID when it is valid, otherwise it tries up to three values from the confi
   sig: sanitizeRequestID(rid string, generator func()
-  behavior: GUARD(isValidRequestID -> pass_through); ACCUMULATE(loop -> result)
+  behavior: GUARD(isValidRequestID(rid) -> return rid); ACCUMULATE(generator loop -> result)
   calls: isValidRequestID
   called_by: New
 
@@ -224,7 +224,7 @@ FiberHandlerFunc (middleware/adaptor/adaptor.go:199-199)
 isValidRequestID (middleware/requestid/requestid.go:61-61)
   isValidRequestID reports whether the request ID contains only visible ASCII characters (0x20–0x7E) and is non-empty.
   sig: isValidRequestID(rid string)
-  behavior: GUARD(rid -> value); ACCUMULATE(loop -> result)
+  behavior: GUARD(rid == "" -> return false); ACCUMULATE(loop -> result)
   called_by: sanitizeRequestID
 
 requestCacheDirectives (middleware/cache/cache.go:61-61)
@@ -236,15 +236,16 @@ FiberApp (middleware/adaptor/adaptor.go:204-204)
   behavior: DELEGATE(handlerFunc -> result)
   calls: handlerFunc
 
+AcquireRequest (client/request.go:983-983)
+  AcquireRequest returns a new (pooled) Request object.
+  behavior: GUARD(!ok -> panic(errRequestTyp...)
+  calls: Get
+  raises: panic
+
 DefaultCtx.RequestID (ctx.go:311-312)
   RequestID returns the request identifier from the response header or request header.
-  behavior: GUARD(requestID -> pass_through)
+  behavior: GUARD(requestID := c.GetRespHeader(HeaderXRequestID... -> return requestID)
   calls: Get, GetRespHeader
-
-New (middleware/limiter/limiter.go:23-23)
-  New creates a new middleware handler
-  sig: New(config ...Config)
-  behavior: DELEGATE(cfg.LimiterMiddleware.New -> result)
 
 Request (client/request.go:46-46)
   Request contains all data related to an HTTP request.
@@ -269,7 +270,7 @@ Request.SetURL (client/request.go:93-93)
 setConfigToRequest (client/client.go:672-672)
   setConfigToRequest sets the parameters passed via Config to the Request.
   sig: setConfigToRequest(req *Request, config ...Config)
-  behavior: GUARD(len -> none); PRECEDENCE(len -> cfg)
+  behavior: GUARD(len(config) == 0 -> return); PRECEDENCE(len -> cfg)
   calls: SetCookies, SetDisablePathNormalizing, SetHeaders, SetParams, SetPathParams, SetReferer, SetTimeout, SetUserAgent
   called_by: Custom, Delete, Get, Head, Options, Patch, Post, Put
 
@@ -287,12 +288,6 @@ Request.Put (client/request.go:648-648)
   calls: Send, SetMethod, SetURL
   called_by: ReleaseFile, ReleaseRequest
 
-NewWithStore (middleware/session/middleware.go:77-77)
-  NewWithStore creates session middleware with an optional custom store.
-  sig: NewWithStore(config ...Config)
-  calls: initialize, saveSession, acquireMiddleware, releaseMiddleware
-  called_by: New
-
 Request.Custom (client/request.go:668-668)
   Custom sends a request with a custom HTTP method to the given URL.
   sig: Request.Custom(url, method string)
@@ -307,7 +302,8 @@ Request.Delete (client/request.go:653-653)
 
 -- GAPS
 type: RELATIONAL (answerable from L2-L3 structure)
-coverage: 80 symbols in L3, 44 with behavior annotations
+coverage: 80 symbols in L3, 37 with behavior annotations
+uncovered: App.requestHandler, DefaultCtx.Request, DefaultCtx.RequestCtx, DefaultReq.Request
 
 --- CLUE FILE END ---
 

@@ -76,8 +76,8 @@ Bind.validateStruct                 M bind.go:183    Struct validation.
 SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
 domainMatcher.match                 M domain.go:139    match checks if a hostname matches the domain p...
 Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
-manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
+manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
 isUnixNetwork                       M middleware/adaptor/adaptor.go:208    function isUnixNetwork
 Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...
@@ -114,7 +114,7 @@ HTTPMiddleware (middleware/adaptor/adaptor.go:162-162)
 FromContext (middleware/session/middleware.go:179-179)
   FromContext returns the Middleware from the Fiber context.
   sig: FromContext(ctx any)
-  behavior: GUARD(m -> pass_through)
+  behavior: GUARD(m, ok := fiber.ValueFromContext[*Middleware](... -> return m)
 
 CustomCtx (ctx_interface.go:13-14)
   CustomCtx extends Ctx with the additional methods required by Fiber's internals and middleware helpers.
@@ -135,7 +135,7 @@ FiberHandlerFunc (middleware/adaptor/adaptor.go:199-199)
 CopyContextToFiberContext (middleware/adaptor/adaptor.go:101-101)
   CopyContextToFiberContext copies the values of context.Context to a fasthttp.RequestCtx.
   sig: CopyContextToFiberContext(src any, requestContext *fasthttp.RequestCtx)
-  behavior: GUARD(requestContext -> none); PRECEDENCE(requestContext -> not_v.IsValid -> t); ACCUMULATE(loop -> result)
+  behavior: GUARD(requestContext == nil -> return); PRECEDENCE(requestContext -> not_v.IsValid -> t); ACCUMULATE(IsNil loop -> result)
   called_by: HTTPMiddleware
 
 FiberApp (middleware/adaptor/adaptor.go:204-204)
@@ -143,6 +143,60 @@ FiberApp (middleware/adaptor/adaptor.go:204-204)
   sig: FiberApp(app *fiber.App)
   behavior: DELEGATE(handlerFunc -> result)
   calls: handlerFunc
+
+toFiberHandler (adapter.go:13-13)
+  toFiberHandler converts a supported handler type to a Fiber handler.
+  sig: toFiberHandler(handler any)
+  behavior: GUARD(handler == nil -> return nil, false); DISPATCH(handler)
+  calls: adaptExpressHandler, adaptFastHTTPHandler, adaptFiberHandler, adaptHTTPHandler
+  called_by: collectHandlers
+
+Middleware.initialize (middleware/session/middleware.go:111-111)
+  initialize sets up middleware for the request.
+  sig: Middleware.initialize(c fiber.Ctx, cfg *Config)
+  behavior: GUARD(err != nil -> panic(err)); UNWIND(defer)
+  called_by: NewWithStore
+  raises: panic
+
+acquireMiddleware (middleware/session/middleware.go:141-141)
+  acquireMiddleware retrieves a middleware instance from the pool.
+  behavior: GUARD(!ok -> panic(ErrTypeAssert...)
+  calls: Get
+  called_by: NewWithStore
+  raises: panic
+
+adaptFiberHandler (adapter.go:32-32)
+  sig: adaptFiberHandler(handler any)
+  behavior: DISPATCH(h)
+  called_by: toFiberHandler
+
+releaseMiddleware (middleware/session/middleware.go:157-157)
+  releaseMiddleware resets and returns middleware to the pool.
+  sig: releaseMiddleware(m *Middleware)
+  called_by: NewWithStore
+
+Middleware (middleware/session/middleware.go:13-13)
+  Middleware holds session data and configuration.
+  methods: Delete, Destroy, Fresh, Get, ID, Keys
+
+DefaultCtx.IsMiddleware (ctx.go:380-381)
+  IsMiddleware returns true if the current request handler was registered as middleware.
+  behavior: GUARD(c.route == nil -> return false); PRECEDENCE(c)
+
+Request.AddFiles (client/request.go:585-585)
+  AddFiles adds multiple files at once.
+  sig: Request.AddFiles(files ...*File)
+  calls: resetBody
+
+Request.Files (client/request.go:556-556)
+  Files returns all files added to the Request.
+
+domainRouter.Use (domain.go:350-350)
+  Use registers a middleware route that will match requests with the provided prefix (which is optional and defaults to "/
+  sig: domainRouter.Use(args ...any)
+  behavior: PRECEDENCE(len -> d); ACCUMULATE(toFiberHandler loop -> handlers, raises fmt.Sprintf("use:...)
+  calls: Name, mount, registerGroup, registerPath, wrapHandlers
+  raises: panic
 
 New (middleware/limiter/limiter.go:23-23)
   New creates a new middleware handler
@@ -155,31 +209,10 @@ NewWithStore (middleware/session/middleware.go:77-77)
   calls: initialize, saveSession, acquireMiddleware, releaseMiddleware
   called_by: New
 
-toFiberHandler (adapter.go:13-13)
-  toFiberHandler converts a supported handler type to a Fiber handler.
-  sig: toFiberHandler(handler any)
-  behavior: GUARD(handler -> pass_through); DISPATCH(handler)
-  calls: adaptExpressHandler, adaptFastHTTPHandler, adaptFiberHandler, adaptHTTPHandler
-  called_by: collectHandlers
-
 HTTPHandler (middleware/adaptor/adaptor.go:56-56)
   HTTPHandler wraps net/http handler to fiber handler
   sig: HTTPHandler(h http.Handler)
   called_by: HTTPHandlerFunc, HTTPMiddleware
-
-Middleware.initialize (middleware/session/middleware.go:111-111)
-  initialize sets up middleware for the request.
-  sig: Middleware.initialize(c fiber.Ctx, cfg *Config)
-  behavior: GUARD(err -> raise_panic); UNWIND(defer)
-  called_by: NewWithStore
-  raises: panic
-
-acquireMiddleware (middleware/session/middleware.go:141-141)
-  acquireMiddleware retrieves a middleware instance from the pool.
-  behavior: GUARD(not_ok -> raise_panic)
-  calls: Get
-  called_by: NewWithStore
-  raises: panic
 
 HTTPHandlerFunc (middleware/adaptor/adaptor.go:51-51)
   HTTPHandlerFunc wraps net/http handler func to fiber handler
@@ -195,52 +228,38 @@ HTTPHandlerWithContext (middleware/adaptor/adaptor.go:65-65)
 LocalContextFromHTTPRequest (middleware/adaptor/adaptor.go:78-78)
   LocalContextFromHTTPRequest extracts the Fiber user context previously stored into r.Context() by the adaptor.
   sig: LocalContextFromHTTPRequest(r *http.Request)
-  behavior: GUARD(r -> pass_through)
+  behavior: GUARD(r == nil -> return nil, false)
   called_by: HTTPHandlerWithContext
-
-New (middleware/rewrite/rewrite.go:12-12)
-  New creates a new middleware handler
-  sig: New(config ...Config)
-  behavior: ACCUMULATE(loop -> k)
-  calls: captureTokens
-
-New (middleware/redirect/redirect.go:13-13)
-  New creates a new middleware handler
-  sig: New(config ...Config)
-  behavior: ACCUMULATE(loop -> k)
-  calls: captureTokens
 
 New (middleware/session/middleware.go:56-56)
   New initializes session middleware with optional configuration.
   sig: New(config ...Config)
-  behavior: GUARD(len -> handler)
+  behavior: GUARD(len(config) > 0 -> return handler)
   calls: NewWithStore
 
-adaptFiberHandler (adapter.go:32-32)
-  sig: adaptFiberHandler(handler any)
-  behavior: DISPATCH(h)
-  called_by: toFiberHandler
+New (middleware/redirect/redirect.go:13-13)
+  New creates a new middleware handler
+  sig: New(config ...Config)
+  behavior: ACCUMULATE(ReplaceAll loop -> k)
+  calls: captureTokens
+
+New (middleware/rewrite/rewrite.go:12-12)
+  New creates a new middleware handler
+  sig: New(config ...Config)
+  behavior: ACCUMULATE(ReplaceAll loop -> k)
+  calls: captureTokens
 
 captureTokens (middleware/redirect/redirect.go:46-46)
   https://github.com/labstack/echo/blob/master/middleware/rewrite.go
   sig: captureTokens(pattern *regexp.Regexp, input string)
-  behavior: PRECEDENCE(len -> groups); ACCUMULATE(loop -> result)
+  behavior: PRECEDENCE(len -> groups); ACCUMULATE(Itoa loop -> result)
   called_by: New
 
 captureTokens (middleware/rewrite/rewrite.go:41-41)
   https://github.com/labstack/echo/blob/master/middleware/rewrite.go
   sig: captureTokens(pattern *regexp.Regexp, input string)
-  behavior: GUARD(groups -> none); ACCUMULATE(loop -> result)
+  behavior: GUARD(groups == nil -> return nil); ACCUMULATE(Itoa loop -> result)
   called_by: New
-
-releaseMiddleware (middleware/session/middleware.go:157-157)
-  releaseMiddleware resets and returns middleware to the pool.
-  sig: releaseMiddleware(m *Middleware)
-  called_by: NewWithStore
-
-Middleware (middleware/session/middleware.go:13-13)
-  Middleware holds session data and configuration.
-  methods: Delete, Destroy, Fresh, Get, ID, Keys
 
 New (middleware/cache/cache.go:109-109)
   New creates a new middleware handler
@@ -251,26 +270,26 @@ New (middleware/cache/cache.go:109-109)
 New (middleware/csrf/csrf.go:50-50)
   New creates a new middleware handler
   sig: New(config ...Config)
-  behavior: PRECEDENCE(cfg -> token); ACCUMULATE(loop -> trustedSubOrigins); DISPATCH(c)
+  behavior: PRECEDENCE(cfg -> token); ACCUMULATE(TrimSpace loop -> trustedSubOrigins, raises "[CSRF] Invalid o...); DISPATCH(c)
   calls: createOrExtendTokenInStorage, deleteTokenFromStorage, expireCSRFCookie, getRawFromStorage, originMatchesHost, refererMatchesHost, updateCSRFCookie, validateSecFetchSite
   raises: panic
 
 New (middleware/cors/cors.go:28-28)
   New creates a new middleware handler
   sig: New(config ...Config)
-  behavior: PRECEDENCE(len -> cfg); ACCUMULATE(loop -> allowSubOrigins)
+  behavior: PRECEDENCE(len -> cfg); ACCUMULATE(TrimSpace loop -> allowSubOrigins, raises "[CORS] Invalid o...)
   calls: isOriginSerializedOrNull, setPreflightHeaders, setSimpleHeaders
   raises: panic
-
-New (middleware/basicauth/basicauth.go:27-27)
-  New creates a new middleware handler
-  sig: New(config ...Config)
-  calls: containsCTL, containsInvalidHeaderChars
 
 New (middleware/static/static.go:121-121)
   New creates a new middleware handler.
   sig: New(root string, cfg ...Config)
   calls: isFile, sanitizePath
+
+New (middleware/basicauth/basicauth.go:27-27)
+  New creates a new middleware handler
+  sig: New(config ...Config)
+  calls: containsCTL, containsInvalidHeaderChars
 
 New (middleware/compress/compress.go:54-54)
   New creates a new middleware handler
@@ -278,54 +297,16 @@ New (middleware/compress/compress.go:54-54)
   behavior: DISPATCH(cfg)
   calls: appendVaryAcceptEncoding, shouldSkip
 
-Config (middleware/envvar/config.go:4-4)
-  Config defines the config for middleware.
-
-Config (middleware/requestid/config.go:9-9)
-  Config defines the config for middleware.
-
-Config (middleware/favicon/config.go:10-10)
+Config (middleware/etag/config.go:8-8)
   Config defines the config for middleware.
 
 Config (middleware/basicauth/config.go:22-22)
   Config defines the config for middleware.
 
-Config (middleware/encryptcookie/config.go:8-8)
-  Config defines the config for middleware.
-
-Config (middleware/compress/config.go:8-8)
-  Config defines the config for middleware.
-
-Config (middleware/cache/config.go:11-11)
-  Config defines the config for middleware.
-
-Config (middleware/limiter/config.go:12-12)
-  Config defines the config for middleware.
-
-Config (middleware/redirect/config.go:10-10)
-  Config defines the config for middleware.
-
-Config (middleware/recover/config.go:8-8)
-  Config defines the config for middleware.
-
-Config (middleware/session/config.go:13-13)
-  Config defines the configuration for the session middleware.
-
-Config (middleware/responsetime/config.go:8-8)
-  Config defines the config for middleware.
-
-Config (middleware/csrf/config.go:15-15)
-  Config defines the config for CSRF middleware.
-
-Config (middleware/proxy/config.go:12-12)
-  Config defines the config for middleware.
-
-Config (middleware/idempotency/config.go:15-15)
-  Config defines the config for middleware.
-
-Config (middleware/static/config.go:11-11)
+Config (middleware/favicon/config.go:10-10)
   Config defines the config for middleware.
 
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
 coverage: 80 symbols in L3, 28 with behavior annotations
+uncovered: Middleware.saveSession, Middleware.Get, Middleware.Delete, Middleware.Destroy
