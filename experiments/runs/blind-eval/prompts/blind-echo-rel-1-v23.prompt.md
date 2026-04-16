@@ -295,22 +295,16 @@ Echo.Group (echo.go:659-659)
   sig: Echo.Group(prefix string, m ...MiddlewareFunc)
   calls: Use
 
+Context.Echo (context.go:665-665)
+  Echo returns the `Echo` instance.
+
 Context.Request (context.go:129-129)
   Request returns `*http.Request`.
   called_by: fsFile
 
-Context.Echo (context.go:665-665)
-  Echo returns the `Echo` instance.
-
 Echo.ReleaseContext (echo.go:690-690)
   ReleaseContext returns the `Context` instance back to the pool.
   sig: Echo.ReleaseContext(c *Context)
-
-Context.json (context.go:464-464)
-  sig: Context.json(code int, i any, indent string)
-  behavior: DELEGATE(c.echo.JSONSerializer.Serialize -> result)
-  calls: Response, SetResponse, writeContentType
-  called_by: JSON, JSONPretty
 
 Context.SetPathValues (context.go:255-255)
   SetPathValues sets path parameters for current request.
@@ -318,6 +312,12 @@ Context.SetPathValues (context.go:255-255)
   behavior: GUARD(pathValues == nil -> panic("context SetP...)
   calls: setPathValues
   raises: panic
+
+Context.json (context.go:464-464)
+  sig: Context.json(code int, i any, indent string)
+  behavior: DELEGATE(c.echo.JSONSerializer.Serialize -> result)
+  calls: Response, SetResponse, writeContentType
+  called_by: JSON, JSONPretty
 
 ContextTimeout (middleware/context_timeout.go:28-28)
   ContextTimeout returns a middleware which returns error (503 Service Unavailable error) to client when underlying method
@@ -327,7 +327,7 @@ ContextTimeout (middleware/context_timeout.go:28-28)
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 46 with behavior annotations
+coverage: 97 symbols in L3, 52 with behavior annotations
 uncovered: Group.AddRoute, Context.FormValues, Context.FormValue, Context.RealIP
 drill: middleware/request_logger.go (~1 lines, RequestLogger)
 drill: group.go (~1 lines, Group.Add)
@@ -354,21 +354,6 @@ func (conf ContextConfig) ToContextRecorder(t *testing.T) (*echo.Context, *httpt
 ## RequestLoggerWithConfig  (middleware/request_logger.go L237-237)
 ```
 func RequestLoggerWithConfig(config RequestLoggerConfig) echo.MiddlewareFunc {
-```
-
-## RequestLoggerConfig.ToMiddleware  (middleware/request_logger.go L246-246)
-```
-func (config RequestLoggerConfig) ToMiddleware() (echo.MiddlewareFunc, error) {
-```
-
-## RequestLoggerConfig  (middleware/request_logger.go L124-124)
-```
-type RequestLoggerConfig struct {
-```
-
-## RequestLoggerValues  (middleware/request_logger.go L189-189)
-```
-type RequestLoggerValues struct {
 ```
 
 ## ContextConfig.ServeWithHandler  (echotest/context.go L167-167)
@@ -494,6 +479,21 @@ func (g *Group) Use(middleware ...MiddlewareFunc) {
 ## Group  (group.go L14-14)
 ```
 type Group struct {
+```
+
+## RequestLoggerConfig.ToMiddleware  (middleware/request_logger.go L246-246)
+```
+func (config RequestLoggerConfig) ToMiddleware() (echo.MiddlewareFunc, error) {
+```
+
+## RequestLoggerConfig  (middleware/request_logger.go L124-124)
+```
+type RequestLoggerConfig struct {
+```
+
+## RequestLoggerValues  (middleware/request_logger.go L189-189)
+```
+type RequestLoggerValues struct {
 ```
 --- END SOURCE SNIPPETS ---
 

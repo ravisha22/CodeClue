@@ -127,102 +127,6 @@ Session (src/requests/sessions.py:356-818)
   raises: InvalidSchema, ValueError
   uses: InvalidSchema (exceptions), PreparedRequest (models), RequestsCookieJar (cookies), Request (models)
 
-PreparedRequest (src/requests/models.py:315-639)
-  The fully mutable :class:`PreparedRequest <PreparedRequest>` object,
-  extends: RequestEncodingMixin, RequestHooksMixin
-  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
-  calls: _get_idna_encoded_host, copy, prepare_auth, prepare_body, prepare_content_length, prepare_cookies, prepare_headers, prepare_hooks
-  called_by: copy, Request
-  raises: MissingSchema, InvalidURL, UnicodeError, NotImplementedError
-  uses: HTTPBasicAuth (auth), InvalidJSONError (exceptions), CaseInsensitiveDict (structures), MissingSchema (exceptions)
-
-Request (src/requests/models.py:232-312)
-  A user-created :class:`Request <Request>` object.
-  extends: RequestHooksMixin
-  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
-  calls: PreparedRequest, register_hook
-
-RequestsWarning (src/requests/exceptions.py:143-144)
-  Base warning for Requests.
-  extends: Warning
-  imports: urllib3.exceptions, compat
-
-ContentDecodingError (src/requests/exceptions.py:124-125)
-  Failed to decode response content.
-  extends: RequestException, BaseHTTPError
-  imports: urllib3.exceptions, compat
-
-FileModeWarning (src/requests/exceptions.py:147-148)
-  A file was opened in text mode, but Requests determined its binary length.
-  extends: RequestsWarning, DeprecationWarning
-  imports: urllib3.exceptions, compat
-
-StreamConsumedError (src/requests/exceptions.py:128-129)
-  The content for this response was already consumed.
-  extends: RequestException, TypeError
-  imports: urllib3.exceptions, compat
-
-Timeout (src/requests/exceptions.py:72-78)
-  The request timed out.
-  extends: RequestException
-  imports: urllib3.exceptions, compat
-
-URLRequired (src/requests/exceptions.py:92-93)
-  A valid URL is required to make a request.
-  extends: RequestException
-  imports: urllib3.exceptions, compat
-
-UnrewindableBodyError (src/requests/exceptions.py:136-137)
-  Requests encountered an error when trying to rewind a body.
-  extends: RequestException
-  imports: urllib3.exceptions, compat
-
-HTTPDigestAuth (src/requests/auth.py:107-314)
-  Attaches HTTP Digest Authentication to the given Request object.
-  extends: AuthBase
-  imports: hashlib, threading, warnings, base64, compat
-  calls: build_digest_header, init_per_thread_state
-
-ConnectTimeout (src/requests/exceptions.py:81-85)
-  The request timed out while trying to connect to the remote server.
-  extends: ConnectionError, Timeout
-  imports: urllib3.exceptions, compat
-
-HTTPBasicAuth (src/requests/auth.py:76-96)
-  Attaches HTTP Basic Authentication to the given Request object.
-  extends: AuthBase
-  imports: hashlib, threading, warnings, base64, compat
-  calls: _basic_auth_str
-
-HTTPProxyAuth (src/requests/auth.py:99-104)
-  Attaches HTTP Proxy Authentication to a given Request object.
-  extends: HTTPBasicAuth
-  imports: hashlib, threading, warnings, base64, compat
-  calls: _basic_auth_str
-
-ReadTimeout (src/requests/exceptions.py:88-89)
-  The server did not send any data in the allotted amount of time.
-  extends: Timeout
-  imports: urllib3.exceptions, compat
-
-RequestException (src/requests/exceptions.py:13-25)
-  There was an ambiguous exception that occurred while handling your
-  extends: IOError
-  imports: urllib3.exceptions, compat
-
-RequestsDependencyWarning (src/requests/exceptions.py:151-152)
-  An imported dependency doesn't match the expected version range.
-  extends: RequestsWarning
-  imports: urllib3.exceptions, compat
-
-RequestsCookieJar (src/requests/cookies.py:176-437)
-  Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
-  extends: CookieJar, MutableMapping
-  imports: calendar, copy, compat, threading, dummy_threading
-  calls: CookieConflictError, __contains__, _find_no_duplicates, copy, get, get_policy, iteritems, iterkeys
-  called_by: copy, cookiejar_from_dict
-  raises: KeyError, CookieConflictError
-
 build_response (src/requests/adapters.py:337-372)
   Builds a :class:`Response <requests.Response>` object from a urllib3
   sig: build_response(req, resp)
@@ -253,6 +157,26 @@ merge_hooks (src/requests/sessions.py:92-104)
 
 __init__ (src/requests/exceptions.py:18-25)
   Initialize RequestException with `request` and `response` objects.
+
+PreparedRequest (src/requests/models.py:315-639)
+  The fully mutable :class:`PreparedRequest <PreparedRequest>` object,
+  extends: RequestEncodingMixin, RequestHooksMixin
+  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
+  calls: _get_idna_encoded_host, copy, prepare_auth, prepare_body, prepare_content_length, prepare_cookies, prepare_headers, prepare_hooks
+  called_by: copy, Request
+  raises: MissingSchema, InvalidURL, UnicodeError, NotImplementedError
+  uses: HTTPBasicAuth (auth), InvalidJSONError (exceptions), CaseInsensitiveDict (structures), MissingSchema (exceptions)
+
+Request (src/requests/models.py:232-312)
+  A user-created :class:`Request <Request>` object.
+  extends: RequestHooksMixin
+  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
+  calls: PreparedRequest, register_hook
+
+RequestsWarning (src/requests/exceptions.py:143-144)
+  Base warning for Requests.
+  extends: Warning
+  imports: urllib3.exceptions, compat
 
 prepare_request (src/requests/sessions.py:459-500)
   Constructs a :class:`PreparedRequest <PreparedRequest>` for
@@ -306,6 +230,88 @@ request_url (src/requests/adapters.py:524-554)
   Obtain the url to use when making the final request.
   sig: request_url(request, proxies)
   called_by: HTTPAdapter
+
+send (src/requests/adapters.py:120-137)
+  Sends PreparedRequest object.
+  sig: send(request, stream, timeout, verify, cert...)
+  raises: NotImplementedError
+
+send (src/requests/adapters.py:591-697)
+  Sends PreparedRequest object.
+  sig: send(request, stream, timeout, verify, cert...)
+  raises: InvalidURL, ConnectionError, ProxyError, ValueError
+  uses: InvalidURL (exceptions), TimeoutSauce (urllib3.util), ConnectionError (exceptions), ProxyError (exceptions)
+
+ContentDecodingError (src/requests/exceptions.py:124-125)
+  Failed to decode response content.
+  extends: RequestException, BaseHTTPError
+  imports: urllib3.exceptions, compat
+
+FileModeWarning (src/requests/exceptions.py:147-148)
+  A file was opened in text mode, but Requests determined its binary length.
+  extends: RequestsWarning, DeprecationWarning
+  imports: urllib3.exceptions, compat
+
+StreamConsumedError (src/requests/exceptions.py:128-129)
+  The content for this response was already consumed.
+  extends: RequestException, TypeError
+  imports: urllib3.exceptions, compat
+
+Timeout (src/requests/exceptions.py:72-78)
+  The request timed out.
+  extends: RequestException
+  imports: urllib3.exceptions, compat
+
+URLRequired (src/requests/exceptions.py:92-93)
+  A valid URL is required to make a request.
+  extends: RequestException
+  imports: urllib3.exceptions, compat
+
+UnrewindableBodyError (src/requests/exceptions.py:136-137)
+  Requests encountered an error when trying to rewind a body.
+  extends: RequestException
+  imports: urllib3.exceptions, compat
+
+ConnectTimeout (src/requests/exceptions.py:81-85)
+  The request timed out while trying to connect to the remote server.
+  extends: ConnectionError, Timeout
+  imports: urllib3.exceptions, compat
+
+HTTPBasicAuth (src/requests/auth.py:76-96)
+  Attaches HTTP Basic Authentication to the given Request object.
+  extends: AuthBase
+  imports: hashlib, threading, warnings, base64, compat
+  calls: _basic_auth_str
+
+HTTPDigestAuth (src/requests/auth.py:107-314)
+  Attaches HTTP Digest Authentication to the given Request object.
+  extends: AuthBase
+  imports: hashlib, threading, warnings, base64, compat
+  calls: build_digest_header, init_per_thread_state
+
+HTTPProxyAuth (src/requests/auth.py:99-104)
+  Attaches HTTP Proxy Authentication to a given Request object.
+  extends: HTTPBasicAuth
+  imports: hashlib, threading, warnings, base64, compat
+  calls: _basic_auth_str
+
+ReadTimeout (src/requests/exceptions.py:88-89)
+  The server did not send any data in the allotted amount of time.
+  extends: Timeout
+  imports: urllib3.exceptions, compat
+
+get (src/requests/sessions.py:595-604)
+  Sends a GET request.
+  sig: get(url)
+  behavior: DELEGATE(request -> result)
+  calls: request
+  called_by: merge_environment_settings, send, Session, should_strip_auth, SessionRedirectMixin, merge_hooks
+
+delete (src/requests/api.py:148-157)
+  Sends a DELETE request.
+  sig: delete(url)
+  behavior: DELEGATE(request -> result)
+  calls: request
 
 -- GAPS
 type: RELATIONAL (answerable from L2-L3 structure)

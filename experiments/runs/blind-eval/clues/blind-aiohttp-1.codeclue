@@ -246,29 +246,23 @@ _gen_form_data (aiohttp/formdata.py:128-161)
   called_by: __call__, FormData
   raises: TypeError
 
-strip_auth_from_url (aiohttp/helpers.py:184-190)
-  Remove user and password from URL if present and return BasicAuth object.
-  sig: strip_auth_from_url(url)
-  calls: BasicAuth
-  called_by: proxies_from_env
-
-_read (aiohttp/payload.py:779-798)
-  Read a chunk of data from the text file-like object.
-  sig: _read(remaining_content_len)
-
 _read (aiohttp/payload.py:510-526)
   Read a chunk of data from the file-like object.
   sig: _read(remaining_content_len)
   behavior: DELEGATE(_value.read -> result)
 
+_read (aiohttp/payload.py:779-798)
+  Read a chunk of data from the text file-like object.
+  sig: _read(remaining_content_len)
+
 handler (aiohttp/abc.py:55-56)
   Execute matched request handler
 
-json (aiohttp/_websocket/models.py:55-59)
+json (aiohttp/_websocket/models.py:81-85)
   Return parsed JSON data.
   behavior: DELEGATE(loads -> result)
 
-json (aiohttp/_websocket/models.py:81-85)
+json (aiohttp/_websocket/models.py:55-59)
   Return parsed JSON data.
   behavior: DELEGATE(loads -> result)
 
@@ -290,11 +284,23 @@ send_json_bytes (aiohttp/web_ws.py:485-499)
   sig: send_json_bytes(data, compress)
   calls: send_bytes
 
+strip_auth_from_url (aiohttp/helpers.py:184-190)
+  Remove user and password from URL if present and return BasicAuth object.
+  sig: strip_auth_from_url(url)
+  calls: BasicAuth
+  called_by: proxies_from_env
+
 readline (aiohttp/multipart.py:423-450)
   Reads body part by line by line.
   behavior: BRANCH(self._unread -> self._unread.popleft(), else -> await self._content.r...)
   calls: append
   called_by: read_chunk, BodyPartReader, _read_headers, _readline, MultipartReader
+
+LookupError (aiohttp/payload.py:50-51)
+  Raised when no payload factory is found for the given data type.
+  extends: Exception
+  imports: asyncio, enum, io, mimetypes, warnings
+  called_by: get, PayloadRegistry
 
 form (aiohttp/multipart.py:475-493)
   Like read(), but assumes that body parts contain form urlencoded data.
@@ -306,16 +312,10 @@ text (aiohttp/multipart.py:459-465)
   Like read(), but assumes that body part contains text data.
   calls: get_charset, read
 
-LookupError (aiohttp/payload.py:50-51)
-  Raised when no payload factory is found for the given data type.
-  extends: Exception
-  imports: asyncio, enum, io, mimetypes, warnings
-  called_by: get, PayloadRegistry
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 34 with behavior annotations
-uncovered: BufferedReaderPayload, HttpRequestParser, PayloadRegistry, RawRequestMessage
+coverage: 302 symbols in L3, 77 with behavior annotations
+uncovered: RequestHandler, post, _read_headers, _read_chunk_from_length
 drill: aiohttp/client_reqrep.py (~41 lines, _update_body_from_data)
 drill: aiohttp/multipart.py (~9 lines, json)
 drill: aiohttp/multipart.py (~17 lines, read)

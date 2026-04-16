@@ -246,12 +246,12 @@ LoggingMiddleware (examples/logging_middleware.py:27-56)
   imports: asyncio, logging, aiohttp
   called_by: run_tests
 
-__call__ (examples/retry_middleware.py:47-88)
+__call__ (examples/combined_middleware.py:119-156)
   Execute request with retry logic.
   sig: __call__(request, handler)
   behavior: ACCUMULATE(range(self.max_retrie... -> delay)
 
-__call__ (examples/combined_middleware.py:119-156)
+__call__ (examples/retry_middleware.py:47-88)
   Execute request with retry logic.
   sig: __call__(request, handler)
   behavior: ACCUMULATE(range(self.max_retrie... -> delay)
@@ -310,7 +310,8 @@ Response (aiohttp/web_response.py:535-740)
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 24 with behavior annotations
-uncovered: TraceRequestHeadersSentParams, TraceRequestRedirectParams, TraceRequestStartParams, TraceResponseChunkReceivedParams
+coverage: 224 symbols in L3, 49 with behavior annotations
+uncovered: RequestPayloadError, ClientRequestBase, ResponseHandler, MultipartResponseWrapper
 drill: aiohttp/web_protocol.py (~37 lines, _handle_request)
 drill: aiohttp/web_ws.py (~11 lines, _handle_ping_pong_exception)
+drill: aiohttp/web_request.py (~11 lines, remote)

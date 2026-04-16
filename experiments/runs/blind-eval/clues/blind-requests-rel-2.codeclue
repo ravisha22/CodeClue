@@ -222,20 +222,6 @@ update (src/requests/cookies.py:358-364)
   calls: copy, set_cookie
   called_by: __setstate__, copy, RequestsCookieJar, create_cookie, merge_cookies
 
-MockRequest (src/requests/cookies.py:23-100)
-  Wraps a `requests.Request` to mimic a `urllib2.Request`.
-  imports: calendar, copy, compat, threading, dummy_threading
-  calls: get_host, get_origin_req_host, is_unverifiable, get
-  called_by: extract_cookies_to_jar, get_cookie_header
-  raises: NotImplementedError
-
-raise_for_status (src/requests/models.py:1001-1028)
-  Raises :class:`HTTPError`, if one occurred.
-  behavior: BRANCH(isinstance(self.reason, bytes) -> result, else -> self.reason)
-  called_by: ok, Response
-  raises: HTTPError
-  uses: HTTPError (exceptions)
-
 FileModeWarning (src/requests/exceptions.py:147-148)
   A file was opened in text mode, but Requests determined its binary length.
   extends: RequestsWarning, DeprecationWarning
@@ -250,6 +236,13 @@ MissingSchema (src/requests/exceptions.py:100-101)
   The URL scheme (e.g.
   extends: RequestException, ValueError
   imports: urllib3.exceptions, compat
+
+MockRequest (src/requests/cookies.py:23-100)
+  Wraps a `requests.Request` to mimic a `urllib2.Request`.
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: get_host, get_origin_req_host, is_unverifiable, get
+  called_by: extract_cookies_to_jar, get_cookie_header
+  raises: NotImplementedError
 
 UnrewindableBodyError (src/requests/exceptions.py:136-137)
   Requests encountered an error when trying to rewind a body.
@@ -295,6 +288,13 @@ next (src/requests/models.py:787-789)
 prepend_scheme_if_needed (src/requests/utils.py:976-1002)
   Given a URL that may or may not have a scheme, prepend the given scheme.
   sig: prepend_scheme_if_needed(url, new_scheme)
+
+raise_for_status (src/requests/models.py:1001-1028)
+  Raises :class:`HTTPError`, if one occurred.
+  behavior: BRANCH(isinstance(self.reason, bytes) -> result, else -> self.reason)
+  called_by: ok, Response
+  raises: HTTPError
+  uses: HTTPError (exceptions)
 
 select_proxy (src/requests/utils.py:825-848)
   Select a proxy for the url, if applicable.

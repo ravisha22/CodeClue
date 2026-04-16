@@ -76,8 +76,8 @@ Bind.validateStruct                 M bind.go:183    Struct validation.
 SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
 domainMatcher.match                 M domain.go:139    match checks if a hostname matches the domain p...
 Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
-DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
 manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
+DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
 walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
 isUnixNetwork                       M middleware/adaptor/adaptor.go:208    function isUnixNetwork
 Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...
@@ -134,30 +134,30 @@ Request.Context (client/request.go:115-115)
   behavior: GUARD(r.ctx == nil -> return context.Back...)
   called_by: Send
 
-FromContext (middleware/session/middleware.go:179-179)
-  FromContext returns the Middleware from the Fiber context.
-  sig: FromContext(ctx any)
-  behavior: GUARD(m, ok := fiber.ValueFromContext[*Middleware](... -> return m)
-
 FromContext (middleware/requestid/requestid.go:79-79)
   FromContext returns the request ID from context.
   sig: FromContext(ctx any)
   behavior: GUARD(rid, ok := fiber.ValueFromContext[string](ctx... -> return rid)
+
+FromContext (middleware/session/middleware.go:179-179)
+  FromContext returns the Middleware from the Fiber context.
+  sig: FromContext(ctx any)
+  behavior: GUARD(m, ok := fiber.ValueFromContext[*Middleware](... -> return m)
 
 TokenFromContext (middleware/keyauth/keyauth.go:99-99)
   TokenFromContext returns the bearer token from the request context.
   sig: TokenFromContext(ctx any)
   behavior: GUARD(token, ok := fiber.ValueFromContext[string](c... -> return token)
 
-Request.AddFormDataWithMap (client/request.go:507-507)
-  AddFormDataWithMap adds multiple form fields and values to the Request.
-  sig: Request.AddFormDataWithMap(m map[string][]string)
-  calls: AddWithMap, resetBody
-
 Request.AddFormData (client/request.go:493-493)
   AddFormData adds a single form field and value to the Request.
   sig: Request.AddFormData(key, val string)
   calls: Add, resetBody
+
+Request.AddFormDataWithMap (client/request.go:507-507)
+  AddFormDataWithMap adds multiple form fields and values to the Request.
+  sig: Request.AddFormDataWithMap(m map[string][]string)
+  calls: AddWithMap, resetBody
 
 Request.SetContext (client/request.go:124-124)
   SetContext sets the context for the Request, allowing request cancellation if ctx is done.
@@ -288,8 +288,8 @@ Client.DoDeadline (client/client.go:85-85)
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 47 with behavior annotations
-uncovered: App.next, App.nextCustom, Client.StreamResponseBody, Response.StatusCode
+coverage: 409 symbols in L3, 231 with behavior annotations
+uncovered: App.next, App.nextCustom, FormData.Set, FormData.SetWithStruct
 drill: middleware/adaptor/adaptor.go (~1 lines, CopyContextToFiberContext)
 drill: middleware/adaptor/adaptor.go (~1 lines, HTTPHandlerWithContext)
 drill: helpers.go (~1 lines, StoreInContext)

@@ -124,32 +124,6 @@ BodyLimitWithConfig                 M middleware/body_limit.go:42     BodyLimitW
   ...and 483 more symbols
 
 -- FOCUS
-Echo.Add (echo.go:642-642)
-  Add registers a new route for an HTTP method and path with matching handler in the router with optional route-level midd
-  sig: Echo.Add(method, path string, handler HandlerFunc, middleware ......)
-  behavior: GUARD(err != nil -> panic(err))
-  calls: add
-  called_by: Any, CONNECT, DELETE, File, GET, HEAD, OPTIONS, PATCH
-  raises: panic
-
-Echo.AddRoute (echo.go:617-617)
-  AddRoute registers a new Route with default host Router
-  sig: Echo.AddRoute(route Route)
-  behavior: DELEGATE(e.add -> result)
-  calls: add
-  called_by: Match
-
-Echo.Group (echo.go:659-659)
-  Group creates a new router group with prefix and optional group-level middleware.
-  sig: Echo.Group(prefix string, m ...MiddlewareFunc)
-  calls: Use
-
-Echo.FileFS (echo.go:591-591)
-  FileFS registers a new route with path to serve file from the provided file system.
-  sig: Echo.FileFS(path, file string, filesystem fs.FS, m ...MiddlewareFunc)
-  behavior: DELEGATE(e.GET -> result)
-  calls: GET, StaticFileHandler
-
 Echo.Match (echo.go:510-510)
   Match registers a new route for multiple HTTP methods and path with matching handler in the router with optional route-l
   sig: Echo.Match(methods []string, path string, handler HandlerFunc, midd...)
@@ -163,11 +137,6 @@ Echo.GET (echo.go:449-449)
   behavior: DELEGATE(e.Add -> result)
   calls: Add
   called_by: FileFS, main
-
-Echo.Use (echo.go:431-431)
-  Use adds middleware to the chain which is run after router has found matching route and before route/request handler met
-  sig: Echo.Use(middleware ...MiddlewareFunc)
-  called_by: Group, main
 
 Echo.Any (echo.go:504-504)
   Any registers a new route for all HTTP methods (supported by Echo) and path with matching handler in the router with opt
@@ -211,6 +180,11 @@ Echo.TRACE (echo.go:485-485)
   behavior: DELEGATE(e.Add -> result)
   calls: Add
 
+Echo.Use (echo.go:431-431)
+  Use adds middleware to the chain which is run after router has found matching route and before route/request handler met
+  sig: Echo.Use(middleware ...MiddlewareFunc)
+  called_by: Group, main
+
 Echo.Pre (echo.go:426-426)
   Pre adds middleware to the chain which is run before router tries to find matching route.
   sig: Echo.Pre(middleware ...MiddlewareFunc)
@@ -218,6 +192,13 @@ Echo.Pre (echo.go:426-426)
 concurrentRouter.Route (router_concurrent.go:21-21)
   sig: concurrentRouter.Route(c *Context)
   behavior: DELEGATE(r.router.Route -> result); UNWIND(defer)
+
+Echo.AddRoute (echo.go:617-617)
+  AddRoute registers a new Route with default host Router
+  sig: Echo.AddRoute(route Route)
+  behavior: DELEGATE(e.add -> result)
+  calls: add
+  called_by: Match
 
 DefaultRouter.storeRouteInfo (router.go:538-538)
   sig: DefaultRouter.storeRouteInfo(ri RouteInfo)
@@ -246,6 +227,14 @@ Group.Match (group.go:77-77)
   calls: AddRoute
   raises: panic
 
+Echo.Add (echo.go:642-642)
+  Add registers a new route for an HTTP method and path with matching handler in the router with optional route-level midd
+  sig: Echo.Add(method, path string, handler HandlerFunc, middleware ......)
+  behavior: GUARD(err != nil -> panic(err))
+  calls: add
+  called_by: Any, CONNECT, DELETE, File, GET, HEAD, OPTIONS, PATCH
+  raises: panic
+
 DefaultRouter (router.go:60-60)
   DefaultRouter is the registry of all registered routes for an `Echo` instance for request matching and URL path paramete
   methods: Add, Remove, Route, Routes, insert, storeRouteInfo
@@ -260,6 +249,11 @@ Echo.File (echo.go:609-609)
   File registers a new route with path to serve a static file with optional route-level middleware.
   sig: Echo.File(path, file string, middleware ...MiddlewareFunc)
   calls: Add
+
+Echo.Group (echo.go:659-659)
+  Group creates a new router group with prefix and optional group-level middleware.
+  sig: Echo.Group(prefix string, m ...MiddlewareFunc)
+  calls: Use
 
 Echo.OPTIONS (echo.go:461-461)
   OPTIONS registers a new OPTIONS route for a path with matching handler in the router with optional route-level middlewar
@@ -277,6 +271,20 @@ Route (route.go:16-16)
   Route contains information to adding/registering new route with the router.
   methods: ToRouteInfo, WithPrefix
 
+AddTrailingSlash (middleware/slash.go:29-29)
+  AddTrailingSlash returns a root level (before router) middleware which adds a trailing slash to the request `URL#Path`.
+  behavior: DELEGATE(AddTrailingSlashWithConfig -> result)
+  calls: AddTrailingSlashWithConfig
+
+RemoveTrailingSlash (middleware/slash.go:93-93)
+  RemoveTrailingSlash returns a root level (before router) middleware which removes a trailing slash from the request URI.
+  behavior: DELEGATE(RemoveTrailingSlashWithConfig -> result)
+  calls: RemoveTrailingSlashWithConfig
+
+RequestLogger (middleware/request_logger.go:395-395)
+  RequestLogger creates Request Logger middleware with Echo default settings that uses Context.Logger() as logger.
+  calls: RequestLoggerWithConfig
+
 routeMethods (router.go:148-148)
   type routeMethods
   methods: find, isHandler, set, updateAllowHeader
@@ -292,37 +300,22 @@ DefaultRouter.Route (router.go:791-791)
   behavior: PRECEDENCE(cap -> not_r.useEscapedPathForRouting -> currentNode); ACCUMULATE(len loop -> searchIndex)
   calls: findStaticChild, node, find
 
-routeMethods.set (router.go:171-171)
-  sig: routeMethods.set(method string, r *routeMethod)
-  behavior: DISPATCH(method)
-  calls: updateAllowHeader
-  called_by: setHandler
-
 Echo.RouteNotFound (echo.go:495-495)
   RouteNotFound registers a special-case route which is executed when no other route is found (i.e.
   sig: Echo.RouteNotFound(path string, h HandlerFunc, m ...MiddlewareFunc)
   behavior: DELEGATE(e.Add -> result)
   calls: Add
 
-routeMethods.updateAllowHeader (router.go:251-251)
-  behavior: ACCUMULATE(WriteString loop -> result)
-  called_by: set
-
-newAddRouteError (router.go:438-438)
-  sig: newAddRouteError(route Route, err error)
-  called_by: Add
-
-routeMethods.isHandler (router.go:301-301)
+routeMethods.set (router.go:171-171)
+  sig: routeMethods.set(method string, r *routeMethod)
+  behavior: DISPATCH(method)
+  calls: updateAllowHeader
   called_by: setHandler
-
-AddRouteError.Error (router.go:434-434)
-
-AddRouteError.Unwrap (router.go:436-436)
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 55 with behavior annotations
-uncovered: SecureConfig.ToMiddleware, RateLimiterConfig.ToMiddleware, Router, RouterConfig
+coverage: 188 symbols in L3, 119 with behavior annotations
+uncovered: Echo.ServeHTTP, Echo.serveHTTP, randomBalancer.Next, DefaultRouter.Routes
 drill: echo.go (~1 lines, Echo.Match)
 drill: echo.go (~1 lines, Echo.GET)
 drill: echo.go (~1 lines, Echo.DELETE)

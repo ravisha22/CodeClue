@@ -702,9 +702,12 @@ def _analyze_focus_selection(
                 function_anchors.append(node.node_id)
 
     semantic_anchors = class_anchors + function_anchors
+    pinned_anchor_ids = list(dict.fromkeys(semantic_anchors))
     anchors = list(semantic_anchors)
     lexical_fallback = False
     lexical_supplements: list[str] = []
+    expansion_candidate_ids: set[str] = set()
+    neighbor_candidate_ids: set[str] = set()
     entity_expansions: list[str] = [
         node.node_id
         for node in sorted(
@@ -726,6 +729,7 @@ def _analyze_focus_selection(
         ]
         anchors = lexical_anchors[:soft_cap]
         lexical_fallback = bool(anchors)
+        expansion_candidate_ids.update(anchors)
     else:
         lexical_supplements = [
             node.node_id
@@ -752,9 +756,11 @@ def _analyze_focus_selection(
     }
     for lexical_id in lexical_supplements:
         candidates.add(lexical_id)
+        expansion_candidate_ids.add(lexical_id)
         anchor_tier[lexical_id] = min(anchor_tier.get(lexical_id, 1), 1)
     for entity_id in entity_expansions:
         candidates.add(entity_id)
+        expansion_candidate_ids.add(entity_id)
         anchor_tier[entity_id] = min(anchor_tier.get(entity_id, 1), 1)
     for anchor in list(anchors):
         anchor_node = node_by_id.get(anchor)
@@ -765,12 +771,14 @@ def _analyze_focus_selection(
                 child = node_by_id.get(child_id)
                 if child and child.node_type in ("function", "async_function"):
                     candidates.add(child_id)
+                    expansion_candidate_ids.add(child_id)
                     anchor_tier[child_id] = min(anchor_tier.get(child_id, 2), anchor_tier[anchor] + 1)
         elif anchor_node.node_type in ("function", "async_function"):
             for parent_id in contains_parents.get(anchor, set()):
                 parent = node_by_id.get(parent_id)
                 if parent and parent.node_type == "class":
                     candidates.add(parent_id)
+                    expansion_candidate_ids.add(parent_id)
                     anchor_tier[parent_id] = min(anchor_tier.get(parent_id, 2), anchor_tier[anchor] + 1)
 
     frontier = set(anchors)
@@ -788,6 +796,7 @@ def _analyze_focus_selection(
                 if _is_test_file(neighbor_node.source_anchor.file_path):
                     continue
                 candidates.add(neighbor)
+                neighbor_candidate_ids.add(neighbor)
                 next_frontier.add(neighbor)
                 visited.add(neighbor)
                 proximity[neighbor] = proximity.get(current, 0) + 1
@@ -852,8 +861,6 @@ def _analyze_focus_selection(
         )
 
     ranked_ids = sorted(candidate_ids, key=_rank_key)
-    if mechanistic_focus and priority_entity_ids:
-        ranked_ids = priority_entity_ids + [nid for nid in ranked_ids if nid not in priority_entity_ids]
 
     if mechanistic_focus and ranked_ids:
         seed_ids = list(dict.fromkeys(priority_entity_ids + ranked_ids[: max(6, min(12, soft_cap // 2))]))
@@ -866,6 +873,7 @@ def _analyze_focus_selection(
                 if _is_test_file(neighbor_node.source_anchor.file_path):
                     continue
                 candidates.add(neighbor)
+                neighbor_candidate_ids.add(neighbor)
                 anchor_tier[neighbor] = min(anchor_tier.get(neighbor, 4), anchor_tier.get(seed_id, 2) + 1)
                 proximity.setdefault(neighbor, proximity.get(seed_id, 0) + 1)
                 expansion_support[neighbor] += max(0.5, _node_question_relevance(node_by_id[seed_id], keywords))
@@ -877,7 +885,51 @@ def _analyze_focus_selection(
                 key=lambda nid: _rank_key(nid, expansion_support.get(nid, 0.0)),
             )
 
-    selected_ids = ranked_ids[:soft_cap]
+    def _pinned_rank_key(nid: str) -> tuple:
+        return (
+            -semantic_scores.get(nid, 0.0),
+            -entity_scores.get(nid, 0.0),
+            -_node_question_relevance(node_by_id[nid], keywords),
+            -anchor_support.get(nid, 0.0),
+            proximity.get(nid, 99),
+            -lexical_scores.get(nid, 0.0),
+            type_priority.get(node_by_id[nid].node_type, 2),
+            node_by_id[nid].semantic_contract.get("symbol_name", node_by_id[nid].node_id),
+        )
+
+    pinned_anchor_ids = [
+        nid
+        for nid in sorted(pinned_anchor_ids, key=_pinned_rank_key)
+        if nid in node_by_id
+    ]
+    pinned_anchor_set = set(pinned_anchor_ids)
+    ranked_expansion_ids = [
+        nid for nid in ranked_ids
+        if nid in expansion_candidate_ids and nid not in pinned_anchor_set
+    ]
+    ranked_expansion_set = set(ranked_expansion_ids)
+    ranked_neighbor_ids = [
+        nid for nid in ranked_ids
+        if nid in neighbor_candidate_ids
+        and nid not in pinned_anchor_set
+        and nid not in ranked_expansion_set
+    ]
+    ranked_neighbor_set = set(ranked_neighbor_ids)
+    ranked_other_ids = [
+        nid for nid in ranked_ids
+        if nid not in pinned_anchor_set
+        and nid not in ranked_expansion_set
+        and nid not in ranked_neighbor_set
+    ]
+    ranked_ids = pinned_anchor_ids + ranked_expansion_ids + ranked_neighbor_ids + ranked_other_ids
+
+    remaining_budget = max(soft_cap - len(pinned_anchor_ids), 0)
+    if len(pinned_anchor_ids) >= soft_cap:
+        selected_ids = list(pinned_anchor_ids)
+    else:
+        selected_ids = pinned_anchor_ids + (
+            ranked_expansion_ids + ranked_neighbor_ids + ranked_other_ids
+        )[:remaining_budget]
     expanded_candidate_ids = [nid for nid in ranked_ids if nid not in selected_ids]
     return _FocusSelection(
         selected_nodes=[node_by_id[nid] for nid in selected_ids],

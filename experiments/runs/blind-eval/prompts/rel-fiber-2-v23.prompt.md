@@ -88,8 +88,8 @@ Bind.validateStruct                 M bind.go:183    Struct validation.
 SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
 domainMatcher.match                 M domain.go:139    match checks if a hostname matches the domain p...
 Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
-DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
 manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
+DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
 walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
 isUnixNetwork                       M middleware/adaptor/adaptor.go:208    function isUnixNetwork
 Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...
@@ -179,13 +179,13 @@ core (client/core.go:48-48)
   core stores middleware and plugin definitions and defines the request execution process.
   methods: afterHooks, execFunc, execute, getRetryConfig, preHooks, timeout
 
+CustomCtx (ctx_interface.go:13-14)
+  CustomCtx extends Ctx with the additional methods required by Fiber's internals and middleware helpers.
+
 Error (app.go:62-63)
   Error represents an error that occurred while handling a request.
   methods: Error
   called_by: serverErrorHandler, DefaultErrorHandler
-
-CustomCtx (ctx_interface.go:13-14)
-  CustomCtx extends Ctx with the additional methods required by Fiber's internals and middleware helpers.
 
 StoreInContext (helpers.go:83-83)
   StoreInContext stores key/value in both Fiber locals and request context.
@@ -302,8 +302,8 @@ Request.Delete (client/request.go:653-653)
 
 -- GAPS
 type: RELATIONAL (answerable from L2-L3 structure)
-coverage: 80 symbols in L3, 37 with behavior annotations
-uncovered: App.requestHandler, DefaultCtx.Request, DefaultCtx.RequestCtx, DefaultReq.Request
+coverage: 305 symbols in L3, 153 with behavior annotations
+uncovered: Request.resetBody, Request.checkClient, Middleware.saveSession, Middleware.Get
 
 --- CLUE FILE END ---
 

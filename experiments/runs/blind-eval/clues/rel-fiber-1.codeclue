@@ -76,8 +76,8 @@ Bind.validateStruct                 M bind.go:183    Struct validation.
 SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
 domainMatcher.match                 M domain.go:139    match checks if a hostname matches the domain p...
 Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
-DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
 manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
+DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
 walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
 isUnixNetwork                       M middleware/adaptor/adaptor.go:208    function isUnixNetwork
 Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...
@@ -240,15 +240,15 @@ Registering.All (register.go:50-50)
   All registers a middleware route that will match requests with the provided path which is stored in register struct.
   sig: Registering.All(handler any, handlers ...any)
 
-State (state.go:21-21)
-  State is a key-value store for Fiber's app in order to be used as a global storage for the app's dependencies.
-  methods: Delete, Get, GetBool, GetComplex128, GetComplex64, GetFloat32
-
 ListenConfig (listen.go:44-45)
   ListenConfig is a struct to customize startup of Fiber.
 
 Register (register.go:8-9)
   Register defines all router handle interface generate by RouteChain().
+
+State (state.go:21-21)
+  State is a key-value store for Fiber's app in order to be used as a global storage for the app's dependencies.
+  methods: Delete, Get, GetBool, GetComplex128, GetComplex64, GetFloat32
 
 Group.mount (mount.go:73-73)
   Mount attaches another app instance as a sub-router along a routing path.
@@ -306,5 +306,5 @@ domainRouter.Route (domain.go:584-584)
 
 -- GAPS
 type: RELATIONAL (answerable from L2-L3 structure)
-coverage: 80 symbols in L3, 50 with behavior annotations
-uncovered: DefaultCtx.RestartRouting, routeParser.analyseParameterPart, App.setCtxFunc, routeParser.parseRoute
+coverage: 224 symbols in L3, 124 with behavior annotations
+uncovered: DefaultCtx.RestartRouting, App.buildTree, App.RebuildTree, App.All

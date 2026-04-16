@@ -66,91 +66,48 @@ ZodBigInt.setLimit                  M packages/zod/src/v3/types.ts:1734   method
 ZodNumber.setLimit                  M packages/zod/src/v3/types.ts:1482   method ZodNumber.setLimit
 ZodNumber._parse                    M packages/zod/src/v3/types.ts:1370   method ZodNumber._parse
 ZodEffects._parse                   M packages/zod/src/v3/types.ts:4322   method ZodEffects._parse
-ZodBigInt._parse                    M packages/zod/src/v3/types.ts:1636   method ZodBigInt._parse
 ZodIntersection._parse              M packages/zod/src/v3/types.ts:3292   method ZodIntersection._parse
-ZodArray._parse                     M packages/zod/src/v3/types.ts:2241   method ZodArray._parse
+ZodBigInt._parse                    M packages/zod/src/v3/types.ts:1636   method ZodBigInt._parse
 ZodDate._parse                      M packages/zod/src/v3/types.ts:1878   method ZodDate._parse
 ZodFunction._parse                  M packages/zod/src/v3/types.ts:3822   method ZodFunction._parse
 ZodPipeline._parse                  M packages/zod/src/v3/types.ts:4782   method ZodPipeline._parse
+ZodArray._parse                     M packages/zod/src/v3/types.ts:2241   method ZodArray._parse
 ZodUnion._parse                     M packages/zod/src/v3/types.ts:2947   method ZodUnion._parse
 ZodEnum._parse                      M packages/zod/src/v3/types.ts:4082   method ZodEnum._parse
 ZodPromise._parse                   M packages/zod/src/v3/types.ts:4244   method ZodPromise._parse
-ZodSymbol._parse                    M packages/zod/src/v3/types.ts:2010   method ZodSymbol._parse
 ZodVoid._parse                      M packages/zod/src/v3/types.ts:2193   method ZodVoid._parse
+ZodNull._parse                      M packages/zod/src/v3/types.ts:2080   method ZodNull._parse
 ZodBoolean._parse                   M packages/zod/src/v3/types.ts:1834   method ZodBoolean._parse
 ZodNaN._parse                       M packages/zod/src/v3/types.ts:4702   method ZodNaN._parse
-ZodNull._parse                      M packages/zod/src/v3/types.ts:2080   method ZodNull._parse
+ZodSymbol._parse                    M packages/zod/src/v3/types.ts:2010   method ZodSymbol._parse
 ZodUndefined._parse                 M packages/zod/src/v3/types.ts:2045   method ZodUndefined._parse
+ZodNativeEnum._parse                M packages/zod/src/v3/types.ts:4179   method ZodNativeEnum._parse
 ZodNever._parse                     M packages/zod/src/v3/types.ts:2164   method ZodNever._parse
 ZodSet._parse                       M packages/zod/src/v3/types.ts:3691   method ZodSet._parse
-ZodLiteral._parse                   M packages/zod/src/v3/types.ts:4007   method ZodLiteral._parse
-ZodMap._parse                       M packages/zod/src/v3/types.ts:3603   method ZodMap._parse
-ZodNativeEnum._parse                M packages/zod/src/v3/types.ts:4179   method ZodNativeEnum._parse
-ZodRecord._parse                    M packages/zod/src/v3/types.ts:3514   method ZodRecord._parse
 ZodTuple._parse                     M packages/zod/src/v3/types.ts:3399   method ZodTuple._parse
-ZodDefault._parse                   M packages/zod/src/v3/types.ts:4569   method ZodDefault._parse
-ZodNullable._parse                  M packages/zod/src/v3/types.ts:4530   method ZodNullable._parse
+ZodLiteral._parse                   M packages/zod/src/v3/types.ts:4007   method ZodLiteral._parse
+ZodRecord._parse                    M packages/zod/src/v3/types.ts:3514   method ZodRecord._parse
+ZodMap._parse                       M packages/zod/src/v3/types.ts:3603   method ZodMap._parse
 ZodBranded._parse                   M packages/zod/src/v3/types.ts:4748   method ZodBranded._parse
-ZodCatch._parse                     M packages/zod/src/v3/types.ts:4619   method ZodCatch._parse
+ZodDefault._parse                   M packages/zod/src/v3/types.ts:4569   method ZodDefault._parse
 ZodLazy._parse                      M packages/zod/src/v3/types.ts:3979   method ZodLazy._parse
+ZodNullable._parse                  M packages/zod/src/v3/types.ts:4530   method ZodNullable._parse
 ZodOptional._parse                  M packages/zod/src/v3/types.ts:4490   method ZodOptional._parse
-ZodReadonly._parse                  M packages/zod/src/v3/types.ts:4877   method ZodReadonly._parse
+ZodCatch._parse                     M packages/zod/src/v3/types.ts:4619   method ZodCatch._parse
 ZodAny._parse                       M packages/zod/src/v3/types.ts:2115   method ZodAny._parse
 ZodUnknown._parse                   M packages/zod/src/v3/types.ts:2140   method ZodUnknown._parse
-ZodOptional.unwrap                  M packages/zod/src/v3/types.ts:4498   method ZodOptional.unwrap
-ZodPromise.unwrap                   M packages/zod/src/v3/types.ts:4240   method ZodPromise.unwrap
+ZodReadonly._parse                  M packages/zod/src/v3/types.ts:4877   method ZodReadonly._parse
 ZodBranded.unwrap                   M packages/zod/src/v3/types.ts:4758   method ZodBranded.unwrap
-ZodReadonly.unwrap                  M packages/zod/src/v3/types.ts:4896   method ZodReadonly.unwrap
+ZodPromise.unwrap                   M packages/zod/src/v3/types.ts:4240   method ZodPromise.unwrap
 ZodNullable.unwrap                  M packages/zod/src/v3/types.ts:4538   method ZodNullable.unwrap
+ZodOptional.unwrap                  M packages/zod/src/v3/types.ts:4498   method ZodOptional.unwrap
+ZodReadonly.unwrap                  M packages/zod/src/v3/types.ts:4896   method ZodReadonly.unwrap
+ZodBigInt.minValue                  M packages/zod/src/v3/types.ts:1800   method ZodBigInt.minValue
 ZodNumber.maxValue                  M packages/zod/src/v3/types.ts:1587   method ZodNumber.maxValue
 ZodNumber.minValue                  M packages/zod/src/v3/types.ts:1577   method ZodNumber.minValue
-ZodBigInt.maxValue                  M packages/zod/src/v3/types.ts:1810   method ZodBigInt.maxValue
   ...and 2442 more symbols
 
 -- FOCUS
-$ZodEncodeError.constructor (packages/zod/src/v4/core/core.ts:105-108)
-  method $ZodEncodeError.constructor
-  sig: $ZodEncodeError.constructor(name: string)
-  calls: constructor
-  called_by: constructor, $ZodAsyncError, $ZodEncodeError
-  uses: this.name
-
-ZodError (packages/zod/src/v3/ZodError.ts:193-316)
-  extends: Error
-  methods: assert, constructor, errors, flatten, formErrors, format
-  calls: assert, constructor, errors, flatten, formErrors, format, isEmpty, message
-  uses: this.issues, new.target.prototype, Object.setPrototypeOf, this.name
-
-$ZodAsyncError.constructor (packages/zod/src/v4/core/core.ts:99-101)
-  method $ZodAsyncError.constructor
-  calls: constructor
-  called_by: $ZodAsyncError, constructor, $ZodEncodeError
-
-$ZodAsyncError (packages/zod/src/v4/core/core.ts:97-102)
-  extends: Error
-  methods: constructor
-  calls: constructor
-  uses: this.name
-
-$ZodEncodeError (packages/zod/src/v4/core/core.ts:103-109)
-  extends: Error
-  methods: constructor
-  calls: constructor
-  uses: this.name
-
-$ZodCheckDef (packages/zod/src/v4/core/checks.ts:8-18)
-  interface $ZodCheckDef
-  uses: errors.$ZodErrorMap, z.util.isAborted, schemas.ParsePayload
-
-$ZodCheckInternals (packages/zod/src/v4/core/checks.ts:19-26)
-  interface $ZodCheckInternals
-  methods: check
-  calls: check
-  uses: errors.$ZodIssueBase, schemas.ParsePayload, util.MaybeAsync, schemas.$ZodType
-
-$ZodCheck (packages/zod/src/v4/core/checks.ts:27-30)
-  interface $ZodCheck
-
 ZodError.message (packages/zod/src/v3/ZodError.ts:280-282)
   method ZodError.message
   behavior: DELEGATE(JSON.stringify -> result)
@@ -170,13 +127,19 @@ ZodNotMultipleOfIssue (packages/zod/src/v3/ZodError.ts:135-139)
   extends: ZodIssueBase
   uses: ZodIssueCode.not_multiple_of
 
+ZodIssueOptionalMessage (packages/zod/src/v3/ZodError.ts:151-151)
+  type alias ZodIssueOptionalMessage = | ZodInvalidTypeIssue | ZodInvalidLiteralIssue | ZodUnrecognizedKeysIssue | ZodInvalidUnionIssue | ZodInvalidUnionDiscriminatorIssue | ZodInvalidEnumValueIssue
+  uses: ZodInvalidTypeIssue, ZodInvalidLiteralIssue, ZodUnrecognizedKeysIssue, ZodInvalidUnionIssue
+
 ZodIssueOptionalMessage (packages/zod/src/v3/ZodError.ts:152-152)
   type alias ZodIssueOptionalMessage = | ZodInvalidTypeIssue | ZodInvalidLiteralIssue | ZodUnrecognizedKeysIssue | ZodInvalidUnionIssue | ZodInvalidUnionDiscriminatorIssue | ZodInvalidEnumValueIssue | ZodInvalidArgumentsIssue
   uses: ZodInvalidTypeIssue, ZodInvalidLiteralIssue, ZodUnrecognizedKeysIssue, ZodInvalidUnionIssue
 
-ZodIssueOptionalMessage (packages/zod/src/v3/ZodError.ts:151-151)
-  type alias ZodIssueOptionalMessage = | ZodInvalidTypeIssue | ZodInvalidLiteralIssue | ZodUnrecognizedKeysIssue | ZodInvalidUnionIssue | ZodInvalidUnionDiscriminatorIssue | ZodInvalidEnumValueIssue
-  uses: ZodInvalidTypeIssue, ZodInvalidLiteralIssue, ZodUnrecognizedKeysIssue, ZodInvalidUnionIssue
+ZodError (packages/zod/src/v3/ZodError.ts:193-316)
+  extends: Error
+  methods: assert, constructor, errors, flatten, formErrors, format
+  calls: assert, constructor, errors, flatten, formErrors, format, isEmpty, message
+  uses: this.issues, new.target.prototype, Object.setPrototypeOf, this.name
 
 ZodError (packages/zod/src/v4/classic/errors.ts:9-23)
   interface ZodError
@@ -256,20 +219,48 @@ $ZodFlattenedError (packages/zod/src/v4/core/errors.ts:250-250)
   type alias $ZodFlattenedError = _FlattenedError<T, U>
   uses: _FlattenedError, T, U
 
-$ZodFlattenedError (packages/zod/src/v4/core/errors.ts:254-254)
-  type alias $ZodFlattenedError = _FlattenedError<T, U>
-  uses: _FlattenedError, T, U
-
 $ZodFlattenedError (packages/zod/src/v4/core/errors.ts:251-251)
   type alias $ZodFlattenedError = _FlattenedError<T, U>
   uses: _FlattenedError, T, U
 
+$ZodFlattenedError (packages/zod/src/v4/core/errors.ts:252-252)
+  type alias $ZodFlattenedError = _FlattenedError<T, U>
+  uses: _FlattenedError, T, U
+
+$ZodFlattenedError (packages/zod/src/v4/core/errors.ts:253-253)
+  type alias $ZodFlattenedError = _FlattenedError<T, U>
+  uses: _FlattenedError, T, U
+
+$ZodFlattenedError (packages/zod/src/v4/core/errors.ts:254-254)
+  type alias $ZodFlattenedError = _FlattenedError<T, U>
+  uses: _FlattenedError, T, U
+
+CustomErrorParams (packages/zod/src/v3/types.ts:55-55)
+  type alias CustomErrorParams = Partial<util.Omit<ZodCustomIssue, "code">>
+  uses: Partial, util.Omit, ZodCustomIssue, code
+
+CustomErrorParams (packages/zod/src/v3/types.ts:56-56)
+  type alias CustomErrorParams = Partial<util.Omit<ZodCustomIssue, "code">>
+  uses: Partial, util.Omit, ZodCustomIssue, code
+
+$ZodAsyncError.constructor (packages/zod/src/v4/core/core.ts:99-101)
+  method $ZodAsyncError.constructor
+  calls: constructor
+  called_by: $ZodAsyncError, constructor, $ZodEncodeError
+
+$ZodEncodeError.constructor (packages/zod/src/v4/core/core.ts:105-108)
+  method $ZodEncodeError.constructor
+  sig: $ZodEncodeError.constructor(name: string)
+  calls: constructor
+  called_by: constructor, $ZodAsyncError, $ZodEncodeError
+  uses: this.name
+
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 5 with behavior annotations
-uncovered: ZodBigIntCheck, ZodBigIntCheck, ZodDateCheck, ZodDateCheck
+coverage: 1513 symbols in L3, 110 with behavior annotations
+uncovered: errToObj, quotelessJson, toString, toString
 drill: packages/zod/src/v3/ZodError.ts (~2 lines, ZodError.message)
-drill: packages/zod/src/v4/core/core.ts (~3 lines, $ZodEncodeError.constructor)
+drill: packages/zod/src/v3/types.ts (~4 lines, ZodNumber.multipleOf)
 
 --- END CLUE FILE ---
 
@@ -281,420 +272,377 @@ drill: packages/zod/src/v4/core/core.ts (~3 lines, $ZodEncodeError.constructor)
   }
 ```
 
-## $ZodEncodeError.constructor  (packages/zod/src/v4/core/core.ts L105-108)
+## ZodNumber.multipleOf  (packages/zod/src/v3/types.ts L1547-1554)
 ```
-  constructor(name: string) {
-    super(`Encountered unidirectional transform during encode: ${name}`);
-    this.name = "ZodEncodeError";
+  multipleOf(value: number, message?: errorUtil.ErrMessage) {
+    return this._addCheck({
+      kind: "multipleOf",
+      value: value,
+      message: errorUtil.toString(message),
+    });
   }
+  step = this.multipleOf;
 ```
 
-## $ZodAsyncError.constructor  (packages/zod/src/v4/core/core.ts L99-101)
+## AnyZodObject  (packages/zod/src/v3/types.ts L2926-2928)
 ```
-  constructor() {
-    super(`Encountered Promise during synchronous parse. Use .parseAsync() instead.`);
-  }
+export type AnyZodObject = ZodObject<any, any, any>;
+
+////////////////////////////////////////
 ```
 
-## $ZodAsyncError  (packages/zod/src/v4/core/core.ts L97-102)
+## AnyZodTuple  (packages/zod/src/v3/types.ts L3393-3394)
+```
+export type AnyZodTuple = ZodTuple<[ZodTypeAny, ...ZodTypeAny[]] | [], ZodTypeAny | null>;
+// type ZodTupleItems = [ZodTypeAny, ...ZodTypeAny[]];
 ```
 
-export class $ZodAsyncError extends Error {
-  constructor() {
-    super(`Encountered Promise during synchronous parse. Use .parseAsync() instead.`);
-  }
+## ArrayCardinality  (packages/zod/src/v3/types.ts L2230-2231)
+```
+export type ArrayCardinality = "many" | "atleastone";
+export type arrayOutputType<
+```
+
+## ArrayKeys  (packages/zod/src/v3/types.ts L4040-4041)
+```
+export type ArrayKeys = keyof any[];
+export type Indices<T> = Exclude<keyof T, ArrayKeys>;
+```
+
+## AssertArray  (packages/zod/src/v3/types.ts L3369-3370)
+```
+export type AssertArray<T> = T extends any[] ? T : never;
+export type OutputTypeOfTuple<T extends ZodTupleItems | []> = AssertArray<{
+```
+
+## BRAND  (packages/zod/src/v4/classic/compat.ts L40-40)
+```
+export type BRAND<T extends string | number | symbol = string | number | symbol> = {
+```
+
+## CatchallInput  (packages/zod/src/v3/types.ts L2408-2410)
+```
+export type CatchallInput<T extends ZodType> = ZodType extends T ? unknown : { [k: string]: T["_input"] };
+
+export type PassthroughType<T extends UnknownKeysParam> = T extends "passthrough" ? { [k: string]: unknown } : unknown;
+```
+
+## CatchallOutput  (packages/zod/src/v3/types.ts L2406-2408)
+```
+export type CatchallOutput<T extends ZodType> = ZodType extends T ? unknown : { [k: string]: T["_output"] };
+
+export type CatchallInput<T extends ZodType> = ZodType extends T ? unknown : { [k: string]: T["_input"] };
+```
+
+## Class.constructor  (packages/zod/src/v4/mini/schemas.ts L1784-1784)
+```
+  constructor(..._args: any[]) {}
+```
+
+## Class  (packages/zod/src/v4/mini/schemas.ts L1781-1785)
+```
+
+// instanceof
+abstract class Class {
+  constructor(..._args: any[]) {}
 }
 ```
 
-## $ZodBranded  (packages/zod/src/v4/core/core.ts L85-85)
+## CustomErrorParams  (packages/zod/src/v3/types.ts L56-56)
 ```
-export type $ZodBranded<
-```
-
-## $ZodConfig  (packages/zod/src/v4/core/core.ts L121-131)
+export type CustomErrorParams = Partial<util.Omit<ZodCustomIssue, "code">>;
 ```
 
-//////////////////////////////   CONFIG   ///////////////////////////////////////
+## Effect  (packages/zod/src/v3/types.ts L4299-4301)
+```
+export type Effect<T> = RefinementEffect<T> | TransformEffect<T> | PreprocessEffect<T>;
 
-export interface $ZodConfig {
-  /** Custom error map. Overrides `config().localeError`. */
-  customError?: errors.$ZodErrorMap | undefined;
-  /** Localized error map. Lowest priority. */
-  localeError?: errors.$ZodErrorMap | undefined;
-  /** Disable JIT schema compilation. Useful in environments that disallow `eval`. */
-  jitless?: boolean | undefined;
-}
+export interface ZodEffectsDef<T extends ZodTypeAny = ZodTypeAny> extends ZodTypeDef {
 ```
 
-## $ZodEncodeError  (packages/zod/src/v4/core/core.ts L103-109)
+## EnumLike  (packages/zod/src/v4/core/util.ts L168-168)
+```
+export type EnumLike = Readonly<Record<string, EnumValue>>;
 ```
 
-export class $ZodEncodeError extends Error {
-  constructor(name: string) {
-    super(`Encountered unidirectional transform during encode: ${name}`);
-    this.name = "ZodEncodeError";
-  }
-}
+## EnumValues  (packages/zod/src/v3/types.ts L4043-4045)
+```
+export type EnumValues<T extends string = string> = readonly [T, ...T[]];
+
+export type Values<T extends EnumValues> = {
 ```
 
-## $ZodNarrow  (packages/zod/src/v4/core/core.ts L96-96)
+## FilterEnum  (packages/zod/src/v3/types.ts L4056-4057)
 ```
-export type $ZodNarrow<T extends schemas.SomeType, Out> = T & { _zod: { output: Out } };
-```
-
-## $brand  (packages/zod/src/v4/core/core.ts L81-81)
-```
-export type $brand<T extends string | number | symbol = string | number | symbol> = {
+export type FilterEnum<Values, ToExclude> = Values extends []
+  ? []
 ```
 
-## $constructor.init  (packages/zod/src/v4/core/core.ts L9-9)
+## Indices  (packages/zod/src/v3/types.ts L4041-4043)
 ```
-  init(inst: T, def: D): asserts inst is T;
+export type Indices<T> = Exclude<keyof T, ArrayKeys>;
+
+export type EnumValues<T extends string = string> = readonly [T, ...T[]];
 ```
 
-## $constructor.new  (packages/zod/src/v4/core/core.ts L8-8)
+## InputTypeOfTuple  (packages/zod/src/v3/types.ts L3378-3379)
 ```
-  new (def: D): T;
-```
-
-## $constructor  (packages/zod/src/v4/core/core.ts L7-10)
-```
-export interface $constructor<T extends ZodTrait, D = T["_zod"]["def"]> {
-  new (def: D): T;
-  init(inst: T, def: D): asserts inst is T;
-}
+export type InputTypeOfTuple<T extends ZodTupleItems | []> = AssertArray<{
+  [k in keyof T]: T[k] extends ZodType<any, any, any> ? T[k]["_input"] : never;
 ```
 
-## Definition  (packages/zod/src/v4/core/core.ts L55-55)
+## InputTypeOfTupleWithRest  (packages/zod/src/v3/types.ts L3381-3382)
 ```
-  class Definition extends Parent {}
-```
-
-## _  (packages/zod/src/v4/core/core.ts L57-66)
+export type InputTypeOfTupleWithRest<
+  T extends ZodTupleItems | [],
 ```
 
-  function _(this: any, def: D) {
-    const inst = params?.Parent ? new Definition() : this;
-    init(inst, def);
-    inst._zod.deferred ??= [];
-    for (const fn of inst._zod.deferred) {
-      fn();
-    }
-    return inst;
-  }
+## IpVersion  (packages/zod/src/v3/types.ts L544-544)
+```
+export type IpVersion = "v4" | "v6";
 ```
 
-## config  (packages/zod/src/v4/core/core.ts L134-138)
+## KeySchema  (packages/zod/src/v3/types.ts L3493-3494)
+```
+export type KeySchema = ZodType<string | number | symbol, any, any>;
+export type RecordType<K extends string | number | symbol, V> = [string] extends [K]
 ```
 
-export function config(newConfig?: Partial<$ZodConfig>): $ZodConfig {
-  if (newConfig) Object.assign(globalConfig, newConfig);
-  return globalConfig;
-}
+## OutputTypeOfTuple  (packages/zod/src/v3/types.ts L3370-3371)
+```
+export type OutputTypeOfTuple<T extends ZodTupleItems | []> = AssertArray<{
+  [k in keyof T]: T[k] extends ZodType<any, any, any> ? T[k]["_output"] : never;
 ```
 
-## init  (packages/zod/src/v4/core/core.ts L22-51)
+## OutputTypeOfTupleWithRest  (packages/zod/src/v3/types.ts L3373-3374)
 ```
-  function init(inst: T, def: D) {
-    if (!inst._zod) {
-      Object.defineProperty(inst, "_zod", {
-        value: {
-          def,
-          constr: _,
-          traits: new Set(),
-        },
-        enumerable: false,
-      });
-    }
+export type OutputTypeOfTupleWithRest<
+  T extends ZodTupleItems | [],
+```
 
-    if (inst._zod.traits.has(name)) {
-      return;
-    }
-
-    inst._zod.traits.add(name);
-
-    initializer(inst, def);
-
-    // support prototype modifications
-    const proto = _.prototype;
-    const keys = Object.keys(proto);
-    for (let i = 0; i < keys.length; i++) {
-      const k = keys[i]!;
-      if (!(k in inst)) {
-        (inst as any)[k] = proto[k].bind(inst);
+## ParseInputLazyPath.path  (packages/zod/src/v3/types.ts L74-84)
+```
+  get path() {
+    if (!this._cachedPath.length) {
+      if (Array.isArray(this._key)) {
+        this._cachedPath.push(...this._path, ...this._key);
+      } else {
+        this._cachedPath.push(...this._path, this._key);
       }
     }
+
+    return this._cachedPath;
   }
 ```
 
-## input  (packages/zod/src/v4/core/core.ts L117-117)
-```
-export type input<T> = T extends { _zod: { input: any } } ? T["_zod"]["input"] : unknown;
+## ParseInputLazyPath  (packages/zod/src/v3/types.ts L61-85)
 ```
 
-## output  (packages/zod/src/v4/core/core.ts L118-118)
-```
-export type output<T> = T extends { _zod: { output: any } } ? T["_zod"]["output"] : unknown;
-```
-
-## DenormalizedError  (packages/zod/src/v3/ZodError.ts L150-150)
-```
-export type DenormalizedError = { [k: string]: DenormalizedError | string[] };
-```
-
-## ErrorMapCtx  (packages/zod/src/v3/ZodError.ts L325-325)
-```
-export type ErrorMapCtx = {
-```
-
-## IssueData  (packages/zod/src/v4/classic/errors.ts L79-79)
-```
-export type IssueData = core.$ZodRawIssue;
-```
-
-## StringValidation  (packages/zod/src/v3/ZodError.ts L88-88)
-```
-export type StringValidation =
-```
-
-## ZodCustomIssue  (packages/zod/src/v3/ZodError.ts L144-148)
-```
-
-export interface ZodCustomIssue extends ZodIssueBase {
-  code: typeof ZodIssueCode.custom;
-  params?: { [k: string]: any };
-}
-```
-
-## ZodError.assert  (packages/zod/src/v3/ZodError.ts L271-275)
-```
-  static assert(value: unknown): asserts value is ZodError {
-    if (!(value instanceof ZodError)) {
-      throw new Error(`Not a ZodError: ${value}`);
+class ParseInputLazyPath implements ParseInput {
+  parent: ParseContext;
+  data: any;
+  _path: ParsePath;
+  _key: string | number | (string | number)[];
+  _cachedPath: ParsePath = [];
+  constructor(parent: ParseContext, value: any, path: ParsePath, key: string | number | (string | number)[]) {
+    this.parent = parent;
+    this.data = value;
+    this._path = path;
+    this._key = key;
+  }
+  get path() {
+    if (!this._cachedPath.length) {
+      if (Array.isArray(this._key)) {
+        this._cachedPath.push(...this._path, ...this._key);
+      } else {
+        this._cachedPath.push(...this._path, this._key);
+      }
     }
+
+    return this._cachedPath;
   }
+}
 ```
 
-## ZodError.constructor  (packages/zod/src/v3/ZodError.ts L201-213)
+## PassthroughType  (packages/zod/src/v3/types.ts L2410-2412)
 ```
-  constructor(issues: ZodIssue[]) {
-    super();
+export type PassthroughType<T extends UnknownKeysParam> = T extends "passthrough" ? { [k: string]: unknown } : unknown;
 
-    const actualProto = new.target.prototype;
-    if (Object.setPrototypeOf) {
-      // eslint-disable-next-line ban/ban
-      Object.setPrototypeOf(this, actualProto);
-    } else {
-      (this as any).__proto__ = actualProto;
+export type deoptional<T extends ZodTypeAny> = T extends ZodOptional<infer U>
+```
+
+## PreprocessEffect  (packages/zod/src/v3/types.ts L4295-4296)
+```
+export type PreprocessEffect<T> = {
+  type: "preprocess";
+```
+
+## ProcessedCreateParams  (packages/zod/src/v3/types.ts L119-119)
+```
+export type ProcessedCreateParams = {
+```
+
+## RawCreateParams  (packages/zod/src/v3/types.ts L110-110)
+```
+export type RawCreateParams =
+```
+
+## RecordType  (packages/zod/src/v3/types.ts L3494-3495)
+```
+export type RecordType<K extends string | number | symbol, V> = [string] extends [K]
+  ? Record<K, V>
+```
+
+## Refinement  (packages/zod/src/v3/types.ts L4284-4285)
+```
+export type Refinement<T> = (arg: T, ctx: RefinementCtx) => any;
+export type SuperRefinement<T> = (arg: T, ctx: RefinementCtx) => void | Promise<void>;
+```
+
+## RefinementCtx  (packages/zod/src/v3/types.ts L38-48)
+```
+///////////////////////////////////////
+//////////                   //////////
+//////////      ZodType      //////////
+//////////                   //////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+export interface RefinementCtx {
+  addIssue: (arg: IssueData) => void;
+  path: (string | number)[];
+}
+```
+
+## RefinementEffect  (packages/zod/src/v3/types.ts L4287-4288)
+```
+export type RefinementEffect<T> = {
+  type: "refinement";
+```
+
+## SafeParseError  (packages/zod/src/v4/core/util.ts L181-181)
+```
+export type SafeParseError<T> = {
+```
+
+## SafeParseReturnType  (packages/zod/src/v3/types.ts L156-156)
+```
+export type SafeParseReturnType<Input, Output> = SafeParseSuccess<Output> | SafeParseError<Input>;
+```
+
+## SafeParseSuccess  (packages/zod/src/v4/core/util.ts L180-180)
+```
+export type SafeParseSuccess<T> = { success: true; data: T; error?: never };
+```
+
+## SomeZodObject  (packages/zod/src/v3/types.ts L2418-2420)
+```
+export type SomeZodObject = ZodObject<ZodRawShape, UnknownKeysParam, ZodTypeAny>;
+
+export type noUnrecognized<Obj extends object, Shape extends object> = {
+```
+
+## SuperRefinement  (packages/zod/src/v3/types.ts L4285-4287)
+```
+export type SuperRefinement<T> = (arg: T, ctx: RefinementCtx) => void | Promise<void>;
+
+export type RefinementEffect<T> = {
+```
+
+## TransformEffect  (packages/zod/src/v3/types.ts L4291-4292)
+```
+export type TransformEffect<T> = {
+  type: "transform";
+```
+
+## UnknownKeysParam  (packages/zod/src/v3/types.ts L2368-2370)
+```
+export type UnknownKeysParam = "passthrough" | "strict" | "strip";
+
+export interface ZodObjectDef<
+```
+
+## Values  (packages/zod/src/v3/types.ts L4045-4046)
+```
+export type Values<T extends EnumValues> = {
+  [k in T[number]]: k;
+```
+
+## Writeable  (packages/zod/src/v4/core/util.ts L101-101)
+```
+export type Writeable<T> = { -readonly [P in keyof T]: T[P] } & {};
+```
+
+## ZodAny._parse  (packages/zod/src/v3/types.ts L2115-2118)
+```
+  _parse(input: ParseInput): ParseReturnType<this["_output"]> {
+    return OK(input.data);
+  }
+  static create = (params?: RawCreateParams): ZodAny => {
+```
+
+## ZodAny  (packages/zod/src/v4/classic/schemas.ts L1049-1051)
+```
+
+// ZodAny
+export interface ZodAny extends _ZodType<core.$ZodAnyInternals> {}
+```
+
+## ZodAnyDef  (packages/zod/src/v3/types.ts L2101-2112)
+```
+//////////////////////////////////////
+//////////////////////////////////////
+//////////                  //////////
+//////////      ZodAny      //////////
+//////////                  //////////
+//////////////////////////////////////
+//////////////////////////////////////
+export interface ZodAnyDef extends ZodTypeDef {
+  typeName: ZodFirstPartyTypeKind.ZodAny;
+}
+
+export class ZodAny extends ZodType<any, ZodAnyDef, any> {
+```
+
+## ZodArray._parse  (packages/zod/src/v3/types.ts L2241-2317)
+```
+  _parse(input: ParseInput): ParseReturnType<this["_output"]> {
+    const { ctx, status } = this._processInputParams(input);
+
+    const def = this._def;
+
+    if (ctx.parsedType !== ZodParsedType.array) {
+      addIssueToContext(ctx, {
+        code: ZodIssueCode.invalid_type,
+        expected: ZodParsedType.array,
+        received: ctx.parsedType,
+      });
+      return INVALID;
     }
-    this.name = "ZodError";
-    this.issues = issues;
-  }
-```
 
-## ZodError.errors  (packages/zod/src/v3/ZodError.ts L197-199)
-```
-  get errors() {
-    return this.issues;
-  }
-```
+    if (def.exactLength !== null) {
+      const tooBig = ctx.data.length > def.exactLength.value;
+      const tooSmall = ctx.data.length < def.exactLength.value;
+      if (tooBig || tooSmall) {
+        addIssueToContext(ctx, {
+          code: tooBig ? ZodIssueCode.too_big : ZodIssueCode.too_small,
+          minimum: (tooSmall ? def.exactLength.value : undefined) as number,
+          maximum: (tooBig ? def.exactLength.value : undefined) as number,
+          type: "array",
+          inclusive: true,
+          exact: true,
+          message: def.exactLength.message,
+        });
+        status.dirty();
+      }
+    }
 
-## ZodError.flatten  (packages/zod/src/v4/classic/errors.ts L14-14)
-```
-  flatten(): core.$ZodFlattenedError<T>;
-```
-
-## ZodError.formErrors  (packages/zod/src/v3/ZodError.ts L313-315)
-```
-  get formErrors() {
-    return this.flatten();
-  }
-```
-
-## ZodError.format  (packages/zod/src/v4/classic/errors.ts L11-11)
-```
-  format(): core.$ZodFormattedError<T>;
-```
-
-## ZodError.isEmpty  (packages/zod/src/v3/ZodError.ts L284-286)
-```
-  get isEmpty(): boolean {
-    return this.issues.length === 0;
-  }
-```
-
-## ZodError.toString  (packages/zod/src/v3/ZodError.ts L277-279)
-```
-  override toString() {
-    return this.message;
-  }
-```
-
-## ZodError  (packages/zod/src/v4/classic/errors.ts L9-23)
-```
-export interface ZodError<T = unknown> extends $ZodError<T> {
-  /** @deprecated Use the `z.treeifyError(err)` function instead. */
-  format(): core.$ZodFormattedError<T>;
-  format<U>(mapper: (issue: core.$ZodIssue) => U): core.$ZodFormattedError<T, U>;
-  /** @deprecated Use the `z.treeifyError(err)` function instead. */
-  flatten(): core.$ZodFlattenedError<T>;
-  flatten<U>(mapper: (issue: core.$ZodIssue) => U): core.$ZodFlattenedError<T, U>;
-  /** @deprecated Push directly to `.issues` instead. */
-  addIssue(issue: core.$ZodIssue): void;
-  /** @deprecated Push directly to `.issues` instead. */
-  addIssues(issues: core.$ZodIssue[]): void;
-
-  /** @deprecated Check `err.issues.length === 0` instead. */
-  isEmpty: boolean;
-}
-```
-
-## ZodErrorMap  (packages/zod/src/v3/ZodError.ts L330-330)
-```
-export type ZodErrorMap = (issue: ZodIssueOptionalMessage, _ctx: ErrorMapCtx) => { message: string };
-```
-
-## ZodFormattedError  (packages/zod/src/v3/ZodError.ts L188-188)
-```
-export type ZodFormattedError<T, U = string> = {
-```
-
-## ZodInvalidArgumentsIssue  (packages/zod/src/v3/ZodError.ts L73-77)
-```
-
-export interface ZodInvalidArgumentsIssue extends ZodIssueBase {
-  code: typeof ZodIssueCode.invalid_arguments;
-  argumentsError: ZodError;
-}
-```
-
-## ZodInvalidDateIssue  (packages/zod/src/v3/ZodError.ts L83-86)
-```
-
-export interface ZodInvalidDateIssue extends ZodIssueBase {
-  code: typeof ZodIssueCode.invalid_date;
-}
-```
-
-## ZodInvalidEnumValueIssue  (packages/zod/src/v3/ZodError.ts L67-72)
-```
-
-export interface ZodInvalidEnumValueIssue extends ZodIssueBase {
-  received: string | number;
-  code: typeof ZodIssueCode.invalid_enum_value;
-  options: (string | number)[];
-}
-```
-
-## ZodInvalidIntersectionTypesIssue  (packages/zod/src/v3/ZodError.ts L131-134)
-```
-
-export interface ZodInvalidIntersectionTypesIssue extends ZodIssueBase {
-  code: typeof ZodIssueCode.invalid_intersection_types;
-}
-```
-
-## ZodInvalidLiteralIssue  (packages/zod/src/v3/ZodError.ts L46-51)
-```
-
-export interface ZodInvalidLiteralIssue extends ZodIssueBase {
-  code: typeof ZodIssueCode.invalid_literal;
-  expected: unknown;
-  received: unknown;
-}
-```
-
-## ZodInvalidReturnTypeIssue  (packages/zod/src/v3/ZodError.ts L78-82)
-```
-
-export interface ZodInvalidReturnTypeIssue extends ZodIssueBase {
-  code: typeof ZodIssueCode.invalid_return_type;
-  returnTypeError: ZodError;
-}
-```
-
-## ZodInvalidStringIssue  (packages/zod/src/v3/ZodError.ts L110-114)
-```
-
-export interface ZodInvalidStringIssue extends ZodIssueBase {
-  code: typeof ZodIssueCode.invalid_string;
-  validation: StringValidation;
-}
-```
-
-## ZodInvalidTypeIssue  (packages/zod/src/v3/ZodError.ts L40-45)
-```
-
-export interface ZodInvalidTypeIssue extends ZodIssueBase {
-  code: typeof ZodIssueCode.invalid_type;
-  expected: ZodParsedType;
-  received: ZodParsedType;
-}
-```
-
-## ZodInvalidUnionDiscriminatorIssue  (packages/zod/src/v3/ZodError.ts L62-66)
-```
-
-export interface ZodInvalidUnionDiscriminatorIssue extends ZodIssueBase {
-  code: typeof ZodIssueCode.invalid_union_discriminator;
-  options: Primitive[];
-}
-```
-
-## ZodInvalidUnionIssue  (packages/zod/src/v3/ZodError.ts L57-61)
-```
-
-export interface ZodInvalidUnionIssue extends ZodIssueBase {
-  code: typeof ZodIssueCode.invalid_union;
-  unionErrors: ZodError[];
-}
-```
-
-## ZodIssue  (packages/zod/src/v4/classic/errors.ts L6-6)
-```
-export type ZodIssue = core.$ZodIssue;
-```
-
-## ZodIssueBase  (packages/zod/src/v3/ZodError.ts L36-36)
-```
-export type ZodIssueBase = {
-```
-
-## ZodIssueCode  (packages/zod/src/v3/ZodError.ts L34-34)
-```
-export type ZodIssueCode = keyof typeof ZodIssueCode;
-```
-
-## ZodIssueOptionalMessage  (packages/zod/src/v3/ZodError.ts L152-152)
-```
-export type ZodIssueOptionalMessage =
-```
-
-## ZodNotFiniteIssue  (packages/zod/src/v3/ZodError.ts L140-143)
-```
-
-export interface ZodNotFiniteIssue extends ZodIssueBase {
-  code: typeof ZodIssueCode.not_finite;
-}
-```
-
-## ZodNotMultipleOfIssue  (packages/zod/src/v3/ZodError.ts L135-139)
-```
-
-export interface ZodNotMultipleOfIssue extends ZodIssueBase {
-  code: typeof ZodIssueCode.not_multiple_of;
-  multipleOf: number | bigint;
-}
-```
-
-## ZodTooBigIssue  (packages/zod/src/v3/ZodError.ts L123-130)
-```
-
-export interface ZodTooBigIssue extends ZodIssueBase {
-  code: typeof ZodIssueCode.too_big;
-  maximum: number | bigint;
-  inclusive: boolean;
-  exact?: boolean;
+    if (def.minLength !== null) {
+      if (ctx.data.length < def.minLength.value) {
+        addIssueToContext(ctx, {
+          code: ZodIssueCode.too_small,
+          minimum: def.minLength.value,
+          type: "array",
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

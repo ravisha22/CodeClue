@@ -160,32 +160,6 @@ RequestIDWithConfig (middleware/request_id.go:37-37)
   behavior: DELEGATE(toMiddlewareOrPanic -> result)
   called_by: RequestID
 
-Context.SetRequest (context.go:134-134)
-  SetRequest sets `*http.Request`.
-  sig: Context.SetRequest(r *http.Request)
-  called_by: newContext
-
-Echo.Use (echo.go:431-431)
-  Use adds middleware to the chain which is run after router has found matching route and before route/request handler met
-  sig: Echo.Use(middleware ...MiddlewareFunc)
-  called_by: Group, main
-
-Echo.Start (echo.go:744-744)
-  Start stars HTTP server on given address with Echo as a handler serving requests.
-  sig: Echo.Start(address string)
-  behavior: DELEGATE(sc.Start -> result); UNWIND(defer)
-  called_by: main
-
-Context.Request (context.go:129-129)
-  Request returns `*http.Request`.
-  called_by: fsFile
-
-Echo.add (echo.go:621-621)
-  sig: Echo.add(route Route)
-  behavior: GUARD(e.OnAddRoute != nil -> return RouteInfo{},...); PRECEDENCE(e -> err -> paramsCount)
-  calls: Add
-  called_by: Add, AddRoute
-
 RequestIDConfig (middleware/request_id.go:11-11)
   RequestIDConfig defines the config for RequestID middleware.
   methods: ToMiddleware
@@ -197,11 +171,37 @@ RequestLoggerConfig (middleware/request_logger.go:124-124)
 Context.Echo (context.go:665-665)
   Echo returns the `Echo` instance.
 
+Context.Request (context.go:129-129)
+  Request returns `*http.Request`.
+  called_by: fsFile
+
+Context.SetRequest (context.go:134-134)
+  SetRequest sets `*http.Request`.
+  sig: Context.SetRequest(r *http.Request)
+  called_by: newContext
+
 Echo.Any (echo.go:504-504)
   Any registers a new route for all HTTP methods (supported by Echo) and path with matching handler in the router with opt
   sig: Echo.Any(path string, handler HandlerFunc, middleware ...Middlewa...)
   behavior: DELEGATE(e.Add -> result)
   calls: Add
+
+Echo.Start (echo.go:744-744)
+  Start stars HTTP server on given address with Echo as a handler serving requests.
+  sig: Echo.Start(address string)
+  behavior: DELEGATE(sc.Start -> result); UNWIND(defer)
+  called_by: main
+
+Echo.Use (echo.go:431-431)
+  Use adds middleware to the chain which is run after router has found matching route and before route/request handler met
+  sig: Echo.Use(middleware ...MiddlewareFunc)
+  called_by: Group, main
+
+Echo.add (echo.go:621-621)
+  sig: Echo.add(route Route)
+  behavior: GUARD(e.OnAddRoute != nil -> return RouteInfo{},...); PRECEDENCE(e -> err -> paramsCount)
+  calls: Add
+  called_by: Add, AddRoute
 
 RequestIDConfig.ToMiddleware (middleware/request_id.go:42-42)
   ToMiddleware converts RequestIDConfig to middleware or returns an error for invalid configuration
@@ -292,15 +292,15 @@ Group.StaticFS (group.go:122-122)
   calls: Add
   called_by: Static
 
-ContextConfig.ToContextRecorder (echotest/context.go:81-81)
-  ToContextRecorder converts ContextConfig to echo.Context and httptest.ResponseRecorder
-  sig: ContextConfig.ToContextRecorder(t *testing.T)
-  called_by: ServeWithHandler, ToContext
-
 ContextConfig.ToContext (echotest/context.go:75-75)
   ToContext converts ContextConfig to echo.Context
   sig: ContextConfig.ToContext(t *testing.T)
   calls: ToContextRecorder
+
+ContextConfig.ToContextRecorder (echotest/context.go:81-81)
+  ToContextRecorder converts ContextConfig to echo.Context and httptest.ResponseRecorder
+  sig: ContextConfig.ToContextRecorder(t *testing.T)
+  called_by: ServeWithHandler, ToContext
 
 ContextConfig (echotest/context.go:20-20)
   ContextConfig is configuration for creating echo.Context for testing purposes.

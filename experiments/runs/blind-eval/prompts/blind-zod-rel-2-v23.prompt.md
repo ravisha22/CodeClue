@@ -66,77 +66,53 @@ ZodBigInt.setLimit                  M packages/zod/src/v3/types.ts:1734   method
 ZodNumber.setLimit                  M packages/zod/src/v3/types.ts:1482   method ZodNumber.setLimit
 ZodNumber._parse                    M packages/zod/src/v3/types.ts:1370   method ZodNumber._parse
 ZodEffects._parse                   M packages/zod/src/v3/types.ts:4322   method ZodEffects._parse
-ZodBigInt._parse                    M packages/zod/src/v3/types.ts:1636   method ZodBigInt._parse
 ZodIntersection._parse              M packages/zod/src/v3/types.ts:3292   method ZodIntersection._parse
-ZodArray._parse                     M packages/zod/src/v3/types.ts:2241   method ZodArray._parse
+ZodBigInt._parse                    M packages/zod/src/v3/types.ts:1636   method ZodBigInt._parse
 ZodDate._parse                      M packages/zod/src/v3/types.ts:1878   method ZodDate._parse
 ZodFunction._parse                  M packages/zod/src/v3/types.ts:3822   method ZodFunction._parse
 ZodPipeline._parse                  M packages/zod/src/v3/types.ts:4782   method ZodPipeline._parse
+ZodArray._parse                     M packages/zod/src/v3/types.ts:2241   method ZodArray._parse
 ZodUnion._parse                     M packages/zod/src/v3/types.ts:2947   method ZodUnion._parse
 ZodEnum._parse                      M packages/zod/src/v3/types.ts:4082   method ZodEnum._parse
 ZodPromise._parse                   M packages/zod/src/v3/types.ts:4244   method ZodPromise._parse
-ZodSymbol._parse                    M packages/zod/src/v3/types.ts:2010   method ZodSymbol._parse
 ZodVoid._parse                      M packages/zod/src/v3/types.ts:2193   method ZodVoid._parse
+ZodNull._parse                      M packages/zod/src/v3/types.ts:2080   method ZodNull._parse
 ZodBoolean._parse                   M packages/zod/src/v3/types.ts:1834   method ZodBoolean._parse
 ZodNaN._parse                       M packages/zod/src/v3/types.ts:4702   method ZodNaN._parse
-ZodNull._parse                      M packages/zod/src/v3/types.ts:2080   method ZodNull._parse
+ZodSymbol._parse                    M packages/zod/src/v3/types.ts:2010   method ZodSymbol._parse
 ZodUndefined._parse                 M packages/zod/src/v3/types.ts:2045   method ZodUndefined._parse
+ZodNativeEnum._parse                M packages/zod/src/v3/types.ts:4179   method ZodNativeEnum._parse
 ZodNever._parse                     M packages/zod/src/v3/types.ts:2164   method ZodNever._parse
 ZodSet._parse                       M packages/zod/src/v3/types.ts:3691   method ZodSet._parse
-ZodLiteral._parse                   M packages/zod/src/v3/types.ts:4007   method ZodLiteral._parse
-ZodMap._parse                       M packages/zod/src/v3/types.ts:3603   method ZodMap._parse
-ZodNativeEnum._parse                M packages/zod/src/v3/types.ts:4179   method ZodNativeEnum._parse
-ZodRecord._parse                    M packages/zod/src/v3/types.ts:3514   method ZodRecord._parse
 ZodTuple._parse                     M packages/zod/src/v3/types.ts:3399   method ZodTuple._parse
-ZodDefault._parse                   M packages/zod/src/v3/types.ts:4569   method ZodDefault._parse
-ZodNullable._parse                  M packages/zod/src/v3/types.ts:4530   method ZodNullable._parse
+ZodLiteral._parse                   M packages/zod/src/v3/types.ts:4007   method ZodLiteral._parse
+ZodRecord._parse                    M packages/zod/src/v3/types.ts:3514   method ZodRecord._parse
+ZodMap._parse                       M packages/zod/src/v3/types.ts:3603   method ZodMap._parse
 ZodBranded._parse                   M packages/zod/src/v3/types.ts:4748   method ZodBranded._parse
-ZodCatch._parse                     M packages/zod/src/v3/types.ts:4619   method ZodCatch._parse
+ZodDefault._parse                   M packages/zod/src/v3/types.ts:4569   method ZodDefault._parse
 ZodLazy._parse                      M packages/zod/src/v3/types.ts:3979   method ZodLazy._parse
+ZodNullable._parse                  M packages/zod/src/v3/types.ts:4530   method ZodNullable._parse
 ZodOptional._parse                  M packages/zod/src/v3/types.ts:4490   method ZodOptional._parse
-ZodReadonly._parse                  M packages/zod/src/v3/types.ts:4877   method ZodReadonly._parse
+ZodCatch._parse                     M packages/zod/src/v3/types.ts:4619   method ZodCatch._parse
 ZodAny._parse                       M packages/zod/src/v3/types.ts:2115   method ZodAny._parse
 ZodUnknown._parse                   M packages/zod/src/v3/types.ts:2140   method ZodUnknown._parse
-ZodOptional.unwrap                  M packages/zod/src/v3/types.ts:4498   method ZodOptional.unwrap
-ZodPromise.unwrap                   M packages/zod/src/v3/types.ts:4240   method ZodPromise.unwrap
+ZodReadonly._parse                  M packages/zod/src/v3/types.ts:4877   method ZodReadonly._parse
 ZodBranded.unwrap                   M packages/zod/src/v3/types.ts:4758   method ZodBranded.unwrap
-ZodReadonly.unwrap                  M packages/zod/src/v3/types.ts:4896   method ZodReadonly.unwrap
+ZodPromise.unwrap                   M packages/zod/src/v3/types.ts:4240   method ZodPromise.unwrap
 ZodNullable.unwrap                  M packages/zod/src/v3/types.ts:4538   method ZodNullable.unwrap
+ZodOptional.unwrap                  M packages/zod/src/v3/types.ts:4498   method ZodOptional.unwrap
+ZodReadonly.unwrap                  M packages/zod/src/v3/types.ts:4896   method ZodReadonly.unwrap
+ZodBigInt.minValue                  M packages/zod/src/v3/types.ts:1800   method ZodBigInt.minValue
 ZodNumber.maxValue                  M packages/zod/src/v3/types.ts:1587   method ZodNumber.maxValue
 ZodNumber.minValue                  M packages/zod/src/v3/types.ts:1577   method ZodNumber.minValue
-ZodBigInt.maxValue                  M packages/zod/src/v3/types.ts:1810   method ZodBigInt.maxValue
   ...and 2442 more symbols
 
 -- FOCUS
-$ZodEncodeError.constructor (packages/zod/src/v4/core/core.ts:105-108)
-  method $ZodEncodeError.constructor
-  sig: $ZodEncodeError.constructor(name: string)
-  calls: constructor
-  called_by: constructor, $ZodAsyncError, $ZodEncodeError
-  uses: this.name
-
-$ZodAsyncError.constructor (packages/zod/src/v4/core/core.ts:99-101)
-  method $ZodAsyncError.constructor
-  calls: constructor
-  called_by: $ZodAsyncError, constructor, $ZodEncodeError
-
-$ZodAsyncError (packages/zod/src/v4/core/core.ts:97-102)
-  extends: Error
-  methods: constructor
-  calls: constructor
-  uses: this.name
-
-$ZodEncodeError (packages/zod/src/v4/core/core.ts:103-109)
-  extends: Error
-  methods: constructor
-  calls: constructor
-  uses: this.name
-
-$ZodCheckPropertyParams (packages/zod/src/v4/core/api.ts:1083-1083)
+$ZodCheckPropertyParams (packages/zod/src/v4/core/api.ts:1082-1082)
   type alias $ZodCheckPropertyParams = CheckParams<checks.$ZodCheckProperty, "property" | "schema" | "when">
   uses: CheckParams, checks.$ZodCheckProperty, property, schema
 
-$ZodCheckPropertyParams (packages/zod/src/v4/core/api.ts:1082-1082)
+$ZodCheckPropertyParams (packages/zod/src/v4/core/api.ts:1083-1083)
   type alias $ZodCheckPropertyParams = CheckParams<checks.$ZodCheckProperty, "property" | "schema" | "when">
   uses: CheckParams, checks.$ZodCheckProperty, property, schema
 
@@ -146,6 +122,42 @@ CheckStringFormatParams (packages/zod/src/v4/core/api.ts:49-49)
 
 CheckStringFormatParams (packages/zod/src/v4/core/api.ts:50-50)
   type alias CheckStringFormatParams = never, > = Params<T, NonNullable<T["_zod"]["issc"]>, "type" | "coerce" | "checks" | "error" | "check" | "format" | AlsoOmit>
+  uses: never, Params, T, NonNullable
+
+$Parse (packages/zod/src/v4/core/parse.ts:7-7)
+  type alias $Parse = <T extends schemas.$ZodType>( schema: T, value: unknown, _ctx?: schemas.ParseContext<errors.$ZodIssue>, _params?: { callee?: util.AnyFunc; Err?: $ZodErrorClass }
+  uses: T, schemas.$ZodType, schema, value
+
+$Parse (packages/zod/src/v4/core/parse.ts:8-8)
+  type alias $Parse = <T extends schemas.$ZodType>( schema: T, value: unknown, _ctx?: schemas.ParseContext<errors.$ZodIssue>, _params?: { callee?: util.AnyFunc; Err?: $ZodErrorClass }
+  uses: T, schemas.$ZodType, schema, value
+
+$Parse (packages/zod/src/v4/core/parse.ts:9-9)
+  type alias $Parse = <T extends schemas.$ZodType>( schema: T, value: unknown, _ctx?: schemas.ParseContext<errors.$ZodIssue>, _params?: { callee?: util.AnyFunc; Err?: $ZodErrorClass }
+  uses: T, schemas.$ZodType, schema, value
+
+$ParseAsync (packages/zod/src/v4/core/parse.ts:31-31)
+  type alias $ParseAsync = <T extends schemas.$ZodType>( schema: T, value: unknown, _ctx?: schemas.ParseContext<errors.$ZodIssue>, _params?: { callee?: util.AnyFunc; Err?: $ZodErrorClass }
+  uses: T, schemas.$ZodType, schema, value
+
+$ParseAsync (packages/zod/src/v4/core/parse.ts:32-32)
+  type alias $ParseAsync = <T extends schemas.$ZodType>( schema: T, value: unknown, _ctx?: schemas.ParseContext<errors.$ZodIssue>, _params?: { callee?: util.AnyFunc; Err?: $ZodErrorClass }
+  uses: T, schemas.$ZodType, schema, value
+
+CheckTypeParams (packages/zod/src/v4/core/api.ts:54-54)
+  type alias CheckTypeParams = never, > = Params<T, NonNullable<T["_zod"]["isst"] | T["_zod"]["issc"]>, "type" | "checks" | "error" | "check" | AlsoOmit>
+  uses: never, Params, T, NonNullable
+
+CheckTypeParams (packages/zod/src/v4/core/api.ts:55-55)
+  type alias CheckTypeParams = never, > = Params<T, NonNullable<T["_zod"]["isst"] | T["_zod"]["issc"]>, "type" | "checks" | "error" | "check" | AlsoOmit>
+  uses: never, Params, T, NonNullable
+
+StringFormatParams (packages/zod/src/v4/core/api.ts:40-40)
+  type alias StringFormatParams = never, > = Params< T, NonNullable<T["_zod"]["isst"] | T["_zod"]["issc"]>, "type" | "coerce" | "checks" | "error" | "check" | "format" | AlsoOmit
+  uses: never, Params, T, NonNullable
+
+StringFormatParams (packages/zod/src/v4/core/api.ts:41-41)
+  type alias StringFormatParams = never, > = Params< T, NonNullable<T["_zod"]["isst"] | T["_zod"]["issc"]>, "type" | "coerce" | "checks" | "error" | "check" | "format" | AlsoOmit >
   uses: never, Params, T, NonNullable
 
 ZodError (packages/zod/src/v4/classic/errors.ts:9-23)
@@ -199,26 +211,6 @@ ZodError.format (packages/zod/src/v3/ZodError.ts:217-264)
   called_by: ZodError
   uses: issue.message, error.issues, issue.code, issue.unionErrors.map
 
-$ZodChecks (packages/zod/src/v4/core/checks.ts:1266-1266)
-  type alias $ZodChecks = | $ZodCheckLessThan | $ZodCheckGreaterThan | $ZodCheckMultipleOf | $ZodCheckNumberFormat
-  uses: $ZodCheckLessThan, $ZodCheckGreaterThan, $ZodCheckMultipleOf, $ZodCheckNumberFormat
-
-$ZodChecks (packages/zod/src/v4/core/checks.ts:1267-1267)
-  type alias $ZodChecks = | $ZodCheckLessThan | $ZodCheckGreaterThan | $ZodCheckMultipleOf | $ZodCheckNumberFormat | $ZodCheckBigIntFormat
-  uses: $ZodCheckLessThan, $ZodCheckGreaterThan, $ZodCheckMultipleOf, $ZodCheckNumberFormat
-
-$ZodChecks (packages/zod/src/v4/core/checks.ts:1268-1268)
-  type alias $ZodChecks = | $ZodCheckLessThan | $ZodCheckGreaterThan | $ZodCheckMultipleOf | $ZodCheckNumberFormat | $ZodCheckBigIntFormat | $ZodCheckMaxSize
-  uses: $ZodCheckLessThan, $ZodCheckGreaterThan, $ZodCheckMultipleOf, $ZodCheckNumberFormat
-
-$ZodChecks (packages/zod/src/v4/core/checks.ts:1265-1265)
-  type alias $ZodChecks = | $ZodCheckLessThan | $ZodCheckGreaterThan | $ZodCheckMultipleOf
-  uses: $ZodCheckLessThan, $ZodCheckGreaterThan, $ZodCheckMultipleOf
-
-$ZodChecks (packages/zod/src/v4/core/checks.ts:1269-1269)
-  type alias $ZodChecks = | $ZodCheckLessThan | $ZodCheckGreaterThan | $ZodCheckMultipleOf | $ZodCheckNumberFormat | $ZodCheckBigIntFormat | $ZodCheckMaxSize | $ZodCheckMinSize
-  uses: $ZodCheckLessThan, $ZodCheckGreaterThan, $ZodCheckMultipleOf, $ZodCheckNumberFormat
-
 $ZodChecks (packages/zod/src/v4/core/checks.ts:1263-1263)
   type alias $ZodChecks = | $ZodCheckLessThan
   uses: $ZodCheckLessThan
@@ -227,185 +219,406 @@ $ZodChecks (packages/zod/src/v4/core/checks.ts:1264-1264)
   type alias $ZodChecks = | $ZodCheckLessThan | $ZodCheckGreaterThan
   uses: $ZodCheckLessThan, $ZodCheckGreaterThan
 
-$ZodFlattenedError (packages/zod/src/v4/core/errors.ts:250-250)
-  type alias $ZodFlattenedError = _FlattenedError<T, U>
-  uses: _FlattenedError, T, U
-
-$ZodFlattenedError (packages/zod/src/v4/core/errors.ts:254-254)
-  type alias $ZodFlattenedError = _FlattenedError<T, U>
-  uses: _FlattenedError, T, U
-
-$ZodFlattenedError (packages/zod/src/v4/core/errors.ts:251-251)
-  type alias $ZodFlattenedError = _FlattenedError<T, U>
-  uses: _FlattenedError, T, U
-
-$ZodFlattenedError (packages/zod/src/v4/core/errors.ts:252-252)
-  type alias $ZodFlattenedError = _FlattenedError<T, U>
-  uses: _FlattenedError, T, U
+$ZodChecks (packages/zod/src/v4/core/checks.ts:1265-1265)
+  type alias $ZodChecks = | $ZodCheckLessThan | $ZodCheckGreaterThan | $ZodCheckMultipleOf
+  uses: $ZodCheckLessThan, $ZodCheckGreaterThan, $ZodCheckMultipleOf
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 5 with behavior annotations
-uncovered: $ZodCheckBigIntFormatParams, $ZodCheckEndsWithParams, $ZodCheckEndsWithParams, $ZodCheckGreaterThanParams
-drill: packages/zod/src/v4/core/core.ts (~3 lines, $ZodEncodeError.constructor)
+coverage: 1546 symbols in L3, 113 with behavior annotations
+uncovered: JSONSchemaGeneratorParams, ToJSONSchemaContext, JSONSchemaGenerator.emit, JSONSchemaGenerator.process
+drill: packages/zod/src/v3/types.ts (~30 lines, ZodPipeline._parse)
+drill: packages/zod/src/v3/types.ts (~1 lines, ZodMap.valueSchema)
 
 --- END CLUE FILE ---
 
 --- SOURCE SNIPPETS (File 2 Drill-Down) ---
-## $ZodEncodeError.constructor  (packages/zod/src/v4/core/core.ts L105-108)
+## ZodMap.valueSchema  (packages/zod/src/v3/types.ts L3600-3603)
 ```
-  constructor(name: string) {
-    super(`Encountered unidirectional transform during encode: ${name}`);
-    this.name = "ZodEncodeError";
+  get valueSchema() {
+    return this._def.valueType;
   }
+  _parse(input: ParseInput): ParseReturnType<this["_output"]> {
 ```
 
-## $ZodAsyncError.constructor  (packages/zod/src/v4/core/core.ts L99-101)
+## ZodPipeline._parse  (packages/zod/src/v3/types.ts L4782-4827)
 ```
-  constructor() {
-    super(`Encountered Promise during synchronous parse. Use .parseAsync() instead.`);
-  }
-```
-
-## $ZodAsyncError  (packages/zod/src/v4/core/core.ts L97-102)
-```
-
-export class $ZodAsyncError extends Error {
-  constructor() {
-    super(`Encountered Promise during synchronous parse. Use .parseAsync() instead.`);
-  }
-}
-```
-
-## $ZodBranded  (packages/zod/src/v4/core/core.ts L85-85)
-```
-export type $ZodBranded<
-```
-
-## $ZodConfig  (packages/zod/src/v4/core/core.ts L121-131)
-```
-
-//////////////////////////////   CONFIG   ///////////////////////////////////////
-
-export interface $ZodConfig {
-  /** Custom error map. Overrides `config().localeError`. */
-  customError?: errors.$ZodErrorMap | undefined;
-  /** Localized error map. Lowest priority. */
-  localeError?: errors.$ZodErrorMap | undefined;
-  /** Disable JIT schema compilation. Useful in environments that disallow `eval`. */
-  jitless?: boolean | undefined;
-}
-```
-
-## $ZodEncodeError  (packages/zod/src/v4/core/core.ts L103-109)
-```
-
-export class $ZodEncodeError extends Error {
-  constructor(name: string) {
-    super(`Encountered unidirectional transform during encode: ${name}`);
-    this.name = "ZodEncodeError";
-  }
-}
-```
-
-## $ZodNarrow  (packages/zod/src/v4/core/core.ts L96-96)
-```
-export type $ZodNarrow<T extends schemas.SomeType, Out> = T & { _zod: { output: Out } };
-```
-
-## $brand  (packages/zod/src/v4/core/core.ts L81-81)
-```
-export type $brand<T extends string | number | symbol = string | number | symbol> = {
-```
-
-## $constructor.init  (packages/zod/src/v4/core/core.ts L9-9)
-```
-  init(inst: T, def: D): asserts inst is T;
-```
-
-## $constructor.new  (packages/zod/src/v4/core/core.ts L8-8)
-```
-  new (def: D): T;
-```
-
-## $constructor  (packages/zod/src/v4/core/core.ts L7-10)
-```
-export interface $constructor<T extends ZodTrait, D = T["_zod"]["def"]> {
-  new (def: D): T;
-  init(inst: T, def: D): asserts inst is T;
-}
-```
-
-## Definition  (packages/zod/src/v4/core/core.ts L55-55)
-```
-  class Definition extends Parent {}
-```
-
-## _  (packages/zod/src/v4/core/core.ts L57-66)
-```
-
-  function _(this: any, def: D) {
-    const inst = params?.Parent ? new Definition() : this;
-    init(inst, def);
-    inst._zod.deferred ??= [];
-    for (const fn of inst._zod.deferred) {
-      fn();
-    }
-    return inst;
-  }
-```
-
-## config  (packages/zod/src/v4/core/core.ts L134-138)
-```
-
-export function config(newConfig?: Partial<$ZodConfig>): $ZodConfig {
-  if (newConfig) Object.assign(globalConfig, newConfig);
-  return globalConfig;
-}
-```
-
-## init  (packages/zod/src/v4/core/core.ts L22-51)
-```
-  function init(inst: T, def: D) {
-    if (!inst._zod) {
-      Object.defineProperty(inst, "_zod", {
-        value: {
-          def,
-          constr: _,
-          traits: new Set(),
-        },
-        enumerable: false,
+  _parse(input: ParseInput): ParseReturnType<any> {
+    const { status, ctx } = this._processInputParams(input);
+    if (ctx.common.async) {
+      const handleAsync = async () => {
+        const inResult = await this._def.in._parseAsync({
+          data: ctx.data,
+          path: ctx.path,
+          parent: ctx,
+        });
+        if (inResult.status === "aborted") return INVALID;
+        if (inResult.status === "dirty") {
+          status.dirty();
+          return DIRTY(inResult.value);
+        } else {
+          return this._def.out._parseAsync({
+            data: inResult.value,
+            path: ctx.path,
+            parent: ctx,
+          });
+        }
+      };
+      return handleAsync();
+    } else {
+      const inResult = this._def.in._parseSync({
+        data: ctx.data,
+        path: ctx.path,
+        parent: ctx,
       });
-    }
-
-    if (inst._zod.traits.has(name)) {
-      return;
-    }
-
-    inst._zod.traits.add(name);
-
-    initializer(inst, def);
-
-    // support prototype modifications
-    const proto = _.prototype;
-    const keys = Object.keys(proto);
-    for (let i = 0; i < keys.length; i++) {
-      const k = keys[i]!;
-      if (!(k in inst)) {
-        (inst as any)[k] = proto[k].bind(inst);
+      if (inResult.status === "aborted") return INVALID;
+      if (inResult.status === "dirty") {
+        status.dirty();
+        return {
+          status: "dirty",
+          value: inResult.value,
+        };
+      } else {
+        return this._def.out._parseSync({
+          data: inResult.value,
+          path: ctx.path,
+          parent: ctx,
+        });
       }
     }
   }
+
+  static create<ASchema extends ZodTypeAny, BSchema extends ZodTypeAny>(
 ```
 
-## input  (packages/zod/src/v4/core/core.ts L117-117)
+## AnyZodObject  (packages/zod/src/v3/types.ts L2926-2928)
 ```
-export type input<T> = T extends { _zod: { input: any } } ? T["_zod"]["input"] : unknown;
+export type AnyZodObject = ZodObject<any, any, any>;
+
+////////////////////////////////////////
 ```
 
-## output  (packages/zod/src/v4/core/core.ts L118-118)
+## AnyZodTuple  (packages/zod/src/v3/types.ts L3393-3394)
 ```
-export type output<T> = T extends { _zod: { output: any } } ? T["_zod"]["output"] : unknown;
+export type AnyZodTuple = ZodTuple<[ZodTypeAny, ...ZodTypeAny[]] | [], ZodTypeAny | null>;
+// type ZodTupleItems = [ZodTypeAny, ...ZodTypeAny[]];
+```
+
+## ArrayCardinality  (packages/zod/src/v3/types.ts L2230-2231)
+```
+export type ArrayCardinality = "many" | "atleastone";
+export type arrayOutputType<
+```
+
+## ArrayKeys  (packages/zod/src/v3/types.ts L4040-4041)
+```
+export type ArrayKeys = keyof any[];
+export type Indices<T> = Exclude<keyof T, ArrayKeys>;
+```
+
+## AssertArray  (packages/zod/src/v3/types.ts L3369-3370)
+```
+export type AssertArray<T> = T extends any[] ? T : never;
+export type OutputTypeOfTuple<T extends ZodTupleItems | []> = AssertArray<{
+```
+
+## BRAND  (packages/zod/src/v4/classic/compat.ts L40-40)
+```
+export type BRAND<T extends string | number | symbol = string | number | symbol> = {
+```
+
+## CatchallInput  (packages/zod/src/v3/types.ts L2408-2410)
+```
+export type CatchallInput<T extends ZodType> = ZodType extends T ? unknown : { [k: string]: T["_input"] };
+
+export type PassthroughType<T extends UnknownKeysParam> = T extends "passthrough" ? { [k: string]: unknown } : unknown;
+```
+
+## CatchallOutput  (packages/zod/src/v3/types.ts L2406-2408)
+```
+export type CatchallOutput<T extends ZodType> = ZodType extends T ? unknown : { [k: string]: T["_output"] };
+
+export type CatchallInput<T extends ZodType> = ZodType extends T ? unknown : { [k: string]: T["_input"] };
+```
+
+## Class.constructor  (packages/zod/src/v4/mini/schemas.ts L1784-1784)
+```
+  constructor(..._args: any[]) {}
+```
+
+## Class  (packages/zod/src/v4/mini/schemas.ts L1781-1785)
+```
+
+// instanceof
+abstract class Class {
+  constructor(..._args: any[]) {}
+}
+```
+
+## CustomErrorParams  (packages/zod/src/v3/types.ts L56-56)
+```
+export type CustomErrorParams = Partial<util.Omit<ZodCustomIssue, "code">>;
+```
+
+## Effect  (packages/zod/src/v3/types.ts L4299-4301)
+```
+export type Effect<T> = RefinementEffect<T> | TransformEffect<T> | PreprocessEffect<T>;
+
+export interface ZodEffectsDef<T extends ZodTypeAny = ZodTypeAny> extends ZodTypeDef {
+```
+
+## EnumLike  (packages/zod/src/v4/core/util.ts L168-168)
+```
+export type EnumLike = Readonly<Record<string, EnumValue>>;
+```
+
+## EnumValues  (packages/zod/src/v3/types.ts L4043-4045)
+```
+export type EnumValues<T extends string = string> = readonly [T, ...T[]];
+
+export type Values<T extends EnumValues> = {
+```
+
+## FilterEnum  (packages/zod/src/v3/types.ts L4056-4057)
+```
+export type FilterEnum<Values, ToExclude> = Values extends []
+  ? []
+```
+
+## Indices  (packages/zod/src/v3/types.ts L4041-4043)
+```
+export type Indices<T> = Exclude<keyof T, ArrayKeys>;
+
+export type EnumValues<T extends string = string> = readonly [T, ...T[]];
+```
+
+## InputTypeOfTuple  (packages/zod/src/v3/types.ts L3378-3379)
+```
+export type InputTypeOfTuple<T extends ZodTupleItems | []> = AssertArray<{
+  [k in keyof T]: T[k] extends ZodType<any, any, any> ? T[k]["_input"] : never;
+```
+
+## InputTypeOfTupleWithRest  (packages/zod/src/v3/types.ts L3381-3382)
+```
+export type InputTypeOfTupleWithRest<
+  T extends ZodTupleItems | [],
+```
+
+## IpVersion  (packages/zod/src/v3/types.ts L544-544)
+```
+export type IpVersion = "v4" | "v6";
+```
+
+## KeySchema  (packages/zod/src/v3/types.ts L3493-3494)
+```
+export type KeySchema = ZodType<string | number | symbol, any, any>;
+export type RecordType<K extends string | number | symbol, V> = [string] extends [K]
+```
+
+## OutputTypeOfTuple  (packages/zod/src/v3/types.ts L3370-3371)
+```
+export type OutputTypeOfTuple<T extends ZodTupleItems | []> = AssertArray<{
+  [k in keyof T]: T[k] extends ZodType<any, any, any> ? T[k]["_output"] : never;
+```
+
+## OutputTypeOfTupleWithRest  (packages/zod/src/v3/types.ts L3373-3374)
+```
+export type OutputTypeOfTupleWithRest<
+  T extends ZodTupleItems | [],
+```
+
+## ParseInputLazyPath.path  (packages/zod/src/v3/types.ts L74-84)
+```
+  get path() {
+    if (!this._cachedPath.length) {
+      if (Array.isArray(this._key)) {
+        this._cachedPath.push(...this._path, ...this._key);
+      } else {
+        this._cachedPath.push(...this._path, this._key);
+      }
+    }
+
+    return this._cachedPath;
+  }
+```
+
+## ParseInputLazyPath  (packages/zod/src/v3/types.ts L61-85)
+```
+
+class ParseInputLazyPath implements ParseInput {
+  parent: ParseContext;
+  data: any;
+  _path: ParsePath;
+  _key: string | number | (string | number)[];
+  _cachedPath: ParsePath = [];
+  constructor(parent: ParseContext, value: any, path: ParsePath, key: string | number | (string | number)[]) {
+    this.parent = parent;
+    this.data = value;
+    this._path = path;
+    this._key = key;
+  }
+  get path() {
+    if (!this._cachedPath.length) {
+      if (Array.isArray(this._key)) {
+        this._cachedPath.push(...this._path, ...this._key);
+      } else {
+        this._cachedPath.push(...this._path, this._key);
+      }
+    }
+
+    return this._cachedPath;
+  }
+}
+```
+
+## PassthroughType  (packages/zod/src/v3/types.ts L2410-2412)
+```
+export type PassthroughType<T extends UnknownKeysParam> = T extends "passthrough" ? { [k: string]: unknown } : unknown;
+
+export type deoptional<T extends ZodTypeAny> = T extends ZodOptional<infer U>
+```
+
+## PreprocessEffect  (packages/zod/src/v3/types.ts L4295-4296)
+```
+export type PreprocessEffect<T> = {
+  type: "preprocess";
+```
+
+## ProcessedCreateParams  (packages/zod/src/v3/types.ts L119-119)
+```
+export type ProcessedCreateParams = {
+```
+
+## RawCreateParams  (packages/zod/src/v3/types.ts L110-110)
+```
+export type RawCreateParams =
+```
+
+## RecordType  (packages/zod/src/v3/types.ts L3494-3495)
+```
+export type RecordType<K extends string | number | symbol, V> = [string] extends [K]
+  ? Record<K, V>
+```
+
+## Refinement  (packages/zod/src/v3/types.ts L4284-4285)
+```
+export type Refinement<T> = (arg: T, ctx: RefinementCtx) => any;
+export type SuperRefinement<T> = (arg: T, ctx: RefinementCtx) => void | Promise<void>;
+```
+
+## RefinementCtx  (packages/zod/src/v3/types.ts L38-48)
+```
+///////////////////////////////////////
+//////////                   //////////
+//////////      ZodType      //////////
+//////////                   //////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+export interface RefinementCtx {
+  addIssue: (arg: IssueData) => void;
+  path: (string | number)[];
+}
+```
+
+## RefinementEffect  (packages/zod/src/v3/types.ts L4287-4288)
+```
+export type RefinementEffect<T> = {
+  type: "refinement";
+```
+
+## SafeParseError  (packages/zod/src/v4/core/util.ts L181-181)
+```
+export type SafeParseError<T> = {
+```
+
+## SafeParseReturnType  (packages/zod/src/v3/types.ts L156-156)
+```
+export type SafeParseReturnType<Input, Output> = SafeParseSuccess<Output> | SafeParseError<Input>;
+```
+
+## SafeParseSuccess  (packages/zod/src/v4/core/util.ts L180-180)
+```
+export type SafeParseSuccess<T> = { success: true; data: T; error?: never };
+```
+
+## SomeZodObject  (packages/zod/src/v3/types.ts L2418-2420)
+```
+export type SomeZodObject = ZodObject<ZodRawShape, UnknownKeysParam, ZodTypeAny>;
+
+export type noUnrecognized<Obj extends object, Shape extends object> = {
+```
+
+## SuperRefinement  (packages/zod/src/v3/types.ts L4285-4287)
+```
+export type SuperRefinement<T> = (arg: T, ctx: RefinementCtx) => void | Promise<void>;
+
+export type RefinementEffect<T> = {
+```
+
+## TransformEffect  (packages/zod/src/v3/types.ts L4291-4292)
+```
+export type TransformEffect<T> = {
+  type: "transform";
+```
+
+## UnknownKeysParam  (packages/zod/src/v3/types.ts L2368-2370)
+```
+export type UnknownKeysParam = "passthrough" | "strict" | "strip";
+
+export interface ZodObjectDef<
+```
+
+## Values  (packages/zod/src/v3/types.ts L4045-4046)
+```
+export type Values<T extends EnumValues> = {
+  [k in T[number]]: k;
+```
+
+## Writeable  (packages/zod/src/v4/core/util.ts L101-101)
+```
+export type Writeable<T> = { -readonly [P in keyof T]: T[P] } & {};
+```
+
+## ZodAny._parse  (packages/zod/src/v3/types.ts L2115-2118)
+```
+  _parse(input: ParseInput): ParseReturnType<this["_output"]> {
+    return OK(input.data);
+  }
+  static create = (params?: RawCreateParams): ZodAny => {
+```
+
+## ZodAny  (packages/zod/src/v4/classic/schemas.ts L1049-1051)
+```
+
+// ZodAny
+export interface ZodAny extends _ZodType<core.$ZodAnyInternals> {}
+```
+
+## ZodAnyDef  (packages/zod/src/v3/types.ts L2101-2112)
+```
+//////////////////////////////////////
+//////////////////////////////////////
+//////////                  //////////
+//////////      ZodAny      //////////
+//////////                  //////////
+//////////////////////////////////////
+//////////////////////////////////////
+export interface ZodAnyDef extends ZodTypeDef {
+  typeName: ZodFirstPartyTypeKind.ZodAny;
+}
+
+export class ZodAny extends ZodType<any, ZodAnyDef, any> {
+```
+
+## ZodArray._parse  (packages/zod/src/v3/types.ts L2241-2317)
+```
+  _parse(input: ParseInput): ParseReturnType<this["_output"]> {
+    const { ctx, status } = this._processInputParams(input);
+
+    const def = this._def;
+
+... (truncated)
 ```
 --- END SOURCE SNIPPETS ---
 
