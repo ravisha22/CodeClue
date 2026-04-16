@@ -136,7 +136,7 @@ Context (context.go:40-40)
 Group.Add (group.go:158-158)
   Add implements `Echo#Add()` for sub-routes within the Group.
   sig: Group.Add(method, path string, handler HandlerFunc, middleware ......)
-  behavior: GUARD(err -> raise_panic)
+  behavior: GUARD(err != nil -> panic(err))
   calls: AddRoute
   called_by: Any, CONNECT, DELETE, File, GET, HEAD, OPTIONS, PATCH
   raises: panic
@@ -258,7 +258,7 @@ Context.Reset (context.go:107-107)
 Group.Match (group.go:77-77)
   Match implements `Echo#Match()` for sub-routes within the Group.
   sig: Group.Match(methods []string, path string, handler HandlerFunc, midd...)
-  behavior: GUARD(len -> raise_panic); ACCUMULATE(loop -> errs)
+  behavior: GUARD(len(errs) > 0 -> panic(errs)); ACCUMULATE(AddRoute loop -> errs)
   calls: AddRoute
   raises: panic
 
@@ -313,21 +313,26 @@ Context.json (context.go:464-464)
   calls: Response, SetResponse, writeContentType
   called_by: JSON, JSONPretty
 
+Context.SetPathValues (context.go:255-255)
+  SetPathValues sets path parameters for current request.
+  sig: Context.SetPathValues(pathValues PathValues)
+  behavior: GUARD(pathValues == nil -> panic("context SetP...)
+  calls: setPathValues
+  raises: panic
+
 ContextTimeout (middleware/context_timeout.go:28-28)
   ContextTimeout returns a middleware which returns error (503 Service Unavailable error) to client when underlying method
   sig: ContextTimeout(timeout time.Duration)
   behavior: DELEGATE(ContextTimeoutWithConfig -> result)
   calls: ContextTimeoutWithConfig
 
-NewContext (context.go:64-64)
-  NewContext returns a new Context instance.
-  sig: NewContext(r *http.Request, w http.ResponseWriter, opts ...any)
-  behavior: DELEGATE(newContext -> result); ACCUMULATE(loop -> result)
-  calls: newContext
-
 -- GAPS
-type: RELATIONAL (answerable from L2-L3 structure)
-coverage: 80 symbols in L3, 45 with behavior annotations
+type: MECHANISTIC (body logic needed for full answer)
+coverage: 80 symbols in L3, 46 with behavior annotations
+uncovered: Group.AddRoute, Context.FormValues, Context.FormValue, Context.RealIP
+drill: middleware/request_logger.go (~1 lines, RequestLogger)
+drill: group.go (~1 lines, Group.Add)
+drill: echotest/context.go (~1 lines, ContextConfig.ToContextRecorder)
 
 --- CLUE FILE END ---
 

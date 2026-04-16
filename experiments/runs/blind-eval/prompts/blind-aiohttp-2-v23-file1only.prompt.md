@@ -126,6 +126,38 @@ _write_chunked_payload              M aiohttp/http_writer.py:124    Write a chun
   ...and 1859 more symbols
 
 -- FOCUS
+_on_cleanup (aiohttp/web_app.py:430-441)
+  sig: _on_cleanup(app)
+  behavior: ACCUMULATE(reversed(self._exits)... -> errors); UNWIND(reversed)
+  calls: CleanupError
+  called_by: cleanup, Application
+  raises: CleanupError
+
+CleanupContext (aiohttp/web_app.py:415-441)
+  imports: asyncio, logging, warnings, aiosignal, frozenlist
+  calls: CleanupError
+  called_by: Application
+  raises: CleanupError
+
+shutdown (aiohttp/web_server.py:111-114)
+  sig: shutdown(timeout)
+  called_by: Server
+
+resources (aiohttp/web_urldispatcher.py:1029-1030)
+  behavior: DELEGATE(ResourcesView -> result)
+  calls: ResourcesView
+  called_by: _add_prefix_to_resources, PrefixedSubAppResource
+
+Application (aiohttp/web_app.py:71-400)
+  imports: asyncio, logging, warnings, aiosignal, frozenlist
+  calls: _add_subapp, _check_frozen, _prepare_middleware, handler, reg_handler, _reg_subapp_signals, add_routes, freeze
+  raises: TypeError, RuntimeError, ValueError
+
+CleanupError (aiohttp/web_app.py:403-406)
+  extends: RuntimeError
+  imports: asyncio, logging, warnings, aiosignal, frozenlist
+  called_by: _on_cleanup, CleanupContext
+
 _cleanup_server (aiohttp/web_runner.py:337-338)
   Run any cleanup steps after the server is shutdown.
 
@@ -136,32 +168,22 @@ _cleanup_server (aiohttp/web_runner.py:452-453)
 shutdown (aiohttp/web_runner.py:302-303)
   Call any shutdown hooks to help server close gracefully.
 
-shutdown (aiohttp/web_server.py:111-114)
-  sig: shutdown(timeout)
-  called_by: Server
-
 pre_shutdown (aiohttp/web_server.py:107-109)
-  behavior: ACCUMULATE(loop -> result)
+  behavior: ACCUMULATE(self._connections loop -> result)
 
 _make_server (aiohttp/web_runner.py:421-430)
   behavior: DELEGATE(Server -> result)
   uses: Server (web_server)
 
-_on_cleanup (aiohttp/web_app.py:430-441)
-  sig: _on_cleanup(app)
-  behavior: ACCUMULATE(loop -> errors); UNWIND(reversed)
-  calls: CleanupError
-  called_by: cleanup, Application
-  raises: CleanupError
-
-resources (aiohttp/web_urldispatcher.py:1029-1030)
-  behavior: DELEGATE(ResourcesView -> result)
-  calls: ResourcesView
-  called_by: _add_prefix_to_resources, PrefixedSubAppResource
+_add_prefix_to_resources (aiohttp/web_urldispatcher.py:717-724)
+  sig: _add_prefix_to_resources(prefix)
+  behavior: ACCUMULATE(router.resources() loop -> result)
+  calls: index_resource, resources, unindex_resource
+  called_by: PrefixedSubAppResource
 
 cleanup (aiohttp/web_app.py:351-360)
   Causes on_cleanup signal
-  behavior: BRANCH(on_cleanup.frozen -> result, else -> result)
+  behavior: BRANCH(self.on_cleanup.frozen -> await self.on_cleanup..., else -> await sel...)
   calls: _on_cleanup
 
 aiohttp_raw_server (aiohttp/pytest_plugin.py:325-349)
@@ -173,22 +195,6 @@ aiohttp_server (aiohttp/pytest_plugin.py:296-321)
   Factory to create a TestServer instance, given an app.
   sig: aiohttp_server(loop)
   uses: TestServer (test_utils)
-
-Application (aiohttp/web_app.py:71-400)
-  imports: asyncio, logging, warnings, aiosignal, frozenlist
-  calls: _add_subapp, _check_frozen, _prepare_middleware, handler, reg_handler, _reg_subapp_signals, add_routes, freeze
-  raises: TypeError, RuntimeError, ValueError
-
-CleanupContext (aiohttp/web_app.py:415-441)
-  imports: asyncio, logging, warnings, aiosignal, frozenlist
-  calls: CleanupError
-  called_by: Application
-  raises: CleanupError
-
-CleanupError (aiohttp/web_app.py:403-406)
-  extends: RuntimeError
-  imports: asyncio, logging, warnings, aiosignal, frozenlist
-  called_by: _on_cleanup, CleanupContext
 
 TestServer (examples/token_refresh_middleware.py:121-243)
   Test server with JWT-like token authentication.
@@ -207,17 +213,21 @@ ResourcesView (aiohttp/web_urldispatcher.py:934-945)
   called_by: resources, UrlDispatcher
 
 cleanup (aiohttp/web_runner.py:305-330)
-  behavior: ACCUMULATE(loop -> result)
+  behavior: ACCUMULATE(list(self._sites) loop -> result)
   calls: stop
   called_by: AppRunner
 
-_add_prefix_to_resources (aiohttp/web_urldispatcher.py:717-724)
-  sig: _add_prefix_to_resources(prefix)
-  behavior: ACCUMULATE(loop -> result)
-  calls: index_resource, resources, unindex_resource
-  called_by: PrefixedSubAppResource
+run_test_server (examples/combined_middleware.py:238-252)
+  Run a test server with various endpoints.
+  calls: TestServer
+  called_by: main
 
 run_test_server (examples/logging_middleware.py:87-102)
+  Run a simple test server.
+  calls: TestServer
+  called_by: main
+
+run_test_server (examples/retry_middleware.py:150-164)
   Run a simple test server.
   calls: TestServer
   called_by: main
@@ -227,28 +237,18 @@ run_test_server (examples/basic_auth_middleware.py:119-131)
   calls: TestServer
   called_by: main
 
-run_test_server (examples/combined_middleware.py:238-252)
-  Run a test server with various endpoints.
-  calls: TestServer
-  called_by: main
-
-run_test_server (examples/retry_middleware.py:150-164)
-  Run a simple test server.
-  calls: TestServer
-  called_by: main
-
 Server (aiohttp/web_server.py:30-126)
   imports: asyncio, warnings, http_parser, streams, web_protocol
   calls: shutdown
 
+TestServer (examples/logging_middleware.py:59-84)
+  Test server for logging middleware demo.
+  imports: asyncio, logging, aiohttp
+  called_by: run_test_server
+
 TestServer (examples/basic_auth_middleware.py:59-116)
   Test server for basic auth endpoints.
   imports: asyncio, base64, binascii, logging, aiohttp
-  called_by: run_test_server
-
-TestServer (examples/retry_middleware.py:91-147)
-  Test server with stateful endpoints for retry testing.
-  imports: asyncio, logging, http, aiohttp
   called_by: run_test_server
 
 TestServer (examples/combined_middleware.py:159-235)
@@ -256,9 +256,9 @@ TestServer (examples/combined_middleware.py:159-235)
   imports: asyncio, base64, binascii, logging, http
   called_by: run_test_server
 
-TestServer (examples/logging_middleware.py:59-84)
-  Test server for logging middleware demo.
-  imports: asyncio, logging, aiohttp
+TestServer (examples/retry_middleware.py:91-147)
+  Test server with stateful endpoints for retry testing.
+  imports: asyncio, logging, http, aiohttp
   called_by: run_test_server
 
 _cleanup_writer (aiohttp/client_reqrep.py:563-566)
@@ -299,14 +299,14 @@ ServerTimeoutError (aiohttp/client_exceptions.py:227-228)
 _cleanup (aiohttp/connector.py:380-417)
   Cleanup unused transports.
 
+_make_server (aiohttp/web_runner.py:373-374)
+
 _make_server (aiohttp/web_runner.py:333-334)
   Return a new server for the runner to serve requests.
 
-_make_server (aiohttp/web_runner.py:373-374)
-
 _on_startup (aiohttp/web_app.py:420-428)
   sig: _on_startup(app)
-  behavior: ACCUMULATE(loop -> exits)
+  behavior: ACCUMULATE(self loop -> exits)
 
 cleanup_ctx (aiohttp/web_app.py:326-327)
 
@@ -316,57 +316,53 @@ named_resources (aiohttp/web_urldispatcher.py:1035-1036)
 
 on_cleanup (aiohttp/web_app.py:322-323)
 
+on_shutdown (examples/web_ws.py:49-51)
+  sig: on_shutdown(app)
+  behavior: ACCUMULATE(app[sockets] loop -> result)
+
 on_shutdown (aiohttp/web_app.py:318-319)
 
 on_shutdown (examples/background_tasks.py:29-31)
   sig: on_shutdown(app)
-  behavior: ACCUMULATE(loop -> result)
-
-on_shutdown (examples/web_ws.py:49-51)
-  sig: on_shutdown(app)
-  behavior: ACCUMULATE(loop -> result)
+  behavior: ACCUMULATE(app[websockets] loop -> result)
 
 on_startup (aiohttp/web_app.py:314-315)
 
 server (aiohttp/web_runner.py:269-270)
 
-shutdown (aiohttp/web_runner.py:418-419)
-
 shutdown (aiohttp/web_app.py:344-349)
   Causes on_shutdown signal
+
+shutdown (aiohttp/web_runner.py:418-419)
 
 shutdown (aiohttp/web_runner.py:370-371)
 
 startup (aiohttp/web_app.py:337-342)
   Causes on_startup signal
 
-AppRunner (aiohttp/web_runner.py:380-453)
-  Web Application runner
-  imports: asyncio, signal, socket, yarl, http_parser
-  calls: cleanup
-  raises: TypeError
-
-AppKey (aiohttp/helpers.py:890-891)
-  Keys for static typing support in Application.
-  imports: asyncio, base64, binascii, enum, inspect
-
-NotAppKeyWarning (aiohttp/web_exceptions.py:75-76)
-  Warning when not using AppKey in Application.
-  extends: UserWarning
-  imports: warnings, http, multidict, yarl, helpers
-
 WSServerHandshakeError (aiohttp/client_exceptions.py:106-107)
   websocket server handshake error.
   extends: ClientResponseError
   imports: asyncio, multidict, typedefs, ssl, client_reqrep
 
+_cleanup_closed (aiohttp/connector.py:419-440)
+  Double confirmation for transport close.
+  behavior: ACCUMULATE(self._cleanup_closed_... -> result)
+  calls: abort
+  called_by: BaseConnector
+
+ServerFingerprintMismatch (aiohttp/client_exceptions.py:239-250)
+  SSL certificate does not match expected fingerprint.
+  extends: ServerConnectionError
+  imports: asyncio, multidict, typedefs, ssl, client_reqrep
+
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 15 with behavior annotations
+coverage: 80 symbols in L3, 16 with behavior annotations
+uncovered: FakeFacebook, FakeResolver, __call__, __init__
 drill: aiohttp/web_runner.py (~2 lines, _cleanup_server)
 drill: aiohttp/web_runner.py (~1 lines, _cleanup_server)
 drill: aiohttp/web_runner.py (~1 lines, _cleanup_server)
-drill: aiohttp/web_runner.py (~2 lines, shutdown)
 
 --- CLUE FILE END ---
 

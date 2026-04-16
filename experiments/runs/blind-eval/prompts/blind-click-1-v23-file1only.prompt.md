@@ -122,16 +122,99 @@ get_best_encoding                   M src/click/_compat.py:48     Returns the de
   ...and 579 more symbols
 
 -- FOCUS
+_check_nested_chain (src/click/core.py:73-90)
+  sig: _check_nested_chain(base_command, cmd_name, cmd, register)
+  behavior: GUARD(not base_command.chain or not isinstance(cmd, Group) -> return); BRANCH(register -> f'It is not possible..., else -> f'Found the group {cm...)
+  called_by: CommandCollection, add_command, Group
+  raises: RuntimeError
+
+ClickException (src/click/exceptions.py:26-53)
+  An exception that Click can handle and show to the user.
+  extends: Exception
+  attrs: exit_code=1
+  imports: gettext, globals, utils, core
+
+ComplexCLI (examples/complex/complex/cli.py:31-45)
+  extends: Group
+  imports: click
+
+cli (examples/completion/completion.py:8-9)
+  calls: group
+
+cli (examples/termui/termui.py:9-11)
+  This script showcases different terminal UI helpers in Click.
+
+cli (examples/repo/repo.py:44-57)
+  Repo is a command line tool that showcases how to build complex
+  sig: cli(ctx, repo_home, config, verbose)
+  behavior: ACCUMULATE(config loop -> result)
+  calls: set_config, Repo
+
+_match_short_opt (src/click/parser.py:389-427)
+  sig: _match_short_opt(arg, state)
+  behavior: ACCUMULATE(arg[1:] loop -> i, raises NoSuchOption)
+  calls: _get_value_from_state, _normalize_opt
+  called_by: _process_opts, _OptionParser
+  raises: NoSuchOption
+  uses: NoSuchOption (exceptions)
+
+_match_long_opt (src/click/parser.py:359-387)
+  sig: _match_long_opt(opt, explicit_value, state)
+  behavior: GUARD(opt not in self._long_opt -> raise NoSuchOption(opt, p...)
+  calls: _get_value_from_state
+  called_by: _process_opts, _OptionParser
+  raises: NoSuchOption, BadOptionUsage
+  uses: NoSuchOption (exceptions), BadOptionUsage (exceptions)
+
+__next__ (src/click/_termui_impl.py:134-140)
+  behavior: DELEGATE(next -> result)
+
+cli (examples/complex/complex/cli.py:56-60)
+  A complex command line interface.
+  sig: cli(ctx, verbose, home)
+
+cli (examples/inout/inout.py:7-30)
+  This script works similar to the Unix `cat` command but it writes
+  sig: cli(input, output)
+  behavior: ACCUMULATE(input loop -> output)
+
+cli (examples/imagepipe/imagepipe.py:11-20)
+  This script processes a bunch of images through pillow in a unix
+
+cli (examples/validation/validation.py:34-48)
+  Validation.
+  sig: cli(count, foo, url)
+  calls: URL
+  raises: BadParameter
+
+cli (examples/complex/complex/commands/cmd_init.py:9-13)
+  Initializes a repository.
+  sig: cli(ctx, path)
+
+cli (examples/aliases/aliases.py:97-98)
+  An example application that supports aliases.
+
+cli (examples/colors/colors.py:25-39)
+  This script prints some colors.
+  behavior: ACCUMULATE(all_colors loop -> result)
+
+cli (examples/naval/naval.py:6-12)
+  Naval Fate.
+
+cli (examples/complex/complex/commands/cmd_status.py:8-11)
+  Shows file changes in the current working directory.
+  sig: cli(ctx)
+
+smoothen_cmd (examples/imagepipe/imagepipe.py:229-238)
+  Applies a smoothening filter.
+  sig: smoothen_cmd(images, iterations)
+  behavior: ACCUMULATE(images loop -> result)
+  calls: copy_filename
+
 _expand_args (src/click/utils.py:578-628)
   Simulate Unix shell expansion with Python functions.
   sig: _expand_args(args)
-  behavior: ACCUMULATE(loop -> out)
-
-_check_nested_chain (src/click/core.py:73-90)
-  sig: _check_nested_chain(base_command, cmd_name, cmd, register)
-  behavior: GUARD(not_base_command.chain_or_not_is -> none); BRANCH(register -> result, else -> result)
-  called_by: CommandCollection, add_command, Group
-  raises: RuntimeError
+  behavior: ACCUMULATE(args loop -> out)
 
 convert_type (src/click/types.py:1112-1169)
   Find the most appropriate :class:`ParamType` for the given Python
@@ -151,7 +234,7 @@ Tuple (src/click/types.py:1060-1109)
 _resolve_incomplete (src/click/shell_completion.py:623-667)
   Find the Click object that will handle the completion of the
   sig: _resolve_incomplete(ctx, args, incomplete)
-  behavior: ACCUMULATE(loop -> result)
+  behavior: ACCUMULATE(params loop -> result)
   calls: _is_incomplete_argument, _is_incomplete_option, _start_of_option
   called_by: get_completions, ShellComplete
 
@@ -165,16 +248,6 @@ Abort (src/click/exceptions.py:294-295)
   An internal signalling exception that signals Click to abort.
   extends: RuntimeError
   imports: gettext, globals, utils, core
-
-ClickException (src/click/exceptions.py:26-53)
-  An exception that Click can handle and show to the user.
-  extends: Exception
-  attrs: exit_code=1
-  imports: gettext, globals, utils, core
-
-ComplexCLI (examples/complex/complex/cli.py:31-45)
-  extends: Group
-  imports: click
 
 FloatRange (src/click/types.py:618-658)
   Restrict a :data:`click.FLOAT` value to a range of accepted
@@ -200,12 +273,6 @@ NoSuchOption (src/click/exceptions.py:208-239)
   extends: UsageError
   imports: gettext, globals, utils, core
 
-cli (examples/termui/termui.py:9-11)
-  This script showcases different terminal UI helpers in Click.
-
-cli (examples/completion/completion.py:8-9)
-  calls: group
-
 command (src/click/decorators.py:168-255)
   Creates a new :class:`Command` and uses the decorated function as
   sig: command(name, cls)
@@ -227,6 +294,31 @@ make_formatter (src/click/core.py:561-573)
   behavior: DELEGATE(formatter_class -> result)
   called_by: Command
 
+Group (src/click/core.py:1503-1951)
+  A group is a command that nests other commands (or more groups).
+  extends: Command
+  attrs: allow_extra_args=True, allow_interspersed_args=False
+  imports: enum, errno, inspect, gettext, itertools
+  calls: get_short_help_str, make_context, _make_sub_context, fail, scope, add_command, format_commands, _process_result
+  raises: TypeError, NoArgsIsHelpError, RuntimeError
+  uses: UsageError (exceptions)
+
+CommandCollection (src/click/core.py:1961-2014)
+  A :class:`Group` that looks up subcommands on other groups.
+  extends: Group
+  imports: enum, errno, inspect, gettext, itertools
+  calls: _check_nested_chain
+
+add_command (src/click/core.py:1622-1630)
+  Registers another :class:`Command` with this group.
+  sig: add_command(cmd, name)
+  calls: _check_nested_chain
+  called_by: Group
+  raises: TypeError
+
+group (examples/completion/completion.py:32-33)
+  called_by: cli
+
 ShellComplete (src/click/shell_completion.py:200-301)
   Base class for providing shell completion support.
   imports: gettext, core, utils, shlex, shutil
@@ -239,98 +331,13 @@ get_completions (src/click/shell_completion.py:271-281)
   calls: _resolve_context, _resolve_incomplete, shell_complete
   called_by: complete, ShellComplete
 
-Command (src/click/core.py:873-1485)
-  Commands are the basic building block of command line interfaces in
-  attrs: allow_extra_args=False, allow_interspersed_args=True, ignore_unknown_options=False
-  imports: enum, errno, inspect, gettext, itertools
-  calls: _main_shell_completion, format_epilog, format_help, format_help_text, format_usage, get_help_option, get_help_option_names, get_params
-  raises: NoArgsIsHelpError, Abort
-  uses: Exit (exceptions), UsageError (exceptions)
-
-Group (src/click/core.py:1503-1951)
-  A group is a command that nests other commands (or more groups).
-  extends: Command
-  attrs: allow_extra_args=True, allow_interspersed_args=False
-  imports: enum, errno, inspect, gettext, itertools
-  calls: get_short_help_str, make_context, _make_sub_context, fail, scope, add_command, format_commands, _process_result
-  raises: TypeError, NoArgsIsHelpError, RuntimeError
-  uses: UsageError (exceptions)
-
-fail (src/click/types.py:136-143)
-  Helper method to fail with an invalid value message.
-  sig: fail(message, param, ctx)
-  called_by: BoolParamType, Choice, DateTime, File, FuncParamType, Path, Tuple, UUIDParameterType
-  raises: BadParameter
-  uses: BadParameter (exceptions)
-
-Choice (src/click/types.py:233-398)
-  The choice type allows a value to be checked against a fixed set
-  extends: ParamType
-  attrs: name='choice'
-  imports: enum, stat, gettext, exceptions, utils
-  calls: _normalized_mapping, get_invalid_choice_message, normalize_choice, fail, convert_type
-  uses: BadParameter (exceptions)
-
-FuncParamType (src/click/types.py:171-192)
-  extends: ParamType
-  imports: enum, stat, gettext, exceptions, utils
-  calls: fail
-  called_by: convert_type
-  uses: BadParameter (exceptions)
-
-_join_param_hints (src/click/exceptions.py:19-23)
-  sig: _join_param_hints(param_hint)
-  behavior: GUARD(param_hint_and_not_isinstance_st -> /_join)
-  called_by: BadParameter, MissingParameter
-
-CommandCollection (src/click/core.py:1961-2014)
-  A :class:`Group` that looks up subcommands on other groups.
-  extends: Group
-  imports: enum, errno, inspect, gettext, itertools
-  calls: _check_nested_chain
-
-_is_incomplete_argument (src/click/shell_completion.py:503-525)
-  Determine if the given parameter is an argument that can still
-  sig: _is_incomplete_argument(ctx, param)
-  called_by: _resolve_incomplete
-
-_is_incomplete_option (src/click/shell_completion.py:537-559)
-  Determine if the given parameter is an option that needs a value.
-  sig: _is_incomplete_option(ctx, args, param)
-  behavior: ACCUMULATE(loop -> result); UNWIND(reversed)
-  calls: _start_of_option
-  called_by: _resolve_incomplete
-
-_start_of_option (src/click/shell_completion.py:528-534)
-  Check if the value looks like the start of an option.
-  sig: _start_of_option(ctx, value)
-  called_by: _is_incomplete_option, _resolve_incomplete
-
-add_command (src/click/core.py:1622-1630)
-  Registers another :class:`Command` with this group.
-  sig: add_command(cmd, name)
-  calls: _check_nested_chain
-  called_by: Group
-  raises: TypeError
-
-complete (src/click/shell_completion.py:291-301)
-  Produce the completion data to send back to the shell.
-  calls: get_completions
-  called_by: shell_complete
-
-get_completion_class (src/click/shell_completion.py:456-463)
-  Look up a registered :class:`ShellComplete` subclass by the name
-  sig: get_completion_class(shell)
-  behavior: DELEGATE(_available_shells.get -> result)
-  called_by: shell_complete
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 17 with behavior annotations
+coverage: 80 symbols in L3, 21 with behavior annotations
+uncovered: exit, format_commands, format_epilog, format_help_text
 drill: src/click/utils.py (~31 lines, _expand_args)
 drill: src/click/core.py (~15 lines, _check_nested_chain)
 drill: src/click/shell_completion.py (~49 lines, _resolve_incomplete)
-drill: src/click/types.py (~40 lines, convert_type)
 
 --- CLUE FILE END ---
 

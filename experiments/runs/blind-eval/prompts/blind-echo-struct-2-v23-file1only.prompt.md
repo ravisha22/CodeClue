@@ -156,25 +156,15 @@ Echo (echo.go:68-68)
 RequestLoggerWithConfig (middleware/request_logger.go:237-237)
   RequestLoggerWithConfig returns a RequestLogger middleware with config.
   sig: RequestLoggerWithConfig(config RequestLoggerConfig)
-  behavior: GUARD(err -> raise_panic)
+  behavior: GUARD(err != nil -> panic(err))
   calls: ToMiddleware
   called_by: RequestLogger
   raises: panic
 
 RequestLoggerConfig.ToMiddleware (middleware/request_logger.go:246-246)
   ToMiddleware converts RequestLoggerConfig into middleware or returns an error for invalid configuration.
-  behavior: PRECEDENCE(config); ACCUMULATE(loop -> result)
+  behavior: PRECEDENCE(config); ACCUMULATE(CanonicalHeaderKey loop -> result)
   called_by: RequestLoggerWithConfig
-
-New (echo.go:333-333)
-  New creates an instance of Echo.
-  calls: DefaultHTTPErrorHandler, NewDefaultFS
-  called_by: NewWithConfig, main
-
-NewWithConfig (echo.go:294-294)
-  NewWithConfig creates an instance of Echo with given configuration.
-  sig: NewWithConfig(config Config)
-  calls: New
 
 RequestIDWithConfig (middleware/request_id.go:37-37)
   RequestIDWithConfig returns a middleware with given valid config or panics on invalid configuration.
@@ -204,7 +194,7 @@ Context.Request (context.go:129-129)
 
 Echo.add (echo.go:621-621)
   sig: Echo.add(route Route)
-  behavior: GUARD(e -> RouteInfo); PRECEDENCE(e -> err -> paramsCount)
+  behavior: GUARD(e.OnAddRoute != nil -> return RouteInfo{},...); PRECEDENCE(e -> err -> paramsCount)
   calls: Add
   called_by: Add, AddRoute
 
@@ -234,8 +224,30 @@ RequestLoggerValues (middleware/request_logger.go:189-189)
 
 CSRFConfig.checkSecFetchSiteRequest (middleware/csrf.go:260-260)
   sig: CSRFConfig.checkSecFetchSiteRequest(c *echo.Context)
-  behavior: GUARD(secFetchSite -> none); PRECEDENCE(secFetchSite -> len -> not_isSafe)
+  behavior: GUARD(secFetchSite == "" -> return false, nil); PRECEDENCE(secFetchSite -> len -> not_isSafe)
   called_by: ToMiddleware
+
+setMultipartFileHeaderTypes (bind.go:449-449)
+  sig: setMultipartFileHeaderTypes(structField reflect.Value, inputFieldName string, files ...)
+  behavior: GUARD(len(fileHeaders) == 0 -> return false); DISPATCH(structField)
+  called_by: bindData
+
+Group.Match (group.go:77-77)
+  Match implements `Echo#Match()` for sub-routes within the Group.
+  sig: Group.Match(methods []string, path string, handler HandlerFunc, midd...)
+  behavior: GUARD(len(errs) > 0 -> panic(errs)); ACCUMULATE(AddRoute loop -> errs)
+  calls: AddRoute
+  raises: panic
+
+New (echo.go:333-333)
+  New creates an instance of Echo.
+  calls: DefaultHTTPErrorHandler, NewDefaultFS
+  called_by: NewWithConfig, main
+
+NewWithConfig (echo.go:294-294)
+  NewWithConfig creates an instance of Echo with given configuration.
+  sig: NewWithConfig(config Config)
+  calls: New
 
 WrapHandler (echo.go:752-752)
   WrapHandler wraps `http.Handler` into `echo.HandlerFunc`.
@@ -246,11 +258,6 @@ WrapMiddleware (echo.go:766-766)
   WrapMiddleware wraps `func(http.Handler) http.Handler` into `echo.MiddlewareFunc`
   sig: WrapMiddleware(m func(http.Handler)
   calls: ServeHTTP
-
-setMultipartFileHeaderTypes (bind.go:449-449)
-  sig: setMultipartFileHeaderTypes(structField reflect.Value, inputFieldName string, files ...)
-  behavior: GUARD(len -> value); DISPATCH(structField)
-  called_by: bindData
 
 Context.Bind (context.go:399-399)
   Bind binds path params, query params and the request body into provided type `i`.
@@ -266,10 +273,15 @@ Context.Cookies (context.go:374-374)
   Cookies returns the HTTP cookies sent with the request.
   behavior: DELEGATE(c.request.Cookies -> result)
 
+DefaultJSONSerializer.Deserialize (json.go:24-24)
+  Deserialize reads a JSON from a request body and converts it into an interface.
+  sig: DefaultJSONSerializer.Deserialize(c *Context, target any)
+  behavior: GUARD(err := json.NewDecoder(c.Request().Body).Deco... -> return ErrBadReque...)
+
 Group.Add (group.go:158-158)
   Add implements `Echo#Add()` for sub-routes within the Group.
   sig: Group.Add(method, path string, handler HandlerFunc, middleware ......)
-  behavior: GUARD(err -> raise_panic)
+  behavior: GUARD(err != nil -> panic(err))
   calls: AddRoute
   called_by: Any, CONNECT, DELETE, File, GET, HEAD, OPTIONS, PATCH
   raises: panic
@@ -312,26 +324,10 @@ Group.Any (group.go:72-72)
   behavior: DELEGATE(g.Add -> result)
   calls: Add
 
-Group.CONNECT (group.go:27-27)
-  CONNECT implements `Echo#CONNECT()` for sub-routes within the Group.
-  sig: Group.CONNECT(path string, h HandlerFunc, m ...MiddlewareFunc)
-  behavior: DELEGATE(g.Add -> result)
-  calls: Add
-
-Group.DELETE (group.go:32-32)
-  DELETE implements `Echo#DELETE()` for sub-routes within the Group.
-  sig: Group.DELETE(path string, h HandlerFunc, m ...MiddlewareFunc)
-  behavior: DELEGATE(g.Add -> result)
-  calls: Add
-
-Group.File (group.go:143-143)
-  File implements `Echo#File()` for sub-routes within the Group.
-  sig: Group.File(path, file string, middleware ...MiddlewareFunc)
-  calls: Add
-
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 42 with behavior annotations
+coverage: 80 symbols in L3, 44 with behavior annotations
+uncovered: Echo.DELETE, Echo.File, Echo.HEAD, Echo.Match
 
 --- CLUE FILE END ---
 

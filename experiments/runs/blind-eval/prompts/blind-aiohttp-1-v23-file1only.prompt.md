@@ -129,7 +129,7 @@ _write_chunked_payload              M aiohttp/http_writer.py:124    Write a chun
 _update_body_from_data (aiohttp/client_reqrep.py:1137-1180)
   Update request body from data.
   sig: _update_body_from_data(body)
-  behavior: BRANCH(isinstance_FormData -> result, else -> result); ACCUMULATE(loop -> result)
+  behavior: BRANCH(isinstance(body, FormData) -> body(), else -> result); ACCUMULATE(body.headers.items()... -> result)
   calls: body
   called_by: _update_body, ClientRequest
   uses: FormData (formdata)
@@ -140,7 +140,7 @@ json (aiohttp/multipart.py:467-473)
 
 read (aiohttp/multipart.py:304-322)
   Reads body part data.
-  behavior: ACCUMULATE(loop -> data)
+  behavior: ACCUMULATE(data.extend loop -> data)
   calls: decode_iter, read_chunk
   called_by: _read_chunk_from_length, _read_chunk_from_stream, form, json, read_chunk, text, BodyPartReader
 
@@ -164,10 +164,17 @@ multipart (aiohttp/web_request.py:673-680)
 append_payload (aiohttp/multipart.py:963-999)
   Adds a new body part to multipart writer.
   sig: append_payload(payload)
-  behavior: BRANCH(is_form_data -> result, else -> raise_RuntimeError)
+  behavior: BRANCH(self._is_form_data -> result, else -> raise RuntimeError(f'...)
   calls: append
   called_by: append, append_form, append_json, MultipartWriter
   raises: RuntimeError
+
+_load_json_data (aiohttp/cookiejar.py:164-195)
+  Load cookies from parsed JSON data.
+  sig: _load_json_data(data)
+  behavior: ACCUMULATE(data.items() loop -> result)
+  called_by: load, CookieJar
+  uses: Morsel (http.cookies)
 
 url (aiohttp/web_request.py:423-427)
   The full URL of the request.
@@ -191,13 +198,6 @@ MultipartPayloadWriter (aiohttp/multipart.py:1149-1204)
   imports: base64, binascii, uuid, warnings, types
   called_by: MultipartWriter
 
-_load_json_data (aiohttp/cookiejar.py:164-195)
-  Load cookies from parsed JSON data.
-  sig: _load_json_data(data)
-  behavior: ACCUMULATE(loop -> result)
-  called_by: load, CookieJar
-  uses: Morsel (http.cookies)
-
 JsonBytesPayload (aiohttp/payload.py:943-963)
   JSON payload for encoders that return bytes directly.
   extends: BytesPayload
@@ -220,7 +220,7 @@ handle_json_data (examples/logging_middleware.py:78-84)
 read_chunk (aiohttp/multipart.py:324-366)
   Reads body part content chunk of the specified size.
   sig: read_chunk(size)
-  behavior: BRANCH(length -> result, else -> result)
+  behavior: BRANCH(self._length -> await self._read_chun..., else -> await self._read_ch...)
   calls: _read_chunk_from_length, _read_chunk_from_stream, read, readline
   called_by: read, BodyPartReader, BodyPartReaderPayload, MultipartReader
   raises: ValueError
@@ -231,12 +231,6 @@ MultipartReader (aiohttp/multipart.py:639-854)
   calls: read_chunk, readline, _get_boundary, _get_part_reader, _maybe_release_last_part, _read_boundary, _read_headers, _read_until_first_boundary
   raises: ValueError, StopAsyncIteration, BadHttpMessage, RuntimeError
   uses: HeadersParser (http), BadHttpMessage (http_exceptions), CIMultiDict (multidict)
-
-readline (aiohttp/multipart.py:423-450)
-  Reads body part by line by line.
-  behavior: BRANCH(unread -> result, else -> result)
-  calls: append
-  called_by: read_chunk, BodyPartReader, _read_headers, _readline, MultipartReader
 
 _update_body (aiohttp/client_reqrep.py:1182-1197)
   Update request body after its already been set.
@@ -260,25 +254,9 @@ read (aiohttp/web_request.py:624-643)
 
 _gen_form_data (aiohttp/formdata.py:128-161)
   Encode a list of fields using the multipart/form-data MIME format
-  behavior: ACCUMULATE(loop -> result)
+  behavior: ACCUMULATE(self._fields loop -> result, raises TypeError)
   called_by: __call__, FormData
   raises: TypeError
-
-form (aiohttp/multipart.py:475-493)
-  Like read(), but assumes that body parts contain form urlencoded data.
-  behavior: BRANCH(encoding -> result, else -> result)
-  calls: get_charset, read
-  raises: ValueError
-
-text (aiohttp/multipart.py:459-465)
-  Like read(), but assumes that body part contains text data.
-  calls: get_charset, read
-
-LookupError (aiohttp/payload.py:50-51)
-  Raised when no payload factory is found for the given data type.
-  extends: Exception
-  imports: asyncio, enum, io, mimetypes, warnings
-  called_by: get, PayloadRegistry
 
 strip_auth_from_url (aiohttp/helpers.py:184-190)
   Remove user and password from URL if present and return BasicAuth object.
@@ -295,22 +273,8 @@ _read (aiohttp/payload.py:510-526)
   sig: _read(remaining_content_len)
   behavior: DELEGATE(_value.read -> result)
 
-as_bytes (aiohttp/multipart.py:1067-1092)
-  Return bytes representation of the multipart data.
-  sig: as_bytes(encoding, errors)
-  behavior: ACCUMULATE(loop -> parts)
-
-decode (aiohttp/multipart.py:1052-1065)
-  Return string representation of the multipart data.
-  sig: decode(encoding, errors)
-  behavior: DELEGATE(join -> result)
-
 handler (aiohttp/abc.py:55-56)
   Execute matched request handler
-
-json (aiohttp/_websocket/models.py:70-72)
-  Return parsed JSON data.
-  behavior: DELEGATE(loads -> result)
 
 json (aiohttp/_websocket/models.py:55-59)
   Return parsed JSON data.
@@ -320,25 +284,53 @@ json (aiohttp/_websocket/models.py:81-85)
   Return parsed JSON data.
   behavior: DELEGATE(loads -> result)
 
+json (aiohttp/_websocket/models.py:70-72)
+  Return parsed JSON data.
+  behavior: DELEGATE(loads -> result)
+
 must_be_empty_body (aiohttp/helpers.py:1105-1111)
   Check if a request must return an empty body.
   sig: must_be_empty_body(method, code)
 
-next (aiohttp/multipart.py:705-739)
-  Emits the next multipart body part.
-  behavior: BRANCH(at_bof -> result, else -> result)
-  raises: RuntimeError
+send_json_bytes (aiohttp/client_ws.py:306-318)
+  Send JSON data using a bytes-returning encoder as a binary frame.
+  sig: send_json_bytes(data, compress)
+  calls: send_bytes
 
-next (aiohttp/multipart.py:240-247)
-  Emits next multipart reader object.
+send_json_bytes (aiohttp/web_ws.py:485-499)
+  Send JSON data using a bytes-returning encoder as a binary frame.
+  sig: send_json_bytes(data, compress)
+  calls: send_bytes
+
+readline (aiohttp/multipart.py:423-450)
+  Reads body part by line by line.
+  behavior: BRANCH(self._unread -> self._unread.popleft(), else -> await self._content.r...)
+  calls: append
+  called_by: read_chunk, BodyPartReader, _read_headers, _readline, MultipartReader
+
+form (aiohttp/multipart.py:475-493)
+  Like read(), but assumes that body parts contain form urlencoded data.
+  behavior: BRANCH(encoding is not None -> encoding, else -> self.get_charset(defa...)
+  calls: get_charset, read
+  raises: ValueError
+
+text (aiohttp/multipart.py:459-465)
+  Like read(), but assumes that body part contains text data.
+  calls: get_charset, read
+
+LookupError (aiohttp/payload.py:50-51)
+  Raised when no payload factory is found for the given data type.
+  extends: Exception
+  imports: asyncio, enum, io, mimetypes, warnings
+  called_by: get, PayloadRegistry
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 35 with behavior annotations
+coverage: 80 symbols in L3, 34 with behavior annotations
+uncovered: BufferedReaderPayload, HttpRequestParser, PayloadRegistry, RawRequestMessage
 drill: aiohttp/client_reqrep.py (~41 lines, _update_body_from_data)
 drill: aiohttp/multipart.py (~9 lines, json)
 drill: aiohttp/multipart.py (~17 lines, read)
-drill: aiohttp/client_reqrep.py (~65 lines, update_body)
 
 --- CLUE FILE END ---
 
