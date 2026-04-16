@@ -112,11 +112,11 @@ and reported separately.
 
 ### Minimum Viable Accuracy Targets
 
-| Knowledge Type | File 1 Only | With File 2 | Current Status |
-|---------------|-------------|-------------|----------------|
-| Structural    | ≥85%        | ≥95%        | On track       |
-| Relational    | ≥70%        | ≥90%        | On track       |
-| Mechanistic   | ≥30%        | ≥70%        | 29.2% (at threshold) |
+| Knowledge Type | File 1 Only | With File 2 | v2.4 Blind |
+|---------------|-------------|-------------|------------|
+| Structural    | ≥85%        | ≥95%        | 87.5% ✅   |
+| Relational    | ≥70%        | ≥90%        | 91.7% ✅   |
+| Mechanistic   | ≥30%        | ≥70%        | 66.7% ⚠️   |
 
 ### Multi-Repo Validity
 - Not just Flask — must generalize across repos, languages, and conventions
@@ -164,18 +164,17 @@ Patterns that led to wasted effort in prior sessions — avoid at all costs:
 
 ---
 
-## 9. Commercial Viability Positioning
+## 9. Open Source Project
 
-**Market as:** "Instant codebase understanding with guided deep-dive capability."
+CodeClue is an **open source project**. All code, extractors, format specifications,
+evaluation data, and tooling are publicly available. There are no commercial tiers,
+paid features, or proprietary components.
 
-The 4K artifact is the entry point; the value is in knowing *where to look*,
-not in answering everything from 4K tokens.
+The generation pipeline (deterministic AST extraction + optional LLM-enhanced
+behavioral summaries) is fully open. Users can run it with any model of their
+choice, including local/self-hosted models for privacy-sensitive codebases.
 
-| Alternative             | Strength         | CodeClue Advantage                        |
-|------------------------|------------------|-------------------------------------------|
-| Full RAG               | Higher accuracy  | 5× fewer tokens, deterministic, structured |
-| Tree-sitter + embeddings | Good localization | Deeper comprehension, behavioral patterns |
-| Agentic browsing       | High accuracy    | Pre-computed (instant), cheaper, reproducible |
+Repository: https://github.com/ravisha22/CodeClue
 
 ---
 

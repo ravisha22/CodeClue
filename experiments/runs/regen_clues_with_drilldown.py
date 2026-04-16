@@ -49,7 +49,7 @@ LANG_MAP = {
 DRILLDOWN_TOKEN_BUDGET = 3000
 
 DRILLDOWN_PROMPT_TEMPLATE = """\
-# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
+# Blind Evaluation Prompt - MRLF v2.4 with File 2 Drill-Down
 # Task: {task_id}
 
 You are a senior software engineer. You have been given:
@@ -58,6 +58,16 @@ You are a senior software engineer. You have been given:
 
 Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. \
+First, identify the symbols most relevant to the question from FOCUS, SYM, and \
+INDEX. Trace those symbols through the clue before forming any conclusion: \
+follow calls: chains, walk extends: hierarchies, and read behavior: annotations \
+as compact control-flow summaries. Use TREE and INDEX to place each symbol in \
+its module context. Then consult the provided source snippets only to confirm \
+or refine the traced path. State explicitly what GAPS says cannot be determined \
+from the evidence. Finally, synthesize the answer, separating supported \
+conclusions from remaining uncertainty.
 
 --- CLUE FILE (File 1) ---
 {clue}
@@ -75,7 +85,7 @@ For each claim you make, cite the specific clue entry or source snippet that sup
 
 # Also keep a plain (non-drilldown) template for STRUCTURAL/RELATIONAL questions
 PLAIN_PROMPT_TEMPLATE = """\
-# Blind Evaluation Prompt - MRLF v2.1
+# Blind Evaluation Prompt - MRLF v2.4
 # Task: {task_id}
 
 You are a senior software engineer. You have been given a codebase
@@ -85,6 +95,15 @@ a compressed representation.
 
 Answer the question below using ONLY the information in the clue file.
 Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. \
+First, identify the modules, symbols, or relationships most relevant to the \
+question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before \
+concluding: follow calls: chains, walk extends: hierarchies, and use behavior: \
+annotations as summaries of how control or responsibility moves. Use TREE and \
+INDEX to situate the relationship in the repository structure. State explicitly \
+what GAPS says cannot be determined from the clue alone. Finally, synthesize \
+the answer, distinguishing supported structure from unresolved uncertainty.
 
 --- CLUE FILE START ---
 {clue}
