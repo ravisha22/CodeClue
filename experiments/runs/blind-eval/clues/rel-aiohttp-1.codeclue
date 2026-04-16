@@ -126,10 +126,6 @@ ClientResponseError (aiohttp/client_exceptions.py:59-99)
   extends: ClientError
   imports: asyncio, multidict, typedefs, ssl, client_reqrep
 
-_BaseRequestContextManager (aiohttp/client.py:1508-1542)
-  imports: asyncio, base64, hashlib, traceback, warnings
-  calls: __await__, send, throw
-
 ClientRequest (aiohttp/client_reqrep.py:954-1434)
   extends: ClientRequestBase
   imports: asyncio, codecs, io, traceback, warnings
@@ -141,19 +137,19 @@ Request (aiohttp/web_request.py:826-884)
   extends: BaseRequest
   imports: asyncio, io, socket, string, tempfile
 
-Response (aiohttp/web_response.py:535-740)
-  extends: StreamResponse
-  imports: asyncio, enum, math, warnings, concurrent.futures
-  calls: write
-  called_by: json_bytes_response, json_response
-  raises: RuntimeError, ValueError, TypeError
-
 WebSocketResponse (aiohttp/web_ws.py:78-773)
   extends: StreamResponse
   imports: asyncio, base64, binascii, hashlib, multidict
   calls: WebSocketReady, __init__, _cancel_heartbeat, _cancel_pong_response_cb, _close_transport, _handle_ping_pong_exception, _handshake, _ping_task_done
   raises: RuntimeError, HTTPBadRequest, ConnectionResetError, TypeError
   uses: WSMessageError (http_websocket), CIMultiDict (multidict), HTTPBadRequest (web_exceptions), WebSocketReader (http)
+
+Response (aiohttp/web_response.py:535-740)
+  extends: StreamResponse
+  imports: asyncio, enum, math, warnings, concurrent.futures
+  calls: write
+  called_by: json_bytes_response, json_response
+  raises: RuntimeError, ValueError, TypeError
 
 RequestInfo (aiohttp/client_reqrep.py:109-124)
   extends: _RequestInfo
@@ -167,6 +163,12 @@ ClientResponse (aiohttp/client_reqrep.py:184-683)
   raises: ClientResponseError, RuntimeError, ClientConnectionError, ContentTypeError
   uses: ClientConnectionError (client_exceptions)
 
+StreamResponse (aiohttp/web_response.py:74-532)
+  extends: HeadersMixin, CookieMixin
+  imports: asyncio, enum, math, warnings, concurrent.futures
+  calls: _generate_content_type_header, _prepare_headers, _set_status, _start_compression, _write_headers, drain, enable_compression, write
+  raises: RuntimeError, ValueError, TypeError
+
 RawRequestMessage (aiohttp/http_parser.py:99-111)
   extends: NamedTuple
   imports: asyncio, string, enum, multidict, yarl
@@ -177,11 +179,11 @@ RawResponseMessage (aiohttp/http_parser.py:112-123)
   imports: asyncio, string, enum, multidict, yarl
   called_by: HttpResponseParser
 
-StreamResponse (aiohttp/web_response.py:74-532)
-  extends: HeadersMixin, CookieMixin
-  imports: asyncio, enum, math, warnings, concurrent.futures
-  calls: _generate_content_type_header, _prepare_headers, _set_status, _start_compression, _write_headers, drain, enable_compression, write
-  raises: RuntimeError, ValueError, TypeError
+BaseSite (aiohttp/web_runner.py:47-78)
+  extends: ABC
+  imports: asyncio, signal, socket, yarl, http_parser
+  calls: _check_site, _reg_site, _unreg_site
+  raises: RuntimeError
 
 BaseProtocol (aiohttp/base_protocol.py:9-100)
   extends: Protocol
@@ -193,12 +195,6 @@ BaseRunner (aiohttp/web_runner.py:252-352)
   extends: ABC
   imports: asyncio, signal, socket, yarl, http_parser
   calls: stop
-  raises: RuntimeError
-
-BaseSite (aiohttp/web_runner.py:47-78)
-  extends: ABC
-  imports: asyncio, signal, socket, yarl, http_parser
-  calls: _check_site, _reg_site, _unreg_site
   raises: RuntimeError
 
 ClientRequestArgs (aiohttp/client_reqrep.py:930-951)
@@ -244,34 +240,6 @@ AiohttpServer (aiohttp/pytest_plugin.py:51-54)
   extends: Protocol
   imports: asyncio, inspect, warnings, pytest, test_utils
 
-BaseConnector (aiohttp/connector.py:226-793)
-  Base connector class.
-  imports: asyncio, random, socket, traceback, warnings
-  calls: _available_connections, _cleanup_closed, _get, _release_acquired, _release_waiter, _update_proxy_auth_header_and_build_proxy_req, _wait_for_available_connection, Connection
-  raises: NotImplementedError, ValueError, ClientConnectionError
-  uses: ClientRequestBase (client_reqrep)
-
-ClientWebSocketResponse (aiohttp/client_ws.py:60-560)
-  imports: asyncio, types, client_exceptions, client_reqrep, helpers
-  calls: _cancel_heartbeat, _cancel_pong_response_cb, _handle_ping_pong_exception, _ping_task_done, _reset_heartbeat, _set_closed, _set_closing, close
-  raises: TypeError, WSMessageTypeError, StopAsyncIteration, RuntimeError
-  uses: WSMessageError (http_websocket)
-
-BaseKey (aiohttp/helpers.py:837-887)
-  Base for concrete context storage key classes.
-  imports: asyncio, base64, binascii, enum, inspect
-  raises: RuntimeError
-
-BaseTimerContext (aiohttp/helpers.py:649-654)
-  imports: asyncio, base64, binascii, enum, inspect
-
-_SessionRequestContextManager (aiohttp/client.py:1549-1578)
-  imports: asyncio, base64, hashlib, traceback, warnings
-
-aiohttp_client_cls (aiohttp/pytest_plugin.py:353-376)
-  Client class to use in ``aiohttp_client`` factory.
-  called_by: aiohttp_client
-
 ClientConnectionError (aiohttp/client_exceptions.py:123-124)
   Base class for client socket errors.
   extends: ClientError
@@ -302,7 +270,42 @@ PayloadEncodingError (aiohttp/http_exceptions.py:60-61)
   extends: BadHttpMessage
   imports: textwrap, multidict
 
+ResponseHandler (aiohttp/client_proto.py:31-371)
+  Helper class to adapt between Protocol and StreamReader.
+  extends: BaseProtocol
+  imports: asyncio, base_protocol, client_exceptions, helpers, http
+  calls: __init__, _drop_timeout, _reschedule_timeout, abort, close, connection_lost, data_received, pause_reading
+  uses: ClientOSError (client_exceptions), ServerDisconnectedError (client_exceptions), ClientConnectionError (client_exceptions), ClientPayloadError (client_exceptions)
+
+FileResponse (aiohttp/web_fileresponse.py:79-406)
+  A response object can be used to send files.
+  extends: StreamResponse
+  imports: asyncio, io, enum, mimetypes, stat
+  calls: __init__, _etag_match, _get_file_path_stat_encoding, _not_modified, _precondition_failed, _prepare_open_file, _sendfile, _sendfile_fallback
+  raises: ConnectionResetError
+  uses: S_ISREG (stat)
+
+_FileResponseResult (aiohttp/web_fileresponse.py:61-67)
+  The result of the file response.
+  extends: Enum
+  imports: asyncio, io, enum, mimetypes, stat
+
+IOBasePayload (aiohttp/payload.py:452-714)
+  extends: Payload
+  imports: asyncio, enum, io, mimetypes, warnings
+  calls: _read_all, _set_or_restore_start_position, _should_stop_writing, set_content_disposition
+
+HTTPNotExtended (aiohttp/web_exceptions.py:495-496)
+  extends: HTTPServerError
+  attrs: status_code=510
+  imports: warnings, http, multidict, yarl, helpers
+
+HTTPRequestEntityTooLarge (aiohttp/web_exceptions.py:366-375)
+  extends: HTTPClientError
+  attrs: status_code=413
+  imports: warnings, http, multidict, yarl, helpers
+
 -- GAPS
 type: RELATIONAL (answerable from L2-L3 structure)
-coverage: 343 symbols in L3, 37 with behavior annotations
-uncovered: RequestHandler, RequestPayloadError, MultipartResponseWrapper, aiohttp_client
+coverage: 80 symbols in L3, 0 with behavior annotations
+uncovered: _BaseRequestContextManager, BaseConnector, ClientWebSocketResponse, BaseKey

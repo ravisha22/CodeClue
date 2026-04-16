@@ -87,8 +87,8 @@ Bind.validateStruct                 M bind.go:183    Struct validation.
 SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
 domainMatcher.match                 M domain.go:139    match checks if a hostname matches the domain p...
 Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
-manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
+manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
 isUnixNetwork                       M middleware/adaptor/adaptor.go:208    function isUnixNetwork
 Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...
@@ -117,6 +117,17 @@ redirectionMsg.Msgsize              M redirect_msgp.go:196    Msgsize returns an
   ...and 1400 more symbols
 
 -- FOCUS
+Error (app.go:62-63)
+  Error represents an error that occurred while handling a request.
+  methods: Error
+  called_by: serverErrorHandler, DefaultErrorHandler
+
+handlerFunc (middleware/adaptor/adaptor.go:242-242)
+  sig: handlerFunc(app *fiber.App, h ...fiber.Handler)
+  calls: resolveRemoteAddr
+  called_by: FiberApp, FiberHandlerFunc
+  raises: panic
+
 FiberHandler (middleware/adaptor/adaptor.go:194-194)
   FiberHandler wraps fiber handler to net/http handler
   sig: FiberHandler(h fiber.Handler)
@@ -129,6 +140,34 @@ FiberHandlerFunc (middleware/adaptor/adaptor.go:199-199)
   behavior: DELEGATE(handlerFunc -> result)
   calls: handlerFunc
   called_by: FiberHandler
+
+App.processSubAppsRoutes (mount.go:168-169)
+  processSubAppsRoutes adds routes of sub-apps recursively when the server is started
+  behavior: ACCUMULATE(hasMountedApps loop -> result)
+  calls: hasMountedApps
+  called_by: mountStartupProcess
+
+App.ErrorHandler (app.go:1376-1376)
+  ErrorHandler is the application's method in charge of finding the appropriate handler for the given request.
+  sig: App.ErrorHandler(ctx Ctx, err error)
+  behavior: GUARD(mountedErrHandler != nil -> return mountedErrHa...); ACCUMULATE(AddTrailingSlashStrin... -> result)
+  called_by: serverErrorHandler
+
+App.serverErrorHandler (app.go:1411-1411)
+  serverErrorHandler is a wrapper around the application's error handler method user for the fasthttp server configuration
+  sig: App.serverErrorHandler(fctx *fasthttp.RequestCtx, err error)
+  behavior: UNWIND(defer)
+  calls: ErrorHandler, Error, NewError
+
+App.hasMountedApps (mount.go:108-109)
+  hasMountedApps Checks if there are any mounted apps in the current application.
+  behavior: DELEGATE(len -> result)
+  called_by: mountStartupProcess, processSubAppsRoutes
+
+NewError (app.go:1046-1046)
+  NewError creates a new Error instance with an optional message
+  sig: NewError(code int, message ...string)
+  called_by: serverErrorHandler
 
 defaultErrorHandler (middleware/csrf/config.go:142-142)
   defaultErrorHandler is the default error handler that processes errors from fiber.Handler.
@@ -157,51 +196,12 @@ HTTPHandlerFunc (middleware/adaptor/adaptor.go:51-51)
   behavior: DELEGATE(HTTPHandler -> result)
   calls: HTTPHandler
 
-App.mountStartupProcess (mount.go:113-114)
-  mountStartupProcess Handles the startup process of mounted apps by appending sub-app routes, generating app list keys, a
-  calls: appendSubAppLists, generateAppListKeys, hasMountedApps, processSubAppsRoutes
-
-hostClientTransport (client/transport.go:96-96)
-  hostClientTransport adapts fasthttp.HostClient to the httpClientTransport interface used by Fiber's client helpers.
-  methods: Client, CloseIdleConnections, Do, DoDeadline, DoRedirects, DoTimeout
-
-lbClientTransport (client/transport.go:150-150)
-  lbClientTransport adapts fasthttp.LBClient to the httpClientTransport interface used by Fiber's client helpers.
-  methods: Client, CloseIdleConnections, Do, DoDeadline, DoRedirects, DoTimeout
-
-standardClientTransport (client/transport.go:42-42)
-  standardClientTransport adapts fasthttp.Client to the httpClientTransport interface used by Fiber's client helpers.
-  methods: Client, CloseIdleConnections, Do, DoDeadline, DoRedirects, DoTimeout
-
-App.processSubAppsRoutes (mount.go:168-169)
-  processSubAppsRoutes adds routes of sub-apps recursively when the server is started
-  behavior: ACCUMULATE(hasMountedApps loop -> result)
-  calls: hasMountedApps
-  called_by: mountStartupProcess
-
-App.ErrorHandler (app.go:1376-1376)
-  ErrorHandler is the application's method in charge of finding the appropriate handler for the given request.
-  sig: App.ErrorHandler(ctx Ctx, err error)
-  behavior: GUARD(mountedErrHandler != nil -> return mountedErrHa...); ACCUMULATE(AddTrailingSlashStrin... -> result)
-  called_by: serverErrorHandler
-
 toFiberHandler (adapter.go:13-13)
   toFiberHandler converts a supported handler type to a Fiber handler.
   sig: toFiberHandler(handler any)
   behavior: GUARD(handler == nil -> return nil, false); DISPATCH(handler)
   calls: adaptExpressHandler, adaptFastHTTPHandler, adaptFiberHandler, adaptHTTPHandler
   called_by: collectHandlers
-
-App.serverErrorHandler (app.go:1411-1411)
-  serverErrorHandler is a wrapper around the application's error handler method user for the fasthttp server configuration
-  sig: App.serverErrorHandler(fctx *fasthttp.RequestCtx, err error)
-  behavior: UNWIND(defer)
-  calls: ErrorHandler, Error, NewError
-
-App.hasMountedApps (mount.go:108-109)
-  hasMountedApps Checks if there are any mounted apps in the current application.
-  behavior: DELEGATE(len -> result)
-  called_by: mountStartupProcess, processSubAppsRoutes
 
 DefaultErrorHandler (app.go:524-524)
   DefaultErrorHandler that process return errors from handlers
@@ -253,59 +253,85 @@ HTTPMiddleware (middleware/adaptor/adaptor.go:162-162)
   sig: HTTPMiddleware(mw func(http.Handler)
   calls: CopyContextToFiberContext, HTTPHandler
 
-App.Test (app.go:1199-1199)
-  Test is used for internal debugging by passing a *http.Request.
-  sig: App.Test(req *http.Request, config ...TestConfig)
-  behavior: PRECEDENCE(len -> req -> err); ACCUMULATE(httpReadResponse loop -> result)
-  calls: Add, Get, startupProcess
+HandlerFromContext (middleware/csrf/csrf.go:238-238)
+  HandlerFromContext returns the Handler found in the context.
+  sig: HandlerFromContext(ctx any)
+  behavior: GUARD(handler, ok := fiber.ValueFromContext[*Handle... -> return handler)
 
-getEffectiveStatusCode (middleware/limiter/limiter.go:32-32)
-  getEffectiveStatusCode returns the actual status code, considering both the error and response status
-  sig: getEffectiveStatusCode(c fiber.Ctx, err error)
-  behavior: GUARD(err != nil -> return fiberErr.Code)
+Response.BodyStream (client/response.go:95-95)
+  BodyStream returns the response body as a stream reader.
+  behavior: GUARD(stream := r.RawResponse.BodyStream(); stream... -> return stream)
+  calls: Body
+  called_by: IsStreaming, Save
 
-Client (client/client.go:37-37)
-  Client provides Fiber's high-level HTTP API while delegating transport work to fasthttp.Client, fasthttp.HostClient, or 
-  methods: AddHeader, AddHeaders, AddParam, AddParams, AddRequestHook, AddResponseHook
+Response.IsStreaming (client/response.go:104-104)
+  IsStreaming returns true if the response body is being streamed.
+  behavior: DELEGATE(r.RawResponse.BodyStream -> result)
+  calls: BodyStream
 
-DefaultRes.SendStatus (res.go:979-979)
-  SendStatus sets the HTTP status code and if the response body is empty, it sets the correct status message in the body.
-  sig: DefaultRes.SendStatus(status int)
-  behavior: GUARD(statusDisallowsBody(status) -> return nil); PRECEDENCE(statusDisallowsBody -> len)
-  calls: SendString, Status, statusDisallowsBody
-  called_by: Format
+acquireResponseChan (client/core.go:249-249)
+  acquireResponseChan returns an empty, non-closed *Response channel from the pool.
+  behavior: GUARD(!ok -> panic(errResponseCh...)
+  called_by: execFunc
+  raises: panic
 
-Do (middleware/proxy/proxy.go:146-146)
-  Do performs the given http request and fills the given http response.
-  sig: Do(c fiber.Ctx, addr string, clients ...*fasthttp.Client)
-  called_by: Balancer, BalancerForward, DomainForward, Forward
+Client.StreamResponseBody (client/client.go:530-530)
+  StreamResponseBody returns the current StreamResponseBody setting.
+  behavior: DELEGATE(c.transport.StreamResponseBody -> result)
 
-DefaultRes.Append (res.go:140-140)
-  Append the specified value to the HTTP response header field.
-  sig: DefaultRes.Append(field string, values ...string)
-  behavior: GUARD(len(values) == 0 -> return); ACCUMULATE(headerContainsValue loop -> h)
-  calls: Set, headerContainsValue
-  called_by: Vary
+Response.StatusCode (client/response.go:43-43)
+  StatusCode returns the HTTP status code of the executed request.
+  behavior: DELEGATE(r.RawResponse.StatusCode -> result)
 
-DefaultRes.SendString (res.go:997-997)
-  SendString sets the HTTP response body for string types.
-  sig: DefaultRes.SendString(body string)
-  called_by: AutoFormat, SendStatus
+Response (client/response.go:19-19)
+  Response represents the result of a request.
+  methods: Body, BodyStream, CBOR, Close, Cookies, Header
 
-DefaultCtx.GetRespHeader (ctx.go:222-222)
-  GetRespHeader returns the HTTP response header specified by field.
-  sig: DefaultCtx.GetRespHeader(key string, defaultValue ...string)
-  behavior: DELEGATE(c.DefaultRes.Get -> result)
-  calls: Get
-  called_by: RequestID
+Response.Close (client/response.go:208-208)
+  Close releases both the Request and Response objects back to their pools.
+  calls: ReleaseResponse
+  called_by: Save
+
+Response.Save (client/response.go:144-144)
+  Save writes the response body to a file or io.Writer.
+  sig: Response.Save(v any)
+  behavior: DISPATCH(p)
+  calls: BodyStream, Close
+
+newBindError (bind.go:102-102)
+  sig: newBindError(source string, raw error)
+  calls: extractFieldFromError
+  called_by: returnBindErr
+
+ReleaseResponse (client/response.go:238-238)
+  ReleaseResponse returns the Response object to the pool.
+  sig: ReleaseResponse(resp *Response)
+  calls: Reset
+  called_by: Close
+
+Response.Reset (client/response.go:193-193)
+  Reset clears the Response object, making it ready for reuse.
+  behavior: ACCUMULATE(ReleaseCookie loop -> result)
+  called_by: ReleaseResponse
+
+Response.CBOR (client/response.go:123-123)
+  CBOR unmarshal the response body into the given interface{} using CBOR.
+  sig: Response.CBOR(v any)
+  behavior: GUARD(r.client == nil -> return ErrClientNil)
+  calls: Body
+
+Response.JSON (client/response.go:114-114)
+  JSON unmarshal the response body into the given interface{} using JSON.
+  sig: Response.JSON(v any)
+  behavior: GUARD(r.client == nil -> return ErrClientNil)
+  calls: Body
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 298 symbols in L3, 151 with behavior annotations
-uncovered: Handler.DeleteToken, response.DecodeMsg, response.EncodeMsg, response.MarshalMsg
+coverage: 80 symbols in L3, 44 with behavior annotations
+uncovered: DefaultCtx.setIndexHandler, Error, PreStartupMessageData.AddError, beforeHandlerFunc
 drill: middleware/adaptor/adaptor.go (~1 lines, FiberHandlerFunc)
 drill: middleware/adaptor/adaptor.go (~1 lines, FiberHandler)
-drill: middleware/csrf/config.go (~1 lines, defaultErrorHandler)
 
 --- END CLUE FILE ---
 
@@ -320,34 +346,9 @@ func FiberHandlerFunc(h fiber.Handler) http.HandlerFunc {
 func FiberHandler(h fiber.Handler) http.Handler {
 ```
 
-## defaultErrorHandler  (middleware/csrf/config.go L142-142)
-```
-func defaultErrorHandler(_ fiber.Ctx, _ error) error {
-```
-
 ## handlerFunc  (middleware/adaptor/adaptor.go L242-242)
 ```
 func handlerFunc(app *fiber.App, h ...fiber.Handler) http.HandlerFunc {
-```
-
-## Config  (middleware/timeout/config.go L10-10)
-```
-type Config struct {
-```
-
-## configDefault  (middleware/timeout/config.go L37-37)
-```
-func configDefault(config ...Config) Config {
-```
-
-## isInsecureCookieExtractor  (middleware/csrf/config.go L208-208)
-```
-func isInsecureCookieExtractor(extractor extractors.Extractor, cookieName string) bool {
-```
-
-## validateExtractorSecurity  (middleware/csrf/config.go L183-183)
-```
-func validateExtractorSecurity(cfg *Config) {
 ```
 
 ## ConvertRequest  (middleware/adaptor/adaptor.go L89-89)

@@ -76,8 +76,8 @@ Bind.validateStruct                 M bind.go:183    Struct validation.
 SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
 domainMatcher.match                 M domain.go:139    match checks if a hostname matches the domain p...
 Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
-manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
+manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
 isUnixNetwork                       M middleware/adaptor/adaptor.go:208    function isUnixNetwork
 Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...
@@ -125,18 +125,18 @@ FiberHandler (middleware/adaptor/adaptor.go:194-194)
   behavior: DELEGATE(FiberHandlerFunc -> result)
   calls: FiberHandlerFunc
 
-CopyContextToFiberContext (middleware/adaptor/adaptor.go:101-101)
-  CopyContextToFiberContext copies the values of context.Context to a fasthttp.RequestCtx.
-  sig: CopyContextToFiberContext(src any, requestContext *fasthttp.RequestCtx)
-  behavior: GUARD(requestContext == nil -> return); PRECEDENCE(requestContext -> not_v.IsValid -> t); ACCUMULATE(IsNil loop -> result)
-  called_by: HTTPMiddleware
-
 FiberHandlerFunc (middleware/adaptor/adaptor.go:199-199)
   FiberHandlerFunc wraps fiber handler to net/http handler func
   sig: FiberHandlerFunc(h fiber.Handler)
   behavior: DELEGATE(handlerFunc -> result)
   calls: handlerFunc
   called_by: FiberHandler
+
+CopyContextToFiberContext (middleware/adaptor/adaptor.go:101-101)
+  CopyContextToFiberContext copies the values of context.Context to a fasthttp.RequestCtx.
+  sig: CopyContextToFiberContext(src any, requestContext *fasthttp.RequestCtx)
+  behavior: GUARD(requestContext == nil -> return); PRECEDENCE(requestContext -> not_v.IsValid -> t); ACCUMULATE(IsNil loop -> result)
+  called_by: HTTPMiddleware
 
 FiberApp (middleware/adaptor/adaptor.go:204-204)
   FiberApp wraps fiber app to net/http handler func
@@ -231,6 +231,12 @@ LocalContextFromHTTPRequest (middleware/adaptor/adaptor.go:78-78)
   behavior: GUARD(r == nil -> return nil, false)
   called_by: HTTPHandlerWithContext
 
+New (middleware/session/middleware.go:56-56)
+  New initializes session middleware with optional configuration.
+  sig: New(config ...Config)
+  behavior: GUARD(len(config) > 0 -> return handler)
+  calls: NewWithStore
+
 New (middleware/redirect/redirect.go:13-13)
   New creates a new middleware handler
   sig: New(config ...Config)
@@ -242,12 +248,6 @@ New (middleware/rewrite/rewrite.go:12-12)
   sig: New(config ...Config)
   behavior: ACCUMULATE(ReplaceAll loop -> k)
   calls: captureTokens
-
-New (middleware/session/middleware.go:56-56)
-  New initializes session middleware with optional configuration.
-  sig: New(config ...Config)
-  behavior: GUARD(len(config) > 0 -> return handler)
-  calls: NewWithStore
 
 captureTokens (middleware/redirect/redirect.go:46-46)
   https://github.com/labstack/echo/blob/master/middleware/rewrite.go
@@ -261,73 +261,52 @@ captureTokens (middleware/rewrite/rewrite.go:41-41)
   behavior: GUARD(groups == nil -> return nil); ACCUMULATE(Itoa loop -> result)
   called_by: New
 
-Config (middleware/basicauth/config.go:22-22)
-  Config defines the config for middleware.
+New (middleware/cache/cache.go:109-109)
+  New creates a new middleware handler
+  sig: New(config ...Config)
+  calls: allowsSharedCacheDirectives, appendWarningHeaders, cacheBodyFetchError, cachedResponseAge, clampDateSeconds, hasDirective, isHeuristicFreshness, loadVaryManifest
+  called_by: makeBuildVaryKeyFunc
 
-Config (middleware/cache/config.go:11-11)
-  Config defines the config for middleware.
+New (middleware/csrf/csrf.go:50-50)
+  New creates a new middleware handler
+  sig: New(config ...Config)
+  behavior: PRECEDENCE(cfg -> token); ACCUMULATE(TrimSpace loop -> trustedSubOrigins, raises "[CSRF] Invalid o...); DISPATCH(c)
+  calls: createOrExtendTokenInStorage, deleteTokenFromStorage, expireCSRFCookie, getRawFromStorage, originMatchesHost, refererMatchesHost, updateCSRFCookie, validateSecFetchSite
+  raises: panic
 
-Config (middleware/compress/config.go:8-8)
-  Config defines the config for middleware.
+New (middleware/cors/cors.go:28-28)
+  New creates a new middleware handler
+  sig: New(config ...Config)
+  behavior: PRECEDENCE(len -> cfg); ACCUMULATE(TrimSpace loop -> allowSubOrigins, raises "[CORS] Invalid o...)
+  calls: isOriginSerializedOrNull, setPreflightHeaders, setSimpleHeaders
+  raises: panic
 
-Config (middleware/cors/config.go:8-8)
-  Config defines the config for middleware.
+New (middleware/static/static.go:121-121)
+  New creates a new middleware handler.
+  sig: New(root string, cfg ...Config)
+  calls: isFile, sanitizePath
 
-Config (middleware/csrf/config.go:15-15)
-  Config defines the config for CSRF middleware.
+New (middleware/basicauth/basicauth.go:27-27)
+  New creates a new middleware handler
+  sig: New(config ...Config)
+  calls: containsCTL, containsInvalidHeaderChars
 
-Config (middleware/earlydata/config.go:13-13)
-  Config defines the config for middleware.
-
-Config (middleware/encryptcookie/config.go:8-8)
-  Config defines the config for middleware.
-
-Config (middleware/envvar/config.go:4-4)
-  Config defines the config for middleware.
+New (middleware/compress/compress.go:54-54)
+  New creates a new middleware handler
+  sig: New(config ...Config)
+  behavior: DISPATCH(cfg)
+  calls: appendVaryAcceptEncoding, shouldSkip
 
 Config (middleware/etag/config.go:8-8)
   Config defines the config for middleware.
 
-Config (middleware/expvar/config.go:8-8)
+Config (middleware/basicauth/config.go:22-22)
   Config defines the config for middleware.
 
 Config (middleware/favicon/config.go:10-10)
   Config defines the config for middleware.
 
-Config (middleware/healthcheck/config.go:24-24)
-  Config defines the configuration options for the healthcheck middleware.
-
-Config (middleware/helmet/config.go:8-8)
-  Config defines the config for middleware.
-
-Config (middleware/idempotency/config.go:15-15)
-  Config defines the config for middleware.
-
-Config (middleware/keyauth/config.go:19-19)
-  Config defines the config for middleware.
-
-Config (middleware/limiter/config.go:12-12)
-  Config defines the config for middleware.
-
-Config (middleware/logger/config.go:12-12)
-  Config defines the config for middleware.
-
-Config (middleware/paginate/config.go:10-10)
-  Config defines the config for the pagination middleware.
-
-Config (middleware/pprof/config.go:8-8)
-  Config defines the config for middleware.
-
-Config (middleware/proxy/config.go:12-12)
-  Config defines the config for middleware.
-
-Config (middleware/recover/config.go:8-8)
-  Config defines the config for middleware.
-
-Config (middleware/redirect/config.go:10-10)
-  Config defines the config for middleware.
-
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 116 symbols in L3, 40 with behavior annotations
+coverage: 80 symbols in L3, 28 with behavior annotations
 uncovered: Middleware.saveSession, Middleware.Get, Middleware.Delete, Middleware.Destroy

@@ -121,19 +121,37 @@ get_best_encoding                   M src/click/_compat.py:48     Returns the de
   ...and 579 more symbols
 
 -- FOCUS
-Tuple (src/click/types.py:1060-1109)
-  The default behavior of Click is to apply a type on a value directly.
-  extends: CompositeParamType
-  imports: enum, stat, gettext, exceptions, utils
-  calls: fail, convert_type
-  called_by: convert_type
-  uses: BadParameter (exceptions)
+_is_incomplete_option (src/click/shell_completion.py:537-559)
+  Determine if the given parameter is an option that needs a value.
+  sig: _is_incomplete_option(ctx, args, param)
+  behavior: ACCUMULATE(enumerate(reversed(ar... -> result); UNWIND(reversed)
+  calls: _start_of_option
+  called_by: _resolve_incomplete
 
-MissingParameter (src/click/exceptions.py:137-205)
-  Raised if click required an option or argument but it was not
-  extends: BadParameter
-  imports: gettext, globals, utils, core
-  calls: _join_param_hints
+_start_of_option (src/click/shell_completion.py:528-534)
+  Check if the value looks like the start of an option.
+  sig: _start_of_option(ctx, value)
+  called_by: _is_incomplete_option, _resolve_incomplete
+
+coerce_path_result (src/click/types.py:955-966)
+  sig: coerce_path_result(value)
+  called_by: Path
+
+get_help_option (src/click/core.py:1054-1079)
+  Returns the help option object.
+  sig: get_help_option(ctx)
+  calls: get_help_option_names
+  called_by: get_params, Command
+
+get_help_option_names (src/click/core.py:1046-1052)
+  Returns the names for the help option.
+  sig: get_help_option_names(ctx)
+  behavior: ACCUMULATE(self.params loop -> result)
+  called_by: get_help_option, Command
+
+get_help_extra (src/click/core.py:3052-3134)
+  sig: get_help_extra(ctx)
+  called_by: Option
 
 OptionHelpExtra (src/click/types.py:1205-1209)
   extends: TypedDict
@@ -162,18 +180,6 @@ option (src/click/decorators.py:352-377)
   Attaches an option to the command.
   calls: _param_memo
   called_by: confirmation_option, help_option, password_option, version_option
-
-_is_incomplete_option (src/click/shell_completion.py:537-559)
-  Determine if the given parameter is an option that needs a value.
-  sig: _is_incomplete_option(ctx, args, param)
-  behavior: ACCUMULATE(enumerate(reversed(ar... -> result); UNWIND(reversed)
-  calls: _start_of_option
-  called_by: _resolve_incomplete
-
-_start_of_option (src/click/shell_completion.py:528-534)
-  Check if the value looks like the start of an option.
-  sig: _start_of_option(ctx, value)
-  called_by: _is_incomplete_option, _resolve_incomplete
 
 open_file (src/click/utils.py:358-404)
   Open a file, with extra behavior to handle ``'-'`` to indicate
@@ -211,46 +217,6 @@ consume_value (src/click/core.py:3256-3318)
   For :class:`Option`, the value can be collected from an interactive prompt
   sig: consume_value(ctx, opts)
 
-FloatRange (src/click/types.py:618-658)
-  Restrict a :data:`click.FLOAT` value to a range of accepted
-  extends: _NumberRangeBase, FloatParamType
-  attrs: name='float range'
-  imports: enum, stat, gettext, exceptions, utils
-  raises: RuntimeError, TypeError
-
-IntRange (src/click/types.py:584-607)
-  Restrict an :data:`click.INT` value to a range of accepted
-  extends: _NumberRangeBase, IntParamType
-  attrs: name='integer range'
-  imports: enum, stat, gettext, exceptions, utils
-
-make_parser (src/click/core.py:1081-1086)
-  Creates the underlying option parser for this command.
-  sig: make_parser(ctx)
-  behavior: ACCUMULATE(self.get_params(ctx)... -> result)
-  calls: get_params
-  called_by: Command
-
-pager (src/click/_termui_impl.py:369-408)
-  Decide what method to use for paging through text.
-  sig: pager(generator, color)
-  calls: _nullpager, _pipepager, _tempfilepager
-  uses: StringIO (io)
-
-_detect_program_name (src/click/utils.py:523-577)
-  Determine the command used to run the program, for use in help
-  sig: _detect_program_name(path, _main)
-
-cli (examples/complex/complex/cli.py:56-60)
-  A complex command line interface.
-  sig: cli(ctx, verbose, home)
-
-cli (examples/repo/repo.py:44-57)
-  Repo is a command line tool that showcases how to build complex
-  sig: cli(ctx, repo_home, config, verbose)
-  behavior: ACCUMULATE(config loop -> result)
-  calls: set_config, Repo
-
 File (src/click/types.py:754-872)
   Declares a parameter to be a file for reading or writing.
   extends: ParamType
@@ -262,10 +228,6 @@ File (src/click/types.py:754-872)
 _is_file_like (src/click/types.py:875-876)
   sig: _is_file_like(value)
   called_by: File
-
-coerce_path_result (src/click/types.py:955-966)
-  sig: coerce_path_result(value)
-  called_by: Path
 
 split_envvar_value (src/click/types.py:126-134)
   Given a value from an environment variable this splits it up
@@ -306,6 +268,14 @@ _OptionParser (src/click/parser.py:220-499)
   raises: NoSuchOption, BadOptionUsage
   uses: BadOptionUsage (exceptions), NoSuchOption (exceptions)
 
+type_cast_value (src/click/core.py:2342-2396)
+  Convert and validate a value against the parameter's
+  sig: type_cast_value(ctx, value)
+  calls: check_iter, _check_iter
+  called_by: Context, Parameter
+  raises: BadParameter
+  uses: BadParameter (exceptions)
+
 _Argument (src/click/parser.py:181-209)
   imports: gettext, exceptions, core, warnings, shell_completion
   called_by: add_argument, _OptionParser
@@ -317,34 +287,54 @@ _Option (src/click/parser.py:127-178)
   called_by: add_option, _OptionParser
   raises: ValueError
 
-get_help_option (src/click/core.py:1054-1079)
-  Returns the help option object.
-  sig: get_help_option(ctx)
-  calls: get_help_option_names
-  called_by: get_params, Command
+KeepOpenFile (src/click/utils.py:197-219)
+  imports: types, globals, typing_extensions, glob, exceptions
+  called_by: open_file
+
+_is_incomplete_argument (src/click/shell_completion.py:503-525)
+  Determine if the given parameter is an argument that can still
+  sig: _is_incomplete_argument(ctx, param)
+  called_by: _resolve_incomplete
+
+add_argument (src/click/parser.py:286-292)
+  Adds a positional argument named `dest` to the parser.
+  sig: add_argument(obj, dest, nargs)
+  calls: _Argument
+
+add_command (src/click/core.py:1622-1630)
+  Registers another :class:`Command` with this group.
+  sig: add_command(cmd, name)
+  calls: _check_nested_chain
+  called_by: Group
+  raises: TypeError
+
+confirmation_option (src/click/decorators.py:380-401)
+  Add a ``--yes`` option which shows a prompt before continuing if
+  calls: option
+
+help_option (src/click/decorators.py:527-551)
+  Pre-configured ``--help`` option which immediately prints the help page
+  calls: option
+
+password_option (src/click/decorators.py:404-418)
+  Add a ``--password`` option which prompts for a password, hiding
+  calls: option
+
+resolve_command (src/click/core.py:1907-1932)
+  sig: resolve_command(ctx, args)
+  calls: fail
+  called_by: Group
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 127 symbols in L3, 24 with behavior annotations
-uncovered: prompt_for_value, CommandCollection, _BaseCommand, _MultiCommand
+coverage: 80 symbols in L3, 15 with behavior annotations
+uncovered: _process_args_for_options, _find_binary_reader, _WindowsConsoleReader, _force_correct_text_reader
 drill: src/click/core.py (~18 lines, command_path)
 drill: src/click/decorators.py (~24 lines, option)
-drill: src/click/shell_completion.py (~5 lines, _start_of_option)
 
 --- END CLUE FILE ---
 
 --- SOURCE SNIPPETS (File 2 Drill-Down) ---
-## _start_of_option  (src/click/shell_completion.py L528-534)
-```
-def _start_of_option(ctx: Context, value: str) -> bool:
-    """Check if the value looks like the start of an option."""
-    if not value:
-        return False
-
-    c = value[0]
-    return c in ctx._opt_prefixes
-```
-
 ## command_path  (src/click/core.py L642-658)
 ```
     def command_path(self) -> str:
@@ -734,6 +724,15 @@ class Argument(Parameter):
 
         if not help_option_names or not self.add_help_option:
             return None
+
+        # Cache the help option object in private _help_option attribute to
+        # avoid creating it multiple times. Not doing this will break the
+        # callback odering by iter_params_for_processing(), which relies on
+        # object comparison.
+        if self._help_option is None:
+            # Avoid circular import.
+            from .decorators import help_option
+
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

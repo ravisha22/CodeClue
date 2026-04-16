@@ -132,12 +132,32 @@ main (aiohttp/web.py:501-565)
   calls: run_app
   uses: ArgumentParser (argparse)
 
-main (examples/digest_auth_qop_auth.py:34-64)
-  uses: DigestAuthMiddleware (aiohttp.client_middleware_digest_auth), ClientSession (aiohttp), URL (yarl)
-
 main (examples/fake_server.py:98-117)
   calls: start, stop, FakeFacebook, FakeResolver
   uses: TCPConnector (aiohttp), ClientSession (aiohttp)
+
+main (examples/digest_auth_qop_auth.py:34-64)
+  uses: DigestAuthMiddleware (aiohttp.client_middleware_digest_auth), ClientSession (aiohttp), URL (yarl)
+
+main (examples/combined_middleware.py:308-316)
+  calls: run_test_server, run_tests
+
+main (examples/basic_auth_middleware.py:179-186)
+  calls: run_test_server, run_tests
+
+main (examples/logging_middleware.py:157-166)
+  calls: run_test_server, run_tests
+
+main (examples/token_refresh_middleware.py:326-333)
+  calls: run_test_server, run_tests
+
+main (examples/retry_middleware.py:234-241)
+  calls: run_test_server, run_tests
+
+main (tools/bench-asyncio-write.py:97-126)
+  sig: main(loop)
+  behavior: ACCUMULATE(jobs loop -> result)
+  calls: fm_time, bench, time
 
 AiohttpClient (aiohttp/pytest_plugin.py:31-48)
   extends: Protocol
@@ -155,28 +175,8 @@ aiohttp_client_cls (aiohttp/pytest_plugin.py:353-376)
   Client class to use in ``aiohttp_client`` factory.
   called_by: aiohttp_client
 
-main (examples/basic_auth_middleware.py:179-186)
-  calls: run_test_server, run_tests
-
-main (examples/combined_middleware.py:308-316)
-  calls: run_test_server, run_tests
-
-main (examples/logging_middleware.py:157-166)
-  calls: run_test_server, run_tests
-
 main (examples/lowlevel_srv.py:10-17)
   sig: main(loop)
-
-main (examples/retry_middleware.py:234-241)
-  calls: run_test_server, run_tests
-
-main (examples/token_refresh_middleware.py:326-333)
-  calls: run_test_server, run_tests
-
-main (tools/bench-asyncio-write.py:97-126)
-  sig: main(loop)
-  behavior: ACCUMULATE(jobs loop -> result)
-  calls: fm_time, bench, time
 
 main (tools/check_changes.py:33-55)
   sig: main(argv)
@@ -249,53 +249,18 @@ add_domain (aiohttp/web_app.py:296-304)
 clear_domain (aiohttp/cookiejar.py:220-221)
   sig: clear_domain(domain)
 
+clear_domain (aiohttp/cookiejar.py:574-575)
+  sig: clear_domain(domain)
+
 clear_domain (aiohttp/abc.py:171-172)
   Clear all cookies for domain and all subdomains.
   sig: clear_domain(domain)
 
-clear_domain (aiohttp/cookiejar.py:574-575)
-  sig: clear_domain(domain)
-
-match_domain (aiohttp/web_urldispatcher.py:818-819)
-  sig: match_domain(host)
-
 match_domain (aiohttp/web_urldispatcher.py:799-800)
   sig: match_domain(host)
 
-AbstractAccessLogger (aiohttp/abc.py:233-249)
-  Abstract writer to access log.
-  extends: ABC
-  imports: logging, socket, http.cookies, multidict, yarl
-
-AbstractAsyncAccessLogger (aiohttp/abc.py:252-266)
-  Abstract asynchronous writer to access log.
-  extends: ABC
-  imports: logging, socket, http.cookies, multidict, yarl
-
-AbstractCookieJar (aiohttp/abc.py:153-187)
-  Abstract Cookie Jar.
-  extends: Sized
-  imports: logging, socket, http.cookies, multidict, yarl
-  calls: update_cookies
-  uses: URL (yarl)
-
-AbstractMatchInfo (aiohttp/abc.py:49-95)
-  extends: ABC
-  imports: logging, socket, http.cookies, multidict, yarl
-
-AbstractResolver (aiohttp/abc.py:136-147)
-  Abstract DNS resolver.
-  extends: ABC
-  imports: logging, socket, http.cookies, multidict, yarl
-
-AbstractResource (aiohttp/web_urldispatcher.py:101-145)
-  extends: Sized
-  imports: asyncio, base64, hashlib, html, inspect
-
-AbstractRoute (aiohttp/web_urldispatcher.py:148-210)
-  extends: ABC
-  imports: asyncio, base64, hashlib, html, inspect
-  raises: ValueError, TypeError
+match_domain (aiohttp/web_urldispatcher.py:818-819)
+  sig: match_domain(host)
 
 proxies_from_env (aiohttp/helpers.py:273-296)
   behavior: ACCUMULATE(stripped.items() loop -> result)
@@ -330,6 +295,39 @@ run_app (aiohttp/web.py:426-498)
   sig: run_app(app)
   calls: _cancel_tasks, _run_app
   called_by: main
+
+_authenticate (aiohttp/client_middleware_digest_auth.py:383-440)
+  Takes the given response and tries digest-auth, if needed.
+  sig: _authenticate(response)
+  behavior: BRANCH((domain := self._challenge.ge... -> [], else -> [str(origin)]); ACCUMULATE(CHALLENGE_FIELDS loop -> result)
+  calls: parse_header_pairs
+  called_by: __call__, DigestAuthMiddleware
+  uses: URL (yarl)
+
+_in_protection_space (aiohttp/client_middleware_digest_auth.py:363-381)
+  Check if the given URL is within the current protection space.
+  sig: _in_protection_space(url)
+  behavior: ACCUMULATE(self._protection_spac... -> result)
+  called_by: __call__, DigestAuthMiddleware
+
+H (aiohttp/client_middleware_digest_auth.py:273-275)
+  RFC 7616 Section 3: Hash function H(data) = hex(hash(data)).
+  sig: H(x)
+  behavior: DELEGATE(hash_fn.hexdigest.encode -> result)
+  called_by: KD, _encode, DigestAuthMiddleware
+
+KD (aiohttp/client_middleware_digest_auth.py:277-279)
+  RFC 7616 Section 3: KD(secret, data) = H(concat(secret, ":", data)).
+  sig: KD(s, d)
+  behavior: DELEGATE(H -> result)
+  calls: H
+  called_by: _encode, DigestAuthMiddleware
+
+escape_quotes (aiohttp/client_middleware_digest_auth.py:108-110)
+  Escape double quotes for HTTP header values.
+  sig: escape_quotes(value)
+  behavior: DELEGATE(replace -> result)
+  called_by: _encode, DigestAuthMiddleware
 
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)

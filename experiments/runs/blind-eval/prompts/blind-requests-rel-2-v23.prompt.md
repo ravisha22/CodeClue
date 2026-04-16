@@ -233,6 +233,20 @@ update (src/requests/cookies.py:358-364)
   calls: copy, set_cookie
   called_by: __setstate__, copy, RequestsCookieJar, create_cookie, merge_cookies
 
+MockRequest (src/requests/cookies.py:23-100)
+  Wraps a `requests.Request` to mimic a `urllib2.Request`.
+  imports: calendar, copy, compat, threading, dummy_threading
+  calls: get_host, get_origin_req_host, is_unverifiable, get
+  called_by: extract_cookies_to_jar, get_cookie_header
+  raises: NotImplementedError
+
+raise_for_status (src/requests/models.py:1001-1028)
+  Raises :class:`HTTPError`, if one occurred.
+  behavior: BRANCH(isinstance(self.reason, bytes) -> result, else -> self.reason)
+  called_by: ok, Response
+  raises: HTTPError
+  uses: HTTPError (exceptions)
+
 FileModeWarning (src/requests/exceptions.py:147-148)
   A file was opened in text mode, but Requests determined its binary length.
   extends: RequestsWarning, DeprecationWarning
@@ -247,13 +261,6 @@ MissingSchema (src/requests/exceptions.py:100-101)
   The URL scheme (e.g.
   extends: RequestException, ValueError
   imports: urllib3.exceptions, compat
-
-MockRequest (src/requests/cookies.py:23-100)
-  Wraps a `requests.Request` to mimic a `urllib2.Request`.
-  imports: calendar, copy, compat, threading, dummy_threading
-  calls: get_host, get_origin_req_host, is_unverifiable, get
-  called_by: extract_cookies_to_jar, get_cookie_header
-  raises: NotImplementedError
 
 UnrewindableBodyError (src/requests/exceptions.py:136-137)
   Requests encountered an error when trying to rewind a body.
@@ -299,13 +306,6 @@ next (src/requests/models.py:787-789)
 prepend_scheme_if_needed (src/requests/utils.py:976-1002)
   Given a URL that may or may not have a scheme, prepend the given scheme.
   sig: prepend_scheme_if_needed(url, new_scheme)
-
-raise_for_status (src/requests/models.py:1001-1028)
-  Raises :class:`HTTPError`, if one occurred.
-  behavior: BRANCH(isinstance(self.reason, bytes) -> result, else -> self.reason)
-  called_by: ok, Response
-  raises: HTTPError
-  uses: HTTPError (exceptions)
 
 select_proxy (src/requests/utils.py:825-848)
   Select a proxy for the url, if applicable.
@@ -432,304 +432,303 @@ def merge_setting(request_setting, session_setting, dict_class=OrderedDict):
     return merged_setting
 ```
 
-## _parse_content_type_header  (src/requests/utils.py L504-523)
+## __enter__  (tests/testserver/server.py L117-121)
 ```
-def _parse_content_type_header(header):
-    """Returns content type and parameters from given header.
-
-    :param header: string
-    :return: tuple containing content type and dictionary of
-         parameters.
-    """
-
-    tokens = header.split(";")
-    content_type, params = tokens[0].strip(), tokens[1:]
-    params_dict = {}
-    strip_chars = "\"' "
-
-    for param in params:
-        param = param.strip()
-        if param and (idx := param.find("=")) != -1:
-            key = param[:idx].strip(strip_chars)
-            value = param[idx + 1 :].strip(strip_chars)
-            params_dict[key.lower()] = value
-    return content_type, params_dict
+    def __enter__(self):
+        self.start()
+        if not self.ready_event.wait(self.WAIT_EVENT_TIMEOUT):
+            raise RuntimeError("Timeout waiting for server to be ready.")
+        return self.host, self.port
 ```
 
-## _validate_header_part  (src/requests/utils.py L1032-1048)
+## __exit__  (tests/testserver/server.py L123-135)
 ```
-def _validate_header_part(header, header_part, header_validator_index):
-    if isinstance(header_part, str):
-        validator = _HEADER_VALIDATORS_STR[header_validator_index]
-    elif isinstance(header_part, bytes):
-        validator = _HEADER_VALIDATORS_BYTE[header_validator_index]
-    else:
-        raise InvalidHeader(
-            f"Header part ({header_part!r}) from {header} "
-            f"must be of type str or bytes, not {type(header_part)}"
+    def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type is None:
+            self.stop_event.wait(self.WAIT_EVENT_TIMEOUT)
+        else:
+            if self.wait_to_close_event:
+                # avoid server from waiting for event timeouts
+                # if an exception is found in the main thread
+                self.wait_to_close_event.set()
+
+        # ensure server thread doesn't get stuck waiting for connections
+        self._close_server_sock_ignore_errors()
+        self.join()
+        return False  # allow exceptions to propagate
+```
+
+## __getstate__  (src/requests/sessions.py L812-814)
+```
+    def __getstate__(self):
+        state = {attr: getattr(self, attr, None) for attr in self.__attrs__}
+        return state
+```
+
+## __init__  (tests/testserver/server.py L139-169)
+```
+    def __init__(
+        self,
+        *,
+        handler=None,
+        host="localhost",
+        port=0,
+        requests_to_handle=1,
+        wait_to_close_event=None,
+        cert_chain=None,
+        keyfile=None,
+        mutual_tls=False,
+        cacert=None,
+    ):
+        super().__init__(
+            handler=handler,
+            host=host,
+            port=port,
+            requests_to_handle=requests_to_handle,
+            wait_to_close_event=wait_to_close_event,
+        )
+        self.cert_chain = cert_chain
+        self.keyfile = keyfile
+        self.ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        self.ssl_context.load_cert_chain(self.cert_chain, keyfile=self.keyfile)
+        self.mutual_tls = mutual_tls
+        self.cacert = cacert
+        if mutual_tls:
+            # For simplicity, we're going to assume that the client cert is
+            # issued by the same CA as our Server certificate
+            self.ssl_context.verify_mode = ssl.CERT_OPTIONAL
+            self.ssl_context.load_verify_locations(self.cacert)
+```
+
+## __setstate__  (src/requests/sessions.py L816-818)
+```
+    def __setstate__(self, state):
+        for attr, value in state.items():
+            setattr(self, attr, value)
+```
+
+## delete  (src/requests/sessions.py L665-673)
+```
+    def delete(self, url, **kwargs):
+        r"""Sends a DELETE request. Returns :class:`Response` object.
+
+        :param url: URL for the new :class:`Request` object.
+        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :rtype: requests.Response
+        """
+
+        return self.request("DELETE", url, **kwargs)
+```
+
+## get_adapter  (src/requests/sessions.py L783-794)
+```
+    def get_adapter(self, url):
+        """
+        Returns the appropriate connection adapter for the given URL.
+
+        :rtype: requests.adapters.BaseAdapter
+        """
+        for prefix, adapter in self.adapters.items():
+            if url.lower().startswith(prefix.lower()):
+                return adapter
+
+        # Nothing matches :-/
+        raise InvalidSchema(f"No connection adapters were found for {url!r}")
+```
+
+## head  (src/requests/sessions.py L617-626)
+```
+    def head(self, url, **kwargs):
+        r"""Sends a HEAD request. Returns :class:`Response` object.
+
+        :param url: URL for the new :class:`Request` object.
+        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :rtype: requests.Response
+        """
+
+        kwargs.setdefault("allow_redirects", False)
+        return self.request("HEAD", url, **kwargs)
+```
+
+## merge_environment_settings  (src/requests/sessions.py L752-781)
+```
+    def merge_environment_settings(self, url, proxies, stream, verify, cert):
+        """
+        Check the environment and merge it with some settings.
+
+        :rtype: dict
+        """
+        # Gather clues from the surrounding environment.
+        if self.trust_env:
+            # Set environment's proxies.
+            no_proxy = proxies.get("no_proxy") if proxies is not None else None
+            env_proxies = get_environ_proxies(url, no_proxy=no_proxy)
+            for k, v in env_proxies.items():
+                proxies.setdefault(k, v)
+
+            # Look for requests environment configuration
+            # and be compatible with cURL.
+            if verify is True or verify is None:
+                verify = (
+                    os.environ.get("REQUESTS_CA_BUNDLE")
+                    or os.environ.get("CURL_CA_BUNDLE")
+                    or verify
+                )
+
+        # Merge all the kwargs.
+        proxies = merge_setting(proxies, self.proxies)
+        stream = merge_setting(stream, self.stream)
+        verify = merge_setting(verify, self.verify)
+        cert = merge_setting(cert, self.cert)
+
+        return {"proxies": proxies, "stream": stream, "verify": verify, "cert": cert}
+```
+
+## mount  (src/requests/sessions.py L801-810)
+```
+    def mount(self, prefix, adapter):
+        """Registers a connection adapter to a prefix.
+
+        Adapters are sorted in descending order by prefix length.
+        """
+        self.adapters[prefix] = adapter
+        keys_to_move = [k for k in self.adapters if len(k) < len(prefix)]
+
+        for key in keys_to_move:
+            self.adapters[key] = self.adapters.pop(key)
+```
+
+## options  (src/requests/sessions.py L606-615)
+```
+    def options(self, url, **kwargs):
+        r"""Sends a OPTIONS request. Returns :class:`Response` object.
+
+        :param url: URL for the new :class:`Request` object.
+        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :rtype: requests.Response
+        """
+
+        kwargs.setdefault("allow_redirects", True)
+        return self.request("OPTIONS", url, **kwargs)
+```
+
+## patch  (src/requests/sessions.py L653-663)
+```
+    def patch(self, url, data=None, **kwargs):
+        r"""Sends a PATCH request. Returns :class:`Response` object.
+
+        :param url: URL for the new :class:`Request` object.
+        :param data: (optional) Dictionary, list of tuples, bytes, or file-like
+            object to send in the body of the :class:`Request`.
+        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :rtype: requests.Response
+        """
+
+        return self.request("PATCH", url, data=data, **kwargs)
+```
+
+## post  (src/requests/sessions.py L628-639)
+```
+    def post(self, url, data=None, json=None, **kwargs):
+        r"""Sends a POST request. Returns :class:`Response` object.
+
+        :param url: URL for the new :class:`Request` object.
+        :param data: (optional) Dictionary, list of tuples, bytes, or file-like
+            object to send in the body of the :class:`Request`.
+        :param json: (optional) json to send in the body of the :class:`Request`.
+        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :rtype: requests.Response
+        """
+
+        return self.request("POST", url, data=data, json=json, **kwargs)
+```
+
+## prepare_request  (src/requests/sessions.py L459-500)
+```
+    def prepare_request(self, request):
+        """Constructs a :class:`PreparedRequest <PreparedRequest>` for
+        transmission and returns it. The :class:`PreparedRequest` has settings
+        merged from the :class:`Request <Request>` instance and those of the
+        :class:`Session`.
+
+        :param request: :class:`Request` instance to prepare with this
+            session's settings.
+        :rtype: requests.PreparedRequest
+        """
+        cookies = request.cookies or {}
+
+        # Bootstrap CookieJar.
+        if not isinstance(cookies, cookielib.CookieJar):
+            cookies = cookiejar_from_dict(cookies)
+
+        # Merge with session cookies
+        merged_cookies = merge_cookies(
+            merge_cookies(RequestsCookieJar(), self.cookies), cookies
         )
 
-    if not validator.match(header_part):
-        header_kind = "name" if header_validator_index == 0 else "value"
-        raise InvalidHeader(
-            f"Invalid leading whitespace, reserved character(s), or return "
-            f"character(s) in header {header_kind}: {header_part!r}"
+        # Set environment's basic authentication if not explicitly set.
+        auth = request.auth
+        if self.trust_env and not auth and not self.auth:
+            auth = get_netrc_auth(request.url)
+
+        p = PreparedRequest()
+        p.prepare(
+            method=request.method.upper(),
+            url=request.url,
+            files=request.files,
+            data=request.data,
+            json=request.json,
+            headers=merge_setting(
+                request.headers, self.headers, dict_class=CaseInsensitiveDict
+            ),
+            params=merge_setting(request.params, self.params),
+            auth=merge_setting(auth, self.auth),
+            cookies=merged_cookies,
+            hooks=merge_hooks(request.hooks, self.hooks),
         )
+        return p
 ```
 
-## add_dict_to_cookiejar  (src/requests/utils.py L468-476)
+## put  (src/requests/sessions.py L641-651)
 ```
-def add_dict_to_cookiejar(cj, cookie_dict):
-    """Returns a CookieJar from a key/value dictionary.
+    def put(self, url, data=None, **kwargs):
+        r"""Sends a PUT request. Returns :class:`Response` object.
 
-    :param cj: CookieJar to insert cookies into.
-    :param cookie_dict: Dict of key/values to insert into CookieJar.
-    :rtype: CookieJar
-    """
+        :param url: URL for the new :class:`Request` object.
+        :param data: (optional) Dictionary, list of tuples, bytes, or file-like
+            object to send in the body of the :class:`Request`.
+        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :rtype: requests.Response
+        """
 
-    return cookiejar_from_dict(cookie_dict, cj)
-```
-
-## address_in_network  (src/requests/utils.py L669-681)
-```
-def address_in_network(ip, net):
-    """This function allows you to check if an IP belongs to a network subnet
-
-    Example: returns True if ip = 192.168.1.1 and net = 192.168.1.0/24
-             returns False if ip = 192.168.1.1 and net = 192.168.100.0/24
-
-    :rtype: bool
-    """
-    ipaddr = struct.unpack("=L", socket.inet_aton(ip))[0]
-    netaddr, bits = net.split("/")
-    netmask = struct.unpack("=L", socket.inet_aton(dotted_netmask(int(bits))))[0]
-    network = struct.unpack("=L", socket.inet_aton(netaddr))[0] & netmask
-    return (ipaddr & netmask) == (network & netmask)
+        return self.request("PUT", url, data=data, **kwargs)
 ```
 
-## atomic_open  (src/requests/utils.py L296-305)
+## request  (src/requests/sessions.py L502-593)
 ```
-def atomic_open(filename):
-    """Write a file to the disk in an atomic fashion"""
-    tmp_descriptor, tmp_name = tempfile.mkstemp(dir=os.path.dirname(filename))
-    try:
-        with os.fdopen(tmp_descriptor, "wb") as tmp_handler:
-            yield tmp_handler
-        os.replace(tmp_name, filename)
-    except BaseException:
-        os.remove(tmp_name)
-        raise
-```
+    def request(
+        self,
+        method,
+        url,
+        params=None,
+        data=None,
+        headers=None,
+        cookies=None,
+        files=None,
+        auth=None,
+        timeout=None,
+        allow_redirects=True,
+        proxies=None,
+        hooks=None,
+        stream=None,
+        verify=None,
+        cert=None,
+        json=None,
+    ):
+        """Constructs a :class:`Request <Request>`, prepares it and sends it.
+        Returns :class:`Response <Response>` object.
 
-## check_header_validity  (src/requests/utils.py L1021-1029)
-```
-def check_header_validity(header):
-    """Verifies that header parts don't contain leading whitespace
-    reserved characters, or return characters.
-
-    :param header: tuple, in the format (name, value).
-    """
-    name, value = header
-    _validate_header_part(header, name, 0)
-    _validate_header_part(header, value, 1)
-```
-
-## default_headers  (src/requests/utils.py L887-898)
-```
-def default_headers():
-    """
-    :rtype: requests.structures.CaseInsensitiveDict
-    """
-    return CaseInsensitiveDict(
-        {
-            "User-Agent": default_user_agent(),
-            "Accept-Encoding": DEFAULT_ACCEPT_ENCODING,
-            "Accept": "*/*",
-            "Connection": "keep-alive",
-        }
-    )
-```
-
-## default_user_agent  (src/requests/utils.py L878-884)
-```
-def default_user_agent(name="python-requests"):
-    """
-    Return a string representing the default user agent.
-
-    :rtype: str
-    """
-    return f"{name}/{__version__}"
-```
-
-## dict_from_cookiejar  (src/requests/utils.py L457-465)
-```
-def dict_from_cookiejar(cj):
-    """Returns a key/value dictionary from a CookieJar.
-
-    :param cj: CookieJar object to extract cookies from.
-    :rtype: dict
-    """
-
-    cookie_dict = {cookie.name: cookie.value for cookie in cj}
-    return cookie_dict
-```
-
-## dict_to_sequence  (src/requests/utils.py L126-132)
-```
-def dict_to_sequence(d):
-    """Returns an internal sequence dictionary update."""
-
-    if hasattr(d, "items"):
-        d = d.items()
-
-    return d
-```
-
-## dotted_netmask  (src/requests/utils.py L684-692)
-```
-def dotted_netmask(mask):
-    """Converts mask from /xx format to xxx.xxx.xxx.xxx
-
-    Example: if mask is 24 function returns 255.255.255.0
-
-    :rtype: str
-    """
-    bits = 0xFFFFFFFF ^ (1 << 32 - mask) - 1
-    return socket.inet_ntoa(struct.pack(">I", bits))
-```
-
-## extract_zipped_paths  (src/requests/utils.py L257-292)
-```
-def extract_zipped_paths(path):
-    """Replace nonexistent paths that look like they refer to a member of a zip
-    archive with the location of an extracted copy of the target, or else
-    just return the provided path unchanged.
-    """
-    if os.path.exists(path):
-        # this is already a valid path, no need to do anything further
-        return path
-
-    # find the first valid part of the provided path and treat that as a zip archive
-    # assume the rest of the path is the name of a member in the archive
-    archive, member = os.path.split(path)
-    while archive and not os.path.exists(archive):
-        archive, prefix = os.path.split(archive)
-        if not prefix:
-            # If we don't check for an empty prefix after the split (in other words, archive remains unchanged after the split),
-            # we _can_ end up in an infinite loop on a rare corner case affecting a small number of users
-            break
-        member = "/".join([prefix, member])
-
-    if not zipfile.is_zipfile(archive):
-        return path
-
-    zip_file = zipfile.ZipFile(archive)
-    if member not in zip_file.namelist():
-        return path
-
-    # we have a valid zip archive and a valid member of that archive
-    suffix = os.path.splitext(member.split("/")[-1])[-1]
-    fd, extracted_path = tempfile.mkstemp(suffix=suffix)
-    try:
-        os.write(fd, zip_file.read(member))
-    finally:
-        os.close(fd)
-
-    return extracted_path
-```
-
-## from_key_val_list  (src/requests/utils.py L308-332)
-```
-def from_key_val_list(value):
-    """Take an object and test to see if it can be represented as a
-    dictionary. Unless it can not be represented as such, return an
-    OrderedDict, e.g.,
-
-    ::
-
-        >>> from_key_val_list([('key', 'val')])
-        OrderedDict([('key', 'val')])
-        >>> from_key_val_list('string')
-        Traceback (most recent call last):
-        ...
-        ValueError: cannot encode objects that are not 2-tuples
-        >>> from_key_val_list({'key': 'val'})
-        OrderedDict([('key', 'val')])
-
-    :rtype: OrderedDict
-    """
-    if value is None:
-        return None
-
-    if isinstance(value, (str, bytes, bool, int)):
-        raise ValueError("cannot encode objects that are not 2-tuples")
-
-    return OrderedDict(value)
-```
-
-## get_auth_from_url  (src/requests/utils.py L1005-1018)
-```
-def get_auth_from_url(url):
-    """Given a url with authentication components, extract them into a tuple of
-    username,password.
-
-    :rtype: (str,str)
-    """
-    parsed = urlparse(url)
-
-    try:
-        auth = (unquote(parsed.username), unquote(parsed.password))
-    except (AttributeError, TypeError):
-        auth = ("", "")
-
-    return auth
-```
-
-## get_encoding_from_headers  (src/requests/utils.py L526-548)
-```
-def get_encoding_from_headers(headers):
-    """Returns encodings from given HTTP Header Dict.
-
-    :param headers: dictionary to extract encoding from.
-    :rtype: str
-    """
-
-    content_type = headers.get("content-type")
-
-    if not content_type:
-        return None
-
-    content_type, params = _parse_content_type_header(content_type)
-
-    if "charset" in params:
-        return params["charset"].strip("'\"")
-
-    if "text" in content_type:
-        return "ISO-8859-1"
-
-    if "application/json" in content_type:
-        # Assume UTF-8 based on RFC 4627: https://www.ietf.org/rfc/rfc4627.txt since the charset was unset
-        return "utf-8"
-```
-
-## get_encodings_from_content  (src/requests/utils.py L479-501)
-```
-def get_encodings_from_content(content):
-    """Returns encodings from given content string.
-
-    :param content: bytestring to extract encodings from.
-    """
-    warnings.warn(
-        (
-            "In requests 3.0, get_encodings_from_content will be removed. For "
-            "more information, please see the discussion on issue #2266. (This"
-            " warning should only appear once.)"
-        ),
-        DeprecationWarning,
-    )
-
-    charset_re = re.compile(r'<meta.*?charset=["\']*(.+?)["\'>]', flags=re.I)
-    pragma_re = re.compile(r'<meta.*?content=["\']*;?charset=(.+?)["\'>]', flags=re.I)
+        :param method: method for the new :class:`Request` object.
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

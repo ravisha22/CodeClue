@@ -67,45 +67,45 @@ ZodBigInt.setLimit                  M packages/zod/src/v3/types.ts:1734   method
 ZodNumber.setLimit                  M packages/zod/src/v3/types.ts:1482   method ZodNumber.setLimit
 ZodNumber._parse                    M packages/zod/src/v3/types.ts:1370   method ZodNumber._parse
 ZodEffects._parse                   M packages/zod/src/v3/types.ts:4322   method ZodEffects._parse
-ZodIntersection._parse              M packages/zod/src/v3/types.ts:3292   method ZodIntersection._parse
 ZodBigInt._parse                    M packages/zod/src/v3/types.ts:1636   method ZodBigInt._parse
+ZodIntersection._parse              M packages/zod/src/v3/types.ts:3292   method ZodIntersection._parse
+ZodArray._parse                     M packages/zod/src/v3/types.ts:2241   method ZodArray._parse
 ZodDate._parse                      M packages/zod/src/v3/types.ts:1878   method ZodDate._parse
 ZodFunction._parse                  M packages/zod/src/v3/types.ts:3822   method ZodFunction._parse
 ZodPipeline._parse                  M packages/zod/src/v3/types.ts:4782   method ZodPipeline._parse
-ZodArray._parse                     M packages/zod/src/v3/types.ts:2241   method ZodArray._parse
 ZodUnion._parse                     M packages/zod/src/v3/types.ts:2947   method ZodUnion._parse
 ZodEnum._parse                      M packages/zod/src/v3/types.ts:4082   method ZodEnum._parse
 ZodPromise._parse                   M packages/zod/src/v3/types.ts:4244   method ZodPromise._parse
+ZodSymbol._parse                    M packages/zod/src/v3/types.ts:2010   method ZodSymbol._parse
 ZodVoid._parse                      M packages/zod/src/v3/types.ts:2193   method ZodVoid._parse
-ZodNull._parse                      M packages/zod/src/v3/types.ts:2080   method ZodNull._parse
 ZodBoolean._parse                   M packages/zod/src/v3/types.ts:1834   method ZodBoolean._parse
 ZodNaN._parse                       M packages/zod/src/v3/types.ts:4702   method ZodNaN._parse
-ZodSymbol._parse                    M packages/zod/src/v3/types.ts:2010   method ZodSymbol._parse
+ZodNull._parse                      M packages/zod/src/v3/types.ts:2080   method ZodNull._parse
 ZodUndefined._parse                 M packages/zod/src/v3/types.ts:2045   method ZodUndefined._parse
-ZodNativeEnum._parse                M packages/zod/src/v3/types.ts:4179   method ZodNativeEnum._parse
 ZodNever._parse                     M packages/zod/src/v3/types.ts:2164   method ZodNever._parse
 ZodSet._parse                       M packages/zod/src/v3/types.ts:3691   method ZodSet._parse
-ZodTuple._parse                     M packages/zod/src/v3/types.ts:3399   method ZodTuple._parse
 ZodLiteral._parse                   M packages/zod/src/v3/types.ts:4007   method ZodLiteral._parse
-ZodRecord._parse                    M packages/zod/src/v3/types.ts:3514   method ZodRecord._parse
 ZodMap._parse                       M packages/zod/src/v3/types.ts:3603   method ZodMap._parse
-ZodBranded._parse                   M packages/zod/src/v3/types.ts:4748   method ZodBranded._parse
+ZodNativeEnum._parse                M packages/zod/src/v3/types.ts:4179   method ZodNativeEnum._parse
+ZodRecord._parse                    M packages/zod/src/v3/types.ts:3514   method ZodRecord._parse
+ZodTuple._parse                     M packages/zod/src/v3/types.ts:3399   method ZodTuple._parse
 ZodDefault._parse                   M packages/zod/src/v3/types.ts:4569   method ZodDefault._parse
-ZodLazy._parse                      M packages/zod/src/v3/types.ts:3979   method ZodLazy._parse
 ZodNullable._parse                  M packages/zod/src/v3/types.ts:4530   method ZodNullable._parse
-ZodOptional._parse                  M packages/zod/src/v3/types.ts:4490   method ZodOptional._parse
+ZodBranded._parse                   M packages/zod/src/v3/types.ts:4748   method ZodBranded._parse
 ZodCatch._parse                     M packages/zod/src/v3/types.ts:4619   method ZodCatch._parse
+ZodLazy._parse                      M packages/zod/src/v3/types.ts:3979   method ZodLazy._parse
+ZodOptional._parse                  M packages/zod/src/v3/types.ts:4490   method ZodOptional._parse
+ZodReadonly._parse                  M packages/zod/src/v3/types.ts:4877   method ZodReadonly._parse
 ZodAny._parse                       M packages/zod/src/v3/types.ts:2115   method ZodAny._parse
 ZodUnknown._parse                   M packages/zod/src/v3/types.ts:2140   method ZodUnknown._parse
-ZodReadonly._parse                  M packages/zod/src/v3/types.ts:4877   method ZodReadonly._parse
-ZodBranded.unwrap                   M packages/zod/src/v3/types.ts:4758   method ZodBranded.unwrap
-ZodPromise.unwrap                   M packages/zod/src/v3/types.ts:4240   method ZodPromise.unwrap
-ZodNullable.unwrap                  M packages/zod/src/v3/types.ts:4538   method ZodNullable.unwrap
 ZodOptional.unwrap                  M packages/zod/src/v3/types.ts:4498   method ZodOptional.unwrap
+ZodPromise.unwrap                   M packages/zod/src/v3/types.ts:4240   method ZodPromise.unwrap
+ZodBranded.unwrap                   M packages/zod/src/v3/types.ts:4758   method ZodBranded.unwrap
 ZodReadonly.unwrap                  M packages/zod/src/v3/types.ts:4896   method ZodReadonly.unwrap
-ZodBigInt.minValue                  M packages/zod/src/v3/types.ts:1800   method ZodBigInt.minValue
+ZodNullable.unwrap                  M packages/zod/src/v3/types.ts:4538   method ZodNullable.unwrap
 ZodNumber.maxValue                  M packages/zod/src/v3/types.ts:1587   method ZodNumber.maxValue
 ZodNumber.minValue                  M packages/zod/src/v3/types.ts:1577   method ZodNumber.minValue
+ZodBigInt.maxValue                  M packages/zod/src/v3/types.ts:1810   method ZodBigInt.maxValue
   ...and 2442 more symbols
 
 -- FOCUS
@@ -143,6 +143,18 @@ ZodMiniFunction (packages/zod/src/v4/mini/schemas.ts:1851-1870)
   calls: input
   uses: core.$ZodFunction, core.$ZodFunctionDef, core.$InferInnerFunctionType, core.$InferOuterFunctionType
 
+ZodMiniUnion (packages/zod/src/v4/mini/schemas.ts:997-1002)
+  interface ZodMiniUnion
+  extends: $ZodUnionInternals
+  called_by: union
+  uses: core.$ZodUnionInternals
+
+ZodMiniDiscriminatedUnion (packages/zod/src/v4/mini/schemas.ts:1047-1054)
+  interface ZodMiniDiscriminatedUnion
+  extends: ZodMiniUnion
+  called_by: discriminatedUnion
+  uses: core.$ZodDiscriminatedUnionInternals
+
 ZodMiniCodec (packages/zod/src/v4/mini/schemas.ts:1594-1601)
   interface ZodMiniCodec
   extends: ZodMiniPipe, $ZodCodec
@@ -153,12 +165,6 @@ ZodMiniCustomStringFormat (packages/zod/src/v4/mini/schemas.ts:469-475)
   extends: ZodMiniStringFormat, $ZodCustomStringFormat
   uses: core.$ZodCustomStringFormat, core.$ZodCustomStringFormatInternals
 
-ZodMiniDiscriminatedUnion (packages/zod/src/v4/mini/schemas.ts:1047-1054)
-  interface ZodMiniDiscriminatedUnion
-  extends: ZodMiniUnion
-  called_by: discriminatedUnion
-  uses: core.$ZodDiscriminatedUnionInternals
-
 ZodMiniPipe (packages/zod/src/v4/mini/schemas.ts:1569-1574)
   interface ZodMiniPipe
   extends: $ZodPipeInternals
@@ -168,12 +174,6 @@ ZodMiniStringFormat (packages/zod/src/v4/mini/schemas.ts:103-109)
   interface ZodMiniStringFormat
   extends: $ZodStringFormatInternals, $ZodStringFormat
   uses: core.$ZodStringFormat, core.$ZodStringFormatInternals
-
-ZodMiniUnion (packages/zod/src/v4/mini/schemas.ts:997-1002)
-  interface ZodMiniUnion
-  extends: $ZodUnionInternals
-  called_by: union
-  uses: core.$ZodUnionInternals
 
 _ZodMiniNumber (packages/zod/src/v4/mini/schemas.ts:517-523)
   interface _ZodMiniNumber
@@ -188,6 +188,24 @@ _ZodMiniString (packages/zod/src/v4/mini/schemas.ts:80-85)
 _ZodMiniJSONSchemaInternals (packages/zod/src/v4/mini/schemas.ts:1834-1834)
   type alias _ZodMiniJSONSchemaInternals = _ZodMiniJSONSchema["_zod"]
   uses: _ZodMiniJSONSchema, _zod
+
+ZodMiniRecord (packages/zod/src/v4/mini/schemas.ts:1143-1150)
+  interface ZodMiniRecord
+  extends: $ZodRecordInternals
+  called_by: looseRecord, partialRecord, record
+  uses: core.$ZodRecordInternals
+
+ZodMiniEnum (packages/zod/src/v4/mini/schemas.ts:1243-1248)
+  interface ZodMiniEnum
+  extends: $ZodEnumInternals
+  called_by: _enum, nativeEnum
+  uses: util.EnumLike, core.$ZodEnumInternals
+
+ZodMiniObject (packages/zod/src/v4/mini/schemas.ts:814-823)
+  interface ZodMiniObject
+  extends: $ZodObjectInternals, $ZodObject
+  called_by: looseObject, strictObject
+  uses: core.$ZodObject
 
 ZodMiniAny (packages/zod/src/v4/mini/schemas.ts:699-703)
   interface ZodMiniAny
@@ -267,26 +285,10 @@ ZodMiniEmail (packages/zod/src/v4/mini/schemas.ts:117-119)
   interface ZodMiniEmail
   uses: core.$ZodEmailInternals
 
-ZodMiniEmoji (packages/zod/src/v4/mini/schemas.ts:208-212)
-  interface ZodMiniEmoji
-  uses: core.$ZodEmojiInternals
-
-ZodMiniEnum (packages/zod/src/v4/mini/schemas.ts:1243-1248)
-  interface ZodMiniEnum
-  extends: $ZodEnumInternals
-  called_by: _enum, nativeEnum
-  uses: util.EnumLike, core.$ZodEnumInternals
-
-ZodMiniExactOptional (packages/zod/src/v4/mini/schemas.ts:1382-1388)
-  interface ZodMiniExactOptional
-  extends: $ZodExactOptionalInternals, $ZodExactOptional
-  called_by: exactOptional
-  uses: core.$ZodExactOptional, core.$ZodExactOptionalInternals
-
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 1504 symbols in L3, 105 with behavior annotations
-uncovered: $ZSF, $RefinementCtx, $ZSFAny, $ZSFArray
+coverage: 80 symbols in L3, 0 with behavior annotations
+uncovered: $InferZodRecordInput, $InferZodRecordInput, $InferZodRecordInput, $InferZodRecordInput
 
 --- CLUE FILE END ---
 

@@ -87,8 +87,8 @@ Bind.validateStruct                 M bind.go:183    Struct validation.
 SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
 domainMatcher.match                 M domain.go:139    match checks if a hostname matches the domain p...
 Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
-manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
+manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
 isUnixNetwork                       M middleware/adaptor/adaptor.go:208    function isUnixNetwork
 Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...
@@ -145,30 +145,30 @@ Request.Context (client/request.go:115-115)
   behavior: GUARD(r.ctx == nil -> return context.Back...)
   called_by: Send
 
-FromContext (middleware/requestid/requestid.go:79-79)
-  FromContext returns the request ID from context.
-  sig: FromContext(ctx any)
-  behavior: GUARD(rid, ok := fiber.ValueFromContext[string](ctx... -> return rid)
-
 FromContext (middleware/session/middleware.go:179-179)
   FromContext returns the Middleware from the Fiber context.
   sig: FromContext(ctx any)
   behavior: GUARD(m, ok := fiber.ValueFromContext[*Middleware](... -> return m)
+
+FromContext (middleware/requestid/requestid.go:79-79)
+  FromContext returns the request ID from context.
+  sig: FromContext(ctx any)
+  behavior: GUARD(rid, ok := fiber.ValueFromContext[string](ctx... -> return rid)
 
 TokenFromContext (middleware/keyauth/keyauth.go:99-99)
   TokenFromContext returns the bearer token from the request context.
   sig: TokenFromContext(ctx any)
   behavior: GUARD(token, ok := fiber.ValueFromContext[string](c... -> return token)
 
-Request.AddFormData (client/request.go:493-493)
-  AddFormData adds a single form field and value to the Request.
-  sig: Request.AddFormData(key, val string)
-  calls: Add, resetBody
-
 Request.AddFormDataWithMap (client/request.go:507-507)
   AddFormDataWithMap adds multiple form fields and values to the Request.
   sig: Request.AddFormDataWithMap(m map[string][]string)
   calls: AddWithMap, resetBody
+
+Request.AddFormData (client/request.go:493-493)
+  AddFormData adds a single form field and value to the Request.
+  sig: Request.AddFormData(key, val string)
+  calls: Add, resetBody
 
 Request.SetContext (client/request.go:124-124)
   SetContext sets the context for the Request, allowing request cancellation if ctx is done.
@@ -299,8 +299,8 @@ Client.DoDeadline (client/client.go:85-85)
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 409 symbols in L3, 231 with behavior annotations
-uncovered: App.next, App.nextCustom, FormData.Set, FormData.SetWithStruct
+coverage: 80 symbols in L3, 47 with behavior annotations
+uncovered: App.next, App.nextCustom, Client.StreamResponseBody, Response.StatusCode
 drill: middleware/adaptor/adaptor.go (~1 lines, CopyContextToFiberContext)
 drill: middleware/adaptor/adaptor.go (~1 lines, HTTPHandlerWithContext)
 drill: helpers.go (~1 lines, StoreInContext)
@@ -326,6 +326,61 @@ func StoreInContext(c Ctx, key, value any) {
 ## LocalContextFromHTTPRequest  (middleware/adaptor/adaptor.go L78-78)
 ```
 func LocalContextFromHTTPRequest(r *http.Request) (context.Context, bool) {
+```
+
+## ConvertRequest  (middleware/adaptor/adaptor.go L89-89)
+```
+func ConvertRequest(c fiber.Ctx, forServer bool) (*http.Request, error) {
+```
+
+## FiberApp  (middleware/adaptor/adaptor.go L204-204)
+```
+func FiberApp(app *fiber.App) http.HandlerFunc {
+```
+
+## FiberHandler  (middleware/adaptor/adaptor.go L194-194)
+```
+func FiberHandler(h fiber.Handler) http.Handler {
+```
+
+## FiberHandlerFunc  (middleware/adaptor/adaptor.go L199-199)
+```
+func FiberHandlerFunc(h fiber.Handler) http.HandlerFunc {
+```
+
+## HTTPHandler  (middleware/adaptor/adaptor.go L56-56)
+```
+func HTTPHandler(h http.Handler) fiber.Handler {
+```
+
+## HTTPHandlerFunc  (middleware/adaptor/adaptor.go L51-51)
+```
+func HTTPHandlerFunc(h http.HandlerFunc) fiber.Handler {
+```
+
+## HTTPMiddleware  (middleware/adaptor/adaptor.go L162-162)
+```
+func HTTPMiddleware(mw func(http.Handler) http.Handler) fiber.Handler {
+```
+
+## disableLogger  (middleware/adaptor/adaptor.go L21-21)
+```
+type disableLogger struct{}
+```
+
+## handlerFunc  (middleware/adaptor/adaptor.go L242-242)
+```
+func handlerFunc(app *fiber.App, h ...fiber.Handler) http.HandlerFunc {
+```
+
+## isUnixNetwork  (middleware/adaptor/adaptor.go L208-208)
+```
+func isUnixNetwork(network string) bool {
+```
+
+## resolveRemoteAddr  (middleware/adaptor/adaptor.go L212-212)
+```
+func resolveRemoteAddr(remoteAddr string, localAddr any) (net.Addr, error) {
 ```
 
 ## App.isEtagStale  (helpers.go L740-740)
@@ -561,61 +616,6 @@ func unescapeHeaderValue(v []byte) ([]byte, error) {
 ## uniqueRouteStack  (helpers.go L230-230)
 ```
 func uniqueRouteStack(stack []*Route) []*Route {
-```
-
-## ConvertRequest  (middleware/adaptor/adaptor.go L89-89)
-```
-func ConvertRequest(c fiber.Ctx, forServer bool) (*http.Request, error) {
-```
-
-## FiberApp  (middleware/adaptor/adaptor.go L204-204)
-```
-func FiberApp(app *fiber.App) http.HandlerFunc {
-```
-
-## FiberHandler  (middleware/adaptor/adaptor.go L194-194)
-```
-func FiberHandler(h fiber.Handler) http.Handler {
-```
-
-## FiberHandlerFunc  (middleware/adaptor/adaptor.go L199-199)
-```
-func FiberHandlerFunc(h fiber.Handler) http.HandlerFunc {
-```
-
-## HTTPHandler  (middleware/adaptor/adaptor.go L56-56)
-```
-func HTTPHandler(h http.Handler) fiber.Handler {
-```
-
-## HTTPHandlerFunc  (middleware/adaptor/adaptor.go L51-51)
-```
-func HTTPHandlerFunc(h http.HandlerFunc) fiber.Handler {
-```
-
-## HTTPMiddleware  (middleware/adaptor/adaptor.go L162-162)
-```
-func HTTPMiddleware(mw func(http.Handler) http.Handler) fiber.Handler {
-```
-
-## disableLogger  (middleware/adaptor/adaptor.go L21-21)
-```
-type disableLogger struct{}
-```
-
-## handlerFunc  (middleware/adaptor/adaptor.go L242-242)
-```
-func handlerFunc(app *fiber.App, h ...fiber.Handler) http.HandlerFunc {
-```
-
-## isUnixNetwork  (middleware/adaptor/adaptor.go L208-208)
-```
-func isUnixNetwork(network string) bool {
-```
-
-## resolveRemoteAddr  (middleware/adaptor/adaptor.go L212-212)
-```
-func resolveRemoteAddr(remoteAddr string, localAddr any) (net.Addr, error) {
 ```
 --- END SOURCE SNIPPETS ---
 

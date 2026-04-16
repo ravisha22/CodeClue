@@ -257,12 +257,12 @@ LoggingMiddleware (examples/logging_middleware.py:27-56)
   imports: asyncio, logging, aiohttp
   called_by: run_tests
 
-__call__ (examples/combined_middleware.py:119-156)
+__call__ (examples/retry_middleware.py:47-88)
   Execute request with retry logic.
   sig: __call__(request, handler)
   behavior: ACCUMULATE(range(self.max_retrie... -> delay)
 
-__call__ (examples/retry_middleware.py:47-88)
+__call__ (examples/combined_middleware.py:119-156)
   Execute request with retry logic.
   sig: __call__(request, handler)
   behavior: ACCUMULATE(range(self.max_retrie... -> delay)
@@ -321,11 +321,10 @@ Response (aiohttp/web_response.py:535-740)
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 224 symbols in L3, 49 with behavior annotations
-uncovered: RequestPayloadError, ClientRequestBase, ResponseHandler, MultipartResponseWrapper
+coverage: 80 symbols in L3, 24 with behavior annotations
+uncovered: TraceRequestHeadersSentParams, TraceRequestRedirectParams, TraceRequestStartParams, TraceResponseChunkReceivedParams
 drill: aiohttp/web_protocol.py (~37 lines, _handle_request)
 drill: aiohttp/web_ws.py (~11 lines, _handle_ping_pong_exception)
-drill: aiohttp/web_request.py (~11 lines, remote)
 
 --- END CLUE FILE ---
 
@@ -341,23 +340,6 @@ drill: aiohttp/web_request.py (~11 lines, remote)
         self._exception = exc
         if self._waiting and not self._closing and self._reader is not None:
             self._reader.feed_data(WSMessageError(data=exc, extra=None))
-```
-
-## remote  (aiohttp/web_request.py L408-420)
-```
-    def remote(self) -> str | None:
-        """Remote IP of client initiated HTTP request.
-
-        The IP is resolved in this order:
-
-        - overridden value by .clone(remote=new_remote) call.
-        - peername of opened socket
-        """
-        if self._transport_peername is None:
-            return None
-        if isinstance(self._transport_peername, (list, tuple)):
-            return str(self._transport_peername[0])
-        return str(self._transport_peername)
 ```
 
 ## _handle_request  (aiohttp/web_protocol.py L535-570)
@@ -484,22 +466,33 @@ drill: aiohttp/web_request.py (~11 lines, remote)
         return self.ok
 ```
 
-## __delitem__  (aiohttp/web_response.py L516-517)
+## WebSocketReady  (aiohttp/web_ws.py L70-75)
 ```
-    def __delitem__(self, key: str | ResponseKey[_T]) -> None:
-        del self._state[key]
+class WebSocketReady:
+    ok: bool
+    protocol: str | None
+
+    def __bool__(self) -> bool:
+        return self.ok
 ```
 
-## __eq__  (aiohttp/web_response.py L528-529)
+## __aiter__  (aiohttp/web_ws.py L742-745)
 ```
-    def __eq__(self, other: object) -> bool:
-        return self is other
+    def __aiter__(self) -> Self:
+        return self
+
+    @overload
 ```
 
-## __getitem__  (aiohttp/web_urldispatcher.py L1026-1027)
+## __anext__  (aiohttp/web_ws.py L760-766)
 ```
-    def __getitem__(self, name: str) -> AbstractResource:
-        return self._named_resources[name]
+    async def __anext__(self) -> WSMessageDecodeText | WSMessageNoDecodeText:
+        msg = await self.receive()
+        if msg.type in (WSMsgType.CLOSE, WSMsgType.CLOSING, WSMsgType.CLOSED):
+            raise StopAsyncIteration
+        return msg
+
+    def _cancel(self, exc: BaseException) -> None:
 ```
 
 ## __init__  (tests/test_worker.py L31-38)
@@ -514,30 +507,6 @@ drill: aiohttp/web_request.py (~11 lines, remote)
         self.wsgi = web.Application()
 ```
 
-## __iter__  (tests/test_client_session.py L801-802)
-```
-        def __iter__(self) -> Iterator[Any]:
-            return iter(self._items)
-```
-
-## __len__  (tests/test_client_session.py L798-799)
-```
-        def __len__(self) -> int:
-            return len(self._items)
-```
-
-## __repr__  (aiohttp/web_urldispatcher.py L272-273)
-```
-    def __repr__(self) -> str:
-        return f"<MatchInfo {super().__repr__()}: {self._route}>"
-```
-
-## __setitem__  (aiohttp/web_response.py L513-514)
-```
-    def __setitem__(self, key: str | ResponseKey[_T], value: Any) -> None:
-        self._state[key] = value
-```
-
 ## _cancel  (aiohttp/web_ws.py L766-773)
 ```
     def _cancel(self, exc: BaseException) -> None:
@@ -549,170 +518,206 @@ drill: aiohttp/web_request.py (~11 lines, remote)
             set_exception(self._reader, exc)
 ```
 
-## _etag_values  (aiohttp/web_request.py L495-513)
+## _cancel_heartbeat  (aiohttp/web_ws.py L129-140)
 ```
-    def _etag_values(etag_header: str) -> Iterator[ETag]:
-        """Extract `ETag` objects from raw header."""
-        if etag_header == ETAG_ANY:
-            yield ETag(
-                is_weak=False,
-                value=ETAG_ANY,
-            )
-        else:
-            for match in LIST_QUOTED_ETAG_RE.finditer(etag_header):
-                is_weak, value, garbage = match.group(2, 3, 4)
-                # Any symbol captured by 4th group means
-                # that the following sequence is invalid.
-                if garbage:
-                    break
+    def _cancel_heartbeat(self) -> None:
+        self._cancel_pong_response_cb()
+        if self._heartbeat_reset_handle is not None:
+            self._heartbeat_reset_handle.cancel()
+            self._heartbeat_reset_handle = None
+        self._need_heartbeat_reset = False
+        if self._heartbeat_cb is not None:
+            self._heartbeat_cb.cancel()
+            self._heartbeat_cb = None
+        if self._ping_task is not None:
+            self._ping_task.cancel()
+            self._ping_task = None
+```
 
-                yield ETag(
-                    is_weak=bool(is_weak),
-                    value=value,
+## _cancel_pong_response_cb  (aiohttp/web_ws.py L142-145)
+```
+    def _cancel_pong_response_cb(self) -> None:
+        if self._pong_response_cb is not None:
+            self._pong_response_cb.cancel()
+            self._pong_response_cb = None
+```
+
+## _close_transport  (aiohttp/web_ws.py L574-579)
+```
+    def _close_transport(self) -> None:
+        """Close the transport."""
+        if self._req is not None and self._req.transport is not None:
+            self._req.transport.close()
+
+    @overload
+```
+
+## _flush_heartbeat_reset  (aiohttp/web_ws.py L157-162)
+```
+    def _flush_heartbeat_reset(self) -> None:
+        self._heartbeat_reset_handle = None
+        if not self._need_heartbeat_reset:
+            return
+        self._reset_heartbeat()
+        self._need_heartbeat_reset = False
+```
+
+## _handshake  (aiohttp/web_ws.py L270-354)
+```
+    def _handshake(
+        self, request: BaseRequest
+    ) -> tuple["CIMultiDict[str]", str | None, int, bool]:
+        headers = request.headers
+        if "websocket" != headers.get(hdrs.UPGRADE, "").lower().strip():
+            raise HTTPBadRequest(
+                text=(
+                    f"No WebSocket UPGRADE hdr: {headers.get(hdrs.UPGRADE)}\n Can "
+                    '"Upgrade" only to "WebSocket".'
                 )
-```
+            )
 
-## _finish  (aiohttp/web_request.py L813-823)
-```
-    def _finish(self) -> None:
-        if self._post is None or self.content_type != "multipart/form-data":
-            return
+        if "upgrade" not in headers.get(hdrs.CONNECTION, "").lower():
+            raise HTTPBadRequest(
+                text=f"No CONNECTION upgrade hdr: {headers.get(hdrs.CONNECTION)}"
+            )
 
-        # NOTE: Release file descriptors for the
-        # NOTE: `tempfile.Temporaryfile`-created `_io.BufferedRandom`
-        # NOTE: instances of files sent within multipart request body
-        # NOTE: via HTTP POST request.
-        for file_name, file_field_object in self._post.items():
-            if isinstance(file_field_object, FileField):
-                file_field_object.file.close()
-```
+        # find common sub-protocol between client and server
+        protocol: str | None = None
+        if hdrs.SEC_WEBSOCKET_PROTOCOL in headers:
+            req_protocols = [
+                str(proto.strip())
+                for proto in headers[hdrs.SEC_WEBSOCKET_PROTOCOL].split(",")
+            ]
 
-## _if_match_or_none_impl  (aiohttp/web_request.py L516-522)
-```
-    def _if_match_or_none_impl(
-        cls, header_value: str | None
-    ) -> tuple[ETag, ...] | None:
-        if not header_value:
-            return None
+            for proto in req_protocols:
+                if proto in self._protocols:
+                    protocol = proto
+                    break
+            else:
+                # No overlap found: Return no protocol as per spec
+                ws_logger.warning(
+                    "%s: Client protocols %r don’t overlap server-known ones %r",
+                    request.remote,
+                    req_protocols,
+                    self._protocols,
+                )
 
-        return tuple(cls._etag_values(header_value))
-```
+        # check supported version
+        version = headers.get(hdrs.SEC_WEBSOCKET_VERSION, "")
+        if version not in ("13", "8", "7"):
+            raise HTTPBadRequest(text=f"Unsupported version: {version}")
 
-## _prepare_hook  (aiohttp/web_request.py L878-884)
-```
-    async def _prepare_hook(self, response: StreamResponse) -> None:
-        match_info = self._match_info
-        if match_info is None:
-            return
-        for app in match_info._apps:
-            if on_response_prepare := app.on_response_prepare:
-                await on_response_prepare.send(self, response)
-```
+        # check client handshake for validity
+        key = headers.get(hdrs.SEC_WEBSOCKET_KEY)
+        try:
+            if not key or len(base64.b64decode(key)) != 16:
+                raise HTTPBadRequest(text=f"Handshake error: {key!r}")
+        except binascii.Error:
+            raise HTTPBadRequest(text=f"Handshake error: {key!r}") from None
 
-## body_exists  (aiohttp/web_request.py L612-614)
-```
-    def body_exists(self) -> bool:
-        """Return True if request has HTTP BODY, False otherwise."""
-        return type(self._payload) is not EmptyStreamReader
-```
-
-## can_read_body  (aiohttp/web_request.py L607-609)
-```
-    def can_read_body(self) -> bool:
-        """Return True if request's HTTP BODY can be read, False otherwise."""
-        return not self._payload.at_eof()
-```
-
-## client_max_size  (aiohttp/web_request.py L252-253)
-```
-    def client_max_size(self) -> int:
-        return self._client_max_size
-```
-
-## clone  (aiohttp/web_request.py L830-852)
-```
-    def clone(
-        self,
-        *,
-        method: str | _SENTINEL = sentinel,
-        rel_url: StrOrURL | _SENTINEL = sentinel,
-        headers: LooseHeaders | _SENTINEL = sentinel,
-        scheme: str | _SENTINEL = sentinel,
-        host: str | _SENTINEL = sentinel,
-        remote: str | _SENTINEL = sentinel,
-        client_max_size: int | _SENTINEL = sentinel,
-    ) -> "Request":
-        ret = super().clone(
-            method=method,
-            rel_url=rel_url,
-            headers=headers,
-            scheme=scheme,
-            host=host,
-            remote=remote,
-            client_max_size=client_max_size,
+        accept_val = base64.b64encode(
+            hashlib.sha1(key.encode() + WS_KEY).digest()
+        ).decode()
+        response_headers = CIMultiDict(
+            {
+                hdrs.UPGRADE: "websocket",
+                hdrs.CONNECTION: "upgrade",
+                hdrs.SEC_WEBSOCKET_ACCEPT: accept_val,
+            }
         )
-        new_ret = cast(Request, ret)
-        new_ret._match_info = self._match_info
-        return new_ret
+
+        notakeover = False
+        compress = 0
+        if self._compress:
+            extensions = headers.get(hdrs.SEC_WEBSOCKET_EXTENSIONS)
+            # Server side always get return with no exception.
+            # If something happened, just drop compress extension
+            compress, notakeover = ws_ext_parse(extensions, isserver=True)
+            if compress:
+                enabledext = ws_ext_gen(
+                    compress=compress, isserver=True, server_notakeover=notakeover
+                )
+                response_headers[hdrs.SEC_WEBSOCKET_EXTENSIONS] = enabledext
+
+        if protocol:
+            response_headers[hdrs.SEC_WEBSOCKET_PROTOCOL] = protocol
+        return (
+            response_headers,
+            protocol,
+            compress,
+            notakeover,
+        )
+
+    def _pre_start(self, request: BaseRequest) -> tuple[str | None, WebSocketWriter]:
 ```
 
-## content  (aiohttp/web_request.py L602-604)
+## _on_data_received  (aiohttp/web_ws.py L147-155)
 ```
-    def content(self) -> StreamReader:
-        """Return raw payload stream."""
-        return self._payload
-```
-
-## cookies  (aiohttp/web_request.py L554-563)
-```
-    def cookies(self) -> Mapping[str, str]:
-        """Return request cookies.
-
-        A read-only dictionary-like object.
-        """
-        # Use parse_cookie_header for RFC 6265 compliant Cookie header parsing
-        # that accepts special characters in cookie names (fixes #2683)
-        parsed = parse_cookie_header(self.headers.get(hdrs.COOKIE, ""))
-        # Extract values from Morsel objects
-        return MappingProxyType({name: morsel.value for name, morsel in parsed})
+    def _on_data_received(self) -> None:
+        if self._heartbeat is None or self._need_heartbeat_reset:
+            return
+        loop = self._loop
+        assert loop is not None
+        # Coalesce multiple chunks received in the same loop tick into a single
+        # heartbeat reset. Resetting immediately per chunk increases timer churn.
+        self._need_heartbeat_reset = True
+        self._heartbeat_reset_handle = loop.call_soon(self._flush_heartbeat_reset)
 ```
 
-## forwarded  (aiohttp/web_request.py L296-354)
+## _ping_task_done  (aiohttp/web_ws.py L226-230)
 ```
-    def forwarded(self) -> tuple[Mapping[str, str], ...]:
-        """A tuple containing all parsed Forwarded header(s).
+    def _ping_task_done(self, task: "asyncio.Task[None]") -> None:
+        """Callback for when the ping task completes."""
+        if not task.cancelled() and (exc := task.exception()):
+            self._handle_ping_pong_exception(exc)
+        self._ping_task = None
+```
 
-        Makes an effort to parse Forwarded headers as specified by RFC 7239:
+## _pong_not_received  (aiohttp/web_ws.py L232-238)
+```
+    def _pong_not_received(self) -> None:
+        if self._req is not None and self._req.transport is not None:
+            self._handle_ping_pong_exception(
+                asyncio.TimeoutError(
+                    f"No PONG received after {self._pong_heartbeat} seconds"
+                )
+            )
+```
 
-        - It adds one (immutable) dictionary per Forwarded 'field-value', ie
-          per proxy. The element corresponds to the data in the Forwarded
-          field-value added by the first proxy encountered by the client. Each
-          subsequent item corresponds to those added by later proxies.
-        - It checks that every value has valid syntax in general as specified
-          in section 4: either a 'token' or a 'quoted-string'.
-        - It un-escapes found escape sequences.
-        - It does NOT validate 'by' and 'for' contents as specified in section
-          6.
-        - It does NOT validate 'host' contents (Host ABNF).
-        - It does NOT validate 'proto' contents for valid URI scheme names.
+## _post_start  (aiohttp/web_ws.py L376-398)
+```
+    def _post_start(
+        self, request: BaseRequest, protocol: str | None, writer: WebSocketWriter
+    ) -> None:
+        self._ws_protocol = protocol
+        self._writer = writer
 
-        Returns a tuple containing one or more immutable dicts
-        """
-        elems = []
-        for field_value in self._message.headers.getall(hdrs.FORWARDED, ()):
-            length = len(field_value)
-            pos = 0
-            need_separator = False
-            elem: dict[str, str] = {}
-            elems.append(types.MappingProxyType(elem))
-            while 0 <= pos < length:
-                match = _FORWARDED_PAIR_RE.match(field_value, pos)
-                if match is not None:  # got a valid forwarded-pair
-                    if need_separator:
-                        # bad syntax here, skip to next comma
-                        pos = field_value.find(",", pos)
-                    else:
-                        name, value, port = match.groups()
+        self._reset_heartbeat()
+
+        loop = self._loop
+        assert loop is not None
+        self._reader = WebSocketDataQueue(request._protocol, 2**16, loop=loop)
+        parser = WebSocketReader(
+            self._reader,
+            self._max_msg_size,
+            compress=bool(self._compress),
+            decode_text=self._decode_text,
+        )
+        cb = None if self._heartbeat is None else self._on_data_received
+        request.protocol.set_parser(parser, data_received_cb=cb)
+        # disable HTTP keepalive for WebSocket
+        request.protocol.keep_alive(False)
+
+    def can_prepare(self, request: BaseRequest) -> WebSocketReady:
+```
+
+## _pre_start  (aiohttp/web_ws.py L354-376)
+```
+    def _pre_start(self, request: BaseRequest) -> tuple[str | None, WebSocketWriter]:
+        self._loop = request._loop
+
+        headers, protocol, compress, notakeover = self._handshake(request)
+
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

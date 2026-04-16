@@ -124,17 +124,19 @@ BodyLimitWithConfig                 M middleware/body_limit.go:42     BodyLimitW
   ...and 483 more symbols
 
 -- FOCUS
-Echo.Static (echo.go:533-533)
-  Static registers a new route with path prefix to serve static files from the provided root directory.
-  sig: Echo.Static(pathPrefix, fsRoot string, middleware ...MiddlewareFunc)
-  behavior: DELEGATE(e.Add -> result)
-  calls: Add, MustSubFS, StaticDirectoryHandler
+Echo.Add (echo.go:642-642)
+  Add registers a new route for an HTTP method and path with matching handler in the router with optional route-level midd
+  sig: Echo.Add(method, path string, handler HandlerFunc, middleware ......)
+  behavior: GUARD(err != nil -> panic(err))
+  calls: add
+  called_by: Any, CONNECT, DELETE, File, GET, HEAD, OPTIONS, PATCH
+  raises: panic
 
-Echo.StaticFS (echo.go:548-548)
-  StaticFS registers a new route with path prefix to serve static files from the provided file system.
-  sig: Echo.StaticFS(pathPrefix string, filesystem fs.FS, middleware ...Middl...)
-  behavior: DELEGATE(e.Add -> result)
-  calls: Add, StaticDirectoryHandler
+StaticDirectoryHandler (echo.go:559-559)
+  StaticDirectoryHandler creates handler function to serve files from provided file system When disablePathUnescaping is s
+  sig: StaticDirectoryHandler(fileSystem fs.FS, disablePathUnescaping bool)
+  calls: Open, sanitizeURI
+  called_by: Static, StaticFS
 
 Group.Static (group.go:112-112)
   Static implements `Echo#Static()` for sub-routes within the Group.
@@ -148,6 +150,30 @@ Group.StaticFS (group.go:122-122)
   behavior: DELEGATE(g.Add -> result)
   calls: Add
   called_by: Static
+
+Routes.Reverse (route.go:117-117)
+  Reverse reverses route to URL string by replacing path parameters with given params values.
+  sig: Routes.Reverse(routeName string, pathValues ...any)
+  behavior: ACCUMULATE(Reverse loop -> result)
+  calls: Reverse
+
+Echo.Static (echo.go:533-533)
+  Static registers a new route with path prefix to serve static files from the provided root directory.
+  sig: Echo.Static(pathPrefix, fsRoot string, middleware ...MiddlewareFunc)
+  behavior: DELEGATE(e.Add -> result)
+  calls: Add, MustSubFS, StaticDirectoryHandler
+
+Echo.StaticFS (echo.go:548-548)
+  StaticFS registers a new route with path prefix to serve static files from the provided file system.
+  sig: Echo.StaticFS(pathPrefix string, filesystem fs.FS, middleware ...Middl...)
+  behavior: DELEGATE(e.Add -> result)
+  calls: Add, StaticDirectoryHandler
+
+RouteInfo.Reverse (route.go:75-75)
+  Reverse reverses route to URL string by replacing path parameters with given params values.
+  sig: RouteInfo.Reverse(pathValues ...any)
+  behavior: DELEGATE(uri.String -> result); ACCUMULATE(Fprintf loop -> result)
+  called_by: Reverse
 
 Echo.Any (echo.go:504-504)
   Any registers a new route for all HTTP methods (supported by Echo) and path with matching handler in the router with opt
@@ -166,30 +192,12 @@ Group.RouteNotFound (group.go:153-153)
   behavior: DELEGATE(g.Add -> result)
   calls: Add
 
-RouteInfo.Reverse (route.go:75-75)
-  Reverse reverses route to URL string by replacing path parameters with given params values.
-  sig: RouteInfo.Reverse(pathValues ...any)
-  behavior: DELEGATE(uri.String -> result); ACCUMULATE(Fprintf loop -> result)
-  called_by: Reverse
-
-Routes.Reverse (route.go:117-117)
-  Reverse reverses route to URL string by replacing path parameters with given params values.
-  sig: Routes.Reverse(routeName string, pathValues ...any)
-  behavior: ACCUMULATE(Reverse loop -> result)
-  calls: Reverse
-
 Echo.AddRoute (echo.go:617-617)
   AddRoute registers a new Route with default host Router
   sig: Echo.AddRoute(route Route)
   behavior: DELEGATE(e.add -> result)
   calls: add
   called_by: Match
-
-StaticDirectoryHandler (echo.go:559-559)
-  StaticDirectoryHandler creates handler function to serve files from provided file system When disablePathUnescaping is s
-  sig: StaticDirectoryHandler(fileSystem fs.FS, disablePathUnescaping bool)
-  calls: Open, sanitizeURI
-  called_by: Static, StaticFS
 
 Echo.RouteNotFound (echo.go:495-495)
   RouteNotFound registers a special-case route which is executed when no other route is found (i.e.
@@ -239,29 +247,9 @@ Echo (echo.go:68-68)
   Echo is the top-level framework instance.
   methods: AcquireContext, Add, AddRoute, Any, CONNECT, DELETE
 
-Echo.Add (echo.go:642-642)
-  Add registers a new route for an HTTP method and path with matching handler in the router with optional route-level midd
-  sig: Echo.Add(method, path string, handler HandlerFunc, middleware ......)
-  behavior: GUARD(err != nil -> panic(err))
-  calls: add
-  called_by: Any, CONNECT, DELETE, File, GET, HEAD, OPTIONS, PATCH
-  raises: panic
-
 routeMethods (router.go:148-148)
   type routeMethods
   methods: find, isHandler, set, updateAllowHeader
-
-DefaultRouter.Route (router.go:791-791)
-  Route looks up a handler registered for method and path.
-  sig: DefaultRouter.Route(c *Context)
-  behavior: PRECEDENCE(cap -> not_r.useEscapedPathForRouting -> currentNode); ACCUMULATE(len loop -> searchIndex)
-  calls: findStaticChild, node, find
-
-Echo.FileFS (echo.go:591-591)
-  FileFS registers a new route with path to serve file from the provided file system.
-  sig: Echo.FileFS(path, file string, filesystem fs.FS, m ...MiddlewareFunc)
-  behavior: DELEGATE(e.GET -> result)
-  calls: GET, StaticFileHandler
 
 Echo.GET (echo.go:449-449)
   GET registers a new GET route for a path with matching handler in the router with optional route-level middleware.
@@ -269,6 +257,18 @@ Echo.GET (echo.go:449-449)
   behavior: DELEGATE(e.Add -> result)
   calls: Add
   called_by: FileFS, main
+
+Echo.FileFS (echo.go:591-591)
+  FileFS registers a new route with path to serve file from the provided file system.
+  sig: Echo.FileFS(path, file string, filesystem fs.FS, m ...MiddlewareFunc)
+  behavior: DELEGATE(e.GET -> result)
+  calls: GET, StaticFileHandler
+
+DefaultRouter.Route (router.go:791-791)
+  Route looks up a handler registered for method and path.
+  sig: DefaultRouter.Route(c *Context)
+  behavior: PRECEDENCE(cap -> not_r.useEscapedPathForRouting -> currentNode); ACCUMULATE(len loop -> searchIndex)
+  calls: findStaticChild, node, find
 
 routeMethods.find (router.go:213-213)
   sig: routeMethods.find(method string, fallbackToAny bool)
@@ -279,6 +279,12 @@ node.findStaticChild (router.go:709-709)
   sig: node.findStaticChild(l byte)
   behavior: ACCUMULATE(loop -> result)
   called_by: Remove, Route, findChildWithLabel
+
+routeMethods.set (router.go:171-171)
+  sig: routeMethods.set(method string, r *routeMethod)
+  behavior: DISPATCH(method)
+  calls: updateAllowHeader
+  called_by: setHandler
 
 DefaultRouter.storeRouteInfo (router.go:538-538)
   sig: DefaultRouter.storeRouteInfo(ri RouteInfo)
@@ -309,19 +315,14 @@ Echo.OPTIONS (echo.go:461-461)
   behavior: DELEGATE(e.Add -> result)
   calls: Add
 
-Echo.PATCH (echo.go:467-467)
-  PATCH registers a new PATCH route for a path with matching handler in the router with optional route-level middleware.
-  sig: Echo.PATCH(path string, h HandlerFunc, m ...MiddlewareFunc)
-  behavior: DELEGATE(e.Add -> result)
-  calls: Add
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 95 symbols in L3, 57 with behavior annotations
-uncovered: Echo.ServeHTTP, Echo.Group, Echo.AcquireContext, Echo.NewContext
+coverage: 80 symbols in L3, 50 with behavior annotations
+uncovered: concurrentRouter, DefaultRouter.Routes, Router, RouterConfig
 drill: echo.go (~1 lines, Echo.StaticFS)
 drill: echo.go (~1 lines, Echo.Static)
 drill: group.go (~1 lines, Group.StaticFS)
+drill: route.go (~1 lines, Routes.Reverse)
 
 --- END CLUE FILE ---
 
@@ -341,6 +342,11 @@ func (e *Echo) Static(pathPrefix, fsRoot string, middleware ...MiddlewareFunc) R
 func (g *Group) StaticFS(pathPrefix string, filesystem fs.FS, middleware ...MiddlewareFunc) RouteInfo {
 ```
 
+## Routes.Reverse  (route.go L117-117)
+```
+func (r Routes) Reverse(routeName string, pathValues ...any) (string, error) {
+```
+
 ## StaticDirectoryHandler  (echo.go L559-559)
 ```
 func StaticDirectoryHandler(fileSystem fs.FS, disablePathUnescaping bool) HandlerFunc {
@@ -349,6 +355,166 @@ func StaticDirectoryHandler(fileSystem fs.FS, disablePathUnescaping bool) Handle
 ## MustSubFS  (echo.go L850-850)
 ```
 func MustSubFS(currentFs fs.FS, fsRoot string) fs.FS {
+```
+
+## HandlerName  (route.go L99-99)
+```
+func HandlerName(h HandlerFunc) string {
+```
+
+## Route.ToRouteInfo  (route.go L25-25)
+```
+func (r Route) ToRouteInfo(params []string) RouteInfo {
+```
+
+## Route.WithPrefix  (route.go L40-40)
+```
+func (r Route) WithPrefix(pathPrefix string, middlewares []MiddlewareFunc) Route {
+```
+
+## Route  (route.go L16-16)
+```
+type Route struct {
+```
+
+## RouteInfo.Clone  (route.go L65-65)
+```
+func (r RouteInfo) Clone() RouteInfo {
+```
+
+## RouteInfo.Reverse  (route.go L75-75)
+```
+func (r RouteInfo) Reverse(pathValues ...any) string {
+```
+
+## RouteInfo  (route.go L53-53)
+```
+type RouteInfo struct {
+```
+
+## Routes.Clone  (route.go L108-108)
+```
+func (r Routes) Clone() Routes {
+```
+
+## Routes.FilterByMethod  (route.go L141-141)
+```
+func (r Routes) FilterByMethod(method string) (Routes, error) {
+```
+
+## Routes.FilterByName  (route.go L177-177)
+```
+func (r Routes) FilterByName(name string) (Routes, error) {
+```
+
+## Routes.FilterByPath  (route.go L159-159)
+```
+func (r Routes) FilterByPath(path string) (Routes, error) {
+```
+
+## Routes.FindByMethodPath  (route.go L127-127)
+```
+func (r Routes) FindByMethodPath(method string, path string) (RouteInfo, error) {
+```
+
+## Group.Add  (group.go L158-158)
+```
+func (g *Group) Add(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.AddRoute  (group.go L172-172)
+```
+func (g *Group) AddRoute(route Route) (RouteInfo, error) {
+```
+
+## Group.Any  (group.go L72-72)
+```
+func (g *Group) Any(path string, handler HandlerFunc, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.CONNECT  (group.go L27-27)
+```
+func (g *Group) CONNECT(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.DELETE  (group.go L32-32)
+```
+func (g *Group) DELETE(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.File  (group.go L143-143)
+```
+func (g *Group) File(path, file string, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.FileFS  (group.go L135-135)
+```
+func (g *Group) FileFS(path, file string, filesystem fs.FS, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.GET  (group.go L37-37)
+```
+func (g *Group) GET(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.Group  (group.go L103-103)
+```
+func (g *Group) Group(prefix string, middleware ...MiddlewareFunc) (sg *Group) {
+```
+
+## Group.HEAD  (group.go L42-42)
+```
+func (g *Group) HEAD(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.Match  (group.go L77-77)
+```
+func (g *Group) Match(methods []string, path string, handler HandlerFunc, middleware ...MiddlewareFunc) Routes {
+```
+
+## Group.OPTIONS  (group.go L47-47)
+```
+func (g *Group) OPTIONS(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.PATCH  (group.go L52-52)
+```
+func (g *Group) PATCH(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.POST  (group.go L57-57)
+```
+func (g *Group) POST(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.PUT  (group.go L62-62)
+```
+func (g *Group) PUT(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.RouteNotFound  (group.go L153-153)
+```
+func (g *Group) RouteNotFound(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.Static  (group.go L112-112)
+```
+func (g *Group) Static(pathPrefix, fsRoot string, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.TRACE  (group.go L67-67)
+```
+func (g *Group) TRACE(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.Use  (group.go L22-22)
+```
+func (g *Group) Use(middleware ...MiddlewareFunc) {
+```
+
+## Group  (group.go L14-14)
+```
+type Group struct {
 ```
 
 ## Config  (echo.go L237-237)
@@ -589,106 +755,6 @@ func sanitizeURI(uri string) string {
 ## subFS  (echo.go L827-827)
 ```
 func subFS(currentFs fs.FS, root string) (fs.FS, error) {
-```
-
-## Group.Add  (group.go L158-158)
-```
-func (g *Group) Add(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.AddRoute  (group.go L172-172)
-```
-func (g *Group) AddRoute(route Route) (RouteInfo, error) {
-```
-
-## Group.Any  (group.go L72-72)
-```
-func (g *Group) Any(path string, handler HandlerFunc, middleware ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.CONNECT  (group.go L27-27)
-```
-func (g *Group) CONNECT(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.DELETE  (group.go L32-32)
-```
-func (g *Group) DELETE(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.File  (group.go L143-143)
-```
-func (g *Group) File(path, file string, middleware ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.FileFS  (group.go L135-135)
-```
-func (g *Group) FileFS(path, file string, filesystem fs.FS, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.GET  (group.go L37-37)
-```
-func (g *Group) GET(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.Group  (group.go L103-103)
-```
-func (g *Group) Group(prefix string, middleware ...MiddlewareFunc) (sg *Group) {
-```
-
-## Group.HEAD  (group.go L42-42)
-```
-func (g *Group) HEAD(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.Match  (group.go L77-77)
-```
-func (g *Group) Match(methods []string, path string, handler HandlerFunc, middleware ...MiddlewareFunc) Routes {
-```
-
-## Group.OPTIONS  (group.go L47-47)
-```
-func (g *Group) OPTIONS(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.PATCH  (group.go L52-52)
-```
-func (g *Group) PATCH(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.POST  (group.go L57-57)
-```
-func (g *Group) POST(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.PUT  (group.go L62-62)
-```
-func (g *Group) PUT(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.RouteNotFound  (group.go L153-153)
-```
-func (g *Group) RouteNotFound(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.Static  (group.go L112-112)
-```
-func (g *Group) Static(pathPrefix, fsRoot string, middleware ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.TRACE  (group.go L67-67)
-```
-func (g *Group) TRACE(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.Use  (group.go L22-22)
-```
-func (g *Group) Use(middleware ...MiddlewareFunc) {
-```
-
-## Group  (group.go L14-14)
-```
-type Group struct {
 ```
 --- END SOURCE SNIPPETS ---
 

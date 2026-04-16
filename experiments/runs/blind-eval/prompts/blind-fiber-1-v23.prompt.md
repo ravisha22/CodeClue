@@ -87,8 +87,8 @@ Bind.validateStruct                 M bind.go:183    Struct validation.
 SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
 domainMatcher.match                 M domain.go:139    match checks if a hostname matches the domain p...
 Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
-manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
+manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
 walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
 isUnixNetwork                       M middleware/adaptor/adaptor.go:208    function isUnixNetwork
 Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...
@@ -117,20 +117,21 @@ redirectionMsg.Msgsize              M redirect_msgp.go:196    Msgsize returns an
   ...and 1400 more symbols
 
 -- FOCUS
-RoutePatternMatch (path.go:155-155)
-  RoutePatternMatch reports whether path matches the provided Fiber route pattern.
-  sig: RoutePatternMatch(path, pattern string, cfg ...Config)
-  behavior: PRECEDENCE(len -> path -> pattern); UNWIND(defer)
-  calls: RemoveEscapeCharBytes, parseRoute, getMatch, reset
+Route.match (router.go:68-68)
+  sig: Route.match(detectionPath, path string, params *[maxParams]string)
+  behavior: GUARD(r.root && len(detectionPath) == 1 && detectio... -> return true); PRECEDENCE(r -> len)
+  called_by: next, nextCustom
+
+App.requestHandler (router.go:315-315)
+  sig: App.requestHandler(rctx *fasthttp.RequestCtx)
+  behavior: GUARD(d, isDefault := ctx.(*DefaultCtx); isDefault -> return); PRECEDENCE(d -> err); UNWIND(defer)
+  calls: next, nextCustom
 
 pathMatch (client/cookiejar.go:307-307)
   pathMatch determines whether the request path matches the cookie path according to RFC 6265 section 5.1.4.
   sig: pathMatch(reqPath, cookiePath []byte)
   behavior: PRECEDENCE(len -> bytes)
   called_by: cookiesForRequest, searchCookieByKeyAndPath
-
-Request.DisablePathNormalizing (client/request.go:614-614)
-  DisablePathNormalizing reports whether path normalizing is disabled for the Request.
 
 CookieJar.cookiesForRequest (client/cookiejar.go:103-103)
   cookiesForRequest returns cookies that match the given host, path and security settings.
@@ -139,24 +140,46 @@ CookieJar.cookiesForRequest (client/cookiejar.go:103-103)
   calls: domainMatch, pathMatch
   called_by: getByHostAndPath
 
-IsFromCache (middleware/idempotency/idempotency.go:29-29)
-  IsFromCache reports whether the middleware served the response from the cache for the current request.
-  sig: IsFromCache(c fiber.Ctx)
-  behavior: DELEGATE(c.Locals -> result)
+domainMatch (client/cookiejar.go:327-327)
+  domainMatch reports whether host domain-matches the given cookie domain.
+  sig: domainMatch(host, domain string)
+  behavior: GUARD(host == domain -> return true)
+  called_by: cookiesForRequest
 
-WasPutToCache (middleware/idempotency/idempotency.go:35-35)
-  WasPutToCache reports whether the middleware stored the response produced by the current request in the cache.
-  sig: WasPutToCache(c fiber.Ctx)
-  behavior: GUARD(wasPut, ok := val.(bool); ok -> return wasPut)
+HTTPMiddleware (middleware/adaptor/adaptor.go:162-162)
+  HTTPMiddleware wraps net/http middleware to fiber middleware
+  sig: HTTPMiddleware(mw func(http.Handler)
+  calls: CopyContextToFiberContext, HTTPHandler
 
-Group (group.go:14-15)
-  Group represents a collection of routes that share middleware and a common path prefix.
-  methods: Add, All, Connect, Delete, Domain, Get
-  called_by: Route
+routeParser.getMatch (path.go:507-507)
+  getMatch parses the passed url and tries to match it against the route segments and determine the parameter positions
+  sig: routeParser.getMatch(detectionPath, path string, params *[maxParams]string, p...)
+  behavior: GUARD(detectionPath != "" -> return false); ACCUMULATE(len loop -> result)
+  calls: CheckConstraint, findParamLen, hasPartialMatchBoundary
+  called_by: RoutePatternMatch
 
-Registering.All (register.go:50-50)
-  All registers a middleware route that will match requests with the provided path which is stored in register struct.
-  sig: Registering.All(handler any, handlers ...any)
+CookieJar.getByHostAndPath (client/cookiejar.go:60-60)
+  getByHostAndPath returns cookies stored for a specific host and path.
+  sig: CookieJar.getByHostAndPath(host, path []byte, secure bool)
+  behavior: GUARD(cj.hostCookies == nil -> return nil); PRECEDENCE(cj -> err)
+  calls: cookiesForRequest
+  called_by: Get, dumpCookiesToReq
+
+searchCookieByKeyAndPath (client/cookiejar.go:294-294)
+  searchCookieByKeyAndPath looks up a cookie by its key and path from the provided slice of cookies.
+  sig: searchCookieByKeyAndPath(key, path []byte, cookies []*fasthttp.Cookie)
+  behavior: ACCUMULATE(Equal loop -> result)
+  calls: pathMatch
+  called_by: SetByHost, parseCookiesFromResp
+
+RoutePatternMatch (path.go:155-155)
+  RoutePatternMatch reports whether path matches the provided Fiber route pattern.
+  sig: RoutePatternMatch(path, pattern string, cfg ...Config)
+  behavior: PRECEDENCE(len -> path -> pattern); UNWIND(defer)
+  calls: RemoveEscapeCharBytes, parseRoute, getMatch, reset
+
+Request.DisablePathNormalizing (client/request.go:614-614)
+  DisablePathNormalizing reports whether path normalizing is disabled for the Request.
 
 CopyContextToFiberContext (middleware/adaptor/adaptor.go:101-101)
   CopyContextToFiberContext copies the values of context.Context to a fasthttp.RequestCtx.
@@ -186,14 +209,15 @@ Middleware.initialize (middleware/session/middleware.go:111-111)
   called_by: NewWithStore
   raises: panic
 
-domainMatch (client/cookiejar.go:327-327)
-  domainMatch reports whether host domain-matches the given cookie domain.
-  sig: domainMatch(host, domain string)
-  behavior: GUARD(host == domain -> return true)
-  called_by: cookiesForRequest
-
 Client.DisablePathNormalizing (client/client.go:437-437)
   DisablePathNormalizing reports whether path normalizing is disabled for the client.
+
+paramsMatch (helpers.go:412-412)
+  paramsMatch returns whether offerParams contains all parameters present in specParams.
+  sig: paramsMatch(specParamStr headerParams, offerParams string)
+  behavior: GUARD(len(specParamStr) == 0 -> return true); ACCUMULATE(VisitHeaderParams loop -> result)
+  calls: unescapeHeaderValue
+  called_by: acceptsOfferType
 
 App.printRoutesMessage (listen.go:516-517)
   printRoutesMessage print all routes with method, path, name and handlers in a format of table, like this: method | path 
@@ -210,90 +234,59 @@ DefaultCtx.Path (ctx.go:297-297)
   behavior: DELEGATE(c.app.toString -> result)
   calls: configDependentPaths
 
-paramsMatch (helpers.go:412-412)
-  paramsMatch returns whether offerParams contains all parameters present in specParams.
-  sig: paramsMatch(specParamStr headerParams, offerParams string)
-  behavior: GUARD(len(specParamStr) == 0 -> return true); ACCUMULATE(VisitHeaderParams loop -> result)
-  calls: unescapeHeaderValue
-  called_by: acceptsOfferType
-
-HTTPMiddleware (middleware/adaptor/adaptor.go:162-162)
-  HTTPMiddleware wraps net/http middleware to fiber middleware
-  sig: HTTPMiddleware(mw func(http.Handler)
-  calls: CopyContextToFiberContext, HTTPHandler
-
 DefaultCtx.Matched (ctx.go:375-376)
   Matched returns true if the current request path was matched by the router.
   behavior: DELEGATE(c.getMatched -> result)
   calls: getMatched
   called_by: OverrideParam
 
-FromContext (middleware/session/middleware.go:179-179)
-  FromContext returns the Middleware from the Fiber context.
-  sig: FromContext(ctx any)
-  behavior: GUARD(m, ok := fiber.ValueFromContext[*Middleware](... -> return m)
+DefaultCtx.RestartRouting (ctx.go:265-266)
+  RestartRouting instead of going to the next handler.
+  behavior: GUARD(c.handlerCtx != nil -> return err)
 
-HTTPHandlerWithContext (middleware/adaptor/adaptor.go:65-65)
-  HTTPHandlerWithContext is like HTTPHandler, but additionally stores Fiber’s user context in the request context
-  sig: HTTPHandlerWithContext(h http.Handler)
-  calls: LocalContextFromHTTPRequest
+Request.PathParam (client/request.go:365-365)
+  PathParam returns the value of a named path parameter.
+  sig: Request.PathParam(key string)
+  behavior: GUARD(val, ok := r.path[key]; ok -> return val)
 
-IsEarly (middleware/earlydata/earlydata.go:16-16)
-  IsEarly returns true if the request used early data and was accepted by the middleware.
-  sig: IsEarly(c fiber.Ctx)
-  behavior: DELEGATE(c.Locals -> result)
+sanitizeRequestID (middleware/requestid/requestid.go:43-43)
+  sanitizeRequestID returns the provided request ID when it is valid, otherwise it tries up to three values from the confi
+  sig: sanitizeRequestID(rid string, generator func()
+  behavior: GUARD(isValidRequestID(rid) -> return rid); ACCUMULATE(generator loop -> result)
+  calls: isValidRequestID
+  called_by: New
 
-New (middleware/skip/skip.go:10-10)
-  New returns a middleware that calls the provided predicate for each request.
-  sig: New(handler fiber.Handler, exclude func(c fiber.Ctx)
-  behavior: GUARD(exclude == nil -> return handler)
+FiberHandler (middleware/adaptor/adaptor.go:194-194)
+  FiberHandler wraps fiber handler to net/http handler
+  sig: FiberHandler(h fiber.Handler)
+  behavior: DELEGATE(FiberHandlerFunc -> result)
+  calls: FiberHandlerFunc
 
-domainRouter.Use (domain.go:350-350)
-  Use registers a middleware route that will match requests with the provided prefix (which is optional and defaults to "/
-  sig: domainRouter.Use(args ...any)
-  behavior: PRECEDENCE(len -> d); ACCUMULATE(toFiberHandler loop -> handlers, raises fmt.Sprintf("use:...)
-  calls: Name, mount, registerGroup, registerPath, wrapHandlers
-  raises: panic
+hasPartialMatchBoundary (path.go:486-486)
+  sig: hasPartialMatchBoundary(path string, matchedLength int)
+  behavior: GUARD(matchedLength < 0 || matchedLength > len(path) -> return false); PRECEDENCE(matchedLength)
+  called_by: getMatch
 
-App.Use (app.go:860-860)
-  Use registers a middleware route that will match requests with the provided prefix (which is optional and defaults to "/
-  sig: App.Use(args ...any)
-  behavior: ACCUMULATE(toFiberHandler loop -> handlers, raises fmt.Sprintf("use:...)
-  raises: panic
+parseRequestCacheControlString (middleware/cache/cache.go:1139-1139)
+  sig: parseRequestCacheControlString(cc string)
+  behavior: DELEGATE(parseRequestCacheControl -> result)
+  calls: parseRequestCacheControl
 
-Group.Use (group.go:70-70)
-  Use registers a middleware route that will match requests with the provided prefix (which is optional and defaults to "/
-  sig: Group.Use(args ...any)
-  behavior: PRECEDENCE(len -> not_grp.anyRouteDefined); ACCUMULATE(toFiberHandler loop -> handlers, raises fmt.Sprintf("use:...)
-  raises: panic
+sanitizePath (middleware/static/static.go:27-27)
+  sanitizePath validates and cleans the requested path.
+  sig: sanitizePath(p []byte, filesystem fs.FS)
+  behavior: PRECEDENCE(bytes -> strings); ACCUMULATE(PathUnescape loop -> result)
+  called_by: New
 
-core (client/core.go:48-48)
-  core stores middleware and plugin definitions and defines the request execution process.
-  methods: afterHooks, execFunc, execute, getRetryConfig, preHooks, timeout
-
-App.Group (app.go:969-969)
-  Group is used for Routes with common prefix to define a new sub-router with optional middleware.
-  sig: App.Group(prefix string, handlers ...any)
-  behavior: PRECEDENCE(len -> err)
-  called_by: Route
-  raises: panic
-
-Group.Group (group.go:187-187)
-  Group is used for Routes with common prefix to define a new sub-router with optional middleware.
-  sig: Group.Group(prefix string, handlers ...any)
-  behavior: PRECEDENCE(len -> err)
-  raises: panic
-
-CustomCtx (ctx_interface.go:13-14)
-  CustomCtx extends Ctx with the additional methods required by Fiber's internals and middleware helpers.
-
-domainCheckResult (domain.go:32-33)
-  domainCheckResult caches a domain match result for a single request.
+Request.PathParams (client/request.go:374-374)
+  PathParams returns an iterator over all path parameters.
+  behavior: DELEGATE(r.path.All -> result)
+  calls: All
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 399 symbols in L3, 212 with behavior annotations
-uncovered: App.next, App.nextCustom, Request.resetBody, Request.checkClient
+coverage: 80 symbols in L3, 55 with behavior annotations
+uncovered: App.next, App.nextCustom, Request.SetParam, Client.SetDisablePathNormalizing
 drill: client/cookiejar.go (~1 lines, pathMatch)
 drill: path.go (~1 lines, RoutePatternMatch)
 drill: client/request.go (~1 lines, Request.DisablePathNormalizing)
@@ -326,106 +319,84 @@ func RemoveEscapeCharBytes(word []byte) []byte {
 func parseRoute(pattern string, customConstraints ...CustomConstraint) routeParser {
 ```
 
-## Constraint.CheckConstraint  (path.go L707-707)
+## AcquireCookieJar  (client/cookiejar.go L24-24)
 ```
-func (c *Constraint) CheckConstraint(param string) bool {
-```
-
-## Constraint  (path.go L80-80)
-```
-	RegexCompiler     *regexp.Regexp
+func AcquireCookieJar() *CookieJar {
 ```
 
-## CustomConstraint  (path.go L88-89)
+## CookieJar.Get  (client/cookiejar.go L50-50)
 ```
-type CustomConstraint interface {
-	// Name returns the name of the constraint.
-```
-
-## GetTrimmedParam  (path.go L623-623)
-```
-func GetTrimmedParam(param string) string {
+func (cj *CookieJar) Get(uri *fasthttp.URI) []*fasthttp.Cookie {
 ```
 
-## RemoveEscapeChar  (path.go L639-639)
+## CookieJar.Release  (client/cookiejar.go L281-281)
 ```
-func RemoveEscapeChar(word string) string {
-```
-
-## addParameterMetaInfo  (path.go L260-260)
-```
-func addParameterMetaInfo(segs []*routeSegment) []*routeSegment {
+func (cj *CookieJar) Release() {
 ```
 
-## findGreedyParamLen  (path.go L607-607)
+## CookieJar.Set  (client/cookiejar.go L143-143)
 ```
-func findGreedyParamLen(s string, searchCount int, segment *routeSegment) int {
-```
-
-## findNextNonEscapedCharPosition  (path.go L462-462)
-```
-func findNextNonEscapedCharPosition(search string, char byte) int {
+func (cj *CookieJar) Set(uri *fasthttp.URI, cookies ...*fasthttp.Cookie) {
 ```
 
-## findNextParamPosition  (path.go L305-305)
+## CookieJar.SetByHost  (client/cookiejar.go L154-154)
 ```
-func findNextParamPosition(pattern string) int {
-```
-
-## findParamLen  (path.go L563-563)
-```
-func findParamLen(s string, segment *routeSegment) int {
+func (cj *CookieJar) SetByHost(host []byte, cookies ...*fasthttp.Cookie) {
 ```
 
-## findParamLenForLastSegment  (path.go L596-596)
+## CookieJar.SetKeyValue  (client/cookiejar.go L195-195)
 ```
-func findParamLenForLastSegment(s string, seg *routeSegment) int {
-```
-
-## getParamConstraintType  (path.go L670-670)
-```
-func getParamConstraintType(constraintPart string) TypeConstraint {
+func (cj *CookieJar) SetKeyValue(host, key, value string) {
 ```
 
-## hasPartialMatchBoundary  (path.go L486-486)
+## CookieJar.SetKeyValueBytes  (client/cookiejar.go L206-206)
 ```
-func hasPartialMatchBoundary(path string, matchedLength int) bool {
-```
-
-## routeParser.analyseParameterPart  (path.go L342-342)
-```
-func (parser *routeParser) analyseParameterPart(pattern string, customConstraints ...CustomConstraint) (int, *routeSegment) {
+func (cj *CookieJar) SetKeyValueBytes(host string, key, value []byte) {
 ```
 
-## routeParser.getMatch  (path.go L507-507)
+## CookieJar.cookiesForRequest  (client/cookiejar.go L103-103)
 ```
-func (parser *routeParser) getMatch(detectionPath, path string, params *[maxParams]string, partialCheck bool) bool { //nolint:revive // Accepting a bool param is fine here
-```
-
-## routeParser.parseRoute  (path.go L221-221)
-```
-func (parser *routeParser) parseRoute(pattern string, customConstraints ...CustomConstraint) {
+func (cj *CookieJar) cookiesForRequest(host string, path []byte, secure bool) []*fasthttp.Cookie {
 ```
 
-## routeParser.reset  (path.go L213-213)
+## CookieJar.dumpCookiesToReq  (client/cookiejar.go L215-215)
 ```
-	parser.segs = parser.segs[:0]
-```
-
-## routeParser  (path.go L27-27)
-```
-	segs          []*routeSegment // the parsed segments of the route
+func (cj *CookieJar) dumpCookiesToReq(req *fasthttp.Request) {
 ```
 
-## routeSegment  (path.go L40-41)
+## CookieJar.getByHostAndPath  (client/cookiejar.go L60-60)
 ```
-type routeSegment struct {
-	// const information
+func (cj *CookieJar) getByHostAndPath(host, path []byte, secure bool) []*fasthttp.Cookie {
 ```
 
-## splitNonEscaped  (path.go L473-473)
+## CookieJar.getCookiesByHost  (client/cookiejar.go L79-79)
 ```
-func splitNonEscaped(s string, sep byte) []string {
+func (cj *CookieJar) getCookiesByHost(host string) []*fasthttp.Cookie {
+```
+
+## CookieJar.parseCookiesFromResp  (client/cookiejar.go L226-226)
+```
+func (cj *CookieJar) parseCookiesFromResp(host, _ []byte, resp *fasthttp.Response) {
+```
+
+## CookieJar  (client/cookiejar.go L40-40)
+```
+type CookieJar struct {
+```
+
+## ReleaseCookieJar  (client/cookiejar.go L34-34)
+```
+func ReleaseCookieJar(c *CookieJar) {
+```
+
+## domainMatch  (client/cookiejar.go L327-327)
+```
+func domainMatch(host, domain string) bool {
+```
+
+## searchCookieByKeyAndPath  (client/cookiejar.go L294-294)
+```
+func searchCookieByKeyAndPath(key, path []byte, cookies []*fasthttp.Cookie) *fasthttp.Cookie {
 ```
 
 ## AcquireFile  (client/request.go L1032-1032)
@@ -788,9 +759,14 @@ func (r *Request) Head(url string) (*Response, error) {
 func (r *Request) Header(key string) []string {
 ```
 
-## Request.Method  (client/request.go L76-76)
+## Request.Headers  (client/request.go L160-160)
 ```
-func (r *Request) Method() string {
+func (r *Request) Headers() iter.Seq2[string, []string] {
+```
+
+## Request.MaxRedirects  (client/request.go L603-603)
+```
+func (r *Request) MaxRedirects() int {
 ```
 --- END SOURCE SNIPPETS ---
 

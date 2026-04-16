@@ -132,12 +132,6 @@ Session (src/requests/sessions.py:356-818)
   raises: InvalidSchema, ValueError
   uses: InvalidSchema (exceptions), PreparedRequest (models), RequestsCookieJar (cookies), Request (models)
 
-merge_hooks (src/requests/sessions.py:92-104)
-  Properly merges both requests and session hooks.
-  sig: merge_hooks(request_hooks, session_hooks, dict_class)
-  calls: get, merge_setting
-  called_by: prepare_request, Session
-
 session (src/requests/sessions.py:821-833)
   Returns a :class:`Session` for context-management.
   behavior: DELEGATE(Session -> result)
@@ -148,18 +142,18 @@ SessionRedirectMixin (src/requests/sessions.py:107-353)
   calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
   raises: TooManyRedirects
 
-__call__ (src/requests/auth.py:72-73)
-  sig: __call__(r)
-  raises: NotImplementedError
-
-__call__ (src/requests/auth.py:94-96)
+__call__ (src/requests/auth.py:102-104)
   sig: __call__(r)
 
 __call__ (src/requests/auth.py:285-303)
   sig: __call__(r)
 
-__call__ (src/requests/auth.py:102-104)
+__call__ (src/requests/auth.py:94-96)
   sig: __call__(r)
+
+__call__ (src/requests/auth.py:72-73)
+  sig: __call__(r)
+  raises: NotImplementedError
 
 _implementation (src/requests/help.py:34-63)
   Return a dict with the Python implementation and version.
@@ -185,86 +179,6 @@ RequestsWarning (src/requests/exceptions.py:143-144)
   extends: Warning
   imports: urllib3.exceptions, compat
 
-close (src/requests/sessions.py:796-799)
-  Closes all adapters and as such the session
-  behavior: ACCUMULATE(self.adapters.values(... -> result)
-  called_by: __exit__, Session, resolve_redirects, SessionRedirectMixin
-
-FileModeWarning (src/requests/exceptions.py:147-148)
-  A file was opened in text mode, but Requests determined its binary length.
-  extends: RequestsWarning, DeprecationWarning
-  imports: urllib3.exceptions, compat
-
-MockRequest (src/requests/cookies.py:23-100)
-  Wraps a `requests.Request` to mimic a `urllib2.Request`.
-  imports: calendar, copy, compat, threading, dummy_threading
-  calls: get_host, get_origin_req_host, is_unverifiable, get
-  called_by: extract_cookies_to_jar, get_cookie_header
-  raises: NotImplementedError
-
-UnrewindableBodyError (src/requests/exceptions.py:136-137)
-  Requests encountered an error when trying to rewind a body.
-  extends: RequestException
-  imports: urllib3.exceptions, compat
-
-_find (src/requests/cookies.py:366-384)
-  Requests uses this method internally to get cookie values.
-  sig: _find(name, domain, path)
-  behavior: ACCUMULATE(iter(self) loop -> result)
-  raises: KeyError
-
-_find_no_duplicates (src/requests/cookies.py:386-413)
-  Both ``__get_item__`` and ``get`` call this function: it's never
-  sig: _find_no_duplicates(name, domain, path)
-  behavior: ACCUMULATE(iter(self) loop -> result, raises CookieConflictError)
-  calls: CookieConflictError
-  called_by: __getitem__, get, RequestsCookieJar
-  raises: KeyError, CookieConflictError
-
-build_response (src/requests/adapters.py:337-372)
-  Builds a :class:`Response <requests.Response>` object from a urllib3
-  sig: build_response(req, resp)
-  behavior: BRANCH(isinstance(req.url, bytes) -> req.url.decode('utf-8'), else -> req.url)
-  called_by: HTTPAdapter
-  uses: Response (models), CaseInsensitiveDict (structures)
-
-copy (src/requests/cookies.py:428-433)
-  Return a copy of this RequestsCookieJar.
-  calls: get_policy, update, RequestsCookieJar
-  called_by: __getstate__, update, RequestsCookieJar, _copy_cookie_jar
-
-default_headers (src/requests/utils.py:887-898)
-  :rtype: requests.structures.CaseInsensitiveDict
-  behavior: DELEGATE(CaseInsensitiveDict -> result)
-  calls: default_user_agent
-  uses: CaseInsensitiveDict (structures)
-
-get_connection_with_tls_context (src/requests/adapters.py:424-471)
-  Returns a urllib3 connection for the given request and TLS settings.
-  sig: get_connection_with_tls_context(request, verify, proxies, cert)
-  behavior: BRANCH(proxy -> raise InvalidProxyURL..., else -> self.poolmanager.conn...)
-  calls: build_connection_pool_key_attributes, proxy_manager_for
-  called_by: HTTPAdapter
-  raises: InvalidURL, InvalidProxyURL
-  uses: InvalidURL (exceptions), InvalidProxyURL (exceptions)
-
-get_environ_proxies (src/requests/utils.py:813-822)
-  Return a dict of environment proxies.
-  sig: get_environ_proxies(url, no_proxy)
-  behavior: BRANCH(should_bypass_proxies(url, no... -> return {}, else -> return getprox...)
-  calls: should_bypass_proxies
-  called_by: resolve_proxies
-
-get_netrc_auth (src/requests/utils.py:206-247)
-  Returns the Requests tuple auth for a given url from netrc.
-  sig: get_netrc_auth(url, raise_errors)
-  behavior: BRANCH(netrc_file is not None -> (netrc_file,), else -> (f'~/{f}' for f in N...)
-
-set_environ (src/requests/utils.py:731-749)
-  Set the environment variable 'env_name' to 'value'
-  sig: set_environ(env_name, value)
-  called_by: should_bypass_proxies
-
 RequestsCookieJar (src/requests/cookies.py:176-437)
   Compatibility class; is a http.cookiejar.CookieJar, but exposes a dict
   extends: CookieJar, MutableMapping
@@ -289,30 +203,119 @@ is_permanent_redirect (src/requests/models.py:779-784)
 super_len (src/requests/utils.py:135-203)
   sig: super_len(o)
 
-HTTPDigestAuth (src/requests/auth.py:107-314)
-  Attaches HTTP Digest Authentication to the given Request object.
-  extends: AuthBase
-  imports: hashlib, threading, warnings, base64, compat
-  calls: build_digest_header, init_per_thread_state
+close (src/requests/sessions.py:796-799)
+  Closes all adapters and as such the session
+  behavior: ACCUMULATE(self.adapters.values(... -> result)
+  called_by: __exit__, Session, resolve_redirects, SessionRedirectMixin
 
-HTTPAdapter (src/requests/adapters.py:144-697)
-  The built-in HTTP Adapter for urllib3.
-  extends: BaseAdapter
-  imports: socket, warnings, urllib3.exceptions, urllib3.poolmanager, urllib3.util
-  calls: add_headers, build_connection_pool_key_attributes, build_response, cert_verify, get_connection_with_tls_context, init_poolmanager, proxy_headers, proxy_manager_for
-  raises: OSError, InvalidURL, InvalidProxyURL, ConnectionError
-  uses: Response (models), CaseInsensitiveDict (structures), InvalidURL (exceptions), InvalidProxyURL (exceptions)
+merge_hooks (src/requests/sessions.py:92-104)
+  Properly merges both requests and session hooks.
+  sig: merge_hooks(request_hooks, session_hooks, dict_class)
+  calls: get, merge_setting
+  called_by: prepare_request, Session
 
-CookieConflictError (src/requests/cookies.py:170-173)
-  There are two cookies that meet the criteria specified in the cookie jar.
-  extends: RuntimeError
+MockRequest (src/requests/cookies.py:23-100)
+  Wraps a `requests.Request` to mimic a `urllib2.Request`.
   imports: calendar, copy, compat, threading, dummy_threading
-  called_by: _find_no_duplicates, RequestsCookieJar
-
-AuthBase (src/requests/auth.py:69-73)
-  Base class that all auth implementations derive from
-  imports: hashlib, threading, warnings, base64, compat
+  calls: get_host, get_origin_req_host, is_unverifiable, get
+  called_by: extract_cookies_to_jar, get_cookie_header
   raises: NotImplementedError
+
+copy (src/requests/cookies.py:428-433)
+  Return a copy of this RequestsCookieJar.
+  calls: get_policy, update, RequestsCookieJar
+  called_by: __getstate__, update, RequestsCookieJar, _copy_cookie_jar
+
+_find_no_duplicates (src/requests/cookies.py:386-413)
+  Both ``__get_item__`` and ``get`` call this function: it's never
+  sig: _find_no_duplicates(name, domain, path)
+  behavior: ACCUMULATE(iter(self) loop -> result, raises CookieConflictError)
+  calls: CookieConflictError
+  called_by: __getitem__, get, RequestsCookieJar
+  raises: KeyError, CookieConflictError
+
+get_connection_with_tls_context (src/requests/adapters.py:424-471)
+  Returns a urllib3 connection for the given request and TLS settings.
+  sig: get_connection_with_tls_context(request, verify, proxies, cert)
+  behavior: BRANCH(proxy -> raise InvalidProxyURL..., else -> self.poolmanager.conn...)
+  calls: build_connection_pool_key_attributes, proxy_manager_for
+  called_by: HTTPAdapter
+  raises: InvalidURL, InvalidProxyURL
+  uses: InvalidURL (exceptions), InvalidProxyURL (exceptions)
+
+FileModeWarning (src/requests/exceptions.py:147-148)
+  A file was opened in text mode, but Requests determined its binary length.
+  extends: RequestsWarning, DeprecationWarning
+  imports: urllib3.exceptions, compat
+
+UnrewindableBodyError (src/requests/exceptions.py:136-137)
+  Requests encountered an error when trying to rewind a body.
+  extends: RequestException
+  imports: urllib3.exceptions, compat
+
+_find (src/requests/cookies.py:366-384)
+  Requests uses this method internally to get cookie values.
+  sig: _find(name, domain, path)
+  behavior: ACCUMULATE(iter(self) loop -> result)
+  raises: KeyError
+
+build_response (src/requests/adapters.py:337-372)
+  Builds a :class:`Response <requests.Response>` object from a urllib3
+  sig: build_response(req, resp)
+  behavior: BRANCH(isinstance(req.url, bytes) -> req.url.decode('utf-8'), else -> req.url)
+  called_by: HTTPAdapter
+  uses: Response (models), CaseInsensitiveDict (structures)
+
+default_headers (src/requests/utils.py:887-898)
+  :rtype: requests.structures.CaseInsensitiveDict
+  behavior: DELEGATE(CaseInsensitiveDict -> result)
+  calls: default_user_agent
+  uses: CaseInsensitiveDict (structures)
+
+get_environ_proxies (src/requests/utils.py:813-822)
+  Return a dict of environment proxies.
+  sig: get_environ_proxies(url, no_proxy)
+  behavior: BRANCH(should_bypass_proxies(url, no... -> return {}, else -> return getprox...)
+  calls: should_bypass_proxies
+  called_by: resolve_proxies
+
+get_netrc_auth (src/requests/utils.py:206-247)
+  Returns the Requests tuple auth for a given url from netrc.
+  sig: get_netrc_auth(url, raise_errors)
+  behavior: BRANCH(netrc_file is not None -> (netrc_file,), else -> (f'~/{f}' for f in N...)
+
+set_environ (src/requests/utils.py:731-749)
+  Set the environment variable 'env_name' to 'value'
+  sig: set_environ(env_name, value)
+  called_by: should_bypass_proxies
+
+get (src/requests/sessions.py:595-604)
+  Sends a GET request.
+  sig: get(url)
+  behavior: DELEGATE(request -> result)
+  calls: request
+  called_by: merge_environment_settings, send, Session, should_strip_auth, SessionRedirectMixin, merge_hooks
+
+request (src/requests/sessions.py:502-593)
+  Constructs a :class:`Request <Request>`, prepares it and sends it.
+  sig: request(method, url, params, data, headers...)
+  calls: merge_environment_settings, prepare_request, send
+  called_by: delete, get, head, options, patch, post, put, Session
+  uses: Request (models)
+
+merge_setting (src/requests/sessions.py:62-89)
+  Determines appropriate setting for a given request, taking into account
+  sig: merge_setting(request_setting, session_setting, dict_class)
+  behavior: ACCUMULATE(none_keys loop -> result)
+  called_by: merge_environment_settings, prepare_request, Session, merge_hooks
+
+send (src/requests/sessions.py:675-750)
+  Send a given PreparedRequest.
+  sig: send(request)
+  behavior: BRANCH(allow_redirects -> self.resolve_redirect..., else -> [])
+  calls: get, get_adapter, resolve_redirects
+  called_by: request, Session, resolve_redirects, SessionRedirectMixin
+  raises: ValueError
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
@@ -446,74 +449,6 @@ def merge_setting(request_setting, session_setting, dict_class=OrderedDict):
         del merged_setting[key]
 
     return merged_setting
-```
-
-## info  (src/requests/help.py L66-122)
-```
-def info():
-    """Generate information for a bug report."""
-    try:
-        platform_info = {
-            "system": platform.system(),
-            "release": platform.release(),
-        }
-    except OSError:
-        platform_info = {
-            "system": "Unknown",
-            "release": "Unknown",
-        }
-
-    implementation_info = _implementation()
-    urllib3_info = {"version": urllib3.__version__}
-    charset_normalizer_info = {"version": None}
-    chardet_info = {"version": None}
-    if charset_normalizer:
-        charset_normalizer_info = {"version": charset_normalizer.__version__}
-    if chardet:
-        chardet_info = {"version": chardet.__version__}
-
-    pyopenssl_info = {
-        "version": None,
-        "openssl_version": "",
-    }
-    if OpenSSL:
-        pyopenssl_info = {
-            "version": OpenSSL.__version__,
-            "openssl_version": f"{OpenSSL.SSL.OPENSSL_VERSION_NUMBER:x}",
-        }
-    cryptography_info = {
-        "version": getattr(cryptography, "__version__", ""),
-    }
-    idna_info = {
-        "version": getattr(idna, "__version__", ""),
-    }
-
-    system_ssl = ssl.OPENSSL_VERSION_NUMBER
-    system_ssl_info = {"version": f"{system_ssl:x}" if system_ssl is not None else ""}
-
-    return {
-        "platform": platform_info,
-        "implementation": implementation_info,
-        "system_ssl": system_ssl_info,
-        "using_pyopenssl": pyopenssl is not None,
-        "using_charset_normalizer": chardet is None,
-        "pyOpenSSL": pyopenssl_info,
-        "urllib3": urllib3_info,
-        "chardet": chardet_info,
-        "charset_normalizer": charset_normalizer_info,
-        "cryptography": cryptography_info,
-        "idna": idna_info,
-        "requests": {
-            "version": requests_version,
-        },
-    }
-```
-
-## main  (src/requests/help.py L125-127)
-```
-def main():
-    """Pretty-print the bug information as JSON."""
-    print(json.dumps(info(), sort_keys=True, indent=2))
 ```
 
 ## __enter__  (tests/testserver/server.py L117-121)
@@ -721,6 +656,74 @@ def main():
 
         # Merge with session cookies
         merged_cookies = merge_cookies(
+            merge_cookies(RequestsCookieJar(), self.cookies), cookies
+        )
+
+        # Set environment's basic authentication if not explicitly set.
+        auth = request.auth
+        if self.trust_env and not auth and not self.auth:
+            auth = get_netrc_auth(request.url)
+
+        p = PreparedRequest()
+        p.prepare(
+            method=request.method.upper(),
+            url=request.url,
+            files=request.files,
+            data=request.data,
+            json=request.json,
+            headers=merge_setting(
+                request.headers, self.headers, dict_class=CaseInsensitiveDict
+            ),
+            params=merge_setting(request.params, self.params),
+            auth=merge_setting(auth, self.auth),
+            cookies=merged_cookies,
+            hooks=merge_hooks(request.hooks, self.hooks),
+        )
+        return p
+```
+
+## put  (src/requests/sessions.py L641-651)
+```
+    def put(self, url, data=None, **kwargs):
+        r"""Sends a PUT request. Returns :class:`Response` object.
+
+        :param url: URL for the new :class:`Request` object.
+        :param data: (optional) Dictionary, list of tuples, bytes, or file-like
+            object to send in the body of the :class:`Request`.
+        :param \*\*kwargs: Optional arguments that ``request`` takes.
+        :rtype: requests.Response
+        """
+
+        return self.request("PUT", url, data=data, **kwargs)
+```
+
+## request  (src/requests/sessions.py L502-593)
+```
+    def request(
+        self,
+        method,
+        url,
+        params=None,
+        data=None,
+        headers=None,
+        cookies=None,
+        files=None,
+        auth=None,
+        timeout=None,
+        allow_redirects=True,
+        proxies=None,
+        hooks=None,
+        stream=None,
+        verify=None,
+        cert=None,
+        json=None,
+    ):
+        """Constructs a :class:`Request <Request>`, prepares it and sends it.
+        Returns :class:`Response <Response>` object.
+
+        :param method: method for the new :class:`Request` object.
+        :param url: URL for the new :class:`Request` object.
+        :param params: (optional) Dictionary or bytes to be sent in the query
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

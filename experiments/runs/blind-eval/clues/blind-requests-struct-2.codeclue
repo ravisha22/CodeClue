@@ -126,17 +126,22 @@ merge_hooks (src/requests/sessions.py:92-104)
   calls: get, merge_setting
   called_by: prepare_request, Session
 
-FileModeWarning (src/requests/exceptions.py:147-148)
-  A file was opened in text mode, but Requests determined its binary length.
-  extends: RequestsWarning, DeprecationWarning
-  imports: urllib3.exceptions, compat
-
 MockRequest (src/requests/cookies.py:23-100)
   Wraps a `requests.Request` to mimic a `urllib2.Request`.
   imports: calendar, copy, compat, threading, dummy_threading
   calls: get_host, get_origin_req_host, is_unverifiable, get
   called_by: extract_cookies_to_jar, get_cookie_header
   raises: NotImplementedError
+
+copy (src/requests/cookies.py:428-433)
+  Return a copy of this RequestsCookieJar.
+  calls: get_policy, update, RequestsCookieJar
+  called_by: __getstate__, update, RequestsCookieJar, _copy_cookie_jar
+
+FileModeWarning (src/requests/exceptions.py:147-148)
+  A file was opened in text mode, but Requests determined its binary length.
+  extends: RequestsWarning, DeprecationWarning
+  imports: urllib3.exceptions, compat
 
 UnrewindableBodyError (src/requests/exceptions.py:136-137)
   Requests encountered an error when trying to rewind a body.
@@ -158,11 +163,6 @@ build_response (src/requests/adapters.py:337-372)
   behavior: BRANCH(isinstance(req.url, bytes) -> req.url.decode('utf-8'), else -> req.url)
   called_by: HTTPAdapter
   uses: Response (models), CaseInsensitiveDict (structures)
-
-copy (src/requests/cookies.py:428-433)
-  Return a copy of this RequestsCookieJar.
-  calls: get_policy, update, RequestsCookieJar
-  called_by: __getstate__, update, RequestsCookieJar, _copy_cookie_jar
 
 default_headers (src/requests/utils.py:887-898)
   :rtype: requests.structures.CaseInsensitiveDict
@@ -235,62 +235,6 @@ put (src/requests/api.py:118-130)
   behavior: DELEGATE(request -> result)
   calls: request
 
-HTTPAdapter (src/requests/adapters.py:144-697)
-  The built-in HTTP Adapter for urllib3.
-  extends: BaseAdapter
-  imports: socket, warnings, urllib3.exceptions, urllib3.poolmanager, urllib3.util
-  calls: add_headers, build_connection_pool_key_attributes, build_response, cert_verify, get_connection_with_tls_context, init_poolmanager, proxy_headers, proxy_manager_for
-  raises: OSError, InvalidURL, InvalidProxyURL, ConnectionError
-  uses: Response (models), CaseInsensitiveDict (structures), InvalidURL (exceptions), InvalidProxyURL (exceptions)
-
-CookieConflictError (src/requests/cookies.py:170-173)
-  There are two cookies that meet the criteria specified in the cookie jar.
-  extends: RuntimeError
-  imports: calendar, copy, compat, threading, dummy_threading
-  called_by: _find_no_duplicates, RequestsCookieJar
-
-AuthBase (src/requests/auth.py:69-73)
-  Base class that all auth implementations derive from
-  imports: hashlib, threading, warnings, base64, compat
-  raises: NotImplementedError
-
-BaseAdapter (src/requests/adapters.py:114-141)
-  The Base Transport Adapter
-  imports: socket, warnings, urllib3.exceptions, urllib3.poolmanager, urllib3.util
-  raises: NotImplementedError
-
-CaseInsensitiveDict (src/requests/structures.py:13-80)
-  A case-insensitive ``dict``-like object.
-  extends: MutableMapping
-  imports: compat
-  calls: lower_items
-  called_by: __eq__, copy
-
-ChunkedEncodingError (src/requests/exceptions.py:120-121)
-  The server declared chunked encoding but sent an invalid chunk.
-  extends: RequestException
-  imports: urllib3.exceptions, compat
-
-ConnectTimeout (src/requests/exceptions.py:81-85)
-  The request timed out while trying to connect to the remote server.
-  extends: ConnectionError, Timeout
-  imports: urllib3.exceptions, compat
-
-ConnectionError (src/requests/exceptions.py:60-61)
-  A Connection error occurred.
-  extends: RequestException
-  imports: urllib3.exceptions, compat
-
-ContentDecodingError (src/requests/exceptions.py:124-125)
-  Failed to decode response content.
-  extends: RequestException, BaseHTTPError
-  imports: urllib3.exceptions, compat
-
-FlaskyStyle (docs/_themes/flask_theme_support.py:7-86)
-  extends: Style
-  attrs: background_color='#f8f8f8', default_style=''
-  imports: pygments.style, pygments.token
-
 prepare_request (src/requests/sessions.py:459-500)
   Constructs a :class:`PreparedRequest <PreparedRequest>` for
   sig: prepare_request(request)
@@ -310,6 +254,53 @@ merge_setting (src/requests/sessions.py:62-89)
   sig: merge_setting(request_setting, session_setting, dict_class)
   behavior: ACCUMULATE(none_keys loop -> result)
   called_by: merge_environment_settings, prepare_request, Session, merge_hooks
+
+get (src/requests/cookies.py:194-204)
+  Dict-like get() that also supports optional domain and path args in
+  sig: get(name, default, domain, path)
+  calls: _find_no_duplicates
+  called_by: get_full_url, get_header, MockRequest, set, RequestsCookieJar, get_cookie_header
+
+request (src/requests/sessions.py:502-593)
+  Constructs a :class:`Request <Request>`, prepares it and sends it.
+  sig: request(method, url, params, data, headers...)
+  calls: merge_environment_settings, prepare_request, send
+  called_by: delete, get, head, options, patch, post, put, Session
+  uses: Request (models)
+
+resolve_redirects (src/requests/sessions.py:160-280)
+  Receives a Response.
+  sig: resolve_redirects(resp, req, stream, timeout, verify...)
+  behavior: ACCUMULATE(req.copy loop -> hist, raises TooManyRedirects)
+  calls: close, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies
+  called_by: send, Session
+  raises: TooManyRedirects
+  uses: TooManyRedirects (exceptions)
+
+HTTPAdapter (src/requests/adapters.py:144-697)
+  The built-in HTTP Adapter for urllib3.
+  extends: BaseAdapter
+  imports: socket, warnings, urllib3.exceptions, urllib3.poolmanager, urllib3.util
+  calls: add_headers, build_connection_pool_key_attributes, build_response, cert_verify, get_connection_with_tls_context, init_poolmanager, proxy_headers, proxy_manager_for
+  raises: OSError, InvalidURL, InvalidProxyURL, ConnectionError
+  uses: Response (models), CaseInsensitiveDict (structures), InvalidURL (exceptions), InvalidProxyURL (exceptions)
+
+update (src/requests/cookies.py:358-364)
+  Updates this jar with cookies from another CookieJar or dict-like
+  sig: update(other)
+  behavior: BRANCH(isinstance(other, cookielib.C... -> result, else -> super().update(ot...)
+  calls: copy, set_cookie
+  called_by: __setstate__, copy, RequestsCookieJar, create_cookie, merge_cookies
+
+extract_cookies_to_jar (src/requests/cookies.py:124-137)
+  Extract the cookies from the response into a CookieJar.
+  sig: extract_cookies_to_jar(jar, request, response)
+  calls: MockRequest, MockResponse
+
+get_cookie_header (src/requests/cookies.py:140-148)
+  Produce an appropriate Cookie header string to be sent with `request`, or None.
+  sig: get_cookie_header(jar, request)
+  calls: get_new_headers, MockRequest, get
 
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)

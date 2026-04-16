@@ -188,18 +188,18 @@ PreparedRequest (src/requests/models.py:315-639)
   raises: MissingSchema, InvalidURL, UnicodeError, NotImplementedError
   uses: HTTPBasicAuth (auth), InvalidJSONError (exceptions), CaseInsensitiveDict (structures), MissingSchema (exceptions)
 
-Request (src/requests/models.py:232-312)
-  A user-created :class:`Request <Request>` object.
-  extends: RequestHooksMixin
-  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
-  calls: PreparedRequest, register_hook
-
 Response (src/requests/models.py:642-1041)
   The :class:`Response <Response>` object, which contains a
   imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
   calls: close, generate, iter_content, raise_for_status
   raises: StreamConsumedError, HTTPError, TypeError, RuntimeError
   uses: ChunkedEncodingError (exceptions), ContentDecodingError (exceptions), ConnectionError (exceptions), RequestsSSLError (exceptions)
+
+Request (src/requests/models.py:232-312)
+  A user-created :class:`Request <Request>` object.
+  extends: RequestHooksMixin
+  imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
+  calls: PreparedRequest, register_hook
 
 RequestEncodingMixin (src/requests/models.py:86-205)
   imports: encodings.idna, io, urllib3.exceptions, urllib3.fields, urllib3.filepost
@@ -333,7 +333,7 @@ resolve_redirects (src/requests/sessions.py:160-280)
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
 coverage: 80 symbols in L3, 28 with behavior annotations
-uncovered: RequestsDependencyWarning, HTTPAdapter, CookieConflictError, AuthBase
+uncovered: RequestsDependencyWarning, build_connection_pool_key_attributes, generate, HTTPAdapter
 
 --- CLUE FILE END ---
 
