@@ -1,4 +1,4 @@
-# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
+# Blind Evaluation Prompt - MRLF v2.4 with File 2 Drill-Down
 # Task: blind-click-2
 
 You are a senior software engineer. You have been given:
@@ -7,6 +7,8 @@ You are a senior software engineer. You have been given:
 
 Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the symbols most relevant to the question from FOCUS, SYM, and INDEX. Trace those symbols through the clue before forming any conclusion: follow calls: chains, walk extends: hierarchies, and read behavior: annotations as compact control-flow summaries. Use TREE and INDEX to place each symbol in its module context. Then consult the provided source snippets only to confirm or refine the traced path. State explicitly what GAPS says cannot be determined from the evidence. Finally, synthesize the answer, separating supported conclusions from remaining uncertainty.
 
 --- CLUE FILE (File 1) ---
 =CC v2.1 click@HEAD 63mod 1620sym
@@ -426,313 +428,281 @@ def _param_memo(f: t.Callable[..., t.Any], param: Parameter) -> None:
         f.__click_params__.append(param)  # type: ignore
 ```
 
-## __init__  (tests/test_utils.py L682-685)
+## decorator  (src/click/decorators.py L115-121)
 ```
-    def __init__(self, package_name):
-        self.__package__ = package_name
+    def decorator(f: t.Callable[te.Concatenate[T, P], R]) -> t.Callable[P, R]:
+        def new_func(*args: P.args, **kwargs: P.kwargs) -> R:
+            ctx = get_current_context()
+            obj = ctx.meta[key]
+            return ctx.invoke(f, obj, *args, **kwargs)
 
-
-```
-
-## _parse_decls  (src/click/core.py L2222-2225)
-```
-    def _parse_decls(
-        self, decls: cabc.Sequence[str], expose_value: bool
-    ) -> tuple[str | None, list[str], list[str]]:
-        raise NotImplementedError()
+        return update_wrapper(new_func, f)
 ```
 
-## add_to_parser  (src/click/core.py L2294-2295)
+## argument  (src/click/decorators.py L324-349)
 ```
-    def add_to_parser(self, parser: _OptionParser, ctx: Context) -> None:
-        raise NotImplementedError()
+def argument(
+    *param_decls: str, cls: type[Argument] | None = None, **attrs: t.Any
+) -> t.Callable[[FC], FC]:
+    """Attaches an argument to the command.  All positional arguments are
+    passed as parameter declarations to :class:`Argument`; all keyword
+    arguments are forwarded unchanged (except ``cls``).
+    This is equivalent to creating an :class:`Argument` instance manually
+    and attaching it to the :attr:`Command.params` list.
+
+    For the default argument class, refer to :class:`Argument` and
+    :class:`Parameter` for descriptions of parameters.
+
+    :param cls: the argument class to instantiate.  This defaults to
+                :class:`Argument`.
+    :param param_decls: Passed as positional arguments to the constructor of
+        ``cls``.
+    :param attrs: Passed as keyword arguments to the constructor of ``cls``.
+    """
+    if cls is None:
+        cls = Argument
+
+    def decorator(f: FC) -> FC:
+        _param_memo(f, cls(param_decls, **attrs))
+        return f
+
+    return decorator
 ```
 
-## get_error_hint  (src/click/core.py L2615-2620)
+## command  (tests/test_formatting.py L68-69)
 ```
-    def get_error_hint(self, ctx: Context) -> str:
-        """Get a stringified version of the param for use in error messages to
-        indicate which param caused the error.
-        """
-        hint_list = self.opts or [self.human_readable_name]
-        return " / ".join(f"'{x}'" for x in hint_list)
+    def command():
+        """A command."""
 ```
 
-## get_usage_pieces  (src/click/core.py L2612-2613)
+## callback  (tests/test_context.py L116-117)
 ```
-    def get_usage_pieces(self, ctx: Context) -> list[str]:
-        return []
-```
-
-## human_readable_name  (src/click/core.py L2228-2232)
-```
-    def human_readable_name(self) -> str:
-        """Returns the human readable name of this parameter.  This is the
-        same as the name for options, but the metavar for arguments.
-        """
-        return self.name  # type: ignore
+        def callback():
+            called.append(True)
 ```
 
-## make_metavar  (src/click/core.py L2234-2246)
+## confirmation_option  (src/click/decorators.py L380-401)
 ```
-    def make_metavar(self, ctx: Context) -> str:
-        if self.metavar is not None:
-            return self.metavar
+def confirmation_option(*param_decls: str, **kwargs: t.Any) -> t.Callable[[FC], FC]:
+    """Add a ``--yes`` option which shows a prompt before continuing if
+    not passed. If the prompt is declined, the program will exit.
 
-        metavar = self.type.get_metavar(param=self, ctx=ctx)
-
-        if metavar is None:
-            metavar = self.type.name.upper()
-
-        if self.nargs != 1:
-            metavar += "..."
-
-        return metavar
-```
-
-## Argument  (src/click/core.py L3338-3413)
-```
-class Argument(Parameter):
-    """Arguments are positional parameters to a command.  They generally
-    provide fewer features than options but can have infinite ``nargs``
-    and are required by default.
-
-    All parameters are passed onwards to the constructor of :class:`Parameter`.
+    :param param_decls: One or more option names. Defaults to the single
+        value ``"--yes"``.
+    :param kwargs: Extra arguments are passed to :func:`option`.
     """
 
-    param_type_name = "argument"
+    def callback(ctx: Context, param: Parameter, value: bool) -> None:
+        if not value:
+            ctx.abort()
 
-    def __init__(
-        self,
-        param_decls: cabc.Sequence[str],
-        required: bool | None = None,
-        **attrs: t.Any,
-    ) -> None:
-        # Auto-detect the requirement status of the argument if not explicitly set.
-        if required is None:
-            # The argument gets automatically required if it has no explicit default
-            # value set and is setup to match at least one value.
-            if attrs.get("default", UNSET) is UNSET:
-                required = attrs.get("nargs", 1) > 0
-            # If the argument has a default value, it is not required.
+    if not param_decls:
+        param_decls = ("--yes",)
+
+    kwargs.setdefault("is_flag", True)
+    kwargs.setdefault("callback", callback)
+    kwargs.setdefault("expose_value", False)
+    kwargs.setdefault("prompt", "Do you want to continue?")
+    kwargs.setdefault("help", "Confirm the action without prompting.")
+    return option(*param_decls, **kwargs)
+```
+
+## group  (tests/test_commands.py L523-524)
+```
+    def group(t):
+        pass
+```
+
+## show_help  (src/click/decorators.py L536-540)
+```
+    def show_help(ctx: Context, param: Parameter, value: bool) -> None:
+        """Callback that print the help page on ``<stdout>`` and exits."""
+        if value and not ctx.resilient_parsing:
+            echo(ctx.get_help(), color=ctx.color)
+            ctx.exit()
+```
+
+## help_option  (src/click/decorators.py L527-551)
+```
+def help_option(*param_decls: str, **kwargs: t.Any) -> t.Callable[[FC], FC]:
+    """Pre-configured ``--help`` option which immediately prints the help page
+    and exits the program.
+
+    :param param_decls: One or more option names. Defaults to the single
+        value ``"--help"``.
+    :param kwargs: Extra arguments are passed to :func:`option`.
+    """
+
+    def show_help(ctx: Context, param: Parameter, value: bool) -> None:
+        """Callback that print the help page on ``<stdout>`` and exits."""
+        if value and not ctx.resilient_parsing:
+            echo(ctx.get_help(), color=ctx.color)
+            ctx.exit()
+
+    if not param_decls:
+        param_decls = ("--help",)
+
+    kwargs.setdefault("is_flag", True)
+    kwargs.setdefault("expose_value", False)
+    kwargs.setdefault("is_eager", True)
+    kwargs.setdefault("help", _("Show this message and exit."))
+    kwargs.setdefault("callback", show_help)
+
+    return option(*param_decls, **kwargs)
+```
+
+## new_func  (src/click/decorators.py L45-46)
+```
+    def new_func(*args: P.args, **kwargs: P.kwargs) -> R:
+        return f(get_current_context().obj, *args, **kwargs)
+```
+
+## make_pass_decorator  (src/click/decorators.py L51-97)
+```
+def make_pass_decorator(
+    object_type: type[T], ensure: bool = False
+) -> t.Callable[[t.Callable[te.Concatenate[T, P], R]], t.Callable[P, R]]:
+    """Given an object type this creates a decorator that will work
+    similar to :func:`pass_obj` but instead of passing the object of the
+    current context, it will find the innermost context of type
+    :func:`object_type`.
+
+    This generates a decorator that works roughly like this::
+
+        from functools import update_wrapper
+
+        def decorator(f):
+            @pass_context
+            def new_func(ctx, *args, **kwargs):
+                obj = ctx.find_object(object_type)
+                return ctx.invoke(f, obj, *args, **kwargs)
+            return update_wrapper(new_func, f)
+        return decorator
+
+    :param object_type: the type of the object to pass.
+    :param ensure: if set to `True`, a new object will be created and
+                   remembered on the context if it's not there yet.
+    """
+
+    def decorator(f: t.Callable[te.Concatenate[T, P], R]) -> t.Callable[P, R]:
+        def new_func(*args: P.args, **kwargs: P.kwargs) -> R:
+            ctx = get_current_context()
+
+            obj: T | None
+            if ensure:
+                obj = ctx.ensure_object(object_type)
             else:
-                required = False
+                obj = ctx.find_object(object_type)
 
-        if "multiple" in attrs:
-            raise TypeError("__init__() got an unexpected keyword argument 'multiple'.")
+            if obj is None:
+                raise RuntimeError(
+                    "Managed to invoke callback without a context"
+                    f" object of type {object_type.__name__!r}"
+                    " existing."
+                )
 
-        super().__init__(param_decls, required=required, **attrs)
+            return ctx.invoke(f, obj, *args, **kwargs)
 
-    @property
-    def human_readable_name(self) -> str:
-        if self.metavar is not None:
-            return self.metavar
-        return self.name.upper()  # type: ignore
+        return update_wrapper(new_func, f)
 
-    def make_metavar(self, ctx: Context) -> str:
-        if self.metavar is not None:
-            return self.metavar
-        var = self.type.get_metavar(param=self, ctx=ctx)
-        if not var:
-            var = self.name.upper()  # type: ignore
-        if self.deprecated:
-            var += "!"
-        if not self.required:
-            var = f"[{var}]"
-        if self.nargs != 1:
-            var += "..."
-        return var
-
-    def _parse_decls(
-        self, decls: cabc.Sequence[str], expose_value: bool
-    ) -> tuple[str | None, list[str], list[str]]:
-        if not decls:
-            if not expose_value:
-                return None, [], []
-            raise TypeError("Argument is marked as exposed, but does not have a name.")
-        if len(decls) == 1:
-            name = arg = decls[0]
-            name = name.replace("-", "_").lower()
-        else:
-            raise TypeError(
-                "Arguments take exactly one parameter declaration, got"
-                f" {len(decls)}: {decls}."
-            )
-        return name, [arg], []
-
-    def get_usage_pieces(self, ctx: Context) -> list[str]:
-        return [self.make_metavar(ctx)]
-
-    def get_error_hint(self, ctx: Context) -> str:
-        return f"'{self.make_metavar(ctx)}'"
-
-    def add_to_parser(self, parser: _OptionParser, ctx: Context) -> None:
-        parser.add_argument(dest=self.name, nargs=self.nargs, obj=self)
+    return decorator
 ```
 
-## __call__  (tests/test_options.py L654-655)
+## pass_context  (src/click/decorators.py L28-36)
 ```
-        def __call__(self):
-            return 42
-```
+def pass_context(f: t.Callable[te.Concatenate[Context, P], R]) -> t.Callable[P, R]:
+    """Marks a callback as wanting to receive the current context
+    object as first argument.
+    """
 
-## __repr__  (src/click/utils.py L146-149)
-```
-    def __repr__(self) -> str:
-        if self._f is not None:
-            return repr(self._f)
-        return f"<unopened file '{format_filename(self.name)}' {self.mode}>"
-```
+    def new_func(*args: P.args, **kwargs: P.kwargs) -> R:
+        return f(get_current_context(), *args, **kwargs)
 
-## _main_shell_completion  (src/click/core.py L1451-1481)
-```
-    def _main_shell_completion(
-        self,
-        ctx_args: cabc.MutableMapping[str, t.Any],
-        prog_name: str,
-        complete_var: str | None = None,
-    ) -> None:
-        """Check if the shell is asking for tab completion, process
-        that, then exit early. Called from :meth:`main` before the
-        program is invoked.
-
-        :param prog_name: Name of the executable in the shell.
-        :param complete_var: Name of the environment variable that holds
-            the completion instruction. Defaults to
-            ``_{PROG_NAME}_COMPLETE``.
-
-        .. versionchanged:: 8.2.0
-            Dots (``.``) in ``prog_name`` are replaced with underscores (``_``).
-        """
-        if complete_var is None:
-            complete_name = prog_name.replace("-", "_").replace(".", "_")
-            complete_var = f"_{complete_name}_COMPLETE".upper()
-
-        instruction = os.environ.get(complete_var)
-
-        if not instruction:
-            return
-
-        from .shell_completion import shell_complete
-
-        rv = shell_complete(self, ctx_args, prog_name, complete_var, instruction)
-        sys.exit(rv)
+    return update_wrapper(new_func, f)
 ```
 
-## collect_usage_pieces  (src/click/core.py L1788-1791)
+## pass_meta_key  (src/click/decorators.py L100-130)
 ```
-    def collect_usage_pieces(self, ctx: Context) -> list[str]:
-        rv = super().collect_usage_pieces(ctx)
-        rv.append(self.subcommand_metavar)
-        return rv
-```
+def pass_meta_key(
+    key: str, *, doc_description: str | None = None
+) -> t.Callable[[t.Callable[te.Concatenate[T, P], R]], t.Callable[P, R]]:
+    """Create a decorator that passes a key from
+    :attr:`click.Context.meta` as the first argument to the decorated
+    function.
 
-## format_epilog  (src/click/core.py L1173-1180)
-```
-    def format_epilog(self, ctx: Context, formatter: HelpFormatter) -> None:
-        """Writes the epilog into the formatter if it exists."""
-        if self.epilog:
-            epilog = inspect.cleandoc(self.epilog)
-            formatter.write_paragraph()
+    :param key: Key in ``Context.meta`` to pass.
+    :param doc_description: Description of the object being passed,
+        inserted into the decorator's docstring. Defaults to "the 'key'
+        key from Context.meta".
 
-            with formatter.indentation():
-                formatter.write_text(epilog)
-```
+    .. versionadded:: 8.0
+    """
 
-## format_help  (src/click/core.py L1120-1135)
-```
-    def format_help(self, ctx: Context, formatter: HelpFormatter) -> None:
-        """Writes the help into the formatter if it exists.
+    def decorator(f: t.Callable[te.Concatenate[T, P], R]) -> t.Callable[P, R]:
+        def new_func(*args: P.args, **kwargs: P.kwargs) -> R:
+            ctx = get_current_context()
+            obj = ctx.meta[key]
+            return ctx.invoke(f, obj, *args, **kwargs)
 
-        This is a low-level method called by :meth:`get_help`.
+        return update_wrapper(new_func, f)
 
-        This calls the following methods:
+    if doc_description is None:
+        doc_description = f"the {key!r} key from :attr:`click.Context.meta`"
 
-        -   :meth:`format_usage`
-        -   :meth:`format_help_text`
-        -   :meth:`format_options`
-        -   :meth:`format_epilog`
-        """
-        self.format_usage(ctx, formatter)
-        self.format_help_text(ctx, formatter)
-        self.format_options(ctx, formatter)
-        self.format_epilog(ctx, formatter)
+    decorator.__doc__ = (
+        f"Decorator that passes {doc_description} as the first argument"
+        " to the decorated function."
+    )
+    return decorator
 ```
 
-## format_help_text  (src/click/core.py L1137-1159)
+## pass_obj  (src/click/decorators.py L39-48)
 ```
-    def format_help_text(self, ctx: Context, formatter: HelpFormatter) -> None:
-        """Writes the help text to the formatter if it exists."""
-        if self.help is not None:
-            # truncate the help text to the first form feed
-            text = inspect.cleandoc(self.help).partition("\f")[0]
-        else:
-            text = ""
+def pass_obj(f: t.Callable[te.Concatenate[T, P], R]) -> t.Callable[P, R]:
+    """Similar to :func:`pass_context`, but only pass the object on the
+    context onwards (:attr:`Context.obj`).  This is useful if that object
+    represents the state of a nested system.
+    """
 
-        if self.deprecated:
-            deprecated_message = (
-                f"(DEPRECATED: {self.deprecated})"
-                if isinstance(self.deprecated, str)
-                else "(DEPRECATED)"
-            )
-            text = _("{text} {deprecated_message}").format(
-                text=text, deprecated_message=deprecated_message
-            )
+    def new_func(*args: P.args, **kwargs: P.kwargs) -> R:
+        return f(get_current_context().obj, *args, **kwargs)
 
-        if text:
-            formatter.write_paragraph()
-
-            with formatter.indentation():
-                formatter.write_text(text)
+    return update_wrapper(new_func, f)
 ```
 
-## format_options  (src/click/core.py L1793-1795)
+## password_option  (src/click/decorators.py L404-418)
 ```
-    def format_options(self, ctx: Context, formatter: HelpFormatter) -> None:
-        super().format_options(ctx, formatter)
-        self.format_commands(ctx, formatter)
-```
+def password_option(*param_decls: str, **kwargs: t.Any) -> t.Callable[[FC], FC]:
+    """Add a ``--password`` option which prompts for a password, hiding
+    input and asking to enter the value again for confirmation.
 
-## format_usage  (src/click/core.py L1027-1033)
-```
-    def format_usage(self, ctx: Context, formatter: HelpFormatter) -> None:
-        """Writes the usage line into the formatter.
+    :param param_decls: One or more option names. Defaults to the single
+        value ``"--password"``.
+    :param kwargs: Extra arguments are passed to :func:`option`.
+    """
+    if not param_decls:
+        param_decls = ("--password",)
 
-        This is a low-level method called by :meth:`get_usage`.
-        """
-        pieces = self.collect_usage_pieces(ctx)
-        formatter.write_usage(ctx.command_path, " ".join(pieces))
-```
-
-## get_help  (tests/test_commands.py L168-169)
-```
-        def get_help(self, ctx):
-            return self.parser.format_help()
+    kwargs.setdefault("prompt", True)
+    kwargs.setdefault("confirmation_prompt", True)
+    kwargs.setdefault("hide_input", True)
+    return option(*param_decls, **kwargs)
 ```
 
-## get_help_option  (src/click/core.py L1054-1079)
+## version_option  (src/click/decorators.py L421-524)
 ```
-    def get_help_option(self, ctx: Context) -> Option | None:
-        """Returns the help option object.
+def version_option(
+    version: str | None = None,
+    *param_decls: str,
+    package_name: str | None = None,
+    prog_name: str | None = None,
+    message: str | None = None,
+    **kwargs: t.Any,
+) -> t.Callable[[FC], FC]:
+    """Add a ``--version`` option which immediately prints the version
+    number and exits the program.
 
-        Skipped if :attr:`add_help_option` is ``False``.
-
-        .. versionchanged:: 8.1.8
-            The help option is now cached to avoid creating it multiple times.
-        """
-        help_option_names = self.get_help_option_names(ctx)
-
-        if not help_option_names or not self.add_help_option:
-            return None
-
-        # Cache the help option object in private _help_option attribute to
-        # avoid creating it multiple times. Not doing this will break the
-        # callback odering by iter_params_for_processing(), which relies on
-        # object comparison.
-        if self._help_option is None:
-            # Avoid circular import.
-            from .decorators import help_option
-
+    If ``version`` is not provided, Click will try to detect it using
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

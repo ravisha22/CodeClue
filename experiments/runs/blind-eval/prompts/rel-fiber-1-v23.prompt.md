@@ -1,4 +1,4 @@
-# Blind Evaluation Prompt - MRLF v2.1
+# Blind Evaluation Prompt - MRLF v2.4
 # Task: rel-fiber-1
 
 You are a senior software engineer. You have been given a codebase
@@ -8,6 +8,8 @@ a compressed representation.
 
 Answer the question below using ONLY the information in the clue file.
 Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the modules, symbols, or relationships most relevant to the question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before concluding: follow calls: chains, walk extends: hierarchies, and use behavior: annotations as summaries of how control or responsibility moves. Use TREE and INDEX to situate the relationship in the repository structure. State explicitly what GAPS says cannot be determined from the clue alone. Finally, synthesize the answer, distinguishing supported structure from unresolved uncertainty.
 
 --- CLUE FILE START ---
 =CC v2.1 fiber@HEAD 148mod 1472sym
@@ -88,8 +90,8 @@ Bind.validateStruct                 M bind.go:183    Struct validation.
 SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
 domainMatcher.match                 M domain.go:139    match checks if a hostname matches the domain p...
 Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
-DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
 manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
+DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
 walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
 isUnixNetwork                       M middleware/adaptor/adaptor.go:208    function isUnixNetwork
 Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...

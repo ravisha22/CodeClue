@@ -1,4 +1,4 @@
-# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
+# Blind Evaluation Prompt - MRLF v2.4 with File 2 Drill-Down
 # Task: blind-fiber-1
 
 You are a senior software engineer. You have been given:
@@ -7,6 +7,8 @@ You are a senior software engineer. You have been given:
 
 Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the symbols most relevant to the question from FOCUS, SYM, and INDEX. Trace those symbols through the clue before forming any conclusion: follow calls: chains, walk extends: hierarchies, and read behavior: annotations as compact control-flow summaries. Use TREE and INDEX to place each symbol in its module context. Then consult the provided source snippets only to confirm or refine the traced path. State explicitly what GAPS says cannot be determined from the evidence. Finally, synthesize the answer, separating supported conclusions from remaining uncertainty.
 
 --- CLUE FILE (File 1) ---
 =CC v2.1 fiber@HEAD 148mod 1472sym
@@ -87,8 +89,8 @@ Bind.validateStruct                 M bind.go:183    Struct validation.
 SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
 domainMatcher.match                 M domain.go:139    match checks if a hostname matches the domain p...
 Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
-DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
 manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
+DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
 walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
 isUnixNetwork                       M middleware/adaptor/adaptor.go:208    function isUnixNetwork
 Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...
@@ -319,84 +321,106 @@ func RemoveEscapeCharBytes(word []byte) []byte {
 func parseRoute(pattern string, customConstraints ...CustomConstraint) routeParser {
 ```
 
-## AcquireCookieJar  (client/cookiejar.go L24-24)
+## Constraint.CheckConstraint  (path.go L707-707)
 ```
-func AcquireCookieJar() *CookieJar {
-```
-
-## CookieJar.Get  (client/cookiejar.go L50-50)
-```
-func (cj *CookieJar) Get(uri *fasthttp.URI) []*fasthttp.Cookie {
+func (c *Constraint) CheckConstraint(param string) bool {
 ```
 
-## CookieJar.Release  (client/cookiejar.go L281-281)
+## Constraint  (path.go L80-80)
 ```
-func (cj *CookieJar) Release() {
-```
-
-## CookieJar.Set  (client/cookiejar.go L143-143)
-```
-func (cj *CookieJar) Set(uri *fasthttp.URI, cookies ...*fasthttp.Cookie) {
+	RegexCompiler     *regexp.Regexp
 ```
 
-## CookieJar.SetByHost  (client/cookiejar.go L154-154)
+## CustomConstraint  (path.go L88-89)
 ```
-func (cj *CookieJar) SetByHost(host []byte, cookies ...*fasthttp.Cookie) {
-```
-
-## CookieJar.SetKeyValue  (client/cookiejar.go L195-195)
-```
-func (cj *CookieJar) SetKeyValue(host, key, value string) {
+type CustomConstraint interface {
+	// Name returns the name of the constraint.
 ```
 
-## CookieJar.SetKeyValueBytes  (client/cookiejar.go L206-206)
+## GetTrimmedParam  (path.go L623-623)
 ```
-func (cj *CookieJar) SetKeyValueBytes(host string, key, value []byte) {
-```
-
-## CookieJar.cookiesForRequest  (client/cookiejar.go L103-103)
-```
-func (cj *CookieJar) cookiesForRequest(host string, path []byte, secure bool) []*fasthttp.Cookie {
+func GetTrimmedParam(param string) string {
 ```
 
-## CookieJar.dumpCookiesToReq  (client/cookiejar.go L215-215)
+## RemoveEscapeChar  (path.go L639-639)
 ```
-func (cj *CookieJar) dumpCookiesToReq(req *fasthttp.Request) {
-```
-
-## CookieJar.getByHostAndPath  (client/cookiejar.go L60-60)
-```
-func (cj *CookieJar) getByHostAndPath(host, path []byte, secure bool) []*fasthttp.Cookie {
+func RemoveEscapeChar(word string) string {
 ```
 
-## CookieJar.getCookiesByHost  (client/cookiejar.go L79-79)
+## addParameterMetaInfo  (path.go L260-260)
 ```
-func (cj *CookieJar) getCookiesByHost(host string) []*fasthttp.Cookie {
-```
-
-## CookieJar.parseCookiesFromResp  (client/cookiejar.go L226-226)
-```
-func (cj *CookieJar) parseCookiesFromResp(host, _ []byte, resp *fasthttp.Response) {
+func addParameterMetaInfo(segs []*routeSegment) []*routeSegment {
 ```
 
-## CookieJar  (client/cookiejar.go L40-40)
+## findGreedyParamLen  (path.go L607-607)
 ```
-type CookieJar struct {
-```
-
-## ReleaseCookieJar  (client/cookiejar.go L34-34)
-```
-func ReleaseCookieJar(c *CookieJar) {
+func findGreedyParamLen(s string, searchCount int, segment *routeSegment) int {
 ```
 
-## domainMatch  (client/cookiejar.go L327-327)
+## findNextNonEscapedCharPosition  (path.go L462-462)
 ```
-func domainMatch(host, domain string) bool {
+func findNextNonEscapedCharPosition(search string, char byte) int {
 ```
 
-## searchCookieByKeyAndPath  (client/cookiejar.go L294-294)
+## findNextParamPosition  (path.go L305-305)
 ```
-func searchCookieByKeyAndPath(key, path []byte, cookies []*fasthttp.Cookie) *fasthttp.Cookie {
+func findNextParamPosition(pattern string) int {
+```
+
+## findParamLen  (path.go L563-563)
+```
+func findParamLen(s string, segment *routeSegment) int {
+```
+
+## findParamLenForLastSegment  (path.go L596-596)
+```
+func findParamLenForLastSegment(s string, seg *routeSegment) int {
+```
+
+## getParamConstraintType  (path.go L670-670)
+```
+func getParamConstraintType(constraintPart string) TypeConstraint {
+```
+
+## hasPartialMatchBoundary  (path.go L486-486)
+```
+func hasPartialMatchBoundary(path string, matchedLength int) bool {
+```
+
+## routeParser.analyseParameterPart  (path.go L342-342)
+```
+func (parser *routeParser) analyseParameterPart(pattern string, customConstraints ...CustomConstraint) (int, *routeSegment) {
+```
+
+## routeParser.getMatch  (path.go L507-507)
+```
+func (parser *routeParser) getMatch(detectionPath, path string, params *[maxParams]string, partialCheck bool) bool { //nolint:revive // Accepting a bool param is fine here
+```
+
+## routeParser.parseRoute  (path.go L221-221)
+```
+func (parser *routeParser) parseRoute(pattern string, customConstraints ...CustomConstraint) {
+```
+
+## routeParser.reset  (path.go L213-213)
+```
+	parser.segs = parser.segs[:0]
+```
+
+## routeParser  (path.go L27-27)
+```
+	segs          []*routeSegment // the parsed segments of the route
+```
+
+## routeSegment  (path.go L40-41)
+```
+type routeSegment struct {
+	// const information
+```
+
+## splitNonEscaped  (path.go L473-473)
+```
+func splitNonEscaped(s string, sep byte) []string {
 ```
 
 ## AcquireFile  (client/request.go L1032-1032)
@@ -759,14 +783,9 @@ func (r *Request) Head(url string) (*Response, error) {
 func (r *Request) Header(key string) []string {
 ```
 
-## Request.Headers  (client/request.go L160-160)
+## Request.Method  (client/request.go L76-76)
 ```
-func (r *Request) Headers() iter.Seq2[string, []string] {
-```
-
-## Request.MaxRedirects  (client/request.go L603-603)
-```
-func (r *Request) MaxRedirects() int {
+func (r *Request) Method() string {
 ```
 --- END SOURCE SNIPPETS ---
 

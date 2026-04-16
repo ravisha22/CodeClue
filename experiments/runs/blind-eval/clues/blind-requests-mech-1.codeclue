@@ -131,13 +131,13 @@ SessionRedirectMixin (src/requests/sessions.py:107-353)
   calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
   raises: TooManyRedirects
 
-__call__ (src/requests/auth.py:102-104)
-  sig: __call__(r)
-
 __call__ (src/requests/auth.py:285-303)
   sig: __call__(r)
 
 __call__ (src/requests/auth.py:94-96)
+  sig: __call__(r)
+
+__call__ (src/requests/auth.py:102-104)
   sig: __call__(r)
 
 __call__ (src/requests/auth.py:72-73)

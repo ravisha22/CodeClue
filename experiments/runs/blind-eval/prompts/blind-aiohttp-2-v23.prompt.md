@@ -1,4 +1,4 @@
-# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
+# Blind Evaluation Prompt - MRLF v2.4 with File 2 Drill-Down
 # Task: blind-aiohttp-2
 
 You are a senior software engineer. You have been given:
@@ -7,6 +7,8 @@ You are a senior software engineer. You have been given:
 
 Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the symbols most relevant to the question from FOCUS, SYM, and INDEX. Trace those symbols through the clue before forming any conclusion: follow calls: chains, walk extends: hierarchies, and read behavior: annotations as compact control-flow summaries. Use TREE and INDEX to place each symbol in its module context. Then consult the provided source snippets only to confirm or refine the traced path. State explicitly what GAPS says cannot be determined from the evidence. Finally, synthesize the answer, separating supported conclusions from remaining uncertainty.
 
 --- CLUE FILE (File 1) ---
 =CC v2.1 aiohttp@HEAD 166mod 6741sym
@@ -160,9 +162,9 @@ CleanupError (aiohttp/web_app.py:403-406)
 _cleanup_server (aiohttp/web_runner.py:337-338)
   Run any cleanup steps after the server is shutdown.
 
-_cleanup_server (aiohttp/web_runner.py:376-377)
-
 _cleanup_server (aiohttp/web_runner.py:452-453)
+
+_cleanup_server (aiohttp/web_runner.py:376-377)
 
 shutdown (aiohttp/web_runner.py:302-303)
   Call any shutdown hooks to help server close gracefully.
@@ -216,13 +218,8 @@ cleanup (aiohttp/web_runner.py:305-330)
   calls: stop
   called_by: AppRunner
 
-run_test_server (examples/combined_middleware.py:238-252)
-  Run a test server with various endpoints.
-  calls: TestServer
-  called_by: main
-
-run_test_server (examples/logging_middleware.py:87-102)
-  Run a simple test server.
+run_test_server (examples/basic_auth_middleware.py:119-131)
+  Run a simple test server with basic auth endpoints.
   calls: TestServer
   called_by: main
 
@@ -231,8 +228,13 @@ run_test_server (examples/retry_middleware.py:150-164)
   calls: TestServer
   called_by: main
 
-run_test_server (examples/basic_auth_middleware.py:119-131)
-  Run a simple test server with basic auth endpoints.
+run_test_server (examples/logging_middleware.py:87-102)
+  Run a simple test server.
+  calls: TestServer
+  called_by: main
+
+run_test_server (examples/combined_middleware.py:238-252)
+  Run a test server with various endpoints.
   calls: TestServer
   called_by: main
 
@@ -240,9 +242,9 @@ Server (aiohttp/web_server.py:30-126)
   imports: asyncio, warnings, http_parser, streams, web_protocol
   calls: shutdown
 
-TestServer (examples/logging_middleware.py:59-84)
-  Test server for logging middleware demo.
-  imports: asyncio, logging, aiohttp
+TestServer (examples/combined_middleware.py:159-235)
+  Test server with stateful endpoints for middleware testing.
+  imports: asyncio, base64, binascii, logging, http
   called_by: run_test_server
 
 TestServer (examples/basic_auth_middleware.py:59-116)
@@ -250,14 +252,14 @@ TestServer (examples/basic_auth_middleware.py:59-116)
   imports: asyncio, base64, binascii, logging, aiohttp
   called_by: run_test_server
 
-TestServer (examples/combined_middleware.py:159-235)
-  Test server with stateful endpoints for middleware testing.
-  imports: asyncio, base64, binascii, logging, http
-  called_by: run_test_server
-
 TestServer (examples/retry_middleware.py:91-147)
   Test server with stateful endpoints for retry testing.
   imports: asyncio, logging, http, aiohttp
+  called_by: run_test_server
+
+TestServer (examples/logging_middleware.py:59-84)
+  Test server for logging middleware demo.
+  imports: asyncio, logging, aiohttp
   called_by: run_test_server
 
 _cleanup_writer (aiohttp/client_reqrep.py:563-566)
@@ -319,11 +321,11 @@ on_shutdown (examples/web_ws.py:49-51)
   sig: on_shutdown(app)
   behavior: ACCUMULATE(app[sockets] loop -> result)
 
-on_shutdown (aiohttp/web_app.py:318-319)
-
 on_shutdown (examples/background_tasks.py:29-31)
   sig: on_shutdown(app)
   behavior: ACCUMULATE(app[websockets] loop -> result)
+
+on_shutdown (aiohttp/web_app.py:318-319)
 
 on_startup (aiohttp/web_app.py:314-315)
 

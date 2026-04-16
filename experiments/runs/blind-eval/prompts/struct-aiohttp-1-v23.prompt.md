@@ -1,4 +1,4 @@
-# Blind Evaluation Prompt - MRLF v2.1
+# Blind Evaluation Prompt - MRLF v2.4
 # Task: struct-aiohttp-1
 
 You are a senior software engineer. You have been given a codebase
@@ -8,6 +8,8 @@ a compressed representation.
 
 Answer the question below using ONLY the information in the clue file.
 Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the modules, symbols, or relationships most relevant to the question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before concluding: follow calls: chains, walk extends: hierarchies, and use behavior: annotations as summaries of how control or responsibility moves. Use TREE and INDEX to situate the relationship in the repository structure. State explicitly what GAPS says cannot be determined from the clue alone. Finally, synthesize the answer, distinguishing supported structure from unresolved uncertainty.
 
 --- CLUE FILE START ---
 =CC v2.1 aiohttp@HEAD 166mod 6741sym
@@ -145,13 +147,13 @@ main (examples/combined_middleware.py:308-316)
 main (examples/basic_auth_middleware.py:179-186)
   calls: run_test_server, run_tests
 
-main (examples/logging_middleware.py:157-166)
-  calls: run_test_server, run_tests
-
 main (examples/token_refresh_middleware.py:326-333)
   calls: run_test_server, run_tests
 
 main (examples/retry_middleware.py:234-241)
+  calls: run_test_server, run_tests
+
+main (examples/logging_middleware.py:157-166)
   calls: run_test_server, run_tests
 
 main (tools/bench-asyncio-write.py:97-126)
@@ -175,13 +177,13 @@ aiohttp_client_cls (aiohttp/pytest_plugin.py:353-376)
   Client class to use in ``aiohttp_client`` factory.
   called_by: aiohttp_client
 
-main (examples/lowlevel_srv.py:10-17)
-  sig: main(loop)
-
 main (tools/check_changes.py:33-55)
   sig: main(argv)
   behavior: BRANCH(failed -> print('', file=sys.st..., else -> print('OK')); ACCUMULATE(changes.iterdir() loop -> result)
   calls: get_root
+
+main (examples/lowlevel_srv.py:10-17)
+  sig: main(loop)
 
 main (tools/check_sum.py:15-46)
   sig: main(argv)
@@ -249,11 +251,11 @@ add_domain (aiohttp/web_app.py:296-304)
 clear_domain (aiohttp/cookiejar.py:220-221)
   sig: clear_domain(domain)
 
-clear_domain (aiohttp/cookiejar.py:574-575)
-  sig: clear_domain(domain)
-
 clear_domain (aiohttp/abc.py:171-172)
   Clear all cookies for domain and all subdomains.
+  sig: clear_domain(domain)
+
+clear_domain (aiohttp/cookiejar.py:574-575)
   sig: clear_domain(domain)
 
 match_domain (aiohttp/web_urldispatcher.py:799-800)

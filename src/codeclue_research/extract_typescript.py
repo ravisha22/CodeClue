@@ -309,8 +309,8 @@ def _split_bases(raw: str) -> list[str]:
         items.append("".join(current))
 
     for item in items:
-        candidate = item.strip().split(".")[-1]
-        candidate = candidate.split("<", 1)[0].strip()
+        candidate = item.strip().split("<", 1)[0].strip()
+        candidate = candidate.split(".")[-1].strip()
         if re.match(r"^[$A-Za-z_][$A-Za-z0-9_]*$", candidate):
             bases.append(candidate)
     return list(dict.fromkeys(bases))

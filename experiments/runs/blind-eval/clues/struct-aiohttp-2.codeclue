@@ -236,14 +236,14 @@ DigestAuthMiddleware (aiohttp/client_middleware_digest_auth.py:145-469)
   raises: ValueError, ClientError
   uses: URL (yarl), ClientError (client_exceptions)
 
-LoggingMiddleware (examples/combined_middleware.py:38-63)
-  Middleware that logs request timing and response status.
-  imports: asyncio, base64, binascii, logging, http
-  called_by: run_tests
-
 LoggingMiddleware (examples/logging_middleware.py:27-56)
   Middleware that logs request timing and response status.
   imports: asyncio, logging, aiohttp
+  called_by: run_tests
+
+LoggingMiddleware (examples/combined_middleware.py:38-63)
+  Middleware that logs request timing and response status.
+  imports: asyncio, base64, binascii, logging, http
   called_by: run_tests
 
 __call__ (examples/retry_middleware.py:47-88)

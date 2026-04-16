@@ -1,4 +1,4 @@
-# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
+# Blind Evaluation Prompt - MRLF v2.4 with File 2 Drill-Down
 # Task: blind-requests-mech-2
 
 You are a senior software engineer. You have been given:
@@ -7,6 +7,8 @@ You are a senior software engineer. You have been given:
 
 Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the symbols most relevant to the question from FOCUS, SYM, and INDEX. Trace those symbols through the clue before forming any conclusion: follow calls: chains, walk extends: hierarchies, and read behavior: annotations as compact control-flow summaries. Use TREE and INDEX to place each symbol in its module context. Then consult the provided source snippets only to confirm or refine the traced path. State explicitly what GAPS says cannot be determined from the evidence. Finally, synthesize the answer, separating supported conclusions from remaining uncertainty.
 
 --- CLUE FILE (File 1) ---
 =CC v2.1 requests@HEAD 36mod 757sym
@@ -530,207 +532,206 @@ drill: src/requests/auth.py (~39 lines, handle_401)
         return f"Digest {base}"
 ```
 
-## __call__  (tests/test_requests.py L1216-1219)
+## ChunkedEncodingError  (src/requests/exceptions.py L120-121)
 ```
-                r.headers["Dummy-Auth-Test"] = "dummy-auth-test-ok"
-                return r
-
-        req = requests.Request("GET", httpbin("headers"))
+class ChunkedEncodingError(RequestException):
+    """The server declared chunked encoding but sent an invalid chunk."""
 ```
 
-## AuthBase  (src/requests/auth.py L69-73)
+## ConnectTimeout  (src/requests/exceptions.py L81-85)
 ```
-class AuthBase:
-    """Base class that all auth implementations derive from"""
+class ConnectTimeout(ConnectionError, Timeout):
+    """The request timed out while trying to connect to the remote server.
 
-    def __call__(self, r):
-        raise NotImplementedError("Auth hooks must be callable.")
-```
-
-## __eq__  (src/requests/structures.py L67-73)
-```
-    def __eq__(self, other):
-        if isinstance(other, Mapping):
-            other = CaseInsensitiveDict(other)
-        else:
-            return NotImplemented
-        # Compare insensitively
-        return dict(self.lower_items()) == dict(other.lower_items())
+    Requests that produced this error are safe to retry.
+    """
 ```
 
-## __ne__  (src/requests/auth.py L313-314)
+## ConnectionError  (src/requests/exceptions.py L60-61)
 ```
-    def __ne__(self, other):
-        return not self == other
-```
-
-## HTTPBasicAuth  (src/requests/auth.py L76-96)
-```
-class HTTPBasicAuth(AuthBase):
-    """Attaches HTTP Basic Authentication to the given Request object."""
-
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-
-    def __eq__(self, other):
-        return all(
-            [
-                self.username == getattr(other, "username", None),
-                self.password == getattr(other, "password", None),
-            ]
-        )
-
-    def __ne__(self, other):
-        return not self == other
-
-    def __call__(self, r):
-        r.headers["Authorization"] = _basic_auth_str(self.username, self.password)
-        return r
+class ConnectionError(RequestException):
+    """A Connection error occurred."""
 ```
 
-## md5_utf8  (src/requests/auth.py L145-148)
+## ContentDecodingError  (src/requests/exceptions.py L124-125)
 ```
-            def md5_utf8(x):
-                if isinstance(x, str):
-                    x = x.encode("utf-8")
-                return hashlib.md5(x).hexdigest()
+class ContentDecodingError(RequestException, BaseHTTPError):
+    """Failed to decode response content."""
 ```
 
-## sha256_utf8  (src/requests/auth.py L161-164)
+## FileModeWarning  (src/requests/exceptions.py L147-148)
 ```
-            def sha256_utf8(x):
-                if isinstance(x, str):
-                    x = x.encode("utf-8")
-                return hashlib.sha256(x).hexdigest()
+class FileModeWarning(RequestsWarning, DeprecationWarning):
+    """A file was opened in text mode, but Requests determined its binary length."""
 ```
 
-## sha512_utf8  (src/requests/auth.py L169-172)
+## HTTPError  (src/requests/exceptions.py L56-57)
 ```
-            def sha512_utf8(x):
-                if isinstance(x, str):
-                    x = x.encode("utf-8")
-                return hashlib.sha512(x).hexdigest()
+class HTTPError(RequestException):
+    """An HTTP error occurred."""
 ```
 
-## sha_utf8  (src/requests/auth.py L153-156)
+## InvalidHeader  (src/requests/exceptions.py L112-113)
 ```
-            def sha_utf8(x):
-                if isinstance(x, str):
-                    x = x.encode("utf-8")
-                return hashlib.sha1(x).hexdigest()
+class InvalidHeader(RequestException, ValueError):
+    """The header value provided was somehow invalid."""
 ```
 
-## handle_redirect  (src/requests/auth.py L236-239)
+## InvalidJSONError  (src/requests/exceptions.py L28-29)
 ```
-    def handle_redirect(self, r, **kwargs):
-        """Reset num_401_calls counter on redirects."""
-        if r.is_redirect:
-            self._thread_local.num_401_calls = 1
+class InvalidJSONError(RequestException):
+    """A JSON error occurred."""
 ```
 
-## init_per_thread_state  (src/requests/auth.py L116-124)
+## InvalidProxyURL  (src/requests/exceptions.py L116-117)
 ```
-    def init_per_thread_state(self):
-        # Ensure state is initialized just once per-thread
-        if not hasattr(self._thread_local, "init"):
-            self._thread_local.init = True
-            self._thread_local.last_nonce = ""
-            self._thread_local.nonce_count = 0
-            self._thread_local.chal = {}
-            self._thread_local.pos = None
-            self._thread_local.num_401_calls = None
+class InvalidProxyURL(InvalidURL):
+    """The proxy URL provided is invalid."""
 ```
 
-## HTTPDigestAuth  (src/requests/auth.py L107-314)
+## InvalidSchema  (src/requests/exceptions.py L104-105)
 ```
-class HTTPDigestAuth(AuthBase):
-    """Attaches HTTP Digest Authentication to the given Request object."""
+class InvalidSchema(RequestException, ValueError):
+    """The URL scheme provided is either invalid or unsupported."""
+```
 
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-        # Keep state in per-thread local storage
-        self._thread_local = threading.local()
+## InvalidURL  (src/requests/exceptions.py L108-109)
+```
+class InvalidURL(RequestException, ValueError):
+    """The URL provided was somehow invalid."""
+```
 
-    def init_per_thread_state(self):
-        # Ensure state is initialized just once per-thread
-        if not hasattr(self._thread_local, "init"):
-            self._thread_local.init = True
-            self._thread_local.last_nonce = ""
-            self._thread_local.nonce_count = 0
-            self._thread_local.chal = {}
-            self._thread_local.pos = None
-            self._thread_local.num_401_calls = None
-
-    def build_digest_header(self, method, url):
+## __reduce__  (src/requests/exceptions.py L45-53)
+```
+    def __reduce__(self):
         """
-        :rtype: str
+        The __reduce__ method called when pickling the object must
+        be the one from the JSONDecodeError (be it json/simplejson)
+        as it expects all the arguments for instantiation, not just
+        one like the IOError, and the MRO would by default call the
+        __reduce__ method from the IOError due to the inheritance order.
         """
+        return CompatJSONDecodeError.__reduce__(self)
+```
 
-        realm = self._thread_local.chal["realm"]
-        nonce = self._thread_local.chal["nonce"]
-        qop = self._thread_local.chal.get("qop")
-        algorithm = self._thread_local.chal.get("algorithm")
-        opaque = self._thread_local.chal.get("opaque")
-        hash_utf8 = None
+## JSONDecodeError  (src/requests/exceptions.py L32-53)
+```
+class JSONDecodeError(InvalidJSONError, CompatJSONDecodeError):
+    """Couldn't decode the text into json"""
 
-        if algorithm is None:
-            _algorithm = "MD5"
-        else:
-            _algorithm = algorithm.upper()
-        # lambdas assume digest modules are imported at the top level
-        if _algorithm == "MD5" or _algorithm == "MD5-SESS":
+    def __init__(self, *args, **kwargs):
+        """
+        Construct the JSONDecodeError instance first with all
+        args. Then use it's args to construct the IOError so that
+        the json specific args aren't used as IOError specific args
+        and the error message from JSONDecodeError is preserved.
+        """
+        CompatJSONDecodeError.__init__(self, *args)
+        InvalidJSONError.__init__(self, *self.args, **kwargs)
 
-            def md5_utf8(x):
-                if isinstance(x, str):
-                    x = x.encode("utf-8")
-                return hashlib.md5(x).hexdigest()
+    def __reduce__(self):
+        """
+        The __reduce__ method called when pickling the object must
+        be the one from the JSONDecodeError (be it json/simplejson)
+        as it expects all the arguments for instantiation, not just
+        one like the IOError, and the MRO would by default call the
+        __reduce__ method from the IOError due to the inheritance order.
+        """
+        return CompatJSONDecodeError.__reduce__(self)
+```
 
-            hash_utf8 = md5_utf8
-        elif _algorithm == "SHA":
+## MissingSchema  (src/requests/exceptions.py L100-101)
+```
+class MissingSchema(RequestException, ValueError):
+    """The URL scheme (e.g. http or https) is missing."""
+```
 
-            def sha_utf8(x):
-                if isinstance(x, str):
-                    x = x.encode("utf-8")
-                return hashlib.sha1(x).hexdigest()
+## ProxyError  (src/requests/exceptions.py L64-65)
+```
+class ProxyError(ConnectionError):
+    """A proxy error occurred."""
+```
 
-            hash_utf8 = sha_utf8
-        elif _algorithm == "SHA-256":
+## ReadTimeout  (src/requests/exceptions.py L88-89)
+```
+class ReadTimeout(Timeout):
+    """The server did not send any data in the allotted amount of time."""
+```
 
-            def sha256_utf8(x):
-                if isinstance(x, str):
-                    x = x.encode("utf-8")
-                return hashlib.sha256(x).hexdigest()
+## RequestException  (src/requests/exceptions.py L13-25)
+```
+class RequestException(IOError):
+    """There was an ambiguous exception that occurred while handling your
+    request.
+    """
 
-            hash_utf8 = sha256_utf8
-        elif _algorithm == "SHA-512":
+    def __init__(self, *args, **kwargs):
+        """Initialize RequestException with `request` and `response` objects."""
+        response = kwargs.pop("response", None)
+        self.response = response
+        self.request = kwargs.pop("request", None)
+        if response is not None and not self.request and hasattr(response, "request"):
+            self.request = self.response.request
+        super().__init__(*args, **kwargs)
+```
 
-            def sha512_utf8(x):
-                if isinstance(x, str):
-                    x = x.encode("utf-8")
-                return hashlib.sha512(x).hexdigest()
+## RequestsDependencyWarning  (src/requests/exceptions.py L151-152)
+```
+class RequestsDependencyWarning(RequestsWarning):
+    """An imported dependency doesn't match the expected version range."""
+```
 
-            hash_utf8 = sha512_utf8
+## RequestsWarning  (src/requests/exceptions.py L143-144)
+```
+class RequestsWarning(Warning):
+    """Base warning for Requests."""
+```
 
-        KD = lambda s, d: hash_utf8(f"{s}:{d}")  # noqa:E731
+## RetryError  (src/requests/exceptions.py L132-133)
+```
+class RetryError(RequestException):
+    """Custom retries logic failed"""
+```
 
-        if hash_utf8 is None:
-            return None
+## SSLError  (src/requests/exceptions.py L68-69)
+```
+class SSLError(ConnectionError):
+    """An SSL error occurred."""
+```
 
-        # XXX not implemented yet
-        entdig = None
-        p_parsed = urlparse(url)
-        #: path is request-uri defined in RFC 2616 which should not be empty
-        path = p_parsed.path or "/"
-        if p_parsed.query:
-            path += f"?{p_parsed.query}"
+## StreamConsumedError  (src/requests/exceptions.py L128-129)
+```
+class StreamConsumedError(RequestException, TypeError):
+    """The content for this response was already consumed."""
+```
 
-        A1 = f"{self.username}:{realm}:{self.password}"
-        A2 = f"{method}:{path}"
+## Timeout  (src/requests/exceptions.py L72-78)
+```
+class Timeout(RequestException):
+    """The request timed out.
 
-        HA1 = hash_utf8(A1)
-... (truncated)
+    Catching this error will catch both
+    :exc:`~requests.exceptions.ConnectTimeout` and
+    :exc:`~requests.exceptions.ReadTimeout` errors.
+    """
+```
+
+## TooManyRedirects  (src/requests/exceptions.py L96-97)
+```
+class TooManyRedirects(RequestException):
+    """Too many redirects."""
+```
+
+## URLRequired  (src/requests/exceptions.py L92-93)
+```
+class URLRequired(RequestException):
+    """A valid URL is required to make a request."""
+```
+
+## UnrewindableBodyError  (src/requests/exceptions.py L136-137)
+```
+class UnrewindableBodyError(RequestException):
+    """Requests encountered an error when trying to rewind a body."""
 ```
 --- END SOURCE SNIPPETS ---
 

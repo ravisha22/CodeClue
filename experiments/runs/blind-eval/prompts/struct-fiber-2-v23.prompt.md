@@ -1,4 +1,4 @@
-# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
+# Blind Evaluation Prompt - MRLF v2.4 with File 2 Drill-Down
 # Task: struct-fiber-2
 
 You are a senior software engineer. You have been given:
@@ -7,6 +7,8 @@ You are a senior software engineer. You have been given:
 
 Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the symbols most relevant to the question from FOCUS, SYM, and INDEX. Trace those symbols through the clue before forming any conclusion: follow calls: chains, walk extends: hierarchies, and read behavior: annotations as compact control-flow summaries. Use TREE and INDEX to place each symbol in its module context. Then consult the provided source snippets only to confirm or refine the traced path. State explicitly what GAPS says cannot be determined from the evidence. Finally, synthesize the answer, separating supported conclusions from remaining uncertainty.
 
 --- CLUE FILE (File 1) ---
 =CC v2.1 fiber@HEAD 148mod 1472sym
@@ -87,8 +89,8 @@ Bind.validateStruct                 M bind.go:183    Struct validation.
 SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
 domainMatcher.match                 M domain.go:139    match checks if a hostname matches the domain p...
 Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
-DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
 manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
+DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
 walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
 isUnixNetwork                       M middleware/adaptor/adaptor.go:208    function isUnixNetwork
 Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...
@@ -145,15 +147,15 @@ Request.Context (client/request.go:115-115)
   behavior: GUARD(r.ctx == nil -> return context.Back...)
   called_by: Send
 
-FromContext (middleware/session/middleware.go:179-179)
-  FromContext returns the Middleware from the Fiber context.
-  sig: FromContext(ctx any)
-  behavior: GUARD(m, ok := fiber.ValueFromContext[*Middleware](... -> return m)
-
 FromContext (middleware/requestid/requestid.go:79-79)
   FromContext returns the request ID from context.
   sig: FromContext(ctx any)
   behavior: GUARD(rid, ok := fiber.ValueFromContext[string](ctx... -> return rid)
+
+FromContext (middleware/session/middleware.go:179-179)
+  FromContext returns the Middleware from the Fiber context.
+  sig: FromContext(ctx any)
+  behavior: GUARD(m, ok := fiber.ValueFromContext[*Middleware](... -> return m)
 
 TokenFromContext (middleware/keyauth/keyauth.go:99-99)
   TokenFromContext returns the bearer token from the request context.

@@ -12,6 +12,7 @@ GO_BEHAVIOR_FILE_SIZE_LIMIT_BYTES = 64_000
 GO_BEHAVIOR_BODY_SIZE_LIMIT_CHARS = 12_000
 
 _GO_CALL_CANDIDATE_RE = re.compile(r"(?:\.|\b)([A-Za-z_][A-Za-z0-9_]*)\s*\(")
+_GO_SHORT_RECEIVER_CALL_RE = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]{0,2})\.([A-Za-z_][A-Za-z0-9_]*)\s*\(")
 _GO_PANIC_RE = re.compile(r"panic\s*\(")
 
 
@@ -371,11 +372,13 @@ def _extract_go_behavior_patterns(body: str) -> list[str]:
 def extract_go_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
     nodes: list[Node] = []
     edges: list[Edge] = []
+    file_scan_records: list[tuple[list[str], dict[str, str]]] = []
 
     repo_start = time.perf_counter()
     type_re = re.compile(r"type\s+([A-Za-z_][A-Za-z0-9_]*)\s+(?:struct|interface)")
     func_re = re.compile(r"func\s+(?:\((\w+)\s+\*?(\w+)\)\s*)?([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)")
     go_files = _iter_go_files(repo_root)
+    method_symbols: dict[str, list[str]] = {}
 
     for file_index, file_path in enumerate(go_files, start=1):
         file_start = time.perf_counter()
@@ -488,6 +491,8 @@ def extract_go_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
                 # Also register short name for call resolution
                 if func_name not in symbols:
                     symbols[func_name] = node_id
+                if receiver_type:
+                    method_symbols.setdefault(func_name, []).append(node_id)
                 doc = _extract_go_doc_comment(lines_list, line_no_0)
                 # Build signature
                 sig = f"({params})" if params else "()"
@@ -572,6 +577,8 @@ def extract_go_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
                         )
                     )
 
+        file_scan_records.append((lines_list, symbols))
+
         # Second pass: extract call edges + panic detection
         node_by_id = {n.node_id: n for n in nodes}
         current_func_id: str | None = None
@@ -595,12 +602,12 @@ def extract_go_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
             if _GO_PANIC_RE.search(line):
                 func_panics.setdefault(current_func_id, []).append("panic")
 
-            for sym_name in dict.fromkeys(_GO_CALL_CANDIDATE_RE.findall(line)):
-                sym_id = symbols.get(sym_name)
-                if not sym_id:
-                    continue
-                if sym_id == current_func_id:
-                    continue
+            emitted_call_targets: set[str] = set()
+
+            def _emit_call_edge(sym_id: str, rel: str) -> None:
+                if not sym_id or sym_id == current_func_id or sym_id in emitted_call_targets:
+                    return
+                emitted_call_targets.add(sym_id)
                 edge_id = f"calls:{current_func_id}:{sym_id}:{line_no}"
                 edges.append(
                     Edge(
@@ -608,9 +615,18 @@ def extract_go_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
                         edge_type="calls",
                         from_node=current_func_id,
                         to_node=sym_id,
-                        evidence={"rel": "regex_call", "line": line_no},
+                        evidence={"rel": rel, "line": line_no},
                     )
                 )
+
+            for sym_name in dict.fromkeys(_GO_CALL_CANDIDATE_RE.findall(line)):
+                _emit_call_edge(symbols.get(sym_name, ""), "regex_call")
+
+            for receiver_name, method_name in dict.fromkeys(_GO_SHORT_RECEIVER_CALL_RE.findall(line)):
+                if len(receiver_name) > 3:
+                    continue
+                for sym_id in method_symbols.get(method_name, []):
+                    _emit_call_edge(sym_id, "short_receiver_call")
             current_func_depth += line.count("{") - line.count("}")
             if current_func_depth <= 0:
                 current_func_id = None
@@ -627,6 +643,46 @@ def extract_go_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
                 f"[extract_go] processed {file_index}/{len(go_files)} files "
                 f"in {time.perf_counter() - repo_start:.1f}s"
             )
+
+    existing_edge_ids = {edge.edge_id for edge in edges}
+    for lines_list, symbols in file_scan_records:
+        current_func_id: str | None = None
+        current_func_depth = 0
+        for line_no_0, line in enumerate(lines_list):
+            line_no = line_no_0 + 1
+            m = func_re.search(line)
+            if m:
+                receiver_type = m.group(2)
+                func_name = m.group(3)
+                name = f"{receiver_type}.{func_name}" if receiver_type else func_name
+                current_func_id = symbols.get(name)
+                current_func_depth = line.count("{") - line.count("}")
+                continue
+            if not current_func_id:
+                continue
+            for receiver_name, method_name in dict.fromkeys(_GO_SHORT_RECEIVER_CALL_RE.findall(line)):
+                if len(receiver_name) > 3:
+                    continue
+                for sym_id in method_symbols.get(method_name, []):
+                    if sym_id == current_func_id:
+                        continue
+                    edge_id = f"calls:{current_func_id}:{sym_id}:{line_no}"
+                    if edge_id in existing_edge_ids:
+                        continue
+                    existing_edge_ids.add(edge_id)
+                    edges.append(
+                        Edge(
+                            edge_id=edge_id,
+                            edge_type="calls",
+                            from_node=current_func_id,
+                            to_node=sym_id,
+                            evidence={"rel": "short_receiver_call", "line": line_no},
+                        )
+                    )
+            current_func_depth += line.count("{") - line.count("}")
+            if current_func_depth <= 0:
+                current_func_id = None
+                current_func_depth = 0
 
     return nodes, edges
 

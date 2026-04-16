@@ -1,4 +1,4 @@
-# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
+# Blind Evaluation Prompt - MRLF v2.4 with File 2 Drill-Down
 # Task: blind-requests-mech-1
 
 You are a senior software engineer. You have been given:
@@ -7,6 +7,8 @@ You are a senior software engineer. You have been given:
 
 Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the symbols most relevant to the question from FOCUS, SYM, and INDEX. Trace those symbols through the clue before forming any conclusion: follow calls: chains, walk extends: hierarchies, and read behavior: annotations as compact control-flow summaries. Use TREE and INDEX to place each symbol in its module context. Then consult the provided source snippets only to confirm or refine the traced path. State explicitly what GAPS says cannot be determined from the evidence. Finally, synthesize the answer, separating supported conclusions from remaining uncertainty.
 
 --- CLUE FILE (File 1) ---
 =CC v2.1 requests@HEAD 36mod 757sym
@@ -142,13 +144,13 @@ SessionRedirectMixin (src/requests/sessions.py:107-353)
   calls: close, get, send, get_redirect_target, rebuild_auth, rebuild_method, rebuild_proxies, should_strip_auth
   raises: TooManyRedirects
 
-__call__ (src/requests/auth.py:102-104)
-  sig: __call__(r)
-
 __call__ (src/requests/auth.py:285-303)
   sig: __call__(r)
 
 __call__ (src/requests/auth.py:94-96)
+  sig: __call__(r)
+
+__call__ (src/requests/auth.py:102-104)
   sig: __call__(r)
 
 __call__ (src/requests/auth.py:72-73)
@@ -451,6 +453,74 @@ def merge_setting(request_setting, session_setting, dict_class=OrderedDict):
     return merged_setting
 ```
 
+## info  (src/requests/help.py L66-122)
+```
+def info():
+    """Generate information for a bug report."""
+    try:
+        platform_info = {
+            "system": platform.system(),
+            "release": platform.release(),
+        }
+    except OSError:
+        platform_info = {
+            "system": "Unknown",
+            "release": "Unknown",
+        }
+
+    implementation_info = _implementation()
+    urllib3_info = {"version": urllib3.__version__}
+    charset_normalizer_info = {"version": None}
+    chardet_info = {"version": None}
+    if charset_normalizer:
+        charset_normalizer_info = {"version": charset_normalizer.__version__}
+    if chardet:
+        chardet_info = {"version": chardet.__version__}
+
+    pyopenssl_info = {
+        "version": None,
+        "openssl_version": "",
+    }
+    if OpenSSL:
+        pyopenssl_info = {
+            "version": OpenSSL.__version__,
+            "openssl_version": f"{OpenSSL.SSL.OPENSSL_VERSION_NUMBER:x}",
+        }
+    cryptography_info = {
+        "version": getattr(cryptography, "__version__", ""),
+    }
+    idna_info = {
+        "version": getattr(idna, "__version__", ""),
+    }
+
+    system_ssl = ssl.OPENSSL_VERSION_NUMBER
+    system_ssl_info = {"version": f"{system_ssl:x}" if system_ssl is not None else ""}
+
+    return {
+        "platform": platform_info,
+        "implementation": implementation_info,
+        "system_ssl": system_ssl_info,
+        "using_pyopenssl": pyopenssl is not None,
+        "using_charset_normalizer": chardet is None,
+        "pyOpenSSL": pyopenssl_info,
+        "urllib3": urllib3_info,
+        "chardet": chardet_info,
+        "charset_normalizer": charset_normalizer_info,
+        "cryptography": cryptography_info,
+        "idna": idna_info,
+        "requests": {
+            "version": requests_version,
+        },
+    }
+```
+
+## main  (src/requests/help.py L125-127)
+```
+def main():
+    """Pretty-print the bug information as JSON."""
+    print(json.dumps(info(), sort_keys=True, indent=2))
+```
+
 ## __enter__  (tests/testserver/server.py L117-121)
 ```
     def __enter__(self):
@@ -656,74 +726,6 @@ def merge_setting(request_setting, session_setting, dict_class=OrderedDict):
 
         # Merge with session cookies
         merged_cookies = merge_cookies(
-            merge_cookies(RequestsCookieJar(), self.cookies), cookies
-        )
-
-        # Set environment's basic authentication if not explicitly set.
-        auth = request.auth
-        if self.trust_env and not auth and not self.auth:
-            auth = get_netrc_auth(request.url)
-
-        p = PreparedRequest()
-        p.prepare(
-            method=request.method.upper(),
-            url=request.url,
-            files=request.files,
-            data=request.data,
-            json=request.json,
-            headers=merge_setting(
-                request.headers, self.headers, dict_class=CaseInsensitiveDict
-            ),
-            params=merge_setting(request.params, self.params),
-            auth=merge_setting(auth, self.auth),
-            cookies=merged_cookies,
-            hooks=merge_hooks(request.hooks, self.hooks),
-        )
-        return p
-```
-
-## put  (src/requests/sessions.py L641-651)
-```
-    def put(self, url, data=None, **kwargs):
-        r"""Sends a PUT request. Returns :class:`Response` object.
-
-        :param url: URL for the new :class:`Request` object.
-        :param data: (optional) Dictionary, list of tuples, bytes, or file-like
-            object to send in the body of the :class:`Request`.
-        :param \*\*kwargs: Optional arguments that ``request`` takes.
-        :rtype: requests.Response
-        """
-
-        return self.request("PUT", url, data=data, **kwargs)
-```
-
-## request  (src/requests/sessions.py L502-593)
-```
-    def request(
-        self,
-        method,
-        url,
-        params=None,
-        data=None,
-        headers=None,
-        cookies=None,
-        files=None,
-        auth=None,
-        timeout=None,
-        allow_redirects=True,
-        proxies=None,
-        hooks=None,
-        stream=None,
-        verify=None,
-        cert=None,
-        json=None,
-    ):
-        """Constructs a :class:`Request <Request>`, prepares it and sends it.
-        Returns :class:`Response <Response>` object.
-
-        :param method: method for the new :class:`Request` object.
-        :param url: URL for the new :class:`Request` object.
-        :param params: (optional) Dictionary or bytes to be sent in the query
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

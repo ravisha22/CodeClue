@@ -398,6 +398,41 @@ class TestL3:
         focus_names = [n.semantic_contract.get("symbol_name", "") for n in focus]
         assert focus_names.index("RequestHandler") < focus_names.index("RequestLogger")
 
+    def test_blended_ranking_keeps_semantic_anchor_ahead_of_expansion(self):
+        graph = CanonicalClueGraph(
+            metadata={"schema_version": "2.0"},
+            repository={"name": "focus-blend", "root_path": "."},
+            nodes=[
+                _make_node("module:src/fiber.py", "module", "src/fiber.py", symbol_name="src/fiber.py"),
+                _make_node(
+                    "sym:fiber:RequestPipeline",
+                    "function",
+                    "src/fiber.py",
+                    symbol_name="RequestPipeline",
+                    purpose="Request handling pipeline for middleware dispatch",
+                ),
+                _make_node(
+                    "sym:fiber:MiddlewareNext",
+                    "function",
+                    "src/fiber.py",
+                    symbol_name="MiddlewareNext",
+                    purpose="function helper",
+                ),
+            ],
+            edges=[
+                _make_edge("contains", "module:src/fiber.py", "sym:fiber:RequestPipeline"),
+                _make_edge("contains", "module:src/fiber.py", "sym:fiber:MiddlewareNext"),
+                _make_edge("calls", "sym:fiber:RequestPipeline", "sym:fiber:MiddlewareNext"),
+            ],
+        )
+        focus = _select_focus_nodes(
+            graph,
+            "What are the call relationships between middleware and the request handling pipeline?",
+        )
+        focus_names = [n.semantic_contract.get("symbol_name", "") for n in focus]
+        assert "MiddlewareNext" in focus_names
+        assert focus_names.index("RequestPipeline") < focus_names.index("MiddlewareNext")
+
 
 # ---------------------------------------------------------------------------
 # GAPS tests

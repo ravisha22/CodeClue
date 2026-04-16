@@ -1,4 +1,4 @@
-# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
+# Blind Evaluation Prompt - MRLF v2.4 with File 2 Drill-Down
 # Task: blind-echo-mech-1
 
 You are a senior software engineer. You have been given:
@@ -7,6 +7,8 @@ You are a senior software engineer. You have been given:
 
 Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the symbols most relevant to the question from FOCUS, SYM, and INDEX. Trace those symbols through the clue before forming any conclusion: follow calls: chains, walk extends: hierarchies, and read behavior: annotations as compact control-flow summaries. Use TREE and INDEX to place each symbol in its module context. Then consult the provided source snippets only to confirm or refine the traced path. State explicitly what GAPS says cannot be determined from the evidence. Finally, synthesize the answer, separating supported conclusions from remaining uncertainty.
 
 --- CLUE FILE (File 1) ---
 =CC v2.1 echo@HEAD 44mod 565sym
@@ -357,166 +359,6 @@ func StaticDirectoryHandler(fileSystem fs.FS, disablePathUnescaping bool) Handle
 func MustSubFS(currentFs fs.FS, fsRoot string) fs.FS {
 ```
 
-## HandlerName  (route.go L99-99)
-```
-func HandlerName(h HandlerFunc) string {
-```
-
-## Route.ToRouteInfo  (route.go L25-25)
-```
-func (r Route) ToRouteInfo(params []string) RouteInfo {
-```
-
-## Route.WithPrefix  (route.go L40-40)
-```
-func (r Route) WithPrefix(pathPrefix string, middlewares []MiddlewareFunc) Route {
-```
-
-## Route  (route.go L16-16)
-```
-type Route struct {
-```
-
-## RouteInfo.Clone  (route.go L65-65)
-```
-func (r RouteInfo) Clone() RouteInfo {
-```
-
-## RouteInfo.Reverse  (route.go L75-75)
-```
-func (r RouteInfo) Reverse(pathValues ...any) string {
-```
-
-## RouteInfo  (route.go L53-53)
-```
-type RouteInfo struct {
-```
-
-## Routes.Clone  (route.go L108-108)
-```
-func (r Routes) Clone() Routes {
-```
-
-## Routes.FilterByMethod  (route.go L141-141)
-```
-func (r Routes) FilterByMethod(method string) (Routes, error) {
-```
-
-## Routes.FilterByName  (route.go L177-177)
-```
-func (r Routes) FilterByName(name string) (Routes, error) {
-```
-
-## Routes.FilterByPath  (route.go L159-159)
-```
-func (r Routes) FilterByPath(path string) (Routes, error) {
-```
-
-## Routes.FindByMethodPath  (route.go L127-127)
-```
-func (r Routes) FindByMethodPath(method string, path string) (RouteInfo, error) {
-```
-
-## Group.Add  (group.go L158-158)
-```
-func (g *Group) Add(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.AddRoute  (group.go L172-172)
-```
-func (g *Group) AddRoute(route Route) (RouteInfo, error) {
-```
-
-## Group.Any  (group.go L72-72)
-```
-func (g *Group) Any(path string, handler HandlerFunc, middleware ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.CONNECT  (group.go L27-27)
-```
-func (g *Group) CONNECT(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.DELETE  (group.go L32-32)
-```
-func (g *Group) DELETE(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.File  (group.go L143-143)
-```
-func (g *Group) File(path, file string, middleware ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.FileFS  (group.go L135-135)
-```
-func (g *Group) FileFS(path, file string, filesystem fs.FS, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.GET  (group.go L37-37)
-```
-func (g *Group) GET(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.Group  (group.go L103-103)
-```
-func (g *Group) Group(prefix string, middleware ...MiddlewareFunc) (sg *Group) {
-```
-
-## Group.HEAD  (group.go L42-42)
-```
-func (g *Group) HEAD(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.Match  (group.go L77-77)
-```
-func (g *Group) Match(methods []string, path string, handler HandlerFunc, middleware ...MiddlewareFunc) Routes {
-```
-
-## Group.OPTIONS  (group.go L47-47)
-```
-func (g *Group) OPTIONS(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.PATCH  (group.go L52-52)
-```
-func (g *Group) PATCH(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.POST  (group.go L57-57)
-```
-func (g *Group) POST(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.PUT  (group.go L62-62)
-```
-func (g *Group) PUT(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.RouteNotFound  (group.go L153-153)
-```
-func (g *Group) RouteNotFound(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.Static  (group.go L112-112)
-```
-func (g *Group) Static(pathPrefix, fsRoot string, middleware ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.TRACE  (group.go L67-67)
-```
-func (g *Group) TRACE(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
-```
-
-## Group.Use  (group.go L22-22)
-```
-func (g *Group) Use(middleware ...MiddlewareFunc) {
-```
-
-## Group  (group.go L14-14)
-```
-type Group struct {
-```
-
 ## Config  (echo.go L237-237)
 ```
 type Config struct {
@@ -755,6 +597,166 @@ func sanitizeURI(uri string) string {
 ## subFS  (echo.go L827-827)
 ```
 func subFS(currentFs fs.FS, root string) (fs.FS, error) {
+```
+
+## Group.Add  (group.go L158-158)
+```
+func (g *Group) Add(method, path string, handler HandlerFunc, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.AddRoute  (group.go L172-172)
+```
+func (g *Group) AddRoute(route Route) (RouteInfo, error) {
+```
+
+## Group.Any  (group.go L72-72)
+```
+func (g *Group) Any(path string, handler HandlerFunc, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.CONNECT  (group.go L27-27)
+```
+func (g *Group) CONNECT(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.DELETE  (group.go L32-32)
+```
+func (g *Group) DELETE(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.File  (group.go L143-143)
+```
+func (g *Group) File(path, file string, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.FileFS  (group.go L135-135)
+```
+func (g *Group) FileFS(path, file string, filesystem fs.FS, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.GET  (group.go L37-37)
+```
+func (g *Group) GET(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.Group  (group.go L103-103)
+```
+func (g *Group) Group(prefix string, middleware ...MiddlewareFunc) (sg *Group) {
+```
+
+## Group.HEAD  (group.go L42-42)
+```
+func (g *Group) HEAD(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.Match  (group.go L77-77)
+```
+func (g *Group) Match(methods []string, path string, handler HandlerFunc, middleware ...MiddlewareFunc) Routes {
+```
+
+## Group.OPTIONS  (group.go L47-47)
+```
+func (g *Group) OPTIONS(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.PATCH  (group.go L52-52)
+```
+func (g *Group) PATCH(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.POST  (group.go L57-57)
+```
+func (g *Group) POST(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.PUT  (group.go L62-62)
+```
+func (g *Group) PUT(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.RouteNotFound  (group.go L153-153)
+```
+func (g *Group) RouteNotFound(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.Static  (group.go L112-112)
+```
+func (g *Group) Static(pathPrefix, fsRoot string, middleware ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.TRACE  (group.go L67-67)
+```
+func (g *Group) TRACE(path string, h HandlerFunc, m ...MiddlewareFunc) RouteInfo {
+```
+
+## Group.Use  (group.go L22-22)
+```
+func (g *Group) Use(middleware ...MiddlewareFunc) {
+```
+
+## Group  (group.go L14-14)
+```
+type Group struct {
+```
+
+## HandlerName  (route.go L99-99)
+```
+func HandlerName(h HandlerFunc) string {
+```
+
+## Route.ToRouteInfo  (route.go L25-25)
+```
+func (r Route) ToRouteInfo(params []string) RouteInfo {
+```
+
+## Route.WithPrefix  (route.go L40-40)
+```
+func (r Route) WithPrefix(pathPrefix string, middlewares []MiddlewareFunc) Route {
+```
+
+## Route  (route.go L16-16)
+```
+type Route struct {
+```
+
+## RouteInfo.Clone  (route.go L65-65)
+```
+func (r RouteInfo) Clone() RouteInfo {
+```
+
+## RouteInfo.Reverse  (route.go L75-75)
+```
+func (r RouteInfo) Reverse(pathValues ...any) string {
+```
+
+## RouteInfo  (route.go L53-53)
+```
+type RouteInfo struct {
+```
+
+## Routes.Clone  (route.go L108-108)
+```
+func (r Routes) Clone() Routes {
+```
+
+## Routes.FilterByMethod  (route.go L141-141)
+```
+func (r Routes) FilterByMethod(method string) (Routes, error) {
+```
+
+## Routes.FilterByName  (route.go L177-177)
+```
+func (r Routes) FilterByName(name string) (Routes, error) {
+```
+
+## Routes.FilterByPath  (route.go L159-159)
+```
+func (r Routes) FilterByPath(path string) (Routes, error) {
+```
+
+## Routes.FindByMethodPath  (route.go L127-127)
+```
+func (r Routes) FindByMethodPath(method string, path string) (RouteInfo, error) {
 ```
 --- END SOURCE SNIPPETS ---
 

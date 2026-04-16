@@ -126,17 +126,11 @@ ComplexCLI (examples/complex/complex/cli.py:31-45)
   extends: Group
   imports: click
 
-cli (examples/completion/completion.py:8-9)
-  calls: group
-
 cli (examples/termui/termui.py:9-11)
   This script showcases different terminal UI helpers in Click.
 
-cli (examples/repo/repo.py:44-57)
-  Repo is a command line tool that showcases how to build complex
-  sig: cli(ctx, repo_home, config, verbose)
-  behavior: ACCUMULATE(config loop -> result)
-  calls: set_config, Repo
+cli (examples/completion/completion.py:8-9)
+  calls: group
 
 _match_short_opt (src/click/parser.py:389-427)
   sig: _match_short_opt(arg, state)
@@ -157,17 +151,8 @@ _match_long_opt (src/click/parser.py:359-387)
 __next__ (src/click/_termui_impl.py:134-140)
   behavior: DELEGATE(next -> result)
 
-cli (examples/complex/complex/cli.py:56-60)
-  A complex command line interface.
-  sig: cli(ctx, verbose, home)
-
-cli (examples/inout/inout.py:7-30)
-  This script works similar to the Unix `cat` command but it writes
-  sig: cli(input, output)
-  behavior: ACCUMULATE(input loop -> output)
-
-cli (examples/imagepipe/imagepipe.py:11-20)
-  This script processes a bunch of images through pillow in a unix
+cli (examples/aliases/aliases.py:97-98)
+  An example application that supports aliases.
 
 cli (examples/validation/validation.py:34-48)
   Validation.
@@ -175,12 +160,8 @@ cli (examples/validation/validation.py:34-48)
   calls: URL
   raises: BadParameter
 
-cli (examples/complex/complex/commands/cmd_init.py:9-13)
-  Initializes a repository.
-  sig: cli(ctx, path)
-
-cli (examples/aliases/aliases.py:97-98)
-  An example application that supports aliases.
+cli (examples/imagepipe/imagepipe.py:11-20)
+  This script processes a bunch of images through pillow in a unix
 
 cli (examples/colors/colors.py:25-39)
   This script prints some colors.
@@ -192,6 +173,25 @@ cli (examples/naval/naval.py:6-12)
 cli (examples/complex/complex/commands/cmd_status.py:8-11)
   Shows file changes in the current working directory.
   sig: cli(ctx)
+
+cli (examples/complex/complex/cli.py:56-60)
+  A complex command line interface.
+  sig: cli(ctx, verbose, home)
+
+cli (examples/complex/complex/commands/cmd_init.py:9-13)
+  Initializes a repository.
+  sig: cli(ctx, path)
+
+cli (examples/repo/repo.py:44-57)
+  Repo is a command line tool that showcases how to build complex
+  sig: cli(ctx, repo_home, config, verbose)
+  behavior: ACCUMULATE(config loop -> result)
+  calls: set_config, Repo
+
+cli (examples/inout/inout.py:7-30)
+  This script works similar to the Unix `cat` command but it writes
+  sig: cli(input, output)
+  behavior: ACCUMULATE(input loop -> output)
 
 smoothen_cmd (examples/imagepipe/imagepipe.py:229-238)
   Applies a smoothening filter.
@@ -322,7 +322,6 @@ get_completions (src/click/shell_completion.py:271-281)
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
 coverage: 80 symbols in L3, 21 with behavior annotations
-uncovered: exit, format_commands, format_epilog, format_help_text
+uncovered: format_commands, format_epilog, format_help_text, format_usage
 drill: src/click/utils.py (~31 lines, _expand_args)
 drill: src/click/core.py (~15 lines, _check_nested_chain)
-drill: src/click/shell_completion.py (~49 lines, _resolve_incomplete)

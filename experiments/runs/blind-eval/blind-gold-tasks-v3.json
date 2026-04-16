@@ -1,0 +1,506 @@
+[
+  {
+    "task_id": "blind-fastapi-struct-1",
+    "repo": "fastapi",
+    "repo_path": "experiments/external-repos/fastapi",
+    "question": "In FastAPI's documented bigger-application pattern, what public building blocks are used to split one API across multiple files and packages?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "The larger-application example is organized around `app/main.py`, a shared `app/dependencies.py`, router modules under `app/routers/`, and an `app/internal/` subpackage."
+      },
+      {
+        "statement": "Each directory that contains an `__init__.py` file is treated as a Python package or subpackage, which is what makes imports like `from app.routers import items` work."
+      },
+      {
+        "statement": "Feature modules declare path operations on an `APIRouter()` instance instead of attaching everything directly to the top-level `FastAPI()` object."
+      },
+      {
+        "statement": "`APIRouter` is documented as something that can be included in a `FastAPI` app or in another `APIRouter`, so multi-file apps are composed by router inclusion."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-fastapi-struct-2",
+    "repo": "fastapi",
+    "repo_path": "experiments/external-repos/fastapi",
+    "question": "Which shared configuration knobs does FastAPI document on `APIRouter` for shaping a whole group of endpoints?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "`APIRouter` accepts shared `prefix`, `tags`, `dependencies`, and extra `responses` that apply to all enclosed path operations."
+      },
+      {
+        "statement": "The documented default response class for `APIRouter` is `JSONResponse`."
+      },
+      {
+        "statement": "`redirect_slashes` defaults to `True` on `APIRouter`."
+      },
+      {
+        "statement": "`include_in_schema` defaults to `True`, so router endpoints are included in the generated OpenAPI schema unless explicitly disabled."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-fastapi-rel-1",
+    "repo": "fastapi",
+    "repo_path": "experiments/external-repos/fastapi",
+    "question": "How do dependency functions relate to path operation functions and the generated API schema in FastAPI?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "A dependency function can declare the same kinds of parameters that a path operation function can declare."
+      },
+      {
+        "statement": "For each request, FastAPI calls the dependency with request-derived values and injects the dependency's return value into the dependent parameter."
+      },
+      {
+        "statement": "Dependencies and sub-dependencies are integrated into the same OpenAPI schema and interactive docs as the main endpoint."
+      },
+      {
+        "statement": "Dependencies are attached with `Depends(...)` on parameters or dependency lists rather than being registered in a separate global plugin registry."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-fastapi-rel-2",
+    "repo": "fastapi",
+    "repo_path": "experiments/external-repos/fastapi",
+    "question": "How do router-level options and path-level options combine when FastAPI builds a larger application from routers?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "Router-level dependencies run before dependencies declared in a path operation decorator and before normal parameter dependencies."
+      },
+      {
+        "statement": "Each path operation declared inside a router still starts with `/`, while the router `prefix` is prepended to produce the final route and should not itself end with `/`."
+      },
+      {
+        "statement": "Router tags and predefined responses apply to every included path operation, and individual operations can still add their own tags or responses."
+      },
+      {
+        "statement": "FastAPI explicitly describes `APIRouter` as a \"mini FastAPI\" because it supports the same kinds of options such as parameters, responses, dependencies, and tags."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-fastapi-mech-1",
+    "repo": "fastapi",
+    "repo_path": "experiments/external-repos/fastapi",
+    "question": "When one FastAPI endpoint mixes path, query, and body inputs, how does the framework decide where each value comes from and how invalid data is reported?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "Parameters whose names match placeholders in the route path are taken from the path."
+      },
+      {
+        "statement": "Parameters of singular types like `int`, `float`, `str`, and `bool` that are not path parameters are interpreted as query parameters."
+      },
+      {
+        "statement": "Parameters typed as Pydantic models are interpreted as request bodies and are read as JSON by default."
+      },
+      {
+        "statement": "Failed type conversion produces structured validation errors whose `loc` field identifies whether the problem came from `path`, `query`, or `body`."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-fastapi-mech-2",
+    "repo": "fastapi",
+    "repo_path": "experiments/external-repos/fastapi",
+    "question": "How does FastAPI turn raised exceptions and validation failures into HTTP responses?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "Raising `HTTPException` stops the rest of the path operation immediately and returns an error response instead of continuing execution."
+      },
+      {
+        "statement": "FastAPI's default HTTP exception handling returns JSON with a `detail` field and can include custom headers supplied on the exception."
+      },
+      {
+        "statement": "Invalid request data is represented internally as `RequestValidationError`, which FastAPI handles with a default validation-error response."
+      },
+      {
+        "statement": "You can override either the HTTP exception handler or the request validation handler with `@app.exception_handler(...)` to return different response formats such as plain text or custom JSON."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-gin-struct-1",
+    "repo": "gin",
+    "repo_path": "experiments/external-repos/gin",
+    "question": "What public constructors and core handler types define Gin's routing surface in the docs?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "`gin.New()` creates a Gin engine without any middleware attached by default."
+      },
+      {
+        "statement": "`gin.Default()` creates a Gin engine with Logger and Recovery middleware already attached."
+      },
+      {
+        "statement": "Routes are registered with method-specific helpers such as `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, and `OPTIONS`."
+      },
+      {
+        "statement": "Each documented route handler receives a `*gin.Context`, which is Gin's main request/response object."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-gin-struct-2",
+    "repo": "gin",
+    "repo_path": "experiments/external-repos/gin",
+    "question": "How do Gin's public context helpers divide request reading, binding, and response writing responsibilities?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "Path values are read with `c.Param`, query values with `c.Query` or `c.DefaultQuery`, and form values with `c.PostForm` or `c.DefaultPostForm`."
+      },
+      {
+        "statement": "Gin exposes both generic binding helpers (`Bind`, `ShouldBind`) and format-specific helpers like `BindJSON`, `ShouldBindQuery`, and `ShouldBindUri`."
+      },
+      {
+        "statement": "The public docs describe built-in rendering support for JSON, XML, HTML templates, and other response formats."
+      },
+      {
+        "statement": "Route groups are created with `Group(...)`, and groups can also be created with middleware such as `gin.BasicAuth(...)`."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-gin-rel-1",
+    "repo": "gin",
+    "repo_path": "experiments/external-repos/gin",
+    "question": "What is the documented relationship between a Gin engine, route groups, middleware, and the request context?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "Global middleware is attached to the engine with `r.Use(...)`."
+      },
+      {
+        "statement": "A route group created from an engine carries a shared path prefix and can receive additional middleware with `group.Use(...)`."
+      },
+      {
+        "statement": "Route groups can be nested, so a child group extends both the parent group's URL prefix and its middleware context."
+      },
+      {
+        "statement": "Middleware and handlers communicate through the shared `*gin.Context`, for example by storing values with `c.Set(...)` and reading them later with `c.MustGet(...)`."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-gin-rel-2",
+    "repo": "gin",
+    "repo_path": "experiments/external-repos/gin",
+    "question": "How do Gin's binding helpers, validation tags, and validator integration fit together?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "Gin uses `go-playground/validator/v10` for request validation."
+      },
+      {
+        "statement": "The same struct can carry source tags such as `form`, `json`, `xml`, or `uri`, together with rules like `binding:\"required\"`."
+      },
+      {
+        "statement": "`ShouldBind` infers a binder from the incoming request, while helpers like `ShouldBindQuery` and `ShouldBindUri` bind only a specific request source."
+      },
+      {
+        "statement": "Custom validators are registered through `binding.Validator.Engine()`."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-gin-mech-1",
+    "repo": "gin",
+    "repo_path": "experiments/external-repos/gin",
+    "question": "How does Gin's documented router behavior handle named parameters, catch-all parameters, exact matches, and redirects when routes overlap?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "A route like `/user/:name` matches a single segment such as `/user/john` but not `/user/` or `/user`."
+      },
+      {
+        "statement": "A route like `/user/:name/*action` also matches deeper paths such as `/user/john/send`."
+      },
+      {
+        "statement": "If no more specific route matches `/user/john`, the documented catch-all example redirects it to `/user/john/`."
+      },
+      {
+        "statement": "Exact routes are resolved before parameter routes regardless of definition order, so `/user/groups` is not interpreted as `/user/:name/...`."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-gin-mech-2",
+    "repo": "gin",
+    "repo_path": "experiments/external-repos/gin",
+    "question": "What documented rules does Gin follow when binding request data and handling binding failures?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "The `Bind*` family uses `MustBindWith` internally and aborts on binding errors with `c.AbortWithError(400, err).SetType(ErrorTypeBind)`."
+      },
+      {
+        "statement": "On that `Bind*` failure path, Gin sets the response status to 400 and the content type to `text/plain; charset=utf-8`."
+      },
+      {
+        "statement": "The `ShouldBind*` family uses `ShouldBindWith` and returns the error so the handler decides how to respond."
+      },
+      {
+        "statement": "`ShouldBindBodyWith` stores the request body in the context so it can be rebound multiple times, unlike plain `ShouldBind` which consumes the body stream."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-express-struct-1",
+    "repo": "express",
+    "repo_path": "experiments/external-repos/express",
+    "question": "Which public objects and built-in middleware make up Express's documented request-handling surface?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "Calling `express()` creates the application object that routes requests and hosts middleware."
+      },
+      {
+        "statement": "Calling `express.Router()` creates a router object that supports middleware and HTTP method routes just like an application."
+      },
+      {
+        "statement": "Express documents built-in middleware including `express.json`, `express.urlencoded`, and `express.static`."
+      },
+      {
+        "statement": "Application-level and router-level handlers are installed with `app.use()` or `app.METHOD()` and `router.use()` or `router.METHOD()` respectively."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-express-struct-2",
+    "repo": "express",
+    "repo_path": "experiments/external-repos/express",
+    "question": "How do the Express docs divide router configuration, parser behavior, and response-ending APIs?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "`express.Router()` supports `caseSensitive`, `mergeParams`, and `strict` configuration options."
+      },
+      {
+        "statement": "By default `mergeParams` is `false`, so parent route parameters are not automatically visible in a child router."
+      },
+      {
+        "statement": "Express documents response methods that end the request-response cycle, including `res.send`, `res.json`, `res.redirect`, `res.render`, `res.sendFile`, and `res.sendStatus`."
+      },
+      {
+        "statement": "The API docs emphasize that parser middleware populates `req.body`, but that its shape is untrusted user input and should be validated before use."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-express-rel-1",
+    "repo": "express",
+    "repo_path": "experiments/external-repos/express",
+    "question": "What is the relationship between an Express app, mounted routers, and router-level middleware?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "A `Router` instance is documented as a complete middleware and routing system, often described as a \"mini-app\"."
+      },
+      {
+        "statement": "Mounting a router with `app.use('/birds', birds)` makes that router handle `/birds` and deeper paths such as `/birds/about`."
+      },
+      {
+        "statement": "Router-level middleware works like application-level middleware, but it is bound to the router instance instead of the main app."
+      },
+      {
+        "statement": "If `mergeParams` is enabled and parent and child routers use the same param name, the child's param value takes precedence."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-express-rel-2",
+    "repo": "express",
+    "repo_path": "experiments/external-repos/express",
+    "question": "How do normal middleware, route callback chains, and error handlers interact in Express's middleware stack?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "Normal middleware functions receive `(req, res, next)` while error-handling middleware must use the four-argument signature `(err, req, res, next)`."
+      },
+      {
+        "statement": "Middleware must either end the request-response cycle or call `next()`, otherwise the request is left hanging."
+      },
+      {
+        "statement": "Multiple callbacks can be attached to the same route, and `next()` passes control to the next callback in that route's stack."
+      },
+      {
+        "statement": "Passing anything except the string `'route'` to `next()` marks the request as errored and skips the remaining non-error middleware and handlers."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-express-mech-1",
+    "repo": "express",
+    "repo_path": "experiments/external-repos/express",
+    "question": "What matching and dispatch rules do the Express docs describe for route parameters, query strings, and route skipping?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "Query strings are explicitly not part of route path matching in Express."
+      },
+      {
+        "statement": "Route parameters populate `req.params`, and their names must be made of word characters while hyphens and dots in the route path are treated literally."
+      },
+      {
+        "statement": "A route parameter can be constrained with a parenthesized regular expression such as `:userId(\\d+)`."
+      },
+      {
+        "statement": "Calling `next('route')` skips the remaining callbacks for the current route and continues with the next matching route registered with `app.METHOD()` or `router.METHOD()`."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-express-mech-2",
+    "repo": "express",
+    "repo_path": "experiments/external-repos/express",
+    "question": "How does Express document the flow of synchronous errors, async errors, and the built-in default error handler?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "Synchronous errors thrown inside route handlers or middleware are caught by Express automatically."
+      },
+      {
+        "statement": "In Express 5, async handlers or middleware that return a rejected Promise automatically call `next(value)`."
+      },
+      {
+        "statement": "The built-in default error handler sets the response status from `err.status` or `err.statusCode`, defaulting to 500 when needed."
+      },
+      {
+        "statement": "If an error is reported after headers were already sent, the default handler closes the connection, so custom handlers should delegate with `next(err)` when `res.headersSent` is true."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-httpx-struct-1",
+    "repo": "httpx",
+    "repo_path": "experiments/external-repos/httpx",
+    "question": "How do the HTTPX docs divide the library between one-off helper functions and client objects?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "HTTPX exposes top-level helper functions such as `request`, `get`, `post`, `put`, `patch`, `delete`, and `stream` for one-off requests."
+      },
+      {
+        "statement": "The docs recommend using those helper functions only for small numbers of requests and using a `Client` for more efficient, longer-lived usage."
+      },
+      {
+        "statement": "`Client` is the synchronous connection-pooled API, while `AsyncClient` is the asynchronous counterpart."
+      },
+      {
+        "statement": "`Client.build_request()` and `Client.send()` are documented as the lower-level request pipeline around explicit `Request` objects."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-httpx-struct-2",
+    "repo": "httpx",
+    "repo_path": "experiments/external-repos/httpx",
+    "question": "What public configuration and error surfaces do the HTTPX API docs expose around clients?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "`Client` configuration includes shared headers, params, cookies, auth, proxy, timeout, limits, base URL, transport, and optional HTTP/2 support."
+      },
+      {
+        "statement": "The API docs state that `Client` can be shared between threads, while `AsyncClient` can be shared between tasks."
+      },
+      {
+        "statement": "HTTPX documents an exception hierarchy rooted at `HTTPError`, with `RequestError` and `HTTPStatusError` as the main branches."
+      },
+      {
+        "statement": "Transport-related subclasses include `TimeoutException`, `NetworkError`, `ProtocolError`, `ProxyError`, and `UnsupportedProtocol`."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-httpx-rel-1",
+    "repo": "httpx",
+    "repo_path": "experiments/external-repos/httpx",
+    "question": "How do HTTPX's top-level helper functions, `Client`, and explicit `Request` objects relate in the documented send pipeline?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "The top-level API establishes a new connection for every request, while a `Client` reuses connections from a pool."
+      },
+      {
+        "statement": "`Client.request(...)` is documented as equivalent to building a request with `client.build_request(...)` and then sending it with `client.send(...)`."
+      },
+      {
+        "statement": "`Client.build_request()` merges client-level headers, params, and cookies into the request and also combines the request URL with any configured `base_url`."
+      },
+      {
+        "statement": "`Client.send(request)` sends the supplied request as-is, so an explicit `httpx.Request()` only gets client defaults automatically if it was built through the client."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-httpx-rel-2",
+    "repo": "httpx",
+    "repo_path": "experiments/external-repos/httpx",
+    "question": "How do HTTPX's synchronous and asynchronous clients line up for lifecycle management and streaming responses?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "`AsyncClient` mirrors the main request methods of `Client`, but each request method is awaited instead of called synchronously."
+      },
+      {
+        "statement": "Both sync and async clients support context-managed streaming with `client.stream(...)`, but the async response exposes `aiter_bytes`, `aiter_text`, `aiter_lines`, and `aiter_raw`."
+      },
+      {
+        "statement": "The async docs warn against creating many short-lived clients in a hot loop because that defeats connection-pooling benefits."
+      },
+      {
+        "statement": "When using manual async streaming through `client.send(request, stream=True)`, the caller is responsible for eventually calling `Response.aclose()`."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-httpx-mech-1",
+    "repo": "httpx",
+    "repo_path": "experiments/external-repos/httpx",
+    "question": "What request-body encoding and redirect-following behavior does HTTPX document for normal client calls?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "`data=` sends form-encoded request bodies, `files=` uses multipart uploads, `json=` sends JSON, and `content=` sends raw bytes or byte iterators."
+      },
+      {
+        "statement": "Multipart file uploads are documented as streaming by default so only one chunk is loaded into memory at a time."
+      },
+      {
+        "statement": "By default HTTPX does not follow redirects, so a redirect response can have an empty `history` and a populated `next_request`."
+      },
+      {
+        "statement": "Setting `follow_redirects=True` makes HTTPX follow redirect responses and record the intermediate responses in `response.history`."
+      }
+    ]
+  },
+  {
+    "task_id": "blind-httpx-mech-2",
+    "repo": "httpx",
+    "repo_path": "experiments/external-repos/httpx",
+    "question": "How do timeouts and streamed response access work in HTTPX according to the public docs?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "HTTPX enforces timeouts by default and raises `TimeoutException` after 5 seconds of network inactivity."
+      },
+      {
+        "statement": "Timeout configuration distinguishes connect, read, write, and pool timeouts, which raise `ConnectTimeout`, `ReadTimeout`, `WriteTimeout`, and `PoolTimeout` respectively."
+      },
+      {
+        "statement": "In streamed responses, `iter_bytes()` and `iter_text()` apply normal content decoding, while `iter_raw()` yields raw bytes without HTTP content decoding."
+      },
+      {
+        "statement": "While a response is still being streamed and has not been fully read, `response.content` and `response.text` are unavailable until the body is explicitly read."
+      }
+    ]
+  }
+]

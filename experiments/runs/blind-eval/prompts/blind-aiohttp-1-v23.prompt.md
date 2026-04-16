@@ -1,4 +1,4 @@
-# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
+# Blind Evaluation Prompt - MRLF v2.4 with File 2 Drill-Down
 # Task: blind-aiohttp-1
 
 You are a senior software engineer. You have been given:
@@ -7,6 +7,8 @@ You are a senior software engineer. You have been given:
 
 Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the symbols most relevant to the question from FOCUS, SYM, and INDEX. Trace those symbols through the clue before forming any conclusion: follow calls: chains, walk extends: hierarchies, and read behavior: annotations as compact control-flow summaries. Use TREE and INDEX to place each symbol in its module context. Then consult the provided source snippets only to confirm or refine the traced path. State explicitly what GAPS says cannot be determined from the evidence. Finally, synthesize the answer, separating supported conclusions from remaining uncertainty.
 
 --- CLUE FILE (File 1) ---
 =CC v2.1 aiohttp@HEAD 166mod 6741sym
@@ -263,14 +265,14 @@ strip_auth_from_url (aiohttp/helpers.py:184-190)
   calls: BasicAuth
   called_by: proxies_from_env
 
-_read (aiohttp/payload.py:779-798)
-  Read a chunk of data from the text file-like object.
-  sig: _read(remaining_content_len)
-
 _read (aiohttp/payload.py:510-526)
   Read a chunk of data from the file-like object.
   sig: _read(remaining_content_len)
   behavior: DELEGATE(_value.read -> result)
+
+_read (aiohttp/payload.py:779-798)
+  Read a chunk of data from the text file-like object.
+  sig: _read(remaining_content_len)
 
 handler (aiohttp/abc.py:55-56)
   Execute matched request handler
@@ -291,12 +293,12 @@ must_be_empty_body (aiohttp/helpers.py:1105-1111)
   Check if a request must return an empty body.
   sig: must_be_empty_body(method, code)
 
-send_json_bytes (aiohttp/client_ws.py:306-318)
+send_json_bytes (aiohttp/web_ws.py:485-499)
   Send JSON data using a bytes-returning encoder as a binary frame.
   sig: send_json_bytes(data, compress)
   calls: send_bytes
 
-send_json_bytes (aiohttp/web_ws.py:485-499)
+send_json_bytes (aiohttp/client_ws.py:306-318)
   Send JSON data using a bytes-returning encoder as a binary frame.
   sig: send_json_bytes(data, compress)
   calls: send_bytes
@@ -521,6 +523,37 @@ drill: aiohttp/multipart.py (~17 lines, read)
         return chunk
 ```
 
+## BadContentDispositionHeader  (aiohttp/multipart.py L66-67)
+```
+class BadContentDispositionHeader(RuntimeWarning):
+    pass
+```
+
+## BadContentDispositionParam  (aiohttp/multipart.py L70-71)
+```
+class BadContentDispositionParam(RuntimeWarning):
+    pass
+```
+
+## __aiter__  (aiohttp/web_ws.py L742-745)
+```
+    def __aiter__(self) -> Self:
+        return self
+
+    @overload
+```
+
+## __anext__  (aiohttp/web_ws.py L760-766)
+```
+    async def __anext__(self) -> WSMessageDecodeText | WSMessageNoDecodeText:
+        msg = await self.receive()
+        if msg.type in (WSMsgType.CLOSE, WSMsgType.CLOSING, WSMsgType.CLOSED):
+            raise StopAsyncIteration
+        return msg
+
+    def _cancel(self, exc: BaseException) -> None:
+```
+
 ## __init__  (tests/test_worker.py L31-38)
 ```
     def __init__(self) -> None:
@@ -533,200 +566,162 @@ drill: aiohttp/multipart.py (~17 lines, read)
         self.wsgi = web.Application()
 ```
 
-## _close  (aiohttp/payload.py L307-321)
+## _apply_content_transfer_decoding  (aiohttp/multipart.py L499-503)
 ```
-    def _close(self) -> None:
-        """
-        Async safe synchronous close operations for backwards compatibility.
-
-        This method exists only for backwards compatibility with code that
-        needs to clean up payloads synchronously. In the future, we will
-        drop this method and only support the async close() method.
-
-        WARNING: This method must be safe to call from within the event loop
-        without blocking. Subclasses should not perform any blocking I/O here.
-
-        WARNING: This method must be called from within an event loop for
-        certain payload types (e.g., IOBasePayload). Calling it outside an
-        event loop may raise RuntimeError.
-        """
+    def _apply_content_transfer_decoding(self, data: bytes) -> bytes:
+        """Apply Content-Transfer-Encoding decoding if header is present."""
+        if CONTENT_TRANSFER_ENCODING in self.headers:
+            return self._decode_content_transfer(data)
+        return data
 ```
 
-## _create_response  (aiohttp/client_reqrep.py L832-844)
+## _decode_content  (aiohttp/multipart.py L540-550)
 ```
-    def _create_response(self, task: asyncio.Task[None] | None) -> ClientResponse:
-        return self.response_class(
-            self.method,
-            self.original_url,
-            writer=task,
-            continue100=None,
-            timer=TimerNoop(),
-            traces=(),
-            loop=self.loop,
-            session=None,
-            request_headers=self.headers,
-            original_url=self.original_url,
-        )
+    def _decode_content(self, data: bytes) -> bytes:
+        encoding = self.headers.get(CONTENT_ENCODING, "").lower()
+        if encoding == "identity":
+            return data
+        if encoding in {"deflate", "gzip"}:
+            return ZLibDecompressor(
+                encoding=encoding,
+                suppress_deflate_header=True,
+            ).decompress_sync(data, max_length=self._max_decompress_size)
+
+        raise RuntimeError(f"unknown content encoding: {encoding}")
 ```
 
-## _create_writer  (aiohttp/client_reqrep.py L846-847)
+## _decode_content_async  (aiohttp/multipart.py L552-563)
 ```
-    def _create_writer(self, protocol: BaseProtocol) -> StreamWriter:
-        return StreamWriter(protocol, self.loop)
-```
-
-## _on_chunk_request_sent  (aiohttp/client_reqrep.py L1426-1428)
-```
-    async def _on_chunk_request_sent(self, method: str, url: URL, chunk: bytes) -> None:
-        for trace in self._traces:
-            await trace.send_request_chunk_sent(method, url, chunk)
-```
-
-## _on_headers_request_sent  (aiohttp/client_reqrep.py L1430-1434)
-```
-    async def _on_headers_request_sent(
-        self, method: str, url: URL, headers: "CIMultiDict[str]"
-    ) -> None:
-        for trace in self._traces:
-            await trace.send_request_headers(method, url, headers)
-```
-
-## _should_write  (aiohttp/client_reqrep.py L849-850)
-```
-    def _should_write(self, protocol: BaseProtocol) -> bool:
-        return protocol.writing_paused
-```
-
-## _terminate  (aiohttp/client_reqrep.py L1419-1424)
-```
-    def _terminate(self) -> None:
-        if self._writer_task is not None:
-            if not self.loop.is_closed():
-                self._writer_task.cancel()
-            self._writer_task.remove_done_callback(self._reset_writer)
-            self._writer_task = None
-```
-
-## _update_auto_headers  (aiohttp/client_reqrep.py L1066-1083)
-```
-    def _update_auto_headers(self, skip_auto_headers: Iterable[str] | None) -> None:
-        if skip_auto_headers is not None:
-            self._skip_auto_headers = CIMultiDict(
-                (hdr, None) for hdr in sorted(skip_auto_headers)
+    async def _decode_content_async(self, data: bytes) -> AsyncIterator[bytes]:
+        encoding = self.headers.get(CONTENT_ENCODING, "").lower()
+        if encoding == "identity":
+            yield data
+        elif encoding in {"deflate", "gzip"}:
+            d = ZLibDecompressor(
+                encoding=encoding,
+                suppress_deflate_header=True,
             )
-            used_headers = self.headers.copy()
-            used_headers.extend(self._skip_auto_headers)  # type: ignore[arg-type]
+            yield await d.decompress(data, max_length=self._max_decompress_size)
         else:
-            # Fast path when there are no headers to skip
-            # which is the most common case.
-            used_headers = self.headers
-
-        for hdr, val in self.DEFAULT_HEADERS.items():
-            if hdr not in used_headers:
-                self.headers[hdr] = val
-
-        if hdrs.USER_AGENT not in used_headers:
-            self.headers[hdrs.USER_AGENT] = SERVER_SOFTWARE
+            raise RuntimeError(f"unknown content encoding: {encoding}")
 ```
 
-## _update_body  (aiohttp/client_reqrep.py L1182-1197)
+## _decode_content_transfer  (aiohttp/multipart.py L565-575)
 ```
-    def _update_body(self, body: Any) -> None:
-        """Update request body after its already been set."""
-        # Remove existing Content-Length header since body is changing
-        if hdrs.CONTENT_LENGTH in self.headers:
-            del self.headers[hdrs.CONTENT_LENGTH]
+    def _decode_content_transfer(self, data: bytes) -> bytes:
+        encoding = self.headers.get(CONTENT_TRANSFER_ENCODING, "").lower()
 
-        # Remove existing Transfer-Encoding header to avoid conflicts
-        if self.chunked and hdrs.TRANSFER_ENCODING in self.headers:
-            del self.headers[hdrs.TRANSFER_ENCODING]
-
-        # Now update the body using the existing method
-        self._update_body_from_data(body)
-
-        # Update transfer encoding headers if needed (same logic as __init__)
-        if body is not None or self.method not in self.GET_METHODS:
-            self._update_transfer_encoding()
+        if encoding == "base64":
+            return base64.b64decode(data)
+        elif encoding == "quoted-printable":
+            return binascii.a2b_qp(data)
+        elif encoding in ("binary", "8bit", "7bit"):
+            return data
+        else:
+            raise RuntimeError(f"unknown content transfer encoding: {encoding}")
 ```
 
-## _update_content_encoding  (aiohttp/client_reqrep.py L1102-1116)
+## _needs_content_decoding  (aiohttp/multipart.py L505-508)
 ```
-    def _update_content_encoding(self, data: Any, compress: bool | str) -> None:
-        """Set request content encoding."""
-        self.compress = None
+    def _needs_content_decoding(self) -> bool:
+        """Check if Content-Encoding decoding should be applied."""
+        # https://datatracker.ietf.org/doc/html/rfc7578#section-4.8
+        return not self._is_form_data and CONTENT_ENCODING in self.headers
+```
+
+## _read_chunk_from_length  (aiohttp/multipart.py L368-376)
+```
+    async def _read_chunk_from_length(self, size: int) -> bytes:
+        # Reads body part content chunk of the specified size.
+        # The body part must has Content-Length header with proper value.
+        assert self._length is not None, "Content-Length required for chunked read"
+        chunk_size = min(size, self._length - self._read_bytes)
+        chunk = await self._content.read(chunk_size)
+        if self._content.at_eof():
+            self._at_eof = True
+        return chunk
+```
+
+## _read_chunk_from_stream  (aiohttp/multipart.py L378-421)
+```
+    async def _read_chunk_from_stream(self, size: int) -> bytes:
+        # Reads content chunk of body part with unknown length.
+        # The Content-Length header for body part is not necessary.
+        assert (
+            size >= self._boundary_len
+        ), "Chunk size must be greater or equal than boundary length + 2"
+        first_chunk = self._prev_chunk is None
+        if first_chunk:
+            # We need to re-add the CRLF that got removed from headers parsing.
+            self._prev_chunk = b"\r\n" + await self._content.read(size)
+
+        chunk = b""
+        # content.read() may return less than size, so we need to loop to ensure
+        # we have enough data to detect the boundary.
+        while len(chunk) < self._boundary_len:
+            chunk += await self._content.read(size)
+            self._content_eof += int(self._content.at_eof())
+            if self._content_eof > 2:
+                raise ValueError("Reading after EOF")
+            if self._content_eof:
+                break
+        if len(chunk) > size:
+            self._content.unread_data(chunk[size:])
+            chunk = chunk[:size]
+
+        assert self._prev_chunk is not None
+        window = self._prev_chunk + chunk
+        sub = b"\r\n" + self._boundary
+        if first_chunk:
+            idx = window.find(sub)
+        else:
+            idx = window.find(sub, max(0, len(self._prev_chunk) - len(sub)))
+        if idx >= 0:
+            # pushing boundary back to content
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=DeprecationWarning)
+                self._content.unread_data(window[idx:])
+            self._prev_chunk = self._prev_chunk[:idx]
+            chunk = window[len(self._prev_chunk) : idx]
+            if not chunk:
+                self._at_eof = True
+        result = self._prev_chunk[2 if first_chunk else 0 :]  # Strip initial CRLF
+        self._prev_chunk = chunk
+        return result
+```
+
+## at_eof  (tests/test_multipart.py L792-793)
+```
+            async def readline(self, *, max_line_length: int | None = None) -> bytes:
+                line = b""
+```
+
+## decode  (tests/test_payload.py L1023-1027)
+```
+        def decode(self, encoding: str = "utf-8", errors: str = "strict") -> str:
+            """Custom decode implementation."""
+            return self._data
+
+        async def write(self, writer: AbstractStreamWriter) -> None:
+```
+
+## filename  (aiohttp/payload.py L188-190)
+```
+    def filename(self) -> str | None:
+        """Filename of the payload."""
+        return self._filename
+```
+
+## form  (aiohttp/multipart.py L475-493)
+```
+    async def form(self, *, encoding: str | None = None) -> list[tuple[str, str]]:
+        """Like read(), but assumes that body parts contain form urlencoded data."""
+        data = await self.read(decode=True)
         if not data:
-            return
-
-        if self.headers.get(hdrs.CONTENT_ENCODING):
-            if compress:
-                raise ValueError(
-                    "compress can not be set if Content-Encoding header is set"
-                )
-        elif compress:
-            self.compress = compress if isinstance(compress, str) else "deflate"
-            self.headers[hdrs.CONTENT_ENCODING] = self.compress
-            self.chunked = True  # enable chunked, no need to deal with length
-```
-
-## _update_cookies  (aiohttp/client_reqrep.py L1085-1100)
-```
-    def _update_cookies(self, cookies: BaseCookie[str]) -> None:
-        """Update request cookies header."""
-        if not cookies:
-            return
-
-        c = SimpleCookie()
-        if hdrs.COOKIE in self.headers:
-            # parse_cookie_header for RFC 6265 compliant Cookie header parsing
-            c.update(parse_cookie_header(self.headers.get(hdrs.COOKIE, "")))
-            del self.headers[hdrs.COOKIE]
-
-        for name, value in cookies.items():
-            # Use helper to preserve coded_value exactly as sent by server
-            c[name] = preserve_morsel_with_coded_value(value)
-
-        self.headers[hdrs.COOKIE] = c.output(header="", sep=";").strip()
-```
-
-## _update_expect_continue  (aiohttp/client_reqrep.py L1261-1271)
-```
-    def _update_expect_continue(self, expect: bool = False) -> None:
-        if expect:
-            self.headers[hdrs.EXPECT] = "100-continue"
-        elif (
-            hdrs.EXPECT in self.headers
-            and self.headers[hdrs.EXPECT].lower() == "100-continue"
-        ):
-            expect = True
-
-        if expect:
-            self._continue = self.loop.create_future()
-```
-
-## _update_proxy  (aiohttp/client_reqrep.py L1273-1288)
-```
-    def _update_proxy(
-        self,
-        proxy: URL | None,
-        proxy_auth: BasicAuth | None,
-        proxy_headers: CIMultiDict[str] | None,
-    ) -> None:
-        self.proxy = proxy
-        if proxy is None:
-            self.proxy_auth = None
-            self.proxy_headers = None
-            return
-
-        if proxy_auth and not isinstance(proxy_auth, BasicAuth):
-            raise ValueError("proxy_auth must be None or BasicAuth() tuple")
-        self.proxy_auth = proxy_auth
-        self.proxy_headers = proxy_headers
-```
-
-## _update_transfer_encoding  (aiohttp/client_reqrep.py L1118-1135)
-```
-    def _update_transfer_encoding(self) -> None:
-        """Analyze transfer-encoding header."""
+            return []
+        if encoding is not None:
+            real_encoding = encoding
+        else:
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

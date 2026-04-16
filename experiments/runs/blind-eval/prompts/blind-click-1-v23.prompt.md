@@ -1,4 +1,4 @@
-# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
+# Blind Evaluation Prompt - MRLF v2.4 with File 2 Drill-Down
 # Task: blind-click-1
 
 You are a senior software engineer. You have been given:
@@ -7,6 +7,8 @@ You are a senior software engineer. You have been given:
 
 Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the symbols most relevant to the question from FOCUS, SYM, and INDEX. Trace those symbols through the clue before forming any conclusion: follow calls: chains, walk extends: hierarchies, and read behavior: annotations as compact control-flow summaries. Use TREE and INDEX to place each symbol in its module context. Then consult the provided source snippets only to confirm or refine the traced path. State explicitly what GAPS says cannot be determined from the evidence. Finally, synthesize the answer, separating supported conclusions from remaining uncertainty.
 
 --- CLUE FILE (File 1) ---
 =CC v2.1 click@HEAD 63mod 1620sym
@@ -137,17 +139,11 @@ ComplexCLI (examples/complex/complex/cli.py:31-45)
   extends: Group
   imports: click
 
-cli (examples/completion/completion.py:8-9)
-  calls: group
-
 cli (examples/termui/termui.py:9-11)
   This script showcases different terminal UI helpers in Click.
 
-cli (examples/repo/repo.py:44-57)
-  Repo is a command line tool that showcases how to build complex
-  sig: cli(ctx, repo_home, config, verbose)
-  behavior: ACCUMULATE(config loop -> result)
-  calls: set_config, Repo
+cli (examples/completion/completion.py:8-9)
+  calls: group
 
 _match_short_opt (src/click/parser.py:389-427)
   sig: _match_short_opt(arg, state)
@@ -168,17 +164,8 @@ _match_long_opt (src/click/parser.py:359-387)
 __next__ (src/click/_termui_impl.py:134-140)
   behavior: DELEGATE(next -> result)
 
-cli (examples/complex/complex/cli.py:56-60)
-  A complex command line interface.
-  sig: cli(ctx, verbose, home)
-
-cli (examples/inout/inout.py:7-30)
-  This script works similar to the Unix `cat` command but it writes
-  sig: cli(input, output)
-  behavior: ACCUMULATE(input loop -> output)
-
-cli (examples/imagepipe/imagepipe.py:11-20)
-  This script processes a bunch of images through pillow in a unix
+cli (examples/aliases/aliases.py:97-98)
+  An example application that supports aliases.
 
 cli (examples/validation/validation.py:34-48)
   Validation.
@@ -186,12 +173,8 @@ cli (examples/validation/validation.py:34-48)
   calls: URL
   raises: BadParameter
 
-cli (examples/complex/complex/commands/cmd_init.py:9-13)
-  Initializes a repository.
-  sig: cli(ctx, path)
-
-cli (examples/aliases/aliases.py:97-98)
-  An example application that supports aliases.
+cli (examples/imagepipe/imagepipe.py:11-20)
+  This script processes a bunch of images through pillow in a unix
 
 cli (examples/colors/colors.py:25-39)
   This script prints some colors.
@@ -203,6 +186,25 @@ cli (examples/naval/naval.py:6-12)
 cli (examples/complex/complex/commands/cmd_status.py:8-11)
   Shows file changes in the current working directory.
   sig: cli(ctx)
+
+cli (examples/complex/complex/cli.py:56-60)
+  A complex command line interface.
+  sig: cli(ctx, verbose, home)
+
+cli (examples/complex/complex/commands/cmd_init.py:9-13)
+  Initializes a repository.
+  sig: cli(ctx, path)
+
+cli (examples/repo/repo.py:44-57)
+  Repo is a command line tool that showcases how to build complex
+  sig: cli(ctx, repo_home, config, verbose)
+  behavior: ACCUMULATE(config loop -> result)
+  calls: set_config, Repo
+
+cli (examples/inout/inout.py:7-30)
+  This script works similar to the Unix `cat` command but it writes
+  sig: cli(input, output)
+  behavior: ACCUMULATE(input loop -> output)
 
 smoothen_cmd (examples/imagepipe/imagepipe.py:229-238)
   Applies a smoothening filter.
@@ -333,10 +335,9 @@ get_completions (src/click/shell_completion.py:271-281)
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
 coverage: 80 symbols in L3, 21 with behavior annotations
-uncovered: exit, format_commands, format_epilog, format_help_text
+uncovered: format_commands, format_epilog, format_help_text, format_usage
 drill: src/click/utils.py (~31 lines, _expand_args)
 drill: src/click/core.py (~15 lines, _check_nested_chain)
-drill: src/click/shell_completion.py (~49 lines, _resolve_incomplete)
 
 --- END CLUE FILE ---
 
@@ -415,120 +416,6 @@ def _expand_args(
             out.extend(matches)
 
     return out
-```
-
-## _resolve_incomplete  (src/click/shell_completion.py L623-667)
-```
-def _resolve_incomplete(
-    ctx: Context, args: list[str], incomplete: str
-) -> tuple[Command | Parameter, str]:
-    """Find the Click object that will handle the completion of the
-    incomplete value. Return the object and the incomplete value.
-
-    :param ctx: Invocation context for the command represented by
-        the parsed complete args.
-    :param args: List of complete args before the incomplete value.
-    :param incomplete: Value being completed. May be empty.
-    """
-    # Different shells treat an "=" between a long option name and
-    # value differently. Might keep the value joined, return the "="
-    # as a separate item, or return the split name and value. Always
-    # split and discard the "=" to make completion easier.
-    if incomplete == "=":
-        incomplete = ""
-    elif "=" in incomplete and _start_of_option(ctx, incomplete):
-        name, _, incomplete = incomplete.partition("=")
-        args.append(name)
-
-    # The "--" marker tells Click to stop treating values as options
-    # even if they start with the option character. If it hasn't been
-    # given and the incomplete arg looks like an option, the current
-    # command will provide option name completions.
-    if "--" not in args and _start_of_option(ctx, incomplete):
-        return ctx.command, incomplete
-
-    params = ctx.command.get_params(ctx)
-
-    # If the last complete arg is an option name with an incomplete
-    # value, the option will provide value completions.
-    for param in params:
-        if _is_incomplete_option(ctx, args, param):
-            return param, incomplete
-
-    # It's not an option name or value. The first argument without a
-    # parsed value will provide value completions.
-    for param in params:
-        if _is_incomplete_argument(ctx, param):
-            return param, incomplete
-
-    # There were no unparsed arguments, the command may be a group that
-    # will provide command name completions.
-    return ctx.command, incomplete
-```
-
-## _is_incomplete_argument  (src/click/shell_completion.py L503-525)
-```
-def _is_incomplete_argument(ctx: Context, param: Parameter) -> bool:
-    """Determine if the given parameter is an argument that can still
-    accept values.
-
-    :param ctx: Invocation context for the command represented by the
-        parsed complete args.
-    :param param: Argument object being checked.
-    """
-    if not isinstance(param, Argument):
-        return False
-
-    assert param.name is not None
-    # Will be None if expose_value is False.
-    value = ctx.params.get(param.name)
-    return (
-        param.nargs == -1
-        or ctx.get_parameter_source(param.name) is not ParameterSource.COMMANDLINE
-        or (
-            param.nargs > 1
-            and isinstance(value, (tuple, list))
-            and len(value) < param.nargs
-        )
-    )
-```
-
-## _is_incomplete_option  (src/click/shell_completion.py L537-559)
-```
-def _is_incomplete_option(ctx: Context, args: list[str], param: Parameter) -> bool:
-    """Determine if the given parameter is an option that needs a value.
-
-    :param args: List of complete args before the incomplete value.
-    :param param: Option object being checked.
-    """
-    if not isinstance(param, Option):
-        return False
-
-    if param.is_flag or param.count:
-        return False
-
-    last_option = None
-
-    for index, arg in enumerate(reversed(args)):
-        if index + 1 > param.nargs:
-            break
-
-        if _start_of_option(ctx, arg):
-            last_option = arg
-            break
-
-    return last_option is not None and last_option in param.opts
-```
-
-## _start_of_option  (src/click/shell_completion.py L528-534)
-```
-def _start_of_option(ctx: Context, value: str) -> bool:
-    """Check if the value looks like the start of an option."""
-    if not value:
-        return False
-
-    c = value[0]
-    return c in ctx._opt_prefixes
 ```
 
 ## __init__  (tests/test_utils.py L682-685)
@@ -744,9 +631,130 @@ class Argument(Parameter):
                 formatter.write_text(epilog)
 ```
 
+## format_help  (src/click/core.py L1120-1135)
+```
+    def format_help(self, ctx: Context, formatter: HelpFormatter) -> None:
+        """Writes the help into the formatter if it exists.
+
+        This is a low-level method called by :meth:`get_help`.
+
+        This calls the following methods:
+
+        -   :meth:`format_usage`
+        -   :meth:`format_help_text`
+        -   :meth:`format_options`
+        -   :meth:`format_epilog`
+        """
+        self.format_usage(ctx, formatter)
+        self.format_help_text(ctx, formatter)
+        self.format_options(ctx, formatter)
+        self.format_epilog(ctx, formatter)
+```
+
+## format_help_text  (src/click/core.py L1137-1159)
+```
+    def format_help_text(self, ctx: Context, formatter: HelpFormatter) -> None:
+        """Writes the help text to the formatter if it exists."""
+        if self.help is not None:
+            # truncate the help text to the first form feed
+            text = inspect.cleandoc(self.help).partition("\f")[0]
+        else:
+            text = ""
+
+        if self.deprecated:
+            deprecated_message = (
+                f"(DEPRECATED: {self.deprecated})"
+                if isinstance(self.deprecated, str)
+                else "(DEPRECATED)"
+            )
+            text = _("{text} {deprecated_message}").format(
+                text=text, deprecated_message=deprecated_message
+            )
+
+        if text:
+            formatter.write_paragraph()
+
+            with formatter.indentation():
+                formatter.write_text(text)
+```
+
+## format_options  (src/click/core.py L1793-1795)
+```
+    def format_options(self, ctx: Context, formatter: HelpFormatter) -> None:
+        super().format_options(ctx, formatter)
+        self.format_commands(ctx, formatter)
+```
+
+## format_usage  (src/click/core.py L1027-1033)
+```
+    def format_usage(self, ctx: Context, formatter: HelpFormatter) -> None:
+        """Writes the usage line into the formatter.
+
+        This is a low-level method called by :meth:`get_usage`.
+        """
+        pieces = self.collect_usage_pieces(ctx)
+        formatter.write_usage(ctx.command_path, " ".join(pieces))
+```
+
 ## get_help  (tests/test_commands.py L168-169)
 ```
         def get_help(self, ctx):
+            return self.parser.format_help()
+```
+
+## get_help_option  (src/click/core.py L1054-1079)
+```
+    def get_help_option(self, ctx: Context) -> Option | None:
+        """Returns the help option object.
+
+        Skipped if :attr:`add_help_option` is ``False``.
+
+        .. versionchanged:: 8.1.8
+            The help option is now cached to avoid creating it multiple times.
+        """
+        help_option_names = self.get_help_option_names(ctx)
+
+        if not help_option_names or not self.add_help_option:
+            return None
+
+        # Cache the help option object in private _help_option attribute to
+        # avoid creating it multiple times. Not doing this will break the
+        # callback odering by iter_params_for_processing(), which relies on
+        # object comparison.
+        if self._help_option is None:
+            # Avoid circular import.
+            from .decorators import help_option
+
+            # Apply help_option decorator and pop resulting option
+            help_option(*help_option_names)(self)
+            self._help_option = self.params.pop()  # type: ignore[assignment]
+
+        return self._help_option
+```
+
+## get_help_option_names  (src/click/core.py L1046-1052)
+```
+    def get_help_option_names(self, ctx: Context) -> list[str]:
+        """Returns the names for the help option."""
+        all_names = set(ctx.help_option_names)
+        for param in self.params:
+            all_names.difference_update(param.opts)
+            all_names.difference_update(param.secondary_opts)
+        return list(all_names)
+```
+
+## get_params  (src/click/core.py L1002-1025)
+```
+    def get_params(self, ctx: Context) -> list[Parameter]:
+        params = self.params
+        help_option = self.get_help_option(ctx)
+
+        if help_option is not None:
+            params = [*params, help_option]
+
+        if __debug__:
+            import warnings
+
 ... (truncated)
 ```
 --- END SOURCE SNIPPETS ---

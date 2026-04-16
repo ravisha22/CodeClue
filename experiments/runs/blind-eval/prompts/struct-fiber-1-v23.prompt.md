@@ -1,4 +1,4 @@
-# Blind Evaluation Prompt - MRLF v2.1
+# Blind Evaluation Prompt - MRLF v2.4
 # Task: struct-fiber-1
 
 You are a senior software engineer. You have been given a codebase
@@ -8,6 +8,8 @@ a compressed representation.
 
 Answer the question below using ONLY the information in the clue file.
 Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the modules, symbols, or relationships most relevant to the question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before concluding: follow calls: chains, walk extends: hierarchies, and use behavior: annotations as summaries of how control or responsibility moves. Use TREE and INDEX to situate the relationship in the repository structure. State explicitly what GAPS says cannot be determined from the clue alone. Finally, synthesize the answer, distinguishing supported structure from unresolved uncertainty.
 
 --- CLUE FILE START ---
 =CC v2.1 fiber@HEAD 148mod 1472sym
@@ -88,8 +90,8 @@ Bind.validateStruct                 M bind.go:183    Struct validation.
 SetValWithStruct                    M client/request.go:1066   SetValWithStruct sets values using a struct.
 domainMatcher.match                 M domain.go:139    match checks if a hostname matches the domain p...
 Bind.returnBindErr                  M bind.go:171    returnBindErr runs returnErr and, if the result...
-DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
 manager.logKey                      M middleware/cache/manager.go:210    function manager.logKey
+DefaultReq.Accepts                  M req.go:51     Accepts checks if the specified extensions or c...
 walkBalancingClient                 M client/transport.go:239    walkBalancingClient traverses balancing clients...
 isUnixNetwork                       M middleware/adaptor/adaptor.go:208    function isUnixNetwork
 Session.Reset                       M middleware/session/session.go:247    Reset generates a new session id, deletes the o...
@@ -243,17 +245,17 @@ LocalContextFromHTTPRequest (middleware/adaptor/adaptor.go:78-78)
   behavior: GUARD(r == nil -> return nil, false)
   called_by: HTTPHandlerWithContext
 
-New (middleware/session/middleware.go:56-56)
-  New initializes session middleware with optional configuration.
-  sig: New(config ...Config)
-  behavior: GUARD(len(config) > 0 -> return handler)
-  calls: NewWithStore
-
 New (middleware/redirect/redirect.go:13-13)
   New creates a new middleware handler
   sig: New(config ...Config)
   behavior: ACCUMULATE(ReplaceAll loop -> k)
   calls: captureTokens
+
+New (middleware/session/middleware.go:56-56)
+  New initializes session middleware with optional configuration.
+  sig: New(config ...Config)
+  behavior: GUARD(len(config) > 0 -> return handler)
+  calls: NewWithStore
 
 New (middleware/rewrite/rewrite.go:12-12)
   New creates a new middleware handler
@@ -261,16 +263,16 @@ New (middleware/rewrite/rewrite.go:12-12)
   behavior: ACCUMULATE(ReplaceAll loop -> k)
   calls: captureTokens
 
-captureTokens (middleware/redirect/redirect.go:46-46)
-  https://github.com/labstack/echo/blob/master/middleware/rewrite.go
-  sig: captureTokens(pattern *regexp.Regexp, input string)
-  behavior: PRECEDENCE(len -> groups); ACCUMULATE(Itoa loop -> result)
-  called_by: New
-
 captureTokens (middleware/rewrite/rewrite.go:41-41)
   https://github.com/labstack/echo/blob/master/middleware/rewrite.go
   sig: captureTokens(pattern *regexp.Regexp, input string)
   behavior: GUARD(groups == nil -> return nil); ACCUMULATE(Itoa loop -> result)
+  called_by: New
+
+captureTokens (middleware/redirect/redirect.go:46-46)
+  https://github.com/labstack/echo/blob/master/middleware/rewrite.go
+  sig: captureTokens(pattern *regexp.Regexp, input string)
+  behavior: PRECEDENCE(len -> groups); ACCUMULATE(Itoa loop -> result)
   called_by: New
 
 New (middleware/cache/cache.go:109-109)
@@ -309,13 +311,13 @@ New (middleware/compress/compress.go:54-54)
   behavior: DISPATCH(cfg)
   calls: appendVaryAcceptEncoding, shouldSkip
 
-Config (middleware/etag/config.go:8-8)
+Config (middleware/encryptcookie/config.go:8-8)
   Config defines the config for middleware.
 
-Config (middleware/basicauth/config.go:22-22)
-  Config defines the config for middleware.
+Config (middleware/csrf/config.go:15-15)
+  Config defines the config for CSRF middleware.
 
-Config (middleware/favicon/config.go:10-10)
+Config (middleware/keyauth/config.go:19-19)
   Config defines the config for middleware.
 
 -- GAPS

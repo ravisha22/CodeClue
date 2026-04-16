@@ -1,4 +1,4 @@
-# Blind Evaluation Prompt - MRLF v2.1 with File 2 Drill-Down
+# Blind Evaluation Prompt - MRLF v2.4 with File 2 Drill-Down
 # Task: blind-echo-rel-1
 
 You are a senior software engineer. You have been given:
@@ -7,6 +7,8 @@ You are a senior software engineer. You have been given:
 
 Answer the question using the clue file AND the source snippets below.
 Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the symbols most relevant to the question from FOCUS, SYM, and INDEX. Trace those symbols through the clue before forming any conclusion: follow calls: chains, walk extends: hierarchies, and read behavior: annotations as compact control-flow summaries. Use TREE and INDEX to place each symbol in its module context. Then consult the provided source snippets only to confirm or refine the traced path. State explicitly what GAPS says cannot be determined from the evidence. Finally, synthesize the answer, separating supported conclusions from remaining uncertainty.
 
 --- CLUE FILE (File 1) ---
 =CC v2.1 echo@HEAD 44mod 565sym
@@ -356,46 +358,6 @@ func (conf ContextConfig) ToContextRecorder(t *testing.T) (*echo.Context, *httpt
 func RequestLoggerWithConfig(config RequestLoggerConfig) echo.MiddlewareFunc {
 ```
 
-## RequestLoggerConfig.ToMiddleware  (middleware/request_logger.go L246-246)
-```
-func (config RequestLoggerConfig) ToMiddleware() (echo.MiddlewareFunc, error) {
-```
-
-## RequestLoggerConfig  (middleware/request_logger.go L124-124)
-```
-type RequestLoggerConfig struct {
-```
-
-## RequestLoggerValues  (middleware/request_logger.go L189-189)
-```
-type RequestLoggerValues struct {
-```
-
-## ContextConfig.ServeWithHandler  (echotest/context.go L167-167)
-```
-func (conf ContextConfig) ServeWithHandler(t *testing.T, handler echo.HandlerFunc, opts ...any) *httptest.ResponseRecorder {
-```
-
-## ContextConfig.ToContext  (echotest/context.go L75-75)
-```
-func (conf ContextConfig) ToContext(t *testing.T) *echo.Context {
-```
-
-## ContextConfig  (echotest/context.go L20-20)
-```
-type ContextConfig struct {
-```
-
-## MultipartForm  (echotest/context.go L62-62)
-```
-type MultipartForm struct {
-```
-
-## MultipartFormFile  (echotest/context.go L68-68)
-```
-type MultipartFormFile struct {
-```
-
 ## Group.AddRoute  (group.go L172-172)
 ```
 func (g *Group) AddRoute(route Route) (RouteInfo, error) {
@@ -494,6 +456,46 @@ func (g *Group) Use(middleware ...MiddlewareFunc) {
 ## Group  (group.go L14-14)
 ```
 type Group struct {
+```
+
+## ContextConfig.ServeWithHandler  (echotest/context.go L167-167)
+```
+func (conf ContextConfig) ServeWithHandler(t *testing.T, handler echo.HandlerFunc, opts ...any) *httptest.ResponseRecorder {
+```
+
+## ContextConfig.ToContext  (echotest/context.go L75-75)
+```
+func (conf ContextConfig) ToContext(t *testing.T) *echo.Context {
+```
+
+## ContextConfig  (echotest/context.go L20-20)
+```
+type ContextConfig struct {
+```
+
+## MultipartForm  (echotest/context.go L62-62)
+```
+type MultipartForm struct {
+```
+
+## MultipartFormFile  (echotest/context.go L68-68)
+```
+type MultipartFormFile struct {
+```
+
+## RequestLoggerConfig.ToMiddleware  (middleware/request_logger.go L246-246)
+```
+func (config RequestLoggerConfig) ToMiddleware() (echo.MiddlewareFunc, error) {
+```
+
+## RequestLoggerConfig  (middleware/request_logger.go L124-124)
+```
+type RequestLoggerConfig struct {
+```
+
+## RequestLoggerValues  (middleware/request_logger.go L189-189)
+```
+type RequestLoggerValues struct {
 ```
 --- END SOURCE SNIPPETS ---
 

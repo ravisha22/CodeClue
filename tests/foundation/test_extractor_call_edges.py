@@ -571,6 +571,32 @@ def test_go_extractor_keeps_scope_after_nested_block(tmp_path: Path):
     assert _has_call(call_edges, "Server.validate", "afterCheck")
 
 
+def test_go_extractor_detects_short_receiver_method_calls(tmp_path: Path):
+    _write_fixture(
+        tmp_path,
+        "middleware.go",
+        """\
+        package main
+
+        type Ctx struct{}
+
+        func (c *Ctx) Next() error {
+            return nil
+        }
+
+        func AuthMiddleware(c *Ctx) error {
+            return c.Next()
+        }
+        """,
+    )
+    nodes, edges = extract_go_nodes_edges(tmp_path)
+    call_edges = _get_call_edges(nodes, edges)
+    assert _has_call(call_edges, "AuthMiddleware", "Next") or \
+           _has_call(call_edges, "AuthMiddleware", "Ctx.Next"), (
+        f"MISSED: c.Next() short-receiver call. Edges: {call_edges}"
+    )
+
+
 def test_go_behavior_pattern_extraction_is_linearish_on_large_body():
     branches = []
     for idx in range(250):
@@ -631,6 +657,25 @@ def test_ts_extractor_captures_property_access_uses(tmp_path: Path):
     )
     uses = parse_node.semantic_contract.get("uses", [])
     assert "obj._zod.def" in uses
+
+
+def test_ts_extractor_preserves_zod_style_bases_and_alias_exports(tmp_path: Path):
+    _write_fixture(
+        tmp_path,
+        "schema.ts",
+        """\
+        export interface ZodSymbol extends core.$ZodType<core.$ZodSymbolInternals> {}
+        export type ZodSymbolAlias = core.$ZodSymbol;
+        """,
+    )
+    nodes, _ = extract_typescript_nodes_edges(tmp_path)
+    symbol_map = {
+        n.semantic_contract.get("symbol_name", ""): n
+        for n in nodes
+        if n.node_type != "module"
+    }
+    assert symbol_map["ZodSymbol"].semantic_contract.get("bases") == ["$ZodType"]
+    assert symbol_map["ZodSymbolAlias"].semantic_contract.get("uses") == ["core.$ZodSymbol"]
 
 
 def test_python_behavior_patterns_include_condition_and_actions(tmp_path: Path):

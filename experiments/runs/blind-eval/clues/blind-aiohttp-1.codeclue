@@ -252,14 +252,14 @@ strip_auth_from_url (aiohttp/helpers.py:184-190)
   calls: BasicAuth
   called_by: proxies_from_env
 
-_read (aiohttp/payload.py:779-798)
-  Read a chunk of data from the text file-like object.
-  sig: _read(remaining_content_len)
-
 _read (aiohttp/payload.py:510-526)
   Read a chunk of data from the file-like object.
   sig: _read(remaining_content_len)
   behavior: DELEGATE(_value.read -> result)
+
+_read (aiohttp/payload.py:779-798)
+  Read a chunk of data from the text file-like object.
+  sig: _read(remaining_content_len)
 
 handler (aiohttp/abc.py:55-56)
   Execute matched request handler
@@ -280,12 +280,12 @@ must_be_empty_body (aiohttp/helpers.py:1105-1111)
   Check if a request must return an empty body.
   sig: must_be_empty_body(method, code)
 
-send_json_bytes (aiohttp/client_ws.py:306-318)
+send_json_bytes (aiohttp/web_ws.py:485-499)
   Send JSON data using a bytes-returning encoder as a binary frame.
   sig: send_json_bytes(data, compress)
   calls: send_bytes
 
-send_json_bytes (aiohttp/web_ws.py:485-499)
+send_json_bytes (aiohttp/client_ws.py:306-318)
   Send JSON data using a bytes-returning encoder as a binary frame.
   sig: send_json_bytes(data, compress)
   calls: send_bytes

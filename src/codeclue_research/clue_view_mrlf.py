@@ -819,31 +819,36 @@ def _analyze_focus_selection(
     } & keywords)
 
     mechanistic_focus = _question_has_mechanistic_signals(question)
-    priority_entity_ids = [
-        nid
-        for nid in sorted(
-            candidate_ids,
-            key=lambda nid: (
-                -entity_scores.get(nid, 0.0),
-                anchor_tier.get(nid, 3),
-                -semantic_scores.get(nid, 0.0),
-                node_by_id[nid].semantic_contract.get("symbol_name", node_by_id[nid].node_id),
-            ),
-        )
-        if entity_scores.get(nid, 0.0) > 0
-    ][: max(6, min(12, soft_cap // 3))]
+    max_anchor_support = max(anchor_support.values(), default=0.0)
 
-    def _rank_key(nid: str, expansion_bonus: float = 0.0) -> tuple:
+    def _normalized_entity_score(nid: str) -> float:
+        return min(1.0, max(0.0, entity_scores.get(nid, 0.0) / 1.4))
+
+    def _call_graph_proximity_score(nid: str) -> float:
+        distance_score = 1.0 if nid in anchors else 0.0
+        if nid in proximity:
+            distance_score = max(distance_score, 1.0 / (1.0 + proximity[nid]))
+        support_score = 0.0
+        if max_anchor_support > 0:
+            support_score = min(1.0, anchor_support.get(nid, 0.0) / max_anchor_support)
+        return max(distance_score, support_score)
+
+    def _blended_focus_score(nid: str) -> float:
+        semantic_score = min(1.0, max(0.0, semantic_scores.get(nid, 0.0)))
+        entity_score = _normalized_entity_score(nid)
+        proximity_score = _call_graph_proximity_score(nid)
+        return (0.60 * semantic_score) + (0.25 * entity_score) + (0.15 * proximity_score)
+
+    def _rank_key(nid: str) -> tuple:
         return (
+            -_blended_focus_score(nid),
             0 if (semantic_scores.get(nid, 0.0) > 0 or entity_scores.get(nid, 0.0) > 0) else 1,
             0 if relational_focus and (node_by_id[nid].semantic_contract or {}).get("bases") else 1,
-            0 if mechanistic_focus and entity_scores.get(nid, 0.0) > 0 else 1,
             anchor_tier.get(nid, 3),
-            -expansion_bonus,
             -semantic_scores.get(nid, 0.0),
-            -entity_scores.get(nid, 0.0),
+            -_normalized_entity_score(nid),
+            -_call_graph_proximity_score(nid),
             -_node_question_relevance(node_by_id[nid], keywords),
-            -anchor_support.get(nid, 0.0),
             proximity.get(nid, 99),
             -centrality.get(nid, 0.0),
             -lexical_scores.get(nid, 0.0),
@@ -852,12 +857,13 @@ def _analyze_focus_selection(
         )
 
     ranked_ids = sorted(candidate_ids, key=_rank_key)
-    if mechanistic_focus and priority_entity_ids:
-        ranked_ids = priority_entity_ids + [nid for nid in ranked_ids if nid not in priority_entity_ids]
+    priority_entity_ids = [
+        nid for nid in ranked_ids
+        if entity_scores.get(nid, 0.0) > 0
+    ][: max(6, min(12, soft_cap // 3))]
 
     if mechanistic_focus and ranked_ids:
         seed_ids = list(dict.fromkeys(priority_entity_ids + ranked_ids[: max(6, min(12, soft_cap // 2))]))
-        expansion_support: dict[str, float] = defaultdict(float)
         for seed_id in seed_ids:
             for neighbor in call_neighbors.get(seed_id, set()):
                 neighbor_node = node_by_id.get(neighbor)
@@ -868,14 +874,9 @@ def _analyze_focus_selection(
                 candidates.add(neighbor)
                 anchor_tier[neighbor] = min(anchor_tier.get(neighbor, 4), anchor_tier.get(seed_id, 2) + 1)
                 proximity.setdefault(neighbor, proximity.get(seed_id, 0) + 1)
-                expansion_support[neighbor] += max(0.5, _node_question_relevance(node_by_id[seed_id], keywords))
-        if expansion_support:
-            candidate_ids = [nid for nid in candidates if nid in node_by_id]
-            centrality = _betweenness_centrality(candidate_ids, structural_edges)
-            ranked_ids = sorted(
-                candidate_ids,
-                key=lambda nid: _rank_key(nid, expansion_support.get(nid, 0.0)),
-            )
+        candidate_ids = [nid for nid in candidates if nid in node_by_id]
+        centrality = _betweenness_centrality(candidate_ids, structural_edges)
+        ranked_ids = sorted(candidate_ids, key=_rank_key)
 
     selected_ids = ranked_ids[:soft_cap]
     expanded_candidate_ids = [nid for nid in ranked_ids if nid not in selected_ids]
