@@ -1,0 +1,11 @@
+# Cross-Model (Goldeneye): blind-echo-struct-2
+Date: 2026-04-16
+
+Echo’s routing and request-handling surface is built from a few central public types and subcomponents:
+
+- `Echo` is the top-level framework instance and exposes the route-registration and dispatch entry points (`AcquireContext`, `Add`, `AddRoute`, `Any`, `CONNECT`, `DELETE`, `GET`, `Start`, `Use`). [Echo, echo.go:68-68; Echo.Add, echo.go:642-642; Echo.Any, echo.go:504-504; Echo.Start, echo.go:744-744; Echo.Use, echo.go:431-431]
+- Routing itself is represented by the `Router` interface and the `DefaultRouter` registry, which stores registered routes and performs request matching and path-parameter extraction. [Router, router.go:21-21; DefaultRouter, router.go:60-60; DefaultRouter.Route, router.go:791-791]
+- `Group` is the public sub-routing abstraction for prefixed route collections, with mirrored registration methods such as `GET`, `Add`, `Match`, `StaticFS`, and `Any`. [Group, group.go:14-14; Group.GET, group.go:37-37; Group.Add, group.go:158-158; Group.Match, group.go:77-77; Group.StaticFS, group.go:122-122; Group.Any, group.go:72-72]
+- `Context` is the per-request object. It represents the current HTTP request and exposes request/response access plus helpers such as `Bind`, `Cookie`, `Cookies`, `QueryParam`, `FormValue`, `String`, `Blob`, `JSON`, `XML`, and `File`. [Context, context.go:40-40; Context.Request, context.go:129-129; Context.Response, context.go:139-139; Context.Bind, context.go:399-399; Context.QueryParam, context.go:287-287; Context.String, context.go:445-445; Context.Blob, context.go:552-552; Context.File, context.go:571-571]
+- Route metadata/reversal also appears as part of the public routing surface through `RouteInfo` and `Routes`, both of which expose `Reverse`. [RouteInfo.Reverse, route.go:75-75; Routes.Reverse, route.go:117-117]
+- Error and middleware-adjacent request-handling pieces include `HTTPError` / `DefaultHTTPErrorHandler` and request middleware configs such as `RequestLoggerConfig` and `RequestIDConfig`. [HTTPError, httperror.go:107-107; DefaultHTTPErrorHandler, echo.go:374-374; RequestLoggerConfig, middleware/request_logger.go:124-124; RequestIDConfig, middleware/request_id.go:11-11]

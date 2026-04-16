@@ -1,0 +1,7 @@
+# Cross-Model (GPT-5.4-mini): blind-zod-mech-1
+Date: 2026-04-16
+
+- Object schemas are parameterized by both `shape` and `catchall`, and the v4 object config stores `out`/`in` as `Record<string, unknown>`. (`$ZodObjectParams` (packages/zod/src/v4/core/api.ts:1161-1162); `$ZodObjectConfig` (packages/zod/src/v4/core/schemas.ts:1748-1749))
+- Unknown-key handling is part of the object type itself: `SomeZodObject` is `ZodObject<ZodRawShape, UnknownKeysParam, ZodTypeAny>`, and `.loose()` switches a `ZodObject` to `core.$loose`. (SomeZodObject (packages/zod/src/v3/types.ts:2418-2420); ZodObject.loose (packages/zod/src/v4/classic/schemas.ts L1193-1193))
+- The object model also supports composition: `SafeExtendShape<Base, Ext>` is defined for safe extension, and discriminated-union options compose a discriminator field with a raw shape via `{ [key in Discriminator]: ZodTypeAny } & ZodRawShape`. (SafeExtendShape (packages/zod/src/v4/mini/schemas.ts L882-882); ZodDiscriminatedUnionOption (packages/zod/src/v3/types.ts:3100-3101))
+- Taken together, the clues show that parsing behavior is driven by the declared shape plus catchall/unknown-key mode, with a separate loose mode and shape composition helpers. (`$ZodObjectParams` (packages/zod/src/v4/core/api.ts:1161-1162); SomeZodObject (packages/zod/src/v3/types.ts:2418-2420); ZodObject.loose (packages/zod/src/v4/classic/schemas.ts L1193-1193))
