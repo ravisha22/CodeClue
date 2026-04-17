@@ -23,6 +23,8 @@ class InvocationTracer:
         source_anchor: str,
         confidence_trigger: float,
         session_id: str,
+        confidence: float | None = None,
+        warning: str | None = None,
     ) -> None:
         entry = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -33,6 +35,10 @@ class InvocationTracer:
             "confidence_trigger": confidence_trigger,
             "session_id": session_id,
         }
+        if confidence is not None:
+            entry["confidence"] = confidence
+        if warning:
+            entry["warning"] = warning
         with self._trace_file.open("a", encoding="utf-8") as f:
             f.write(json.dumps(entry, sort_keys=True) + "\n")
 

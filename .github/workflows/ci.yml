@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . pytest
+
+      - name: Run foundation tests
+        run: python -m pytest tests/foundation/ -q --tb=line
+
+      - name: Smoke test click clue rendering
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from codeclue_research.extractor import extract_graph
+          from codeclue_research.clue_view_mrlf import render_mrlf
+
+          repo = Path("experiments/external-repos/click")
+          graph = extract_graph(repo, language="python")
+          clue = render_mrlf(graph, "How does Click wire command dispatch?", repo_root=repo)
+          assert clue.strip(), "rendered clue should not be empty"
+          print(f"Rendered {len(clue)} characters")
+          PY

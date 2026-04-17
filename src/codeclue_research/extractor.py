@@ -355,6 +355,23 @@ def _extract_accumulator_target(loop: ast.stmt) -> str:
     return "result"
 
 
+def _extract_accumulator_detail(loop: ast.stmt) -> str:
+    for child in ast.walk(loop):
+        if isinstance(child, ast.AugAssign):
+            target = _reference_summary(child.target).replace(".", "_")
+            value = _reference_summary(child.value).replace(".", "_")
+            return _clip_summary(f"{target} {value}", max_parts=5, max_len=28)
+        if isinstance(child, ast.Assign) and isinstance(child.value, ast.BinOp) and isinstance(child.value.op, ast.Add):
+            target = _reference_summary(child.targets[0]).replace(".", "_")
+            value = _reference_summary(child.value.right).replace(".", "_")
+            return _clip_summary(f"{target} {value}", max_parts=5, max_len=28)
+        if isinstance(child, ast.Call) and isinstance(child.func, ast.Attribute) and child.func.attr in {"append", "extend", "update", "add", "write"}:
+            container = _reference_summary(child.func.value).replace(".", "_")
+            arg = _reference_summary(child.args[0]).replace(".", "_") if child.args else child.func.attr
+            return _clip_summary(f"{container} {arg}", max_parts=5, max_len=28)
+    return _extract_accumulator_target(loop)
+
+
 def _loop_label(loop: ast.stmt) -> str:
     if isinstance(loop, (ast.For, ast.AsyncFor)):
         return _truncate_text(f"{ast.unparse(loop.iter)} loop", 24)
@@ -507,7 +524,7 @@ def _extract_behavior_patterns(node: ast.FunctionDef | ast.AsyncFunctionDef) -> 
 
     for stmt in body:
         if isinstance(stmt, (ast.For, ast.AsyncFor, ast.While)):
-            target = _extract_accumulator_target(stmt).replace("_", " ")
+            target = _extract_accumulator_detail(stmt).replace("_", " ")
             loop_label = _loop_label(stmt)
             raise_name = _loop_raises(stmt)
             detail = f"{loop_label} -> {target}"

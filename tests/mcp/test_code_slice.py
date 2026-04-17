@@ -100,3 +100,24 @@ class TestCodeSlice:
             end_line=5,
         )
         assert result["status"] == "error"
+
+    def test_symbol_lookup_uses_detail_store(self, tmp_path):
+        source = tmp_path / "example.py"
+        source.write_text("def target():\n    return 42\n", encoding="utf-8")
+        result = code_slice(
+            repo_root=str(tmp_path),
+            symbol_name="target",
+            graph=None,
+            detail_records=[
+                {
+                    "symbol": "target",
+                    "file": "example.py",
+                    "lines": [1, 2],
+                    "source": "def target():\n    return 42",
+                }
+            ],
+        )
+        assert result["status"] == "ok"
+        assert result["symbol_name"] == "target"
+        assert result["confidence"] == 1.0
+        assert result["lines"][0]["content"].startswith("def target")

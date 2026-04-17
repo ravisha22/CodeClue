@@ -83,6 +83,8 @@ def test_stdio_transport_initializes_lists_tools_and_calls_tool() -> None:
                     "check_freshness",
                     "expand_projection",
                     "fetch_contract",
+                    "get_clue",
+                    "get_drill_targets",
                 }
 
                 result = await session.call_tool(

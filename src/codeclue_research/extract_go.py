@@ -246,6 +246,30 @@ def _find_go_accumulate_target(lines: list[str], start_idx: int) -> str:
     return "result"
 
 
+def _find_go_accumulate_detail(lines: list[str], start_idx: int) -> str:
+    block_lines, _ = _collect_go_block_lines(lines, start_idx)
+    for line in block_lines[1:]:
+        match = re.search(r"([A-Za-z_][A-Za-z0-9_\.]*)\s*\+=\s*([A-Za-z_][A-Za-z0-9_\.]*)", line)
+        if match:
+            return _truncate_go_text(
+                f"{match.group(1).replace('.', '_')} {match.group(2).replace('.', '_')}",
+                28,
+            )
+        match = re.search(r"([A-Za-z_][A-Za-z0-9_\.]*)\s*=\s*append\([^,]+,\s*([A-Za-z_][A-Za-z0-9_\.]*)", line)
+        if match:
+            return _truncate_go_text(
+                f"{match.group(1).replace('.', '_')} {match.group(2).replace('.', '_')}",
+                28,
+            )
+        match = re.search(r"([A-Za-z_][A-Za-z0-9_\.]*)\.(?:append|write|add|store)\(\s*([A-Za-z_][A-Za-z0-9_\.]*)", line)
+        if match:
+            return _truncate_go_text(
+                f"{match.group(1).replace('.', '_')} {match.group(2).replace('.', '_')}",
+                28,
+            )
+    return _find_go_accumulate_target(lines, start_idx)
+
+
 def _go_loop_label(lines: list[str], start_idx: int) -> str:
     block_lines, _ = _collect_go_block_lines(lines, start_idx)
     for line in block_lines[1:]:
@@ -353,7 +377,7 @@ def _extract_go_behavior_patterns(body: str) -> list[str]:
 
     if loop_idx is not None:
         loop_label = _go_loop_label(raw_lines, loop_idx)
-        target = _find_go_accumulate_target(raw_lines, loop_idx).replace("_", " ")
+        target = _find_go_accumulate_detail(raw_lines, loop_idx).replace("_", " ")
         raise_name = _go_loop_raise(raw_lines, loop_idx)
         detail = f"{loop_label} -> {target}"
         if raise_name:

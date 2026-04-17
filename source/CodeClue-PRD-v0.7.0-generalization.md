@@ -1,16 +1,29 @@
 ---
-title: "CodeClue Research Specification: MRLF v2.1 — Generalized Behavioral Comprehension"
-version: 0.7.0-research
-status: RESEARCH DRAFT — Generalization plan under implementation
+title: "CodeClue Research Specification: MRLF v2.5 — Generalized Behavioral Comprehension"
+version: 0.8.0-research
+status: RESEARCH DRAFT — v2.5 results integrated
 author: Ravi Nandagopalan
 created: 2026-03-28
-last_updated: 2026-04-14
+last_updated: 2026-04-17
 document_type: Research Design Document (not a product PRD)
 classification: Internal / Open Source Candidate
 supersedes: CodeClue-PRD-v0.3.0-mvp-FINAL.md (v0.6.0)
 ---
 
 ## Changelog from v0.6.0
+
+### v0.8.0 (2026-04-17) — v2.5 evidence refresh
+
+**Context:** The project now has a larger blind evaluation set (7 blind repos, 168
+blind facts total), a reasoning scaffold artifact, and cross-model validation
+results. This revision updates the research record from pre-v2.5 planning numbers
+to the latest measured v2.5 outcomes.
+
+**Key updates:**
+1. Replace v2.1/v2.4 placeholder result tables with v2.5 blind results.
+2. Add the reasoning scaffold as a first-class consumption protocol artifact.
+3. Add cross-model validation outcomes and scaffold lift observations.
+4. Reframe viability claims around measured v2.5 scores rather than aspirational targets.
 
 ### v0.7.0 (2026-04-14) — Generalization Pivot
 
@@ -53,11 +66,10 @@ LLM consumption. The central artifact is the MRLF (Multi-Resolution Lattice
 Format) — a two-file clue system that compresses codebase understanding into
 a ≤4K token primary file with a JSONL detail store for drill-down.
 
-**Revised claim (v0.7.0):** MRLF v2.1 provides:
-- **Structural comprehension** (≥90% accuracy) from File 1 alone
-- **Relational comprehension** (≥80% accuracy) from File 1 alone
-- **Mechanistic comprehension** (~35-45% from File 1 behavioral annotations,
-  ~80% with File 2 drill-down)
+**Revised claim (v0.8.0):** MRLF v2.5 provides:
+- **Structural comprehension** (51.8% blind, 29/56 facts) from File 1 alone on the current 7-repo blind set
+- **Relational comprehension** (60.7% blind, 34/56 facts) from File 1 alone on the current 7-repo blind set
+- **Mechanistic comprehension** (41.1% blind, 23/56 facts) with the current File 1 + targeted File 2 protocol
 - **Zero hallucination** on all Tier 1 content (deterministic AST extraction)
 - **Explicit sufficiency boundary** — the format self-reports what it can and
   cannot answer, with costed drill-down targets
@@ -89,10 +101,10 @@ that can and cannot be compressed into ≤4K tokens:
 
 | Knowledge Type | Compressible? | Evidence |
 |---------------|--------------|----------|
-| Structural (file/module layout) | Yes — L0+L1 | 100% coverage in all tests |
-| Relational (call graph, hierarchy) | Yes — L2+L3 structure | ~80% in dev evaluation |
-| Declarative (signatures, docstrings) | Yes — L2+L3 metadata | ~75% in dev evaluation |
-| Mechanistic (internal logic) | Partially — behavioral patterns | 4.2% without patterns (blind eval) |
+| Structural (file/module layout) | Yes — L0+L2 | 51.8% blind (v2.5, 29/56) |
+| Relational (call graph, hierarchy) | Yes — L2+L3 structure | 60.7% blind (v2.5, 34/56) |
+| Declarative (signatures, docstrings) | Yes — L2+L3 metadata | Strong in repo-level leaders (requests 70.8%, zod 83.3%) |
+| Mechanistic (internal logic) | Partially — behavioral patterns + drill-down | 41.1% blind (v2.5, 23/56) |
 | Invariant (error/security properties) | Partially — behavioral patterns | Untested at scale |
 
 **Rate-distortion analysis:** Each mechanistic fact requires ~30-80 tokens of
@@ -240,6 +252,23 @@ drill: decorators.py:1-50 (~50 lines, command/group setup)
 
 ---
 
+### 5.6 Reasoning Scaffold (NEW in v0.8.0)
+
+MRLF v2.5 treats clue-consumption protocol as part of the system surface. The
+canonical scaffold lives in `docs/REASONING-SCAFFOLD.md` and standardizes how a
+consumer should use File 1 and File 2:
+
+1. Read **FOCUS → SYM → INDEX → TREE** in that order.
+2. Surface **GAPS** before committing to an answer.
+3. Use File 2 drill-down to **confirm or refine** the traced path rather than
+   replacing File 1 reasoning.
+
+Measured prompt overhead is ~2.5-3%. On the current cross-model slice, the most
+notable scaffold effect is **Sonnet 4.6 improving from 50.0% to 81.3%** on the
+8-task / 32-fact validation subset when the reasoning scaffold is present.
+
+---
+
 ## 6. Validation Framework (NEW in v0.7.0)
 
 ### 6.1 Repository Splits
@@ -270,37 +299,40 @@ language breakdown. Minimum publishable: 60 facts across ≥3 languages.
 
 ## 7. Experimental Results
 
-### 7.1 Baseline (Pre-Generalization, MRLF v2.0)
+### 7.1 Blind Results (MRLF v2.5)
 
-| Split | Knowledge Type | Covered | Total | Accuracy | 95% CI |
-|-------|---------------|---------|-------|----------|--------|
-| Dev (click) | Mechanistic | 0 | 12 | 0.0% | [0.0%, 24.3%] |
-| Validation (aiohttp, fiber) | Mechanistic | 1 | 32 | 3.1% | [0.6%, 15.7%] |
+| Knowledge Type | Covered | Total | Accuracy | 95% CI |
+|---------------|---------|-------|----------|--------|
+| Structural | 29 | 56 | 51.8% | [39.0%, 64.3%] |
+| Relational | 34 | 56 | 60.7% | [47.6%, 72.4%] |
+| Mechanistic | 23 | 56 | 41.1% | [29.2%, 54.1%] |
+| **Overall** | **86** | **168** | **51.2%** | **cluster bootstrap: [37.5%, 65.5%]** |
 
-**Note:** All existing gold facts are mechanistic. Structural/relational gold tasks
-not yet created. No overfitting detected (dev ≤ validation).
+### 7.2 Repository Breakdown (v2.5 blind)
 
-### 7.2 Post-Generalization (MRLF v2.1, Round 2)
+| Repo | Language | Covered / Total | Accuracy |
+|------|----------|-----------------|----------|
+| zod | TypeScript | 20 / 24 | 83.3% |
+| requests | Python | 17 / 24 | 70.8% |
+| echo | Go | 14 / 24 | 58.3% |
+| express | TypeScript/JavaScript ecosystem | 11 / 24 | 45.8% |
+| gin | Go | 10 / 24 | 41.7% |
+| httpx | Python | 8 / 24 | 33.3% |
+| fastapi | Python | 6 / 24 | 25.0% |
 
-| Task | v2.0 | v2.1-r2 | Key Findings |
-|------|------|---------|-------------|
-| aiohttp-1 | 0/4 | 0/4 | Payload internals too deep for patterns |
-| aiohttp-2 | 0/4 | 1/4 | UNWIND(reversed) pattern covered reverse cleanup |
-| fiber-1 | 0/4 | 2/4 | Path rewrite + 404/405 branch covered |
-| fiber-2 | 1/4 | 1/4 | DefaultPanicHandler recovered via compound-word fix |
-| click-1 | 0/4 | 3/4 | Decorator→Command + dispatch chain covered |
-| click-2 | 0/4 | 0/4 | Precedence chain still requires body logic |
-| **TOTAL** | **1/24** | **7/24** | **4.2% → 29.2% (7× improvement)** |
+### 7.3 Drill-Down and Scaffold Results
 
-**What worked:**
-- Behavioral patterns (UNWIND, BRANCH) directly enabled 3 new coverages
-- Graph-structural selection with compound-word splitting surfaced correct symbols
-- click-1 dispatch chain covered by docstring + call graph + behavioral patterns
+| Study | Result | Source |
+|------|--------|--------|
+| File 1 only mechanistic slice | 22.9% | `paper/codeclue-paper-v25.md` |
+| File 1 + File 2 mechanistic slice | 47.9% | `paper/codeclue-paper-v25.md` |
+| Drill-down lift | +25.0 percentage points | `paper/codeclue-paper-v25.md` |
+| Sonnet 4.6 cross-model score | 50.0% → 81.3% with scaffold | `paper/codeclue-paper-v25.md`, `docs/REASONING-SCAFFOLD.md` |
 
-**What still fails:**
-- Deep body logic (precedence chains, constructor wiring, specific conditionals)
-- Behavioral patterns capture control flow *structure* but not *content*
-- 17/24 remaining gaps require method body text (File 2 drill-down territory)
+**Interpretation:** v2.5 demonstrates that MRLF is useful but not yet uniformly
+strong across repository styles. The main stable strengths are relational
+structure and guided drill-down. The main remaining weakness is repository
+coverage variance, especially on FastAPI and HTTPX.
 
 ---
 
@@ -315,9 +347,9 @@ deterministic structural answers, with guided drill-down for deep questions."
 
 | Knowledge Type | File 1 Only | With File 2 | Status |
 |---------------|-------------|-------------|--------|
-| Structural | ≥85% | ≥95% | On track |
-| Relational | ≥70% | ≥90% | On track |
-| Mechanistic | ≥30% | ≥70% | Blocked (4.2% → target 30%+) |
+| Structural | 51.8% on current blind set | N/A | Below long-term target; useful but not yet publishable as a universal claim |
+| Relational | 60.7% on current blind set | N/A | Near minimal usefulness threshold, still below ideal |
+| Mechanistic | 22.9% clue-only / 47.9% with drill-down | 47.9% | Improved materially, still below product-grade target |
 
 ### 8.3 Competitive Positioning
 
@@ -377,4 +409,4 @@ Patterns that led to wasted effort in prior sessions:
 
 ---
 
-*End of PRD v0.7.0*
+*End of PRD v0.8.0*

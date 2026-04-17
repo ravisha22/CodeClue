@@ -15,16 +15,23 @@ class TestMCPProtocol:
         )
         assert server is not None
 
-    def test_server_lists_five_tools(self):
-        """Server exposes exactly 5 tools."""
+    def test_server_lists_public_tools(self):
+        """Server exposes the MRLF public drill-down tools."""
         server = create_server(
             graph_path="experiments/runs/v2-lane-a-flask/graph.json",
             repo_root="experiments/external-repos/flask",
         )
         tools = server.list_tools()
         tool_names = {t["name"] for t in tools}
-        assert tool_names == {"code_slice", "resolve_dependency", "check_freshness",
-                              "expand_projection", "fetch_contract"}
+        assert tool_names == {
+            "code_slice",
+            "resolve_dependency",
+            "check_freshness",
+            "expand_projection",
+            "fetch_contract",
+            "get_clue",
+            "get_drill_targets",
+        }
 
     def test_tool_schemas_have_required_fields(self):
         """Each tool has input_schema with required parameters."""

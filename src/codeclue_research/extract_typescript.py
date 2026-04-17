@@ -82,6 +82,22 @@ def _ts_pattern_text(prefix: str, detail: str, *, max_len: int = 80) -> str:
     return f"{prefix}({_truncate_ts_text(detail, max_len - len(prefix) - 2)})"
 
 
+def _ts_accumulate_target(body: str) -> str:
+    acc_match = re.search(
+        r"(?s)(?:for\s*\([^)]*\)|\.forEach\s*\([^)]*\))\s*\{\s*(?:([$A-Za-z_][$A-Za-z0-9_\.]*)\s*\+=\s*([$A-Za-z_][$A-Za-z0-9_\.]*)|([$A-Za-z_][$A-Za-z0-9_\.]*)\.(?:push|set|add|write)\(([$A-Za-z_][$A-Za-z0-9_\.]*))",
+        body,
+    )
+    if not acc_match:
+        return "result"
+    groups = acc_match.groups()
+    target = next((group for group in (groups[0], groups[2]) if group), "result")
+    value = next((group for group in (groups[1], groups[3]) if group), "")
+    detail = target.replace(".", " ")
+    if value:
+        detail = f"{detail} {value.replace('.', ' ')}"
+    return _truncate_ts_text(detail, 28)
+
+
 def _ts_action_text(expr: str, *, max_len: int = 24) -> str:
     raw = _compact_ts_text(expr.strip())
     if not raw:
@@ -166,7 +182,7 @@ def _extract_ts_behavior_patterns(body: str) -> list[str]:
 
     guard_match = re.search(r"(?s)if\s*\(([^)]*)\)\s*\{\s*([^{}]*return\b[^{};]*;?)\s*\}(?!\s*else\b)", body)
     if guard_match:
-        guard_condition = _truncate_ts_text(guard_match.group(1), 48)
+        guard_condition = _truncate_ts_text(guard_match.group(1), 60)
         guard_action = _ts_action_text(guard_match.group(2), max_len=22)
         patterns.append(_ts_pattern_text("GUARD", f"{guard_condition} -> {guard_action}"))
 
@@ -186,7 +202,7 @@ def _extract_ts_behavior_patterns(body: str) -> list[str]:
         body,
     )
     if branch_match:
-        cond = _truncate_ts_text(branch_match.group(1), 28)
+        cond = _truncate_ts_text(branch_match.group(1), 60)
         true_action = _ts_action_text(branch_match.group(2), max_len=18)
         false_action = _ts_action_text(branch_match.group(3), max_len=18)
         patterns.append(_ts_pattern_text("BRANCH", f"{cond} -> {true_action}, else -> {false_action}"))
@@ -196,15 +212,11 @@ def _extract_ts_behavior_patterns(body: str) -> list[str]:
         patterns.append(f"DELEGATE({delegate_match.group(1)} -> result)")
 
     if re.search(r"\bfor\s*\(", body) or ".forEach(" in body:
-        acc_match = re.search(
-            r"(?s)(?:for\s*\([^)]*\)|\.forEach\s*\([^)]*\))\s*\{\s*(?:([$A-Za-z_][$A-Za-z0-9_\.]*)\s*\+=|([$A-Za-z_][$A-Za-z0-9_\.]*)\.(?:push|set|add|write)\()",
-            body,
-        )
-        target = next((group for group in acc_match.groups() if group), "result") if acc_match else "result"
+        target = _ts_accumulate_target(body)
         loop_call = re.search(r"([$A-Za-z_][$A-Za-z0-9_\.]*)\s*\(", body)
         loop_label = f"{loop_call.group(1).split('.')[-1]} loop" if loop_call else "loop"
         throw_match = re.search(r"\bthrow\s+([^;]+)", body)
-        detail = f"{_truncate_ts_text(loop_label, 24)} -> {target.replace('.', ' ')[:24]}"
+        detail = f"{_truncate_ts_text(loop_label, 24)} -> {target}"
         if throw_match:
             detail += f", raises {_truncate_ts_text(throw_match.group(1), 18)}"
         patterns.append(_ts_pattern_text("ACCUMULATE", detail))

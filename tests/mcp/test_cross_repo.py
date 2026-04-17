@@ -42,7 +42,7 @@ class TestCrossRepoValidation:
     def test_list_tools_works(self, repo_server):
         name, graph, server = repo_server
         tools = server.list_tools()
-        assert len(tools) == 5
+        assert len(tools) == 7
 
     def test_code_slice_works(self, repo_server):
         name, graph, server = repo_server

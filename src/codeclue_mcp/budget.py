@@ -12,6 +12,8 @@ _DEFAULT_BUDGETS: dict[str, int] = {
     "OF5": 30,
 }
 
+DEFAULT_CONFIDENCE_THRESHOLD = 0.8
+
 
 class BudgetTracker:
     def __init__(self, operation_family: str, budget: int | None = None) -> None:
@@ -26,8 +28,11 @@ class BudgetTracker:
     def remaining(self) -> int:
         return max(0, self.budget - len(self._calls))
 
-    def record_call(self, tool: str, node_id: str) -> None:
-        self._calls.append({"tool": tool, "node_id": node_id})
+    def record_call(self, tool: str, node_id: str, confidence: float | None = None) -> None:
+        entry: dict[str, Any] = {"tool": tool, "node_id": node_id}
+        if confidence is not None:
+            entry["confidence"] = float(confidence)
+        self._calls.append(entry)
 
     def register_unresolved(self, node_ids: list[str]) -> None:
         self._unresolved = list(node_ids)
@@ -40,5 +45,6 @@ class BudgetTracker:
             "calls_made": len(self._calls),
             "budget": self.budget,
             "remaining": self.remaining(),
+            "calls": list(self._calls),
             "unresolved_nodes": self._unresolved if exhausted else [],
         }

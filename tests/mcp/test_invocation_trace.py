@@ -49,6 +49,23 @@ class TestInvocationTrace:
         assert entry["confidence_trigger"] == 0.45
         assert entry["session_id"] == "test-2"
 
+    def test_trace_entry_includes_confidence_when_provided(self, trace_dir):
+        tracer = InvocationTracer(trace_dir=trace_dir)
+        tracer.log(
+            tool="fetch_contract",
+            args={"node_id": "x"},
+            output_hash="hash123",
+            source_anchor="x",
+            confidence_trigger=0.8,
+            session_id="test-3",
+            confidence=0.72,
+            warning="confidence 0.72 below session threshold 0.80",
+        )
+        trace_file = list(trace_dir.glob("*.jsonl"))[0]
+        entry = json.loads(trace_file.read_text().strip().split("\n")[-1])
+        assert entry["confidence"] == 0.72
+        assert "warning" in entry
+
     def test_multiple_entries_appended(self, trace_dir):
         """Multiple log calls append to the same file."""
         tracer = InvocationTracer(trace_dir=trace_dir)

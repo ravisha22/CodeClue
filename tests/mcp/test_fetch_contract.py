@@ -56,3 +56,10 @@ class TestFetchContract:
         """Unknown node_id returns error."""
         result = fetch_contract(graph=flask_graph, node_id="nonexistent:node")
         assert result["status"] == "error"
+
+    def test_confidence_increases_with_behavior_annotations(self, flask_graph):
+        node = flask_graph.nodes[0]
+        node.semantic_contract["behavior_patterns"] = ["GUARD(x -> return)"]
+        result = fetch_contract(graph=flask_graph, node_id=node.node_id)
+        assert result["status"] == "ok"
+        assert result["confidence"] > 0.9

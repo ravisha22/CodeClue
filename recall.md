@@ -3,6 +3,17 @@
 Date: 2026-04-01
 Scope: Preserve full working context, decisions, and execution direction across context compaction.
 
+## Current top summary (v2.5 / v0.8.0)
+
+- Canonical current score: **86/168 = 51.2%** blind accuracy in MRLF v2.5.
+- Family breakdown: **structural 51.8%**, **relational 60.7%**, **mechanistic 41.1%**.
+- Mechanistic drill-down is materially better than clue-only on the measured slice:
+  **22.9% → 47.9%**.
+- Reasoning scaffold is now a first-class part of the system contract; strongest
+  observed cross-model lift is **Sonnet 4.6: 50.0% → 81.3%** on the 8-task subset.
+- Use `docs/CANONICAL-STATUS.md` for current status and `docs/OPEN-ISSUES-PLAN.md`
+  for remaining work.
+
 ## 1) User intent and clarification history
 
 - Primary intent in this phase: move from vague external benchmark selection to a concrete, executable, preregistered replay set.

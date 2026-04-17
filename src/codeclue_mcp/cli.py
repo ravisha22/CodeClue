@@ -11,8 +11,15 @@ def build_parser() -> argparse.ArgumentParser:
         description="Run the CodeClue MCP server over a real MCP transport.",
     )
     parser.add_argument("--graph-path", default=None, help="Path to a pre-built clue graph JSON file (optional)")
+    parser.add_argument("--clue-dir", default=None, help="Path to a directory containing .codeclue artifacts (optional)")
     parser.add_argument("--repo-root", default=None, help="Repository root for source access (optional)")
     parser.add_argument("--workspace-root", default=None, help="Workspace root for repo discovery (defaults to cwd)")
+    parser.add_argument(
+        "--confidence-threshold",
+        type=float,
+        default=0.8,
+        help="Warn when tool confidence falls below this threshold",
+    )
     parser.add_argument(
         "--transport",
         default="stdio",
@@ -28,7 +35,9 @@ def main(argv: list[str] | None = None) -> None:
     workspace_root = args.workspace_root or os.getcwd()
     serve_mcp(
         graph_path=args.graph_path,
+        clue_dir=args.clue_dir,
         repo_root=args.repo_root,
         transport=args.transport,
         workspace_root=workspace_root,
+        confidence_threshold=args.confidence_threshold,
     )

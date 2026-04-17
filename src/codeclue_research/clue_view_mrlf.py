@@ -403,6 +403,28 @@ def _split_compound_words(text: str) -> set[str]:
     return set(re.findall(r"[a-z]{3,}", parts.lower()))
 
 
+def _keyword_variants(keyword: str) -> set[str]:
+    variants = {keyword}
+    alias_map = {
+        "context": {"ctx"},
+        "request": {"req"},
+        "response": {"res"},
+        "routing": {"route", "router"},
+        "route": {"router", "routing"},
+        "router": {"route", "routing"},
+        "types": {"type"},
+        "defined": {"define", "definition"},
+    }
+    variants.update(alias_map.get(keyword, set()))
+    if keyword.endswith("ing") and len(keyword) > 5:
+        variants.add(keyword[:-3])
+    if keyword.endswith("es") and len(keyword) > 4:
+        variants.add(keyword[:-2])
+    if keyword.endswith("s") and len(keyword) > 4:
+        variants.add(keyword[:-1])
+    return {variant for variant in variants if variant}
+
+
 def _semantic_overlap(purpose: str, question_keywords: set[str]) -> float:
     """Score overlap between node documentation and question intent.
 
@@ -421,7 +443,10 @@ def _symbol_overlap(symbol_name: str, file_path: str, question_keywords: set[str
         return 0.0
     symbol_words = _split_compound_words(symbol_name)
     path_words = _split_compound_words(file_path)
-    return len((symbol_words | path_words) & question_keywords) / max(len(question_keywords), 1)
+    expanded_keywords = set()
+    for keyword in question_keywords:
+        expanded_keywords.update(_keyword_variants(keyword))
+    return len((symbol_words | path_words) & expanded_keywords) / max(len(question_keywords), 1)
 
 
 def _node_question_relevance(node: Node, question_keywords: set[str]) -> float:
@@ -817,9 +842,19 @@ def _analyze_focus_selection(
     relational_focus = bool({
         "inheritance", "inherit", "extends", "extension", "relationship", "relationships", "hierarchy",
     } & keywords)
-
+    structural_focus = _classify_question_type(question, [], symbol_nodes) == "STRUCTURAL"
     mechanistic_focus = _question_has_mechanistic_signals(question)
     max_anchor_support = max(anchor_support.values(), default=0.0)
+    file_focus_scores: dict[str, float] = defaultdict(float)
+    if structural_focus:
+        for candidate_id in candidate_ids:
+            node = node_by_id[candidate_id]
+            score = lexical_scores.get(candidate_id, 0.0) + entity_scores.get(candidate_id, 0.0)
+            if score > 0:
+                file_focus_scores[node.source_anchor.file_path] = max(
+                    file_focus_scores[node.source_anchor.file_path],
+                    score,
+                )
 
     def _normalized_entity_score(nid: str) -> float:
         return min(1.0, max(0.0, entity_scores.get(nid, 0.0) / 1.4))
@@ -837,7 +872,15 @@ def _analyze_focus_selection(
         semantic_score = min(1.0, max(0.0, semantic_scores.get(nid, 0.0)))
         entity_score = _normalized_entity_score(nid)
         proximity_score = _call_graph_proximity_score(nid)
-        return (0.60 * semantic_score) + (0.25 * entity_score) + (0.15 * proximity_score)
+        file_score = 0.0
+        if structural_focus:
+            file_score = min(1.0, file_focus_scores.get(node_by_id[nid].source_anchor.file_path, 0.0))
+        return (
+            (0.52 * semantic_score)
+            + (0.22 * entity_score)
+            + (0.14 * proximity_score)
+            + (0.12 * file_score)
+        )
 
     def _rank_key(nid: str) -> tuple:
         return (
@@ -1357,6 +1400,7 @@ def generate_detail_store(
             return names
 
         record = {
+            "node_id": node.node_id,
             "symbol": sym_name,
             "type": node.node_type,
             "file": fp,
@@ -1366,6 +1410,8 @@ def generate_detail_store(
             "called_by": _resolve_names(calls_in.get(node.node_id, [])),
             "confidence": node.confidence,
             "purpose": sc.get("purpose", ""),
+            "behavior_patterns": list(sc.get("behavior_patterns", []) or []),
+            "semantic_contract": sc,
         }
         records.append(record)
 
