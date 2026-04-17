@@ -1,0 +1,1010 @@
+[
+  {
+    "task_id": "ent-saleor-struct-1",
+    "repo": "saleor",
+    "repo_path": "experiments/external-repos/saleor",
+    "question": "How is Saleor split across its core platform, multichannel commerce model, and extension surfaces?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "Saleor is a GraphQL-only, API-only platform."
+      },
+      {
+        "statement": "The dashboard is a decoupled project in a separate repository."
+      },
+      {
+        "statement": "Saleor is native-multichannel, with per-channel control over pricing, currencies, stock, and products."
+      },
+      {
+        "statement": "Backend extension surfaces include webhooks, apps, subscription queries, API extensions, and dashboard iframes."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-saleor-struct-2",
+    "repo": "saleor",
+    "repo_path": "experiments/external-repos/saleor",
+    "question": "How is the Saleor repository organized for app modules, GraphQL APIs, and tests?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "Saleor uses a standard Django structure where each app has its own directory with migrations, management, models, utils, error codes, and tests."
+      },
+      {
+        "statement": "The API files live under `saleor/graphql/`."
+      },
+      {
+        "statement": "Each GraphQL app module contains `schema.py`, `sorters.py`, `filters.py`, `types.py`, `enums.py`, `dataloaders.py`, mutations, and tests."
+      },
+      {
+        "statement": "Tests are split into separate `queries` and `mutations` directories, ideally with one file per query or mutation."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-saleor-rel-1",
+    "repo": "saleor",
+    "repo_path": "experiments/external-repos/saleor",
+    "question": "How are permission checks attached to Saleor GraphQL queries and mutations?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "Query permissions are declared with `permission_required` or `one_of_permissions_required` decorators."
+      },
+      {
+        "statement": "Mutation permissions are defined in the `Meta.permissions` field."
+      },
+      {
+        "statement": "`AuthorizationFilters` represents function-based permission checks instead of named admin permission scopes."
+      },
+      {
+        "statement": "When `PermissionDenied` is raised, the error should state which permissions are required, and those permissions should be mentioned in the GraphQL description."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-saleor-rel-2",
+    "repo": "saleor",
+    "repo_path": "experiments/external-repos/saleor",
+    "question": "How do Saleor’s API deprecation rules relate GraphQL fields, webhook payloads, plugins, and changelog entries?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "Removing or renaming a GraphQL schema field is a breaking change."
+      },
+      {
+        "statement": "Removing or renaming a webhook payload field is a breaking change."
+      },
+      {
+        "statement": "Changing `PluginsManager` function signatures is a breaking change for existing plugins."
+      },
+      {
+        "statement": "API fields should be deprecated before removal, and `PREVIEW_FEATURE` changes can be removed in the next minor version."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-saleor-mech-1",
+    "repo": "saleor",
+    "repo_path": "experiments/external-repos/saleor",
+    "question": "How does Saleor keep search indexing and other scheduled work running?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "The search vector update task is triggered by the Celery beat scheduler."
+      },
+      {
+        "statement": "That feature will not work without task queue configuration."
+      },
+      {
+        "statement": "`uv run poe worker` starts the Celery worker."
+      },
+      {
+        "statement": "`uv run poe scheduler` starts the Celery Beat scheduler."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-saleor-mech-2",
+    "repo": "saleor",
+    "repo_path": "experiments/external-repos/saleor",
+    "question": "How are concurrent object updates kept safe in Saleor?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "Use Django `select_for_update()` on querysets to lock objects and prevent race conditions."
+      },
+      {
+        "statement": "When locking multiple objects, the lock order should be consistent, typically by primary key."
+      },
+      {
+        "statement": "When locking across multiple models, acquire locks in a defined order, such as locking `Order` before `OrderLine`."
+      },
+      {
+        "statement": "Locking helper functions should live in a `lock_objects.py` file in the same app directory as the model being locked."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-maybe-struct-1",
+    "repo": "maybe",
+    "repo_path": "experiments/external-repos/maybe",
+    "question": "What documented surfaces and usage modes does Maybe expose for users, self-hosters, and developers?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "Maybe is described as a personal finance app for everyone and a fully working application."
+      },
+      {
+        "statement": "The repository explicitly documents Docker-based self-hosting in `docs/hosting/docker.md`."
+      },
+      {
+        "statement": "The README separates self-hosting users from developers and points self-hosters to the Docker guide instead of the local development steps."
+      },
+      {
+        "statement": "The documented API surface includes an AI chat API under `/api/v1/chats`."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-maybe-struct-2",
+    "repo": "maybe",
+    "repo_path": "experiments/external-repos/maybe",
+    "question": "What files and setup artifacts are documented for getting a self-hosted Maybe deployment running with Docker?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "The Docker guide recommends first installing Docker Engine and verifying it with `docker run hello-world`."
+      },
+      {
+        "statement": "The sample compose file is downloaded from the repository as `compose.yml` from `compose.example.yml`."
+      },
+      {
+        "statement": "Optional environment configuration is done through a local `.env` file containing `SECRET_KEY_BASE` and `POSTGRES_PASSWORD`."
+      },
+      {
+        "statement": "The documented runtime flow includes `docker compose up`, then `docker compose up -d` for background mode, with `docker compose ls` used to verify it is running."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-maybe-rel-1",
+    "repo": "maybe",
+    "repo_path": "experiments/external-repos/maybe",
+    "question": "How are authentication, AI enablement, and endpoint scopes related across Maybe's Chat API?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "All chat endpoints require authentication via OAuth2 or API keys and also require `ai_enabled` to be true."
+      },
+      {
+        "statement": "GET endpoints for listing chats and fetching a chat require the `read` scope."
+      },
+      {
+        "statement": "Create, update, delete, create-message, and retry-message operations require the `write` scope."
+      },
+      {
+        "statement": "The documented error model distinguishes unauthorized from forbidden, where forbidden covers insufficient permissions or AI not enabled."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-maybe-rel-2",
+    "repo": "maybe",
+    "repo_path": "experiments/external-repos/maybe",
+    "question": "How do chats, messages, assistant responses, and tool calls relate in the documented Chat API payloads?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "List Chats returns a `chats` array with chat metadata plus pagination fields including `page`, `per_page`, `total_count`, and `total_pages`."
+      },
+      {
+        "statement": "Get Chat returns a `messages` array that can include both `user_message` and `assistant_message` records."
+      },
+      {
+        "statement": "Assistant messages include a `model` field and a `tool_calls` array."
+      },
+      {
+        "statement": "The docs say the AI assistant can make tool calls to access user financial data."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-maybe-mech-1",
+    "repo": "maybe",
+    "repo_path": "experiments/external-repos/maybe",
+    "question": "What is the documented lifecycle when creating a chat or message, and how does a client observe the AI response?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "`POST /api/v1/chats` accepts an optional title, an initial message, and an optional model, and it returns the same shape as Get Chat."
+      },
+      {
+        "statement": "`POST /api/v1/chats/:chat_id/messages` returns the user message immediately with `ai_response_status` set to `pending`."
+      },
+      {
+        "statement": "The API processes AI responses asynchronously in the background rather than blocking the create request."
+      },
+      {
+        "statement": "Clients are told to poll the chat endpoint and look for new messages with `type` equal to `assistant_message`."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-maybe-mech-2",
+    "repo": "maybe",
+    "repo_path": "experiments/external-repos/maybe",
+    "question": "How does the documented self-hosting update path work, and what is the recovery flow for a first-time database connection problem?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "The documented image source for self-hosting is `ghcr.io/maybe-finance/maybe` with `latest` and `stable` tags."
+      },
+      {
+        "statement": "By default the self-hosted app does not update automatically."
+      },
+      {
+        "statement": "The documented update sequence is `docker compose pull`, `docker compose build`, then `docker compose up --no-deps -d web worker`."
+      },
+      {
+        "statement": "If the first start hits an `ActiveRecord::DatabaseConnectionError`, the guide recommends `docker compose down`, removing the `maybe_postgres-data` volume, and starting `docker compose up` again."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-calcom-struct-1",
+    "repo": "calcom",
+    "repo_path": "experiments/external-repos/calcom",
+    "question": "How is Cal.diy split across its main runtime components and platform packages?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "The root project is a Next.js scheduling platform built with tRPC, React, Tailwind CSS, Prisma, and Daily.co."
+      },
+      {
+        "statement": "`apps/api/v2` is a separate Nest.js API v2 service."
+      },
+      {
+        "statement": "`packages/platform/atoms` is the embeddable UI component package and supports React 18/19 and Next 14/15."
+      },
+      {
+        "statement": "The platform packages include an example application alongside the embeddable atoms package for local and backend integration testing."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-calcom-struct-2",
+    "repo": "calcom",
+    "repo_path": "experiments/external-repos/calcom",
+    "question": "What enterprise capabilities does Cal.diy explicitly exclude compared with Cal.com?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "Cal.diy is the open-source community edition and is recommended only for personal, non-production self-hosting."
+      },
+      {
+        "statement": "Teams, team round-robin, team collective, managed event types, instant meeting, and organizations are shown as available in Cal.com but not Cal.diy."
+      },
+      {
+        "statement": "SAML SSO, SCIM directory sync, impersonation, workflows, routing forms, insights dashboard, attributes and segments, delegation, workspace platform, and admin panel are Cal.com-only features."
+      },
+      {
+        "statement": "Cal.diy still includes event types, availability schedules, webhooks, Zapier, API v2, API keys, and platform or OAuth clients."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-calcom-rel-1",
+    "repo": "calcom",
+    "repo_path": "experiments/external-repos/calcom",
+    "question": "How does the headless router flow from a submitted form to a booked meeting?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "The router is entered with a `formId` plus field values in the URL."
+      },
+      {
+        "statement": "It validates field types and required fields before choosing a route."
+      },
+      {
+        "statement": "For an `eventTypeRedirect`, it finds team members matching the routing rules and redirects to the booking page with `routedTeamMemberIds`."
+      },
+      {
+        "statement": "The booking page shows only the matching members' slots, slot selection temporarily blocks the slot, and confirmation rechecks availability rules before sending emails and webhooks."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-calcom-rel-2",
+    "repo": "calcom",
+    "repo_path": "experiments/external-repos/calcom",
+    "question": "How do Cal.diy webhooks map booking lifecycle events to outgoing requests?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "Webhook triggers include booking created, cancelled, rescheduled, confirmed, rejected, requested, payment initiated, no-show updated, meeting started and ended, recording ready, instant meeting, transcription generated, and form submitted."
+      },
+      {
+        "statement": "Created booking events are modeled as their own webhook event family with a structured booking payload."
+      },
+      {
+        "statement": "Cancelled and rescheduled booking events use event-specific payload variants instead of a single undifferentiated booking shape."
+      },
+      {
+        "statement": "Webhook delivery combines booking event selection and payload construction with a separate outbound transport/signing step."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-calcom-mech-1",
+    "repo": "calcom",
+    "repo_path": "experiments/external-repos/calcom",
+    "question": "How does the cancellation-reason setting change booking cancellation behavior?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "`requiresCancellationReason` is stored on `EventType` as a Prisma enum with values `MANDATORY_BOTH`, `MANDATORY_HOST_ONLY`, `MANDATORY_ATTENDEE_ONLY`, and `OPTIONAL_BOTH`."
+      },
+      {
+        "statement": "The default is `MANDATORY_HOST_ONLY`, including when the column is null or the booking has no `eventTypeId`."
+      },
+      {
+        "statement": "Cancellation-reason enforcement happens in backend cancellation handling, where the booking actor and event settings are checked before canceling."
+      },
+      {
+        "statement": "The cancellation UI mirrors the same requirement so the client form reflects whether a reason is mandatory."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-calcom-mech-2",
+    "repo": "calcom",
+    "repo_path": "experiments/external-repos/calcom",
+    "question": "How is the platform example app wired to Cal.diy's API v2 for local OAuth testing?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "Local OAuth testing depends on environment/config values being shared between the root workspace, API v2 service, and the example app."
+      },
+      {
+        "statement": "The API v2 service includes local-development setup tooling/scripts for preparing OAuth test secrets."
+      },
+      {
+        "statement": "The example app consumes client-facing OAuth settings while the backend keeps the corresponding server-side secret configuration."
+      },
+      {
+        "statement": "The authorize flow redirects to `localhost:4321?code=abc`, exchanges the code for access and refresh tokens, and reflects availability updates from the main web app."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-netbox-struct-1",
+    "repo": "netbox",
+    "repo_path": "experiments/external-repos/netbox",
+    "question": "What is NetBox's overall architectural role and data scope?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "NetBox is the system of record and source of truth for network infrastructure, not a tool that directly talks to network nodes."
+      },
+      {
+        "statement": "Its recommended automation architecture centers NetBox as the central authority while other tools handle monitoring, assurance, and execution."
+      },
+      {
+        "statement": "Its data model spans regions, sites, locations, racks, devices, cables, power, circuits, virtual machines, IP prefixes, ranges and addresses, VRFs, VLANs, tenancy, and contacts."
+      },
+      {
+        "statement": "NetBox exposes programmable REST and GraphQL APIs so the same data can drive cable maps, device configs, and automation."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-netbox-struct-2",
+    "repo": "netbox",
+    "repo_path": "experiments/external-repos/netbox",
+    "question": "What can NetBox plugins extend, and what core boundaries do they not cross?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "Plugins are packaged Django apps that can add models, URLs and views, template content, navigation items, middleware, and configuration parameters."
+      },
+      {
+        "statement": "Plugin URLs are limited to `/plugins`, and plugins cannot modify core models, override core templates, alter core settings, or disable core components."
+      },
+      {
+        "statement": "Plugins can declare minimum and maximum NetBox version compatibility."
+      },
+      {
+        "statement": "Plugin configuration is supplied under `PLUGINS_CONFIG` in `configuration.py`."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-netbox-rel-1",
+    "repo": "netbox",
+    "repo_path": "experiments/external-repos/netbox",
+    "question": "How do tenancy and resource ownership differ in NetBox, and how are they organized?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "Tenancy associates objects with a tenant, typically a customer or internal organization."
+      },
+      {
+        "statement": "Tenant groups can nest recursively, and a tenant may belong to a group or none."
+      },
+      {
+        "statement": "Most core objects can be assigned to exactly one tenant, covering things like circuits, devices, racks, prefixes, VLANs, VRFs, clusters, and virtual machines."
+      },
+      {
+        "statement": "Resource ownership is separate from tenancy: it names users or groups responsible for an object and should not be confused with tenant assignment."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-netbox-rel-2",
+    "repo": "netbox",
+    "repo_path": "experiments/external-repos/netbox",
+    "question": "How do NetBox permissions and authentication interact across the UI and API?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "Object-based permissions can target object types, users or groups, allowed actions, and JSON constraints."
+      },
+      {
+        "statement": "Default permissions are auto-applied to any authenticated user, regardless of database permission rows."
+      },
+      {
+        "statement": "`EXEMPT_VIEW_PERMISSIONS` can make selected models viewable by all users, including anonymous users."
+      },
+      {
+        "statement": "The REST and GraphQL APIs use token-based authentication that maps clients to user accounts and their assigned permissions, and LDAP and SSO are also supported."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-netbox-mech-1",
+    "repo": "netbox",
+    "repo_path": "experiments/external-repos/netbox",
+    "question": "How are NetBox background jobs enqueued, scheduled, and executed?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "Background tasks include custom scripts, remote data source synchronization, and housekeeping tasks."
+      },
+      {
+        "statement": "Plugins can add their own jobs via the Job model, and jobs run in `rqworker` processes."
+      },
+      {
+        "statement": "Jobs can run immediately, in the future, or on a repeating interval, and `enqueue_once()` prevents duplicate instance-bound jobs."
+      },
+      {
+        "statement": "System jobs use `system_job()`, and default worker queues are high, default, and low; custom queues need a dedicated worker configuration."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-netbox-mech-2",
+    "repo": "netbox",
+    "repo_path": "experiments/external-repos/netbox",
+    "question": "What is the processing chain for event rules and outgoing webhooks?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "When a monitored change occurs, resulting events are placed into a Redis queue so the user request can finish immediately."
+      },
+      {
+        "statement": "`rqworker` processes extract queued events or webhooks and send them asynchronously."
+      },
+      {
+        "statement": "Webhook payloads can use Jinja2 templates and get context like event, timestamp, object_type, username, request_id, data, and pre-change and post-change snapshots."
+      },
+      {
+        "statement": "Webhook requests succeed only on 2XX responses, failures can be requeued manually, and `webhook_receiver` is a local inspection tool that only prints requests."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-mattermost-struct-1",
+    "repo": "mattermost",
+    "repo_path": "experiments/external-repos/mattermost",
+    "question": "According to the top-level README, what is Mattermost's core runtime and deployment profile?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "Mattermost is described as an open core, self-hosted collaboration platform."
+      },
+      {
+        "statement": "The core platform is written in Go and React."
+      },
+      {
+        "statement": "It runs as a single Linux binary and relies on PostgreSQL."
+      },
+      {
+        "statement": "The README says it can be deployed on-premises or tried in the cloud."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-mattermost-struct-2",
+    "repo": "mattermost",
+    "repo_path": "experiments/external-repos/mattermost",
+    "question": "How do the README and API docs describe Mattermost's integration and API-documentation surface?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "The README says integrations can be built via APIs, webhooks, slash commands, Apps, and plugins."
+      },
+      {
+        "statement": "The API reference uses the OpenAPI standard and the ReDoc document generator."
+      },
+      {
+        "statement": "The API documentation source is written in YAML under `api/v4/source`."
+      },
+      {
+        "statement": "Playbooks APIs are fetched from GitHub at build time and integrated into the final YAML file."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-mattermost-rel-1",
+    "repo": "mattermost",
+    "repo_path": "experiments/external-repos/mattermost",
+    "question": "How do team and channel creation permissions line up across the Mattermost API?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "Creating a team requires authentication and the `create_team` permission."
+      },
+      {
+        "statement": "Getting teams returns only open teams for regular users, while `manage_system` can show all teams."
+      },
+      {
+        "statement": "Creating a channel requires `team_id`, and public versus private channels require `create_public_channel` or `create_private_channel` respectively."
+      },
+      {
+        "statement": "Creating a direct message channel requires one of the two users plus `create_direct_channel`, but `manage_system` overrides those requirements."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-mattermost-rel-2",
+    "repo": "mattermost",
+    "repo_path": "experiments/external-repos/mattermost",
+    "question": "Which admin and compliance gates span channel discovery and team deletion?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "Getting all channels requires the `manage_system` permission."
+      },
+      {
+        "statement": "`SearchAllChannels` can search private and open channels across all teams and can exclude default channels."
+      },
+      {
+        "statement": "Getting all teams returns open teams for regular users, but `manage_system` is required to show all teams."
+      },
+      {
+        "statement": "Deleting a team is soft by default, and permanent deletion is only allowed for compliance reasons when `ServiceSettings.EnableAPITeamDeletion` is enabled."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-mattermost-mech-1",
+    "repo": "mattermost",
+    "repo_path": "experiments/external-repos/mattermost",
+    "question": "How does incoming webhook administration work across team, channel, and system scopes?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "An incoming webhook is created for a channel and requires a `channel_id`."
+      },
+      {
+        "statement": "The channel target must be a public channel or private group, and `channel_locked` controls whether the webhook stays fixed to that channel."
+      },
+      {
+        "statement": "Creating a webhook for a different user requires `manage_others_incoming_webhooks` in addition to team-level `manage_webhooks`."
+      },
+      {
+        "statement": "Listing, getting, deleting, and updating incoming webhooks are governed by `manage_webhooks` at system, team, or channel scope, and listing can be filtered by `team_id`."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-mattermost-mech-2",
+    "repo": "mattermost",
+    "repo_path": "experiments/external-repos/mattermost",
+    "question": "How are security-sensitive issues and security updates handled in Mattermost's policy docs?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "Security-sensitive issues should not be reported through GitHub issues; they should be emailed to `responsibledisclosure@mattermost.com`."
+      },
+      {
+        "statement": "Security updates are only provided for the latest 3 releases and the current Extended Support Release."
+      },
+      {
+        "statement": "Critical security updates are delivered as dot releases."
+      },
+      {
+        "statement": "Security update details are announced 30 days after the update becomes available."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-consul-struct-1",
+    "repo": "consul",
+    "repo_path": "experiments/external-repos/consul",
+    "question": "According to the docs, how is Consul's service mesh split between control plane and data plane?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "The data plane refers to gateways, sidecar proxies, or native application libraries that sit in the request path."
+      },
+      {
+        "statement": "For production deployments, Consul primarily supports Envoy as the proxy."
+      },
+      {
+        "statement": "The control plane's primary goal is to provide configuration for the data plane."
+      },
+      {
+        "statement": "Consul's service mesh is composed of server agents, client agents, and consul-dataplane proxies."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-consul-struct-2",
+    "repo": "consul",
+    "repo_path": "experiments/external-repos/consul",
+    "question": "How do the docs describe Consul's cluster communication and federation topology?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "Consul uses two RPC systems for communication: gRPC and Go's `net/rpc`."
+      },
+      {
+        "statement": "Most in-cluster communication happens over the multiplexed server TCP port 8300."
+      },
+      {
+        "statement": "Internal gRPC APIs are exposed on the server port, while external gRPC APIs use a dedicated port 8502."
+      },
+      {
+        "statement": "Network areas define pairwise gossip pools over the WAN between Consul datacenters and use TCP connections over the server RPC port."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-consul-rel-1",
+    "repo": "consul",
+    "repo_path": "experiments/external-repos/consul",
+    "question": "How are the ACL entities related in Consul's ACL documentation?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "ACL tokens are central to the ACL system."
+      },
+      {
+        "statement": "Tokens are associated with policies and roles."
+      },
+      {
+        "statement": "AuthMethods with BindingRules can create ACL tokens from external systems such as Kubernetes, JWT, or OIDC."
+      },
+      {
+        "statement": "ServiceIdentity and NodeIdentity are policy templates for a specific service or node that can be rendered into a full policy."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-consul-rel-2",
+    "repo": "consul",
+    "repo_path": "experiments/external-repos/consul",
+    "question": "What documented paths can register checks in Consul?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "The `/v1/catalog/register` API can register checks through the `Checks` field on `structs.RegisterRequest`."
+      },
+      {
+        "statement": "The `/v1/agent/check/register` API registers checks through `AgentRegisterCheck`."
+      },
+      {
+        "statement": "The `/v1/agent/service/register` API registers checks through the `Check` or `Checks` fields on `ServiceDefinition`."
+      },
+      {
+        "statement": "The `consul services register` CLI path registers checks through the `Check` and `Checks` fields on `api.AgentServiceRegistration`."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-consul-mech-1",
+    "repo": "consul",
+    "repo_path": "experiments/external-repos/consul",
+    "question": "How does the docs describe the Envoy configuration lifecycle in Consul?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "The initial bootstrap configuration for Envoy is generated by a consul-dataplane instance or a Consul client agent."
+      },
+      {
+        "statement": "Envoy then dials an xDS server, which can be either a Consul server or a Consul client agent."
+      },
+      {
+        "statement": "Consul initializes internal watches over snapshots of the state needed to configure Envoy."
+      },
+      {
+        "statement": "As snapshots change, Consul generates and pushes updated xDS configuration diffs."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-consul-mech-2",
+    "repo": "consul",
+    "repo_path": "experiments/external-repos/consul",
+    "question": "How does Consul load agent configuration and apply Auto-Config?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "Agent configuration is the primary mechanism for configuring Consul."
+      },
+      {
+        "statement": "Most configuration comes from HCL or JSON files, with some settings also coming from command line flags and Auto-Config."
+      },
+      {
+        "statement": "The loader reads config files into an ordered list of sources and merges them into a RuntimeConfig."
+      },
+      {
+        "statement": "If Auto-Config is enabled, the process runs again with server-provided config added as another source."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-grafana-struct-1",
+    "repo": "grafana",
+    "repo_path": "experiments/external-repos/grafana",
+    "question": "What are the main administrative permission tiers in Grafana and where do their boundaries sit?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "Grafana separates server administrator permissions from organization permissions; server admins manage server-wide settings and resources while org permissions manage organization-scoped resources."
+      },
+      {
+        "statement": "Organization roles are Viewer, Editor, and Admin, and the Basic Role has no permissions until RBAC adds them."
+      },
+      {
+        "statement": "Dashboard and folder permissions are narrower than org permissions and can override them for a selected dashboard or folder."
+      },
+      {
+        "statement": "Grafana Enterprise adds data source permissions and role-based access control for finer-grained read/write access to Grafana resources."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-grafana-struct-2",
+    "repo": "grafana",
+    "repo_path": "experiments/external-repos/grafana",
+    "question": "What plugin surfaces and security controls does Grafana expose?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "Grafana supports three plugin types: panel, data source, and app plugins."
+      },
+      {
+        "statement": "App plugins can bundle data sources, panels, dashboards, and Grafana pages into one experience."
+      },
+      {
+        "statement": "The plugin catalog is available to Grafana Server Administrators and Organization Administrators."
+      },
+      {
+        "statement": "Grafana uses plugin signatures and the Plugin Frontend Sandbox to verify integrity and isolate plugin code."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-grafana-rel-1",
+    "repo": "grafana",
+    "repo_path": "experiments/external-repos/grafana",
+    "question": "How do users, teams, organizations, and folders relate in Grafana access control?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "Every Grafana user belongs to at least one organization."
+      },
+      {
+        "statement": "Teams exist inside an organization, can contain multiple users, and can have Member or Admin roles."
+      },
+      {
+        "statement": "Organization permissions cover dashboards, folders, alerts, data sources, plugins, teams, service accounts, and other org resources."
+      },
+      {
+        "statement": "Dashboard and folder permissions take precedence over organization permissions for the selected entity."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-grafana-rel-2",
+    "repo": "grafana",
+    "repo_path": "experiments/external-repos/grafana",
+    "question": "How do data sources connect Grafana's query, visualization, and alerting workflows?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "A data source's query editor is used from dashboard panels and Explore."
+      },
+      {
+        "statement": "After configuration, a data source can feed dashboards, Explore queries, and alert rules."
+      },
+      {
+        "statement": "The Mixed data source lets one panel query multiple data sources at once."
+      },
+      {
+        "statement": "The Dashboard data source reuses another panel's result set or annotations from the same dashboard."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-grafana-mech-1",
+    "repo": "grafana",
+    "repo_path": "experiments/external-repos/grafana",
+    "question": "How does Grafana data source management work from setup to querying?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "Only organization administrators can add or remove data sources, and they do it through the Configuration or Data Sources area."
+      },
+      {
+        "statement": "To add a data source, Grafana has you open Connections, search for the source, and then configure it with source-specific instructions."
+      },
+      {
+        "statement": "Each data source has a query editor whose UI can vary by source and may include autocomplete, metric suggestions, or visual query building."
+      },
+      {
+        "statement": "Grafana also ships built-in core data sources and supports additional data source plugins or custom plugins."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-grafana-mech-2",
+    "repo": "grafana",
+    "repo_path": "experiments/external-repos/grafana",
+    "question": "How does alerting resource provisioning work in Grafana?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "Grafana can provision alert rules, contact points, notification policies, mute timings, and templates."
+      },
+      {
+        "statement": "Provisioning is available through files on disk, Terraform, or the Alerting provisioning HTTP API."
+      },
+      {
+        "statement": "Imported alerting resources are not editable in the UI the same way as manual resources, and file provisioning is not available in Grafana Cloud."
+      },
+      {
+        "statement": "The Alerting provisioning HTTP API manages Grafana-managed alerts, while data-source-managed alerts need Mimir or Cortex tooling."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-supabase-struct-1",
+    "repo": "supabase",
+    "repo_path": "experiments/external-repos/supabase",
+    "question": "What are the major services in a Supabase project and how are they arranged?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "A Supabase project includes Postgres, Studio, GoTrue/Auth, PostgREST/API, Realtime, Storage, Deno Edge Functions, postgres-meta, Supavisor, and Kong."
+      },
+      {
+        "statement": "Kong is the API gateway in front of the core services."
+      },
+      {
+        "statement": "Postgres is the core of Supabase and is not abstracted away; users can access it with full privileges."
+      },
+      {
+        "statement": "Supavisor is described as a cloud-native, multi-tenant Postgres connection pooler."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-supabase-struct-2",
+    "repo": "supabase",
+    "repo_path": "experiments/external-repos/supabase",
+    "question": "How are Supabase branches isolated from the main project and from each other?",
+    "knowledge_type": "structural",
+    "gold_facts": [
+      {
+        "statement": "Supabase branches create separate environments with their own Supabase instance and API credentials."
+      },
+      {
+        "statement": "Preview branches are ephemeral and can be paused or deleted after inactivity or when a pull request is merged or closed."
+      },
+      {
+        "statement": "Persistent branches are long-lived and are recommended for staging, QA, or development environments."
+      },
+      {
+        "statement": "Branches are isolated Supabase environments with their own credentials and branch-scoped resources, not just lightweight git labels."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-supabase-rel-1",
+    "repo": "supabase",
+    "repo_path": "experiments/external-repos/supabase",
+    "question": "How do API keys, auth tokens, and RLS work together in Supabase's access model?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "API keys authenticate an application component, while Supabase Auth identifies the user."
+      },
+      {
+        "statement": "Publishable and anon keys are public-facing but rely on RLS and the `anon` and `authenticated` Postgres roles for row access."
+      },
+      {
+        "statement": "Secret and `service_role` keys are backend-only and bypass RLS through the `service_role` Postgres role."
+      },
+      {
+        "statement": "Supabase Auth JWTs can scope database access row by row when used with RLS policies."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-supabase-rel-2",
+    "repo": "supabase",
+    "repo_path": "experiments/external-repos/supabase",
+    "question": "What ownership and transfer constraints exist around Supabase projects and organizations?",
+    "knowledge_type": "relational",
+    "gold_facts": [
+      {
+        "statement": "Projects can be transferred between different organizations."
+      },
+      {
+        "statement": "The transfer requires ownership of the source organization and at least membership in the target organization."
+      },
+      {
+        "statement": "Project transfers are constrained by platform-level project metadata, so ownership checks are necessary but not sufficient for every move."
+      },
+      {
+        "statement": "Existing integrations or project configuration can block a transfer even when source ownership and target membership are satisfied."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-supabase-mech-1",
+    "repo": "supabase",
+    "repo_path": "experiments/external-repos/supabase",
+    "question": "How does Realtime move database changes and broadcasts from Postgres to clients?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "Realtime is a separate service layer that maintains client connections while coordinating with Postgres-backed change sources."
+      },
+      {
+        "statement": "Database change streaming is one Realtime path, where subscribed Postgres changes are forwarded to connected clients."
+      },
+      {
+        "statement": "Broadcast is a second Realtime path, where application-originated messages are fanned out to subscribed channels."
+      },
+      {
+        "statement": "Private and broadcast flows are gated by authorization checks before messages are delivered to clients."
+      }
+    ]
+  },
+  {
+    "task_id": "ent-supabase-mech-2",
+    "repo": "supabase",
+    "repo_path": "experiments/external-repos/supabase",
+    "question": "How do Supabase Cron jobs execute and interact with other services?",
+    "knowledge_type": "mechanistic",
+    "gold_facts": [
+      {
+        "statement": "Supabase Cron is a Postgres module for scheduling recurring jobs and monitoring job runs inside Postgres."
+      },
+      {
+        "statement": "Jobs can be created via SQL or the Dashboard and can run from every second to once a year."
+      },
+      {
+        "statement": "A cron job can run SQL snippets, database functions, or HTTP requests such as invoking a Supabase Edge Function."
+      },
+      {
+        "statement": "The cron subsystem stores both scheduled job definitions and execution history inside its database-backed scheduler layer."
+      }
+    ]
+  }
+]

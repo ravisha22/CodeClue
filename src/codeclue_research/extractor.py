@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import ast
+import json
 import hashlib
+import re
+import tomllib
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -155,6 +158,418 @@ def _reference_summary(node: ast.AST | None) -> str:
     if isinstance(node, (ast.Dict, ast.List, ast.Set, ast.Tuple)):
         return _literal_summary(node)
     return type(node).__name__.lower()
+
+
+def _approx_token_count(text: str) -> int:
+    return max(1, len(re.findall(r"\S+", text)))
+
+
+def _truncate_to_tokens(text: str, max_tokens: int) -> str:
+    words = text.split()
+    if len(words) <= max_tokens:
+        return text
+    return " ".join(words[:max_tokens]) + " ..."
+
+
+def _find_repo_files(repo_root: Path, file_names: list[str], *, max_matches_per_name: int = 3) -> list[Path]:
+    matches: list[Path] = []
+    seen: set[Path] = set()
+    for name in file_names:
+        candidates = sorted(
+            (
+                path for path in repo_root.rglob(name)
+                if not any(part.startswith(".") for part in path.relative_to(repo_root).parts[:-1])
+            ),
+            key=lambda path: (len(path.relative_to(repo_root).parts), path.as_posix()),
+        )
+        for path in candidates[:max_matches_per_name]:
+            if path not in seen:
+                seen.add(path)
+                matches.append(path)
+    return matches
+
+
+def _make_aux_node(
+    repo_root: Path,
+    file_path: Path,
+    *,
+    node_id: str,
+    node_type: str,
+    symbol_name: str,
+    purpose: str,
+    confidence: float = 0.86,
+    extra_contract: dict | None = None,
+    snippet_text: str | None = None,
+) -> Node:
+    rel_path = file_path.relative_to(repo_root).as_posix()
+    raw_text = snippet_text
+    if raw_text is None:
+        try:
+            raw_text = file_path.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            raw_text = ""
+    contract = {
+        "purpose": purpose,
+        "language": "config" if node_type == "config" else "documentation",
+        "symbol_name": symbol_name,
+        "symbol_type": node_type,
+        "tier": 1,
+        "calls": [],
+        "called_by": [],
+        "complexity_indicators": {
+            "decorator_depth": 0,
+            "generic_type_param_count": 0,
+        },
+    }
+    if extra_contract:
+        contract.update(extra_contract)
+    return Node(
+        node_id=node_id,
+        node_type=node_type,
+        source_anchor=SourceAnchor(
+            file_path=rel_path,
+            byte_start=0,
+            byte_end=len(raw_text.encode("utf-8")),
+            ast_path=node_type,
+            content_hash=_hash_text(raw_text),
+        ),
+        semantic_contract=contract,
+        confidence=confidence,
+    )
+
+
+def _parse_python_config_entries(text: str) -> tuple[list[str], dict[str, list[str]]]:
+    entries: list[str] = []
+    settings_refs: dict[str, list[str]] = {}
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return entries, settings_refs
+
+    interesting = {"INSTALLED_APPS", "MIDDLEWARE", "DATABASES"}
+    for node in tree.body:
+        target_name = None
+        value = None
+        if isinstance(node, ast.Assign):
+            if len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+                target_name = node.targets[0].id
+                value = node.value
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            target_name = node.target.id
+            value = node.value
+        if not target_name or value is None:
+            continue
+
+        if target_name.isupper():
+            summary = _expr_text(value, max_len=100)
+            entries.append(f"{target_name}={summary}")
+
+        if target_name in interesting:
+            refs: list[str] = []
+            if isinstance(value, (ast.List, ast.Tuple)):
+                for elt in value.elts[:12]:
+                    ref = _reference_summary(elt).strip("'\"")
+                    if ref:
+                        refs.append(ref)
+            elif isinstance(value, ast.Dict):
+                for key in value.keys[:8]:
+                    ref = _reference_summary(key).strip("'\"")
+                    if ref:
+                        refs.append(ref)
+            if refs:
+                settings_refs[target_name] = refs
+
+    return entries[:12], settings_refs
+
+
+def _parse_env_entries(text: str) -> list[str]:
+    entries: list[str] = []
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip("'\"")
+        if key:
+            entries.append(f"{key}={_truncate_text(value, 40) if value else '<set>'}")
+    return entries[:15]
+
+
+def _parse_package_json(text: str) -> tuple[list[str], list[str]]:
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError:
+        return [], []
+    dependencies: list[str] = []
+    for section in ("dependencies", "devDependencies", "peerDependencies"):
+        block = payload.get(section, {})
+        if isinstance(block, dict):
+            dependencies.extend(block.keys())
+    scripts = list(payload.get("scripts", {}).keys()) if isinstance(payload.get("scripts"), dict) else []
+    return list(dict.fromkeys(dependencies))[:20], scripts[:10]
+
+
+def _parse_pyproject(text: str) -> tuple[list[str], list[str]]:
+    try:
+        payload = tomllib.loads(text)
+    except tomllib.TOMLDecodeError:
+        return [], []
+
+    dependencies: list[str] = []
+    scripts: list[str] = []
+
+    project = payload.get("project", {})
+    if isinstance(project, dict):
+        for item in project.get("dependencies", [])[:20]:
+            if isinstance(item, str):
+                dependencies.append(item.split()[0])
+        if isinstance(project.get("scripts"), dict):
+            scripts.extend(project["scripts"].keys())
+
+    poetry = payload.get("tool", {}).get("poetry", {}) if isinstance(payload.get("tool"), dict) else {}
+    if isinstance(poetry, dict):
+        deps = poetry.get("dependencies", {})
+        if isinstance(deps, dict):
+            dependencies.extend(k for k in deps.keys() if k.lower() != "python")
+        poetry_scripts = poetry.get("scripts", {})
+        if isinstance(poetry_scripts, dict):
+            scripts.extend(poetry_scripts.keys())
+
+    build_system = payload.get("build-system", {})
+    if isinstance(build_system, dict):
+        for item in build_system.get("requires", [])[:10]:
+            if isinstance(item, str):
+                dependencies.append(item.split()[0])
+
+    return list(dict.fromkeys(dependencies))[:20], list(dict.fromkeys(scripts))[:10]
+
+
+def _parse_compose_services(text: str) -> tuple[list[str], list[str]]:
+    services: list[str] = []
+    details: list[str] = []
+    lines = text.splitlines()
+    in_services = False
+    service_indent = None
+    current_service = ""
+    current_props: list[str] = []
+
+    def _flush() -> None:
+        if current_service:
+            services.append(current_service)
+            if current_props:
+                details.append(f"{current_service}: {', '.join(current_props[:4])}")
+
+    for raw_line in lines:
+        line = raw_line.split("#", 1)[0].rstrip()
+        if not line:
+            continue
+        if not in_services:
+            if line.strip() == "services:":
+                in_services = True
+            continue
+
+        indent = len(raw_line) - len(raw_line.lstrip(" "))
+        if indent == 0:
+            break
+
+        service_match = re.match(r"^\s{2,}([A-Za-z0-9_.-]+):\s*$", raw_line)
+        if service_match:
+            _flush()
+            current_service = service_match.group(1)
+            current_props = []
+            service_indent = indent
+            continue
+
+        if not current_service or service_indent is None or indent <= service_indent:
+            continue
+
+        prop_match = re.match(r"^\s+[A-Za-z0-9_.-]+:\s*(.+)$", raw_line)
+        if prop_match:
+            current_props.append(_truncate_text(prop_match.group(1).strip(), 40))
+
+    _flush()
+    return services[:10], details[:10]
+
+
+def _summarize_doc_text(text: str, *, max_headings: int = 6, max_lines: int = 4) -> tuple[list[str], list[str]]:
+    headings: list[str] = []
+    summary_lines: list[str] = []
+    architecture_keywords = {
+        "architecture", "service", "worker", "queue", "database", "api",
+        "auth", "docker", "deploy", "stack", "webhook", "celery", "django",
+    }
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+        if line.startswith("#"):
+            heading = line.lstrip("#").strip()
+            if heading and heading not in headings:
+                headings.append(heading)
+            continue
+        if line.startswith(("-", "*", "`", "```")):
+            continue
+        lowered = line.lower()
+        if any(keyword in lowered for keyword in architecture_keywords) or len(summary_lines) < 2:
+            compact = _truncate_text(line, 120)
+            if compact not in summary_lines:
+                summary_lines.append(compact)
+        if len(headings) >= max_headings and len(summary_lines) >= max_lines:
+            break
+    return headings[:max_headings], summary_lines[:max_lines]
+
+
+def _extract_config_context(repo_root: Path, *, max_tokens: int = 500) -> tuple[list[Node], list[Edge]]:
+    nodes: list[Node] = []
+    edges: list[Edge] = []
+    used_tokens = 0
+    config_files = _find_repo_files(
+        repo_root,
+        ["settings.py", "config.py", ".env.example", "docker-compose.yml", "pyproject.toml", "package.json"],
+    )
+
+    for file_path in config_files:
+        try:
+            text = file_path.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+
+        rel_path = file_path.relative_to(repo_root).as_posix()
+        entries: list[str] = []
+        dependencies: list[str] = []
+        services: list[str] = []
+        extra: dict = {"context_kind": "config"}
+
+        lowered = file_path.name.lower()
+        if lowered in {"settings.py", "config.py"}:
+            entries, settings_refs = _parse_python_config_entries(text)
+            if settings_refs:
+                extra["settings_refs"] = settings_refs
+        elif lowered == ".env.example":
+            entries = _parse_env_entries(text)
+        elif lowered == "docker-compose.yml":
+            services, entries = _parse_compose_services(text)
+        elif lowered == "pyproject.toml":
+            dependencies, scripts = _parse_pyproject(text)
+            if scripts:
+                extra["scripts"] = scripts
+        elif lowered == "package.json":
+            dependencies, scripts = _parse_package_json(text)
+            if scripts:
+                extra["scripts"] = scripts
+
+        summary_parts: list[str] = []
+        if entries:
+            summary_parts.append(f"entries: {', '.join(entries[:6])}")
+        if services:
+            summary_parts.append(f"services: {', '.join(services[:6])}")
+        if dependencies:
+            summary_parts.append(f"deps: {', '.join(dependencies[:8])}")
+        if not summary_parts:
+            continue
+
+        purpose = f"Config summary for {rel_path}: " + "; ".join(summary_parts)
+        entry_tokens = _approx_token_count(purpose)
+        if used_tokens + entry_tokens > max_tokens:
+            remaining = max(20, max_tokens - used_tokens)
+            purpose = _truncate_to_tokens(purpose, remaining)
+            entry_tokens = _approx_token_count(purpose)
+        if used_tokens + entry_tokens > max_tokens:
+            break
+
+        extra.update({
+            "config_entries": entries[:10],
+            "services": services[:10],
+            "dependencies": dependencies[:12],
+            "summary": purpose,
+        })
+        node = _make_aux_node(
+            repo_root,
+            file_path,
+            node_id=f"config:{rel_path}",
+            node_type="config",
+            symbol_name=rel_path,
+            purpose=purpose,
+            confidence=0.88,
+            extra_contract=extra,
+            snippet_text=text,
+        )
+        nodes.append(node)
+        used_tokens += entry_tokens
+
+    return nodes, edges
+
+
+def _extract_doc_context(repo_root: Path, *, max_tokens: int = 300) -> tuple[list[Node], list[Edge]]:
+    nodes: list[Node] = []
+    edges: list[Edge] = []
+    used_tokens = 0
+    doc_files = _find_repo_files(repo_root, ["README.md", "mkdocs.yml", "docusaurus.config.js", "index.md"])
+    preferred = []
+    for path in doc_files:
+        rel = path.relative_to(repo_root).as_posix()
+        if rel == "README.md" or rel == "docs/index.md" or path.name in {"mkdocs.yml", "docusaurus.config.js"}:
+            preferred.append(path)
+    seen: set[Path] = set()
+    ordered = []
+    for path in preferred + doc_files:
+        if path not in seen:
+            seen.add(path)
+            ordered.append(path)
+
+    for file_path in ordered:
+        rel_path = file_path.relative_to(repo_root).as_posix()
+        if rel_path not in {"README.md", "docs/index.md"} and file_path.name not in {"mkdocs.yml", "docusaurus.config.js"}:
+            continue
+        try:
+            text = file_path.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+
+        snippet_lines = text.splitlines()[:200] if file_path.name.lower() == "readme.md" else text.splitlines()[:120]
+        snippet_text = "\n".join(snippet_lines)
+        headings, summary_lines = _summarize_doc_text(snippet_text)
+        if not headings and not summary_lines:
+            continue
+
+        purpose_parts = []
+        if summary_lines:
+            purpose_parts.append(" ".join(summary_lines[:2]))
+        if headings:
+            purpose_parts.append("sections: " + ", ".join(headings[:5]))
+        purpose = f"Documentation summary for {rel_path}: " + "; ".join(purpose_parts)
+        entry_tokens = _approx_token_count(purpose)
+        if used_tokens + entry_tokens > max_tokens:
+            remaining = max(20, max_tokens - used_tokens)
+            purpose = _truncate_to_tokens(purpose, remaining)
+            entry_tokens = _approx_token_count(purpose)
+        if used_tokens + entry_tokens > max_tokens:
+            break
+
+        extra = {
+            "context_kind": "doc",
+            "doc_kind": "readme" if rel_path == "README.md" else "doc",
+            "headings": headings[:8],
+            "summary_lines": summary_lines[:4],
+            "summary": purpose,
+        }
+        nodes.append(
+            _make_aux_node(
+                repo_root,
+                file_path,
+                node_id=f"doc:{rel_path}",
+                node_type="doc",
+                symbol_name=rel_path,
+                purpose=purpose,
+                confidence=0.84,
+                extra_contract=extra,
+                snippet_text=snippet_text,
+            )
+        )
+        used_tokens += entry_tokens
+
+    return nodes, edges
 
 
 def _identifier_hints(node: ast.AST | None) -> list[str]:
@@ -659,6 +1074,29 @@ class SymbolCollector(ast.NodeVisitor):
         self.scope_stack.pop()
 
 
+def _decorator_name(decorator: ast.AST) -> str:
+    if isinstance(decorator, ast.Call):
+        return _reference_summary(decorator.func)
+    return _reference_summary(decorator)
+
+
+def _call_keyword(call: ast.Call, key: str) -> ast.AST | None:
+    for keyword in call.keywords:
+        if keyword.arg == key:
+            return keyword.value
+    return None
+
+
+def _resolve_symbol_candidates(name_to_symbol: dict[str, list[str]], raw_name: str) -> list[str]:
+    if not raw_name:
+        return []
+    candidates = name_to_symbol.get(raw_name, [])
+    if candidates:
+        return candidates
+    tail = raw_name.rsplit(".", 1)[-1]
+    return name_to_symbol.get(tail, [])
+
+
 def extract_python_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]:
     nodes: list[Node] = []
     edges: list[Edge] = []
@@ -841,6 +1279,174 @@ def extract_python_nodes_edges(repo_root: Path) -> tuple[list[Node], list[Edge]]
                                 )
                             )
 
+        route_nodes_to_add: list[Node] = []
+        route_edges_to_add: list[Edge] = []
+
+        class_nodes = {
+            symbol.line_start: symbol
+            for symbol in collector.symbols
+            if symbol.symbol_type == "class"
+        }
+        function_nodes = {
+            symbol.line_start: symbol
+            for symbol in collector.symbols
+            if symbol.symbol_type in ("function", "async_function")
+        }
+
+        # Framework-aware extraction: Django models, routes, settings, Celery.
+        for ast_node in ast.walk(tree):
+            if isinstance(ast_node, ast.ClassDef):
+                class_symbol = class_nodes.get(ast_node.lineno)
+                if not class_symbol:
+                    continue
+                class_ids = name_to_symbol.get(class_symbol.symbol_name, [])
+                if len(class_ids) != 1:
+                    continue
+                class_id = class_ids[0]
+
+                for item in ast_node.body:
+                    value = None
+                    field_name = ""
+                    if isinstance(item, ast.Assign) and item.targets and isinstance(item.targets[0], ast.Name):
+                        field_name = item.targets[0].id
+                        value = item.value
+                    elif isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
+                        field_name = item.target.id
+                        value = item.value
+                    if not isinstance(value, ast.Call):
+                        continue
+
+                    relation_name = _get_call_name(value.func)
+                    if relation_name not in {"ForeignKey", "ManyToManyField", "OneToOneField"}:
+                        continue
+
+                    target_node = value.args[0] if value.args else _call_keyword(value, "to")
+                    target_name = _reference_summary(target_node).strip("'\"")
+                    for related_id in _resolve_symbol_candidates(name_to_symbol, target_name):
+                        if related_id == class_id:
+                            continue
+                        route_edges_to_add.append(
+                            Edge(
+                                edge_id=f"relates:{class_id}:{related_id}:{field_name or relation_name}:{getattr(value, 'lineno', 0)}",
+                                edge_type="relates",
+                                from_node=class_id,
+                                to_node=related_id,
+                                evidence={
+                                    "rel": relation_name,
+                                    "field": field_name,
+                                    "line": getattr(value, "lineno", 0),
+                                },
+                            )
+                        )
+
+            elif isinstance(ast_node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                func_symbol = function_nodes.get(ast_node.lineno)
+                if not func_symbol:
+                    continue
+                func_ids = _resolve_symbol_candidates(name_to_symbol, func_symbol.symbol_name)
+                if len(func_ids) != 1:
+                    continue
+                func_id = func_ids[0]
+                for decorator in ast_node.decorator_list:
+                    decorator_name = _decorator_name(decorator)
+                    if decorator_name.rsplit(".", 1)[-1] in {"task", "shared_task"}:
+                        route_edges_to_add.append(
+                            Edge(
+                                edge_id=f"task:{module_node_id}:{func_id}:{getattr(decorator, 'lineno', ast_node.lineno)}",
+                                edge_type="task",
+                                from_node=module_node_id,
+                                to_node=func_id,
+                                evidence={
+                                    "rel": "celery_task",
+                                    "decorator": decorator_name,
+                                    "line": getattr(decorator, "lineno", ast_node.lineno),
+                                },
+                            )
+                        )
+                        node_obj = next((n for n in nodes if n.node_id == func_id), None)
+                        if node_obj:
+                            decorators = node_obj.semantic_contract.get("decorators", [])
+                            if decorator_name not in decorators:
+                                decorators.append(decorator_name)
+                            node_obj.semantic_contract["decorators"] = decorators
+
+            elif isinstance(ast_node, ast.Call):
+                route_kind = _get_call_name(ast_node.func)
+                if route_kind not in {"path", "re_path"}:
+                    continue
+
+                pattern_node = ast_node.args[0] if ast_node.args else None
+                target_node = ast_node.args[1] if len(ast_node.args) > 1 else _call_keyword(ast_node, "view")
+                route_pattern = _reference_summary(pattern_node).strip("'\"") or route_kind
+                target_name = _reference_summary(target_node)
+                route_symbol = f"{route_kind}:{route_pattern}"
+                route_id = f"route:{rel_path}:{route_pattern}:{getattr(ast_node, 'lineno', 0)}"
+                purpose = f"Django route {route_pattern} -> {target_name or 'view'}"
+                route_nodes_to_add.append(
+                    _make_aux_node(
+                        repo_root,
+                        file_path,
+                        node_id=route_id,
+                        node_type="route",
+                        symbol_name=route_symbol,
+                        purpose=purpose,
+                        confidence=0.9,
+                        extra_contract={
+                            "route_pattern": route_pattern,
+                            "route_target": target_name,
+                            "framework": "django",
+                        },
+                        snippet_text=text,
+                    )
+                )
+                route_edges_to_add.append(
+                    Edge(
+                        edge_id=f"contains:{module_node_id}:{route_id}",
+                        edge_type="contains",
+                        from_node=module_node_id,
+                        to_node=route_id,
+                        evidence={"rel": "django_urlpattern"},
+                    )
+                )
+                for target_id in _resolve_symbol_candidates(name_to_symbol, target_name):
+                    route_edges_to_add.append(
+                        Edge(
+                            edge_id=f"routes:{route_id}:{target_id}:{getattr(ast_node, 'lineno', 0)}",
+                            edge_type="routes",
+                            from_node=route_id,
+                            to_node=target_id,
+                            evidence={
+                                "rel": route_kind,
+                                "pattern": route_pattern,
+                                "line": getattr(ast_node, "lineno", 0),
+                            },
+                        )
+                    )
+
+        # Attach settings references captured in settings.py/config.py modules.
+        if file_path.name in {"settings.py", "config.py"}:
+            _, settings_refs = _parse_python_config_entries(text)
+            if settings_refs:
+                for node_obj in nodes:
+                    if node_obj.node_id == module_node_id:
+                        node_obj.semantic_contract["django_settings_refs"] = settings_refs
+                        break
+                for setting_name, refs in settings_refs.items():
+                    for ref in refs:
+                        for target_id in _resolve_symbol_candidates(name_to_symbol, ref):
+                            route_edges_to_add.append(
+                                Edge(
+                                    edge_id=f"configures:{module_node_id}:{target_id}:{setting_name}",
+                                    edge_type="configures",
+                                    from_node=module_node_id,
+                                    to_node=target_id,
+                                    evidence={"rel": setting_name},
+                                )
+                            )
+
+        nodes.extend(route_nodes_to_add)
+        edges.extend(route_edges_to_add)
+
         # Detect call edges: walk ALL node types (functions, async functions, AND classes)
         for node in ast.walk(tree):
             if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
@@ -940,7 +1546,55 @@ def extract_graph(
             nodes.extend(go_nodes)
             edges.extend(go_edges)
 
+    config_nodes, config_edges = _extract_config_context(repo_root)
+    doc_nodes, doc_edges = _extract_doc_context(repo_root)
+    nodes.extend(config_nodes)
+    nodes.extend(doc_nodes)
+    edges.extend(config_edges)
+    edges.extend(doc_edges)
+
     node_map = {node.node_id: node for node in nodes}
+
+    # Link extracted config/doc context to graph symbols when possible.
+    module_nodes = [node for node in nodes if node.node_type == "module"]
+    symbol_lookup: dict[str, list[str]] = {}
+    for node in nodes:
+        symbol_lookup.setdefault(node.semantic_contract.get("symbol_name", node.node_id), []).append(node.node_id)
+
+    for node in config_nodes:
+        settings_refs = node.semantic_contract.get("settings_refs", {})
+        for setting_name, refs in settings_refs.items():
+            for ref in refs:
+                linked = False
+                for module in module_nodes:
+                    mod_symbol = module.semantic_contract.get("symbol_name", "")
+                    mod_path = module.source_anchor.file_path
+                    mod_stem = Path(mod_path).stem
+                    if ref in mod_symbol or ref in mod_path or ref.rsplit(".", 1)[-1] == mod_stem:
+                        edge_id = f"configures:{node.node_id}:{module.node_id}:{setting_name}"
+                        edges.append(
+                            Edge(
+                                edge_id=edge_id,
+                                edge_type="configures",
+                                from_node=node.node_id,
+                                to_node=module.node_id,
+                                evidence={"rel": setting_name, "ref": ref},
+                            )
+                        )
+                        linked = True
+                if linked:
+                    continue
+                for target_id in _resolve_symbol_candidates(symbol_lookup, ref):
+                    edges.append(
+                        Edge(
+                            edge_id=f"configures:{node.node_id}:{target_id}:{setting_name}",
+                            edge_type="configures",
+                            from_node=node.node_id,
+                            to_node=target_id,
+                            evidence={"rel": setting_name, "ref": ref},
+                        )
+                    )
+
     edge_map = {edge.edge_id: edge for edge in edges}
     nodes = sorted(node_map.values(), key=lambda item: item.node_id)
     edges = sorted(edge_map.values(), key=lambda item: item.edge_id)

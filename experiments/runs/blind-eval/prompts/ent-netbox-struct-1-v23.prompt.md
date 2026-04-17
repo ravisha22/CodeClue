@@ -12,14 +12,20 @@ Do not use any external knowledge about the framework or library.
 **Reasoning scaffold:** Think through the clue systematically before answering. First, identify the modules, symbols, or relationships most relevant to the question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before concluding: follow calls: chains, walk extends: hierarchies, and use behavior: annotations as summaries of how control or responsibility moves. Use TREE and INDEX to situate the relationship in the repository structure. State explicitly what GAPS says cannot be determined from the clue alone. Finally, synthesize the answer, distinguishing supported structure from unresolved uncertainty.
 
 --- CLUE FILE START ---
-=CC v2.1 netbox@HEAD 1108mod 11516sym
+=CC v2.1 netbox@HEAD 1108mod 11893sym
 ? What is NetBox's overall architectural role and data scope?
 
 
+-- README
+<div align="center"> <img src="https://raw.githubusercontent.com/netbox-community/netbox/main/docs/netbox_logo_light.svg" width="400" alt=...
+sections: NetBox's Role, Why NetBox?, Comprehensive Data Model, Focused Development, Extensible and Customizable
+
 -- TREE
 contrib/  (1 files)
-netbox/  (1107 files)
-  account/  circuits/  core/  dcim/  extras/  ipam/  netbox/  reports/  scripts/  tenancy/  ...+5
+docs/  (1 files)
+netbox/  (1109 files)
+  account/  circuits/  core/  dcim/  extras/  ipam/  netbox/  project-static/  reports/  scripts/  ...+6
+README.md  mkdocs.yml
 
 -- INDEX
 contrib/gunicorn.py                              20L  
@@ -27,7 +33,7 @@ netbox/account/__init__.py                        0L
 netbox/account/migrations/0001_initial.py        27L  Migration
 netbox/account/migrations/__init__.py             0L  
 netbox/account/models.py                         17L  Meta, get_absolute_url, UserToken
-netbox/account/urls.py                           21L  
+netbox/account/urls.py                           21L  path:api-tokens/, path:api-tokens/<int:pk>/, path:api-tokens/add/, path:bookmarks/, path:notifications/
 netbox/account/views.py                         380L  get_extra_context, get_queryset, BookmarkListView, get, post
 netbox/circuits/__init__.py                       0L  
 netbox/circuits/api/__init__.py                   0L  
@@ -40,8 +46,7 @@ netbox/circuits/api/urls.py                      26L
 netbox/circuits/api/views.py                    126L  CircuitGroupAssignmentViewSet, CircuitGroupViewSet, CircuitTerminationViewSet, CircuitTypeViewSet, CircuitViewSet
 netbox/circuits/apps.py                          26L  ready, CircuitsConfig
 netbox/circuits/choices.py                      110L  CircuitCommitRateChoices, CircuitPriorityChoices, CircuitStatusChoices, CircuitTerminationPortSpeedChoices, CircuitTerminationSideChoices
-netbox/circuits/constants.py                     11L  
-  ...and 1089 more modules
+  ...and 1090 more modules
 
 -- SYM
 IPAddress                           C netbox/ipam/models/ip.py:750    An IPAddress represents an individual IPv4 or I...
@@ -76,10 +81,10 @@ validate                            M netbox/utilities/filters.py:52     functio
 get_limit                           M netbox/netbox/api/pagination.py:45     function get_limit
 _get_terminations                   M netbox/dcim/tables/cables.py:29     function _get_terminations
 _populate_count_for_type            M netbox/dcim/migrations/0219_devicetype_device_count.py:7      Update a CounterCache field on the specified mo...
-get_url_params                      M netbox/netbox/object_actions.py:55     function get_url_params
 _get_custom_fields                  M netbox/extras/api/customfields.py:40     Cache CustomFields assigned to this model to av...
 VLANGroupSerializer                 C netbox/ipam/api/serializers_/vlans.py:27     class VLANGroupSerializer
 filter_device                       M netbox/ipam/graphql/filters.py:166    Helper to standardize logic for device and devi...
+get_url_params                      M netbox/netbox/object_actions.py:55     function get_url_params
 get_queryset                        M netbox/users/api/views.py:118    function get_queryset
 cache_templates                     M netbox/utilities/jinja2.py:44     function cache_templates
 _draw_device                        M netbox/dcim/svg/racks.py:177    function _draw_device
@@ -95,26 +100,29 @@ get_viewname                        M netbox/utilities/views.py:293    Return th
 _clean_side                         M netbox/dcim/forms/bulk_import.py:1539   Derive a Cable's A/B termination objects.
 _get_script                         M netbox/extras/api/views.py:294    function _get_script
 get_additional_lookups              M netbox/netbox/filtersets.py:167    function get_additional_lookups
-get_queryset                        M netbox/core/models/object_types.py:43     function get_queryset
 generate                            M netbox/users/models/tokens.py:256    Generate and return a random token value of the...
-get_clean_data                      M netbox/core/models/change_logging.py:173    Return only the pre-/post-change attributes whi...
+get_queryset                        M netbox/core/models/object_types.py:43     function get_queryset
 get_object                          M netbox/extras/views.py:1642   function get_object
+get_clean_data                      M netbox/core/models/change_logging.py:173    Return only the pre-/post-change attributes whi...
 clone                               M netbox/ipam/models/ip.py:991    function clone
 to_objectchange                     M netbox/ipam/models/ip.py:1000   function to_objectchange
 get_for_model                       M netbox/extras/models/customfields.py:66     Return all CustomFields assigned to the given m...
 _get_columns                        M netbox/netbox/tables/tables.py:64     function _get_columns
-get_serializer_ref_name             M netbox/core/api/schema.py:208    Get serializer's ref_name
-_get_opts                           M netbox/core/models/object_types.py:63     function _get_opts
-update                              M netbox/netbox/api/serializers/features.py:65     function update
-filter_by_cable_end                 M netbox/dcim/filtersets.py:2651   function filter_by_cable_end
-vc_interfaces                       M netbox/dcim/models/devices.py:1087   Return a QuerySet matching all Interfaces assig...
-_is_superuser                       M netbox/netbox/authentication/__init__.py:240    function _is_superuser
-enqueue                             M netbox/netbox/jobs.py:150    Enqueue a new `Job`.
-_load_resource                      M netbox/netbox/plugins/__init__.py:87     function _load_resource
-ProviderSerializer                  C netbox/circuits/api/serializers_/providers.py:18     class ProviderSerializer
-  ...and 7826 more symbols
+  ...and 8206 more symbols
 
 -- FOCUS
+netbox/netbox/settings.py (netbox/netbox/settings.py:1-981)
+  Config summary for netbox/netbox/settings.py: entries: RELEASE=load_release_data(), VERSION=RELEASE.full_version, BASE_DIR=os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ADMINS=getattr(configuration, 'ADMINS', []), ALLOWED_HOSTS=getattr(configuration, 'ALLOWED_HOSTS'), API_TOKEN_PEPPERS=getattr(configuration, 'API_TOKEN_PEPPERS', {})
+  entries: RELEASE=load_release_data(), VERSION=RELEASE.full_version, BASE_DIR=os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ADMINS=getattr(configuration, 'ADMINS', []), ALLOWED_HOSTS=getattr(configuration, 'ALLOWED_HOSTS')
+
+netbox/core/tables/config.py (netbox/core/tables/config.py:1-36)
+  Config summary for netbox/core/tables/config.py: entries: REVISION_BUTTONS='\n{% if not record.is_active %}\n<a href="{% url \'core:configrevision_restore\' pk=record.pk %}...
+  entries: REVISION_BUTTONS='\n{% if not record.is_active %}\n<a href="{% url \'core:configrevision_restore\' pk=record.pk %}...
+
+netbox/project-static/netbox-graphiql/package.json (netbox/project-static/netbox-graphiql/package.json:1-17)
+  Config summary for netbox/project-static/netbox-graphiql/package.json: deps: @graphiql/plugin-explorer, graphiql, graphql, js-cookie, react, react-dom
+  deps: @graphiql/plugin-explorer, graphiql, graphql, js-cookie, react, react-dom
+
 data_as_string (netbox/core/models/data.py:341-347)
   behavior: GUARD(not self.data -> return None)
 
@@ -143,21 +151,21 @@ prechange_data_clean (netbox/core/models/change_logging.py:185-186)
   behavior: DELEGATE(get_clean_data -> result)
   calls: get_clean_data
 
+prep_object_data (netbox/ipam/api/views.py:422-431)
+  sig: prep_object_data(requested_objects, available_objects, parent)
+  behavior: ACCUMULATE(enumerate(requested_o... -> request data value)
+
 prep_object_data (netbox/ipam/api/views.py:373-386)
   sig: prep_object_data(requested_objects, available_objects, parent)
   behavior: ACCUMULATE(enumerate(requested_o... -> request data value, raises Validation...)
   raises: ValidationError
   uses: IPSet (netaddr), ValidationError (rest_framework.exceptions)
 
-prep_object_data (netbox/ipam/api/views.py:422-431)
+prep_object_data (netbox/ipam/api/views.py:475-482)
   sig: prep_object_data(requested_objects, available_objects, parent)
   behavior: ACCUMULATE(enumerate(requested_o... -> request data value)
 
 prep_object_data (netbox/ipam/api/views.py:325-333)
-  sig: prep_object_data(requested_objects, available_objects, parent)
-  behavior: ACCUMULATE(enumerate(requested_o... -> request data value)
-
-prep_object_data (netbox/ipam/api/views.py:475-482)
   sig: prep_object_data(requested_objects, available_objects, parent)
   behavior: ACCUMULATE(enumerate(requested_o... -> request data value)
 
@@ -174,18 +182,23 @@ DataSource (netbox/core/models/data.py:35-278)
   raises: ValidationError, SyncError
   uses: ValidationError (django.core.exceptions)
 
+DataFile (netbox/core/models/data.py:281-373)
+  The database representation of a remote file fetched from a remote DataSource.
+  extends: Model
+  imports: hashlib, logging, fnmatch, urllib.parse, yaml
+  called_by: sync, DataSource
+
+Role (netbox/ipam/models/ip.py:191-207)
+  A Role represents the functional role of a Prefix or VLAN; for example, "Customer," "Infrastructure," or
+  extends: OrganizationalModel
+  imports: netaddr, django.contrib.contenttypes.fields, django.contrib.contenttypes.models, django.contrib.postgres.indexes, django.core.exceptions
+
 SyncedDataMixin (netbox/netbox/models/features.py:511-638)
   Enables population of local data from a DataFile object, synchronized from a remote DataSource.
   extends: Model
   imports: django.contrib.contenttypes.fields, django.contrib.contenttypes.models, django.core.validators, django.db, django.db.models
   calls: delete, sync, sync_data
   raises: NotImplementedError
-
-DataFile (netbox/core/models/data.py:281-373)
-  The database representation of a remote file fetched from a remote DataSource.
-  extends: Model
-  imports: hashlib, logging, fnmatch, urllib.parse, yaml
-  called_by: sync, DataSource
 
 BulkSyncDataView (netbox/netbox/views/generic/feature_views.py:262-284)
   Synchronize multiple instances of a model inheriting from SyncedDataMixin.
@@ -244,43 +257,10 @@ ContactRoleEditView (netbox/tenancy/views.py:331-333)
   extends: ObjectEditView
   imports: django.contrib.contenttypes.models, django.shortcuts, django.utils.translation, extras.ui.panels, netbox.object_actions
 
-ContactRoleFilter (netbox/tenancy/graphql/filters.py:171-172)
-  extends: OrganizationalModelFilter
-  imports: strawberry, strawberry_django, strawberry.scalars, extras.graphql.filter_mixins, netbox.graphql.filters
-
-ContactRoleFilterForm (netbox/tenancy/forms/filtersets.py:87-93)
-  extends: OrganizationalModelFilterSetForm
-  imports: django, django.utils.translation, core.models, netbox.forms, utilities.forms.fields
-
-ContactRoleFilterSet (netbox/tenancy/filtersets.py:71-75)
-  extends: OrganizationalModelFilterSet
-  imports: django_filters, django.db.models, django.utils.translation, netbox.filtersets, utilities.filters
-
-ContactRoleForm (netbox/tenancy/forms/model_forms.py:81-88)
-  extends: OrganizationalModelForm
-  imports: django, django.utils.translation, netbox.forms, utilities.forms.fields, utilities.forms.rendering
-
-ContactRoleImportForm (netbox/tenancy/forms/bulk_import.py:76-80)
-  extends: OrganizationalModelImportForm
-  imports: django, django.contrib.contenttypes.models, django.utils.translation, netbox.forms, utilities.forms.fields
-
-ContactRoleIndex (netbox/tenancy/search.py:35-43)
-  extends: SearchIndex
-  imports: netbox.search
-
-ContactRoleListView (netbox/tenancy/views.py:301-305)
-  extends: ObjectListView
-  imports: django.contrib.contenttypes.models, django.shortcuts, django.utils.translation, extras.ui.panels, netbox.object_actions
-
-ContactRoleSerializer (netbox/tenancy/api/serializers_/contacts.py:38-46)
-  extends: OrganizationalModelSerializer
-  imports: django.contrib.auth.models, rest_framework, netbox.api.fields, netbox.api.gfk_fields, netbox.api.serializers
-  called_by: ContactAssignmentSerializer
-
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 13 with behavior annotations
-uncovered: DataSourceViewSet, DeviceRole, DeviceRoleBulkDeleteView, DeviceRoleBulkEditForm
+coverage: 82 symbols in L3, 13 with behavior annotations
+uncovered: DataSourceType, DataSourceView, DataSourceViewSet, DeviceRole
 
 --- CLUE FILE END ---
 

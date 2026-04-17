@@ -24,6 +24,7 @@ v2.1 changes (Apr 14, 2026):
 from __future__ import annotations
 
 import json
+import random
 import re
 from collections import defaultdict
 from dataclasses import dataclass
@@ -43,6 +44,11 @@ BUDGET_L2 = 1500
 BUDGET_L3 = 2000
 BUDGET_GAPS = 100
 BUDGET_TOTAL = 4150
+ENTERPRISE_NODE_THRESHOLD = 5000
+L2_ENTERPRISE_CONTEXT_BUDGET = 200
+README_PREAMBLE_BUDGET = 120
+LARGE_EDGE_THRESHOLD = 100000
+SAMPLED_EDGE_LIMIT = 50000
 
 _ENC = tiktoken.get_encoding("cl100k_base")
 
@@ -55,6 +61,75 @@ def _token_count(text: str) -> int:
 def _word_count(text: str) -> int:
     """Count whitespace-delimited words (kept for backward compat / display)."""
     return len(text.split())
+
+
+def _is_enterprise_graph(graph: CanonicalClueGraph) -> bool:
+    return len(graph.nodes) > ENTERPRISE_NODE_THRESHOLD
+
+
+def _sample_edges(edges: list[Edge], *, max_edges: int = SAMPLED_EDGE_LIMIT) -> list[Edge]:
+    if len(edges) <= max_edges:
+        return edges
+    return random.Random(0).sample(edges, max_edges)
+
+
+def _context_nodes(graph: CanonicalClueGraph, *, kinds: tuple[str, ...]) -> list[Node]:
+    return [node for node in graph.nodes if node.node_type in kinds]
+
+
+def _top_config_focus_nodes(graph: CanonicalClueGraph, *, limit: int = 3) -> list[Node]:
+    priority_tokens = (
+        ("settings.py", 0),
+        (".env", 1),
+        ("docker-compose", 2),
+        ("config.py", 3),
+        ("pyproject.toml", 4),
+        ("package.json", 5),
+    )
+
+    def _rank(node: Node) -> tuple[int, str]:
+        file_path = node.source_anchor.file_path.lower()
+        for token, rank in priority_tokens:
+            if token in file_path:
+                return rank, file_path
+        return 99, file_path
+
+    configs = [node for node in graph.nodes if node.node_type == "config"]
+    return sorted(configs, key=_rank)[:limit]
+
+
+def _render_readme_preamble(graph: CanonicalClueGraph, budget: int = README_PREAMBLE_BUDGET) -> str:
+    readme = next(
+        (
+            node for node in graph.nodes
+            if node.node_type == "doc"
+            and (
+                node.source_anchor.file_path == "README.md"
+                or (node.semantic_contract or {}).get("doc_kind") == "readme"
+            )
+        ),
+        None,
+    )
+    if not readme:
+        return ""
+
+    sc = readme.semantic_contract or {}
+    lines = ["-- README"]
+    used_toks = _token_count("-- README\n")
+    summary_lines = sc.get("summary_lines", [])
+    headings = sc.get("headings", [])
+    if summary_lines:
+        summary = " ".join(summary_lines[:2])
+        summary_toks = _token_count(summary + "\n")
+        if used_toks + summary_toks <= budget:
+            lines.append(summary)
+            used_toks += summary_toks
+    if headings:
+        heading_line = "sections: " + ", ".join(headings[:5])
+        heading_toks = _token_count(heading_line + "\n")
+        if used_toks + heading_toks <= budget:
+            lines.append(heading_line)
+    return "\n".join(lines) + "\n"
 
 
 # ---------------------------------------------------------------------------
@@ -322,7 +397,15 @@ def _render_l2(
     ranked = sorted(symbol_nodes, key=lambda n: ranks.get(n.node_id, 0), reverse=True)
 
     # Node type shorthand
-    type_short = {"class": "C", "function": "M", "async_function": "M", "method": "M"}
+    type_short = {
+        "class": "C",
+        "function": "M",
+        "async_function": "M",
+        "method": "M",
+        "config": "G",
+        "doc": "D",
+        "route": "R",
+    }
 
     lines = ["-- SYM"]
     used_toks = _token_count("-- SYM\n")
@@ -693,12 +776,15 @@ def _analyze_focus_selection(
     contains_parents: dict[str, set[str]] = defaultdict(set)
     call_neighbors: dict[str, set[str]] = defaultdict(set)
     structural_edges: list[tuple[str, str]] = []
-    for edge in graph.edges:
+    expansion_edges = graph.edges
+    if len(graph.edges) > LARGE_EDGE_THRESHOLD:
+        expansion_edges = _sample_edges(list(graph.edges))
+    for edge in expansion_edges:
         if edge.edge_type == "contains":
             contains_children[edge.from_node].add(edge.to_node)
             contains_parents[edge.to_node].add(edge.from_node)
             structural_edges.append((edge.from_node, edge.to_node))
-        elif edge.edge_type in {"calls", "inherits"}:
+        elif edge.edge_type in {"calls", "inherits", "relates", "routes", "configures", "task"}:
             call_neighbors[edge.from_node].add(edge.to_node)
             call_neighbors[edge.to_node].add(edge.from_node)
             structural_edges.append((edge.from_node, edge.to_node))
@@ -825,7 +911,12 @@ def _analyze_focus_selection(
             break
 
     candidate_ids = [nid for nid in candidates if nid in node_by_id]
-    centrality = _betweenness_centrality(candidate_ids, structural_edges)
+    use_pagerank_centrality = len(graph.edges) > LARGE_EDGE_THRESHOLD
+    centrality = (
+        _pagerank(candidate_ids, structural_edges)
+        if use_pagerank_centrality
+        else _betweenness_centrality(candidate_ids, structural_edges)
+    )
     anchor_support: dict[str, float] = defaultdict(float)
     semantic_anchor_set = set(semantic_anchors)
     for anchor in semantic_anchor_set or set(anchors):
@@ -918,7 +1009,11 @@ def _analyze_focus_selection(
                 anchor_tier[neighbor] = min(anchor_tier.get(neighbor, 4), anchor_tier.get(seed_id, 2) + 1)
                 proximity.setdefault(neighbor, proximity.get(seed_id, 0) + 1)
         candidate_ids = [nid for nid in candidates if nid in node_by_id]
-        centrality = _betweenness_centrality(candidate_ids, structural_edges)
+        centrality = (
+            _pagerank(candidate_ids, structural_edges)
+            if use_pagerank_centrality
+            else _betweenness_centrality(candidate_ids, structural_edges)
+        )
         ranked_ids = sorted(candidate_ids, key=_rank_key)
 
     selected_ids = ranked_ids[:soft_cap]
@@ -936,7 +1031,19 @@ def _select_focus_nodes(
     budget: int = BUDGET_L3,
 ) -> list[Node]:
     """Select task-relevant nodes via semantic anchoring and structure."""
-    return _analyze_focus_selection(graph, question, budget=budget).selected_nodes
+    selection = _analyze_focus_selection(graph, question, budget=budget).selected_nodes
+    if not _is_enterprise_graph(graph):
+        return selection
+
+    prepended = _top_config_focus_nodes(graph)
+    merged: list[Node] = []
+    seen: set[str] = set()
+    for node in prepended + selection:
+        if node.node_id in seen:
+            continue
+        merged.append(node)
+        seen.add(node.node_id)
+    return merged
 
 
 def _render_l3(
@@ -994,6 +1101,27 @@ def _render_l3(
         entry_lines = [f"{sym_name} ({fp}:{start_line}-{end_line})"]
         if purpose and purpose != f"{node.node_type} {sym_name}":
             entry_lines.append(f"  {purpose}")
+
+        if node.node_type == "config":
+            config_entries = sc.get("config_entries", [])
+            services = sc.get("services", [])
+            dependencies = sc.get("dependencies", [])
+            if config_entries:
+                entry_lines.append(f"  entries: {', '.join(config_entries[:5])}")
+            if services:
+                entry_lines.append(f"  services: {', '.join(services[:5])}")
+            if dependencies:
+                entry_lines.append(f"  deps: {', '.join(dependencies[:6])}")
+
+        if node.node_type == "doc":
+            headings = sc.get("headings", [])
+            if headings:
+                entry_lines.append(f"  sections: {', '.join(headings[:5])}")
+
+        if node.node_type == "route":
+            route_target = sc.get("route_target", "")
+            if route_target:
+                entry_lines.append(f"  target: {route_target}")
 
         # Signature for functions
         sig = sc.get("signature", "")
@@ -1310,9 +1438,12 @@ def render_mrlf(
     header += f"? {question}\n"
 
     # Render each level
+    enterprise_context = _is_enterprise_graph(graph)
+    readme_preamble = _render_readme_preamble(graph) if enterprise_context else ""
+    l2_budget = BUDGET_L2 - L2_ENTERPRISE_CONTEXT_BUDGET if enterprise_context else BUDGET_L2
     l0 = _render_l0(graph)
     l1 = _render_l1(graph, repo_root)
-    l2_text = _render_l2(graph, repo_root)
+    l2_text = _render_l2(graph, repo_root, budget=l2_budget)
     l3 = _render_l3(graph, question, repo_root)
 
     # For GAPS, we need focus and l2 node lists
@@ -1322,7 +1453,7 @@ def render_mrlf(
     gaps = _render_gaps(graph, question, focus_nodes, l2_symbols)
 
     # Assemble
-    sections = [header, "", l0, l1, l2_text, l3, gaps]
+    sections = [header, "", readme_preamble, l0, l1, l2_text, l3, gaps]
     result = "\n".join(sections)
 
     # Final budget check — if over total, trim L3 FOCUS first
@@ -1332,7 +1463,7 @@ def render_mrlf(
         overshoot = total_toks - BUDGET_TOTAL
         reduced_l3_budget = max(200, BUDGET_L3 - overshoot)
         l3 = _render_l3(graph, question, repo_root, budget=reduced_l3_budget)
-        sections = [header, "", l0, l1, l2_text, l3, gaps]
+        sections = [header, "", readme_preamble, l0, l1, l2_text, l3, gaps]
         result = "\n".join(sections)
 
     return result

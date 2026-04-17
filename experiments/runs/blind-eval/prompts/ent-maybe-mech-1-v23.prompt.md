@@ -11,8 +11,9 @@ Do not use any external knowledge about the framework or library.
 **Reasoning scaffold:** Think through the clue systematically before answering. First, identify the symbols most relevant to the question from FOCUS, SYM, and INDEX. Trace those symbols through the clue before forming any conclusion: follow calls: chains, walk extends: hierarchies, and read behavior: annotations as compact control-flow summaries. Use TREE and INDEX to place each symbol in its module context. Then consult the provided source snippets only to confirm or refine the traced path. State explicitly what GAPS says cannot be determined from the evidence. Finally, synthesize the answer, separating supported conclusions from remaining uncertainty.
 
 --- CLUE FILE (File 1) ---
-=CC v2.1 maybe@HEAD 91mod 267sym
+=CC v2.1 maybe@HEAD 91mod 270sym
 ? What is the documented lifecycle when creating a chat or message, and how does a client observe the AI response?
+
 
 
 -- TREE
@@ -20,6 +21,7 @@ app/  (50 files)
   javascript/
 vendor/  (41 files)
   javascript/
+.env.example  README.md  package.json
 
 -- INDEX
 app/components/DS/dialog_controller.js           33L  clickOutside, close, connect, extends
@@ -73,8 +75,8 @@ extends.validate                    M app/javascript/controllers/password_valida
 extends.addEventListeners           M app/components/DS/tooltip_controller.js:29     method extends.addEventListeners
 extends._getTrendIcon               M app/javascript/controllers/time_series_chart_controller.js:401    method extends._getTrendIcon
 extends.hideAllTooltipsExcept       M app/javascript/controllers/mobile_cell_interaction_controller.js:126    method extends.hideAllTooltipsExcept
-extends.applyTheme                  M app/javascript/controllers/theme_controller.js:32     method extends.applyTheme
 extends.startSystemThemeListener    M app/javascript/controllers/theme_controller.js:71     method extends.startSystemThemeListener
+extends.applyTheme                  M app/javascript/controllers/theme_controller.js:32     method extends.applyTheme
 extends.stopSystemThemeListener     M app/javascript/controllers/theme_controller.js:79     method extends.stopSystemThemeListener
 extends.showPaletteSection          M app/javascript/controllers/category_controller.js:211    method extends.showPaletteSection
 extends._addHiddenFormInputsForSelectedIds M app/javascript/controllers/bulk_select_controller.js:85     method extends._addHiddenFormInputsForSelectedIds
@@ -108,7 +110,7 @@ extends.removeEventListeners        M app/javascript/controllers/tooltip_control
 extends.startAutoUpdate             M app/javascript/controllers/tooltip_controller.js:50     method extends.startAutoUpdate
 extends.stopAutoUpdate              M app/javascript/controllers/tooltip_controller.js:60     method extends.stopAutoUpdate
 extends.removeEventListeners        M app/components/DS/tooltip_controller.js:34     method extends.removeEventListeners
-  ...and 202 more symbols
+  ...and 205 more symbols
 
 -- FOCUS
 extends.toggleErrorMessage (app/javascript/controllers/mobile_cell_interaction_controller.js:73-102)
@@ -320,6 +322,76 @@ drill: app/javascript/controllers/chat_controller.js (~9 lines, extends.autoResi
   }
 ```
 
+## extends.handleInputKeyDown  (app/javascript/controllers/chat_controller.js L36-43)
+```
+  handleInputKeyDown(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      this.formTarget.requestSubmit();
+    }
+  }
+
+  #configureAutoScroll() {
+```
+
+## extends.submitSampleQuestion  (app/javascript/controllers/chat_controller.js L27-35)
+```
+  submitSampleQuestion(e) {
+    this.inputTarget.value = e.target.dataset.chatQuestionParam;
+
+    setTimeout(() => {
+      this.formTarget.requestSubmit();
+    }, 200);
+  }
+
+  // Newlines require shift+enter, otherwise submit the form (same functionality as ChatGPT and others)
+```
+
+## extends  (app/javascript/controllers/turbo_frame_timeout_controller.js L2-42)
+```
+
+// Connects to data-controller="turbo-frame-timeout"
+export default class extends Controller {
+  static values = { timeout: { type: Number, default: 10000 } }
+
+  connect() {
+    this.timeoutId = setTimeout(() => {
+      this.handleTimeout()
+    }, this.timeoutValue)
+
+    // Listen for successful frame loads to clear timeout
+    this.element.addEventListener("turbo:frame-load", this.clearTimeout.bind(this))
+  }
+
+  disconnect() {
+    this.clearTimeout()
+  }
+
+  clearTimeout() {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId)
+      this.timeoutId = null
+    }
+  }
+
+  handleTimeout() {
+    // Replace loading content with error state
+    this.element.innerHTML = `
+      <div class="flex items-center justify-end gap-1">
+        <div class="w-8 h-4 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-warning">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+            <path d="M12 9v4"/>
+            <path d="m12 17 .01 0"/>
+          </svg>
+        </div>
+        <p class="font-mono text-right text-xs text-warning">Timeout</p>
+      </div>
+    `
+  }
+} 
+```
+
 ## extends.findHighlightForField  (app/javascript/controllers/mobile_cell_interaction_controller.js L145-148)
 ```
   findHighlightForField(field) {
@@ -441,76 +513,6 @@ drill: app/javascript/controllers/chat_controller.js (~9 lines, extends.autoResi
     
     this.hideAllErrorTooltips();
   }
-```
-
-## extends  (app/javascript/controllers/turbo_frame_timeout_controller.js L2-42)
-```
-
-// Connects to data-controller="turbo-frame-timeout"
-export default class extends Controller {
-  static values = { timeout: { type: Number, default: 10000 } }
-
-  connect() {
-    this.timeoutId = setTimeout(() => {
-      this.handleTimeout()
-    }, this.timeoutValue)
-
-    // Listen for successful frame loads to clear timeout
-    this.element.addEventListener("turbo:frame-load", this.clearTimeout.bind(this))
-  }
-
-  disconnect() {
-    this.clearTimeout()
-  }
-
-  clearTimeout() {
-    if (this.timeoutId) {
-      clearTimeout(this.timeoutId)
-      this.timeoutId = null
-    }
-  }
-
-  handleTimeout() {
-    // Replace loading content with error state
-    this.element.innerHTML = `
-      <div class="flex items-center justify-end gap-1">
-        <div class="w-8 h-4 flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-warning">
-            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-            <path d="M12 9v4"/>
-            <path d="m12 17 .01 0"/>
-          </svg>
-        </div>
-        <p class="font-mono text-right text-xs text-warning">Timeout</p>
-      </div>
-    `
-  }
-} 
-```
-
-## extends.handleInputKeyDown  (app/javascript/controllers/chat_controller.js L36-43)
-```
-  handleInputKeyDown(e) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      this.formTarget.requestSubmit();
-    }
-  }
-
-  #configureAutoScroll() {
-```
-
-## extends.submitSampleQuestion  (app/javascript/controllers/chat_controller.js L27-35)
-```
-  submitSampleQuestion(e) {
-    this.inputTarget.value = e.target.dataset.chatQuestionParam;
-
-    setTimeout(() => {
-      this.formTarget.requestSubmit();
-    }, 200);
-  }
-
-  // Newlines require shift+enter, otherwise submit the form (same functionality as ChatGPT and others)
 ```
 --- END SOURCE SNIPPETS ---
 

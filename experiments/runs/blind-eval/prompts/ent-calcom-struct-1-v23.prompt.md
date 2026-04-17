@@ -12,20 +12,24 @@ Do not use any external knowledge about the framework or library.
 **Reasoning scaffold:** Think through the clue systematically before answering. First, identify the modules, symbols, or relationships most relevant to the question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before concluding: follow calls: chains, walk extends: hierarchies, and use behavior: annotations as summaries of how control or responsibility moves. Use TREE and INDEX to situate the relationship in the repository structure. State explicitly what GAPS says cannot be determined from the clue alone. Finally, synthesize the answer, distinguishing supported structure from unresolved uncertainty.
 
 --- CLUE FILE START ---
-=CC v2.1 calcom@HEAD 5074mod 11723sym
+=CC v2.1 calcom@HEAD 5074mod 11733sym
 ? How is Cal.diy split across its main runtime components and platform packages?
 
 
+-- README
+> [!WARNING] > Use at your own risk. Cal.diy is the open source community edition of Cal.com and it is intended for users who want...
+sections: About Cal.diy, What's different from Cal.com?, Built With, Getting Started, Prerequisites
+
 -- TREE
 __checks__/  (3 files)
-apps/  (1632 files)
+apps/  (1635 files)
   api/  docs/  web/
-example-apps/  (7 files)
+example-apps/  (8 files)
   credential-sync/
-packages/  (3418 files)
+packages/  (3420 files)
   app-store/  dayjs/  debugging/  emails/  embeds/  features/  i18n/  kysely/  lib/  prisma/  ...+4
 scripts/  (9 files)
-checkly.config.ts  i18n-unused.config.js  playwright.config.ts  setupVitest.ts  vitest.workspace.ts
+.env.example  README.md  checkly.config.ts  docker-compose.yml  i18n-unused.config.js  package.json  playwright.config.ts  setupVitest.ts  vitest.workspace.ts
 
 -- INDEX
 packages/embeds/embed-core/src/embed.ts        1709L  buildFilteredQueryParams, constructor, doInIframe, ensureGuestKey, filterParams
@@ -51,14 +55,6 @@ InputLocationValidator_2024_06_14.validate M packages/platform/types/event-types
 InputTeamLocationValidator_2024_06_14.validate M packages/platform/types/event-types/event-types_2024_06_14/inputs/locations.input.ts:215    async_method InputTeamLocationValidator_2024_06...
 hasPermission                       M packages/platform/enums/permissions.ts:15     function hasPermission
 hasPermission                       M packages/platform/utils/permissions.ts:15     function hasPermission
-SystemError.constructor             M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:207    method SystemError.constructor
-TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:118    async_method TestRepository.delete
-TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:135    async_method TestRepository.delete
-TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:31     async_method TestRepository.delete
-TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:47     async_method TestRepository.delete
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:156    async_method TestRepository.update
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:186    async_method TestRepository.update
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:66     async_method TestRepository.update
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:118    method TestTasker.constructor
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:152    method TestTasker.constructor
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:194    method TestTasker.constructor
@@ -70,41 +66,60 @@ TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:386    
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:430    method TestTasker.constructor
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:470    method TestTasker.constructor
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:73     method TestTasker.constructor
-UserError.constructor               M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:197    method UserError.constructor
-PartialWebhookInputPipe.transform   M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:16     method PartialWebhookInputPipe.transform
-WebhookInputPipe.transform          M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:6      method WebhookInputPipe.transform
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:102    async_method TestRepository.update
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:171    async_method TestRepository.update
-CalendarAppDelegationCredentialClientIdNotAuthorizedError.constructor M packages/lib/CalendarAppError.ts:30     method CalendarAppDelegationCredentialClientIdN...
-CalendarAppDelegationCredentialConfigurationError.constructor M packages/lib/CalendarAppError.ts:16     method CalendarAppDelegationCredentialConfigura...
-CalendarAppDelegationCredentialInvalidGrantError.constructor M packages/lib/CalendarAppError.ts:23     method CalendarAppDelegationCredentialInvalidGr...
-CalendarAppError.constructor        M packages/lib/CalendarAppError.ts:2      method CalendarAppError.constructor
-CalendarAppDelegationCredentialError.constructor M packages/lib/CalendarAppError.ts:9      method CalendarAppDelegationCredentialError.con...
-CalendarAppDelegationCredentialNotSetupError.constructor M packages/lib/CalendarAppError.ts:37     method CalendarAppDelegationCredentialNotSetupE...
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:113    async_method TestRepository.findById
+TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:136    async_method TestRepository.findById
+TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:176    async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:192    async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:34     async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:53     async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:74     async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:90     async_method TestRepository.findById
-TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:136    async_method TestRepository.findById
-TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:176    async_method TestRepository.findById
-Office365CalendarService.triggerDelegationCredentialError M packages/app-store/office365calendar/lib/CalendarService.ts:126    async_method Office365CalendarService.triggerDe...
-BookingAuditAccessService.constructor M packages/features/booking-audit/lib/service/BookingAuditAccessService.ts:33     method BookingAuditAccessService.constructor
-BookingAuditPermissionError.constructor M packages/features/booking-audit/lib/service/BookingAuditAccessService.ts:13     method BookingAuditPermissionError.constructor
-DefaultLayoutEnabledValidator.validate M packages/platform/types/event-types/event-types_2024_06_14/inputs/booker-layouts.input.ts:49     method DefaultLayoutEnabledValidator.validate
-LayoutValidator.validate            M packages/platform/types/event-types/event-types_2024_06_14/inputs/booker-layouts.input.ts:17     method LayoutValidator.validate
-DefaultLayoutEnabledValidator.defaultMessage M packages/platform/types/event-types/event-types_2024_06_14/inputs/booker-layouts.input.ts:58     method DefaultLayoutEnabledValidator.defaultMes...
-  ...and 11280 more symbols
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:31     async_method TestRepository.delete
+PartialWebhookInputPipe.transform   M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:16     method PartialWebhookInputPipe.transform
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:118    async_method TestRepository.delete
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:135    async_method TestRepository.delete
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:47     async_method TestRepository.delete
+CalendarAppDelegationCredentialClientIdNotAuthorizedError.constructor M packages/lib/CalendarAppError.ts:30     method CalendarAppDelegationCredentialClientIdN...
+CalendarAppDelegationCredentialConfigurationError.constructor M packages/lib/CalendarAppError.ts:16     method CalendarAppDelegationCredentialConfigura...
+CalendarAppDelegationCredentialError.constructor M packages/lib/CalendarAppError.ts:9      method CalendarAppDelegationCredentialError.con...
+CalendarAppDelegationCredentialInvalidGrantError.constructor M packages/lib/CalendarAppError.ts:23     method CalendarAppDelegationCredentialInvalidGr...
+CalendarAppError.constructor        M packages/lib/CalendarAppError.ts:2      method CalendarAppError.constructor
+UserError.constructor               M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:197    method UserError.constructor
+WebhookInputPipe.transform          M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:6      method WebhookInputPipe.transform
+CalendarAppDelegationCredentialNotSetupError.constructor M packages/lib/CalendarAppError.ts:37     method CalendarAppDelegationCredentialNotSetupE...
+SystemError.constructor             M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:207    method SystemError.constructor
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:102    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:156    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:171    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:186    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:66     async_method TestRepository.update
+  ...and 11296 more symbols
 
 -- FOCUS
-WrappedBookerPropsForPlatform (apps/web/modules/bookings/types.ts:100-100)
-  type alias WrappedBookerPropsForPlatform = WrappedBookerPropsMain & {
-  uses: WrappedBookerPropsMain
+.env.example (.env.example:1-484)
+  Config summary for .env.example: entries: DATABASE_URL=postgresql://postgres:@localhost:5450..., DATABASE_DIRECT_URL=postgresql://postgres:@localhost:5450..., INSIGHTS_DATABASE_URL=<set>, NEXT_PUBLIC_WEBAPP_URL=http://localhost:3000, NEXT_PUBLIC_WEBSITE_URL=http://localhost:3000, NEXT_PUBLIC_EMBED_LIB_URL=http://localhost:3000/embed/embed.js
+  entries: DATABASE_URL=postgresql://postgres:@localhost:5450..., DATABASE_DIRECT_URL=postgresql://postgres:@localhost:5450..., INSIGHTS_DATABASE_URL=<set>, NEXT_PUBLIC_WEBAPP_URL=http://localhost:3000, NEXT_PUBLIC_WEBSITE_URL=http://localhost:3000
+
+apps/api/v2/.env.example (apps/api/v2/.env.example:1-76)
+  Config summary for apps/api/v2/.env.example: entries: NODE_ENV=development, API_PORT=5555, API_URL=http://localhost, DATABASE_READ_URL=postgresql://postgres:@localhost:5450..., DATABASE_WRITE_URL=postgresql://postgres:@localhost:5450..., LOG_LEVEL=DEBUG
+  entries: NODE_ENV=development, API_PORT=5555, API_URL=http://localhost, DATABASE_READ_URL=postgresql://postgres:@localhost:5450..., DATABASE_WRITE_URL=postgresql://postgres:@localhost:5450...
+
+example-apps/credential-sync/.env.example (example-apps/credential-sync/.env.example:1-15)
+  Config summary for example-apps/credential-sync/.env.example: entries: CALCOM_TEST_USER_ID=1, GOOGLE_REFRESH_TOKEN=<set>, GOOGLE_CLIENT_ID=<set>, GOOGLE_CLIENT_SECRET=<set>, ZOOM_REFRESH_TOKEN=<set>, ZOOM_CLIENT_ID=<set>
+  entries: CALCOM_TEST_USER_ID=1, GOOGLE_REFRESH_TOKEN=<set>, GOOGLE_CLIENT_ID=<set>, GOOGLE_CLIENT_SECRET=<set>, ZOOM_REFRESH_TOKEN=<set>
 
 WrappedBookerPropsForPlatform (apps/web/modules/bookings/types.ts:99-99)
   type alias WrappedBookerPropsForPlatform = WrappedBookerPropsMain & {
   uses: WrappedBookerPropsMain
+
+WrappedBookerPropsForPlatform (apps/web/modules/bookings/types.ts:100-100)
+  type alias WrappedBookerPropsForPlatform = WrappedBookerPropsMain & {
+  uses: WrappedBookerPropsMain
+
+packages/prisma/docker-compose.yml (packages/prisma/docker-compose.yml:1-27)
+  Config summary for packages/prisma/docker-compose.yml: entries: postgres: postgres:18, environment: "cal-saml", "", trust, healthcheck: ["CMD-SHELL", "pg_isready"], 10s, 5s, 5, postgres_is_ready: postgres, postgres: service_healthy; services: postgres, ports, volumes, environment, healthcheck, postgres_is_ready
+  entries: postgres: postgres:18, environment: "cal-saml", "", trust, healthcheck: ["CMD-SHELL", "pg_isready"], 10s, 5s, 5, postgres_is_ready: postgres, postgres: service_healthy
+  services: postgres, ports, volumes, environment, healthcheck
 
 SplitNameDefaultFieldInput_2024_06_14 (packages/platform/types/event-types/event-types_2024_06_14/inputs/booking-fields.input.ts:58-103)
   uses: e.g, cal.com
@@ -145,10 +160,10 @@ main (packages/platform/libraries/scripts/postpublish.js:12-63)
   calls: waitForNewestNpmRelease
   uses: path.join, package.json, JSON.parse, fs.readFileSync
 
-BaseCalProviderProps (packages/platform/atoms/cal-provider/BaseCalProvider.tsx:38-38)
+BaseCalProviderProps (packages/platform/atoms/cal-provider/BaseCalProvider.tsx:37-37)
   type alias BaseCalProviderProps = {
 
-BaseCalProviderProps (packages/platform/atoms/cal-provider/BaseCalProvider.tsx:37-37)
+BaseCalProviderProps (packages/platform/atoms/cal-provider/BaseCalProvider.tsx:38-38)
   type alias BaseCalProviderProps = {
 
 Cal.getLastLoadedLinkInframe (packages/embeds/embed-core/src/embed.ts:711-721)
@@ -200,58 +215,10 @@ main (packages/prisma/seed-pbac-only.ts:8-40)
   behavior: ACCUMULATE(main loop -> result)
   uses: console.log, result.organization.name, result.organization.slug, Object.keys
 
-CalApi (packages/embeds/embed-core/src/embed.ts:847-1505)
-  methods: closeModal, constructor, handleClose, init, initNamespace, log
-  calls: constructor, doInIframe, ensureGuestKey, getCalConfig, getLastLoadedLinkInframe, getPreviousModalRenderStartVariables, log, Cal
-  called_by: constructor, Cal
-  uses: this.cal, this.cal.namespace, CalApi.initializedNamespaces.push, this.cal.__config.calOrigin
-
-Cal.constructor (packages/embeds/embed-core/src/embed.ts:427-522)
-  method Cal.constructor
-  sig: Cal.constructor(namespace: string, q: Queue)
-  behavior: GUARD(!iframe -> // Iframe might be...); PRECEDENCE(not_iframe -> data -> modalBox); ACCUMULATE(constructor loop -> result)
-  calls: doInIframe, processQueue, resetQueue, constructor, CalApi
-  called_by: Cal, constructor, CalApi
-  uses: this.__config, this.api, this.namespace, this.actionManager
-
-Cal.doInIframe (packages/embeds/embed-core/src/embed.ts:397-413)
-  method Cal.doInIframe
-  sig: Cal.doInIframe(doInIframeArg: DoInIframeArg)
-  behavior: GUARD(!this.iframeReady -> this.iframeDoQueue....)
-  called_by: constructor, Cal, ui, CalApi
-  uses: this.iframeReady, this.iframeDoQueue.push, this.iframe, this.iframe.contentWindow
-
-main (scripts/pull-coss-ui-components.ts:217-259)
-  behavior: TRANSFORM(map)
-  calls: processComponent, resolvePaths
-  uses: console.log, targetDirs.components, Array.isArray, uiJson.registryDependencies
-
-doWeNeedCalOriginProp (packages/features/embed/lib/EmbedCodes.tsx:7-12)
-  sig: doWeNeedCalOriginProp(embedCalOrigin: string)
-  called_by: MyApp
-  uses: app.cal.com
-
-Cal.resetQueue (packages/embeds/embed-core/src/embed.ts:415-420)
-  method Cal.resetQueue
-  called_by: constructor, iframeReset, Cal
-  uses: this.iframeDoQueue, this.iframeDoQueue.filter, this.commandsPersistAcrossIframeResets.includes, doInIframeArg.method
-
-CalApi.ui (packages/embeds/embed-core/src/embed.ts:1488-1504)
-  method CalApi.ui
-  sig: CalApi.ui(uiConfig: UiConfig)
-  calls: doInIframe, validate
-  called_by: CalApi
-  uses: this.cal.doInIframe
-
-CalVideoSettingsRepository (packages/features/calVideoSettings/repositories/CalVideoSettingsRepository.ts:2-83)
-  methods: deleteCalVideoSettings
-  calls: deleteCalVideoSettings
-  uses: prisma.calVideoSettings.delete, prisma.calVideoSettings.create, calVideoSettings.disableRecordingForGuests, calVideoSettings.disableRecordingForOrganizer
-
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 23 with behavior annotations
-uncovered: GoogleCalError, IWipeMyCalAction, IWipeMyCalActionButtonProps, ListEventTypesPlatformWrapperProps
+coverage: 83 symbols in L3, 23 with behavior annotations
+uncovered: GlobalCalWithoutNs, GoogleCalError, IWipeMyCalAction, IWipeMyCalActionButtonProps
 
 --- CLUE FILE END ---
 

@@ -12,14 +12,18 @@ Do not use any external knowledge about the framework or library.
 **Reasoning scaffold:** Think through the clue systematically before answering. First, identify the modules, symbols, or relationships most relevant to the question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before concluding: follow calls: chains, walk extends: hierarchies, and use behavior: annotations as summaries of how control or responsibility moves. Use TREE and INDEX to situate the relationship in the repository structure. State explicitly what GAPS says cannot be determined from the clue alone. Finally, synthesize the answer, distinguishing supported structure from unresolved uncertainty.
 
 --- CLUE FILE START ---
-=CC v2.1 saleor@HEAD 4239mod 27374sym
+=CC v2.1 saleor@HEAD 4239mod 27389sym
 ? How is Saleor split across its core platform, multichannel commerce model, and extension surfaces?
 
+
+-- README
+<div align="center" width="100px"> <picture>
+sections: Table of Contents, What makes Saleor special?, Why API-only Architecture?, What are the tradeoffs?, Features
 
 -- TREE
 saleor/  (4237 files)
   account/  app/  asgi/  attribute/  auth/  channel/  checkout/  core/  csv/  discount/  ...+20
-conftest.py  manage.py
+.env.example  README.md  conftest.py  manage.py  package.json  pyproject.toml
 
 -- INDEX
 conftest.py                                     115L  Custom, django_db_setup, pytest_addoption, pytest_collection_modifyitems, pytest_configure
@@ -99,19 +103,21 @@ clean_attributes                    M saleor/graphql/product/mutations/product/p
 clean_attributes                    M saleor/graphql/product/mutations/product/product_update.py:78     function clean_attributes
 clean_attributes                    M saleor/graphql/product/mutations/product_variant/product_variant_update.py:130    function clean_attributes
 clean_input                         M saleor/graphql/page/mutations/page_create.py:81     function clean_input
-clean_attributes                    M saleor/graphql/page/mutations/page_create.py:72     function clean_attributes
-_resolve_page                       M saleor/graphql/page/schema.py:103    function _resolve_page
-resolve_page                        M saleor/graphql/page/schema.py:94     function resolve_page
-_resolve_pages                      M saleor/graphql/page/schema.py:122    function _resolve_pages
-resolve_pages                       M saleor/graphql/page/schema.py:117    function resolve_pages
-_create_variant_errors              M saleor/graphql/checkout/mutations/checkout_create_from_order.py:81     function _create_variant_errors
-__run_payment_method                M saleor/plugins/manager.py:2556   function __run_payment_method
-__run_payment_webhook               M saleor/plugins/webhook/plugin.py:2994   Trigger payment webhook event.
-get_form_field_description          M saleor/graphql/core/types/converter.py:24     function get_form_field_description
-_resolve_product                    M saleor/graphql/product/schema.py:455    function _resolve_product
-  ...and 13182 more symbols
+  ...and 13206 more symbols
 
 -- FOCUS
+saleor/settings.py (saleor/settings.py:1-1261)
+  Config summary for saleor/settings.py: entries: SOFT_MEMORY_LIMIT_IN_MB=os.environ.get('SOFT_MEMORY_LIMIT_IN_MB', None), HARD_MEMORY_LIMIT_IN_MB=os.environ.get('HARD_MEMORY_LIMIT_IN_MB', None), DEBUG=get_bool_from_env('DEBUG', True), SITE_ID=1, PROJECT_ROOT=os.path.normpath(os.path.join(os.path.dirname(__file__), '..')), ROOT_URLCONF='saleor.urls'
+  entries: SOFT_MEMORY_LIMIT_IN_MB=os.environ.get('SOFT_MEMORY_LIMIT_IN_MB', None), HARD_MEMORY_LIMIT_IN_MB=os.environ.get('HARD_MEMORY_LIMIT_IN_MB', None), DEBUG=get_bool_from_env('DEBUG', True), SITE_ID=1, PROJECT_ROOT=os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
+
+saleor/tests/settings.py (saleor/tests/settings.py:1-105)
+  Config summary for saleor/tests/settings.py: entries: POPULATE_DEFAULTS=False, CELERY_TASK_ALWAYS_EAGER=True, PUBLIC_URL='https://example.com', SECRET_KEY='NOTREALLY', ALLOWED_CLIENT_HOSTS=['www.example.com'], EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend'
+  entries: POPULATE_DEFAULTS=False, CELERY_TASK_ALWAYS_EAGER=True, PUBLIC_URL='https://example.com', SECRET_KEY='NOTREALLY', ALLOWED_CLIENT_HOSTS=['www.example.com']
+
+.env.example (.env.example:1-8)
+  Config summary for .env.example: entries: CACHE_URL=redis://localhost:6379/0, CELERY_BROKER_URL=redis://localhost:6379/1, DEFAULT_FROM_EMAIL=noreply@example.com, EMAIL_URL=smtp://localhost:1025, SECRET_KEY=changeme, HTTP_IP_FILTER_ALLOW_LOOPBACK_IPS=True
+  entries: CACHE_URL=redis://localhost:6379/0, CELERY_BROKER_URL=redis://localhost:6379/1, DEFAULT_FROM_EMAIL=noreply@example.com, EMAIL_URL=smtp://localhost:1025, SECRET_KEY=changeme
+
 ModelWithRestrictedChannelAccessMutation (saleor/graphql/core/mutations.py:895-938)
   extends: DeprecatedModelMutation
   imports: secrets, enum, itertools, uuid, graphene
@@ -265,46 +271,9 @@ RequiredSaleorVersionSpec (saleor/app/manifest_validations.py:36-41)
   imports: logging, django.core.exceptions, django.db.models, django.db.models.functions, pydantic
   called_by: _clean_required_saleor_version
 
-SaleorGraphQLBackend (saleor/graphql/api.py:234-256)
-  extends: GraphQLCoreBackend
-  imports: graphql, django.urls, django.utils.functional, graphql.backend.base, graphql.execution
-
-validate_ids_and_get_model_type_and_pks (saleor/core/notification/validation.py:26-37)
-  sig: validate_ids_and_get_model_type_and_pks(data_input)
-  behavior: GUARD((ids := data_input.get('ids')) -> return (model_type, pks))
-  raises: ValidationError
-  uses: ValidationError (django.core.exceptions)
-
-clean_model (saleor/core/management/commands/clean_editorjs_fields.py:162-242)
-  sig: clean_model(cls, field)
-  behavior: ACCUMULATE(enumerate(qs.iterator... -> stderr joinedstr, raises CommandError)
-  called_by: handle, Command
-  raises: CommandError
-  uses: CommandError (django.core.management.base)
-
-get_type_for_model (saleor/graphql/core/mutations.py:1027-1035)
-  sig: get_type_for_model(cls)
-  behavior: GUARD(not cls._meta.object_type -> raise ImproperlyConfigure...)
-  raises: ImproperlyConfigured
-  uses: ImproperlyConfigured (django.core.exceptions)
-
-get_type_for_model (saleor/graphql/core/mutations.py:782-790)
-  sig: get_type_for_model(cls)
-  behavior: GUARD(not cls._meta.object_type -> raise ImproperlyConfigure...)
-  raises: ImproperlyConfigured
-  uses: ImproperlyConfigured (django.core.exceptions)
-
-flatten_model_metadata (saleor/core/migrations/0001_migrate_metadata.py:6-17)
-  sig: flatten_model_metadata(model_with_metadata)
-  calls: flatten_metadata
-  called_by: flatten_attributes_metadata, flatten_categories_metadata, flatten_checkouts_metadata, flatten_collections_metadata, flatten_digital_contents_metadata, flatten_fulfillments_metadata, flatten_orders_metadata, flatten_product_types_metadata
-
-SyncWebhookControlContextModelObjectType (saleor/graphql/core/types/sync_webhook_control.py:33-37)
-  imports: django.db.models, graphene.types.resolver, context, model
-
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 12 with behavior annotations
+coverage: 83 symbols in L3, 12 with behavior annotations
 uncovered: move_email_templates_to_separate_model, perform_model_extra_actions, reorder_model, resolve_access_token_for_app_extension
 
 --- CLUE FILE END ---

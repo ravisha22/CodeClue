@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pytest
 
-from codeclue_research.extractor import extract_python_nodes_edges
+from codeclue_research.extractor import extract_graph, extract_python_nodes_edges
 from codeclue_research.extract_go import _extract_go_behavior_patterns, extract_go_nodes_edges
 from codeclue_research.extract_typescript import extract_typescript_nodes_edges
 
@@ -744,3 +744,89 @@ def test_ts_behavior_patterns_include_richer_details(tmp_path: Path):
     patterns = choose_node.semantic_contract.get("behavior_patterns", [])
     assert any("GUARD(!opts" in pattern and "return defaultValue" in pattern for pattern in patterns)
     assert any(pattern.startswith("PRECEDENCE(") and "opts" in pattern and "envvar" in pattern for pattern in patterns)
+
+
+def test_extract_graph_adds_config_and_doc_nodes(tmp_path: Path):
+    _write_fixture(
+        tmp_path,
+        "settings.py",
+        """\
+        INSTALLED_APPS = ["inventory", "orders"]
+        MIDDLEWARE = ["django.middleware.security.SecurityMiddleware"]
+        DATABASES = {"default": {"ENGINE": "django.db.backends.postgresql"}}
+        """,
+    )
+    _write_fixture(tmp_path, ".env.example", "DEBUG=false\nSECRET_KEY=example\n")
+    _write_fixture(
+        tmp_path,
+        "docker-compose.yml",
+        """\
+        services:
+          web:
+            build: .
+          worker:
+            image: app:latest
+        """,
+    )
+    _write_fixture(
+        tmp_path,
+        "pyproject.toml",
+        """\
+        [project]
+        dependencies = ["django", "celery"]
+        """,
+    )
+    _write_fixture(
+        tmp_path,
+        "README.md",
+        """\
+        # Sample Platform
+
+        ## Architecture
+        Web app, worker, and PostgreSQL database.
+        """,
+    )
+
+    graph = extract_graph(tmp_path, language="python")
+    node_types = {(node.node_type, node.source_anchor.file_path) for node in graph.nodes}
+    assert ("config", "settings.py") in node_types
+    assert ("config", ".env.example") in node_types
+    assert ("config", "docker-compose.yml") in node_types
+    assert ("doc", "README.md") in node_types
+
+
+def test_python_extractor_emits_django_and_celery_edges(tmp_path: Path):
+    _write_fixture(
+        tmp_path,
+        "app.py",
+        """\
+        from django.db import models
+        from django.urls import path
+        from celery import shared_task
+
+        class Author(models.Model):
+            pass
+
+        class Book(models.Model):
+            author = models.ForeignKey(Author, on_delete=models.CASCADE)
+
+        def book_list():
+            return []
+
+        urlpatterns = [
+            path("books/", book_list),
+        ]
+
+        @shared_task
+        def sync_books():
+            return book_list()
+        """,
+    )
+
+    graph = extract_graph(tmp_path, language="python")
+    edge_types = {(edge.edge_type, edge.evidence.get("rel")) for edge in graph.edges}
+    assert ("relates", "ForeignKey") in edge_types
+    assert any(edge.edge_type == "routes" for edge in graph.edges)
+    assert any(edge.edge_type == "task" for edge in graph.edges)
+    route_nodes = [node for node in graph.nodes if node.node_type == "route"]
+    assert route_nodes

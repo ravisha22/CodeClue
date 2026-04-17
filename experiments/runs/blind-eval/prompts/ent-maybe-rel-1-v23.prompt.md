@@ -1,18 +1,20 @@
-# Blind Evaluation Prompt - MRLF v2.4 with File 2 Drill-Down
+# Blind Evaluation Prompt - MRLF v2.4
 # Task: ent-maybe-rel-1
 
-You are a senior software engineer. You have been given:
-1. A codebase comprehension artifact (clue file) - a compressed representation
-2. Source code snippets for key functions identified as needing deeper analysis
+You are a senior software engineer. You have been given a codebase
+comprehension artifact (a "clue file") that summarises a repository's
+structure, symbols, and behavior. This is NOT the full source code - it is
+a compressed representation.
 
-Answer the question using the clue file AND the source snippets below.
+Answer the question below using ONLY the information in the clue file.
 Do not use any external knowledge about the framework or library.
 
-**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the symbols most relevant to the question from FOCUS, SYM, and INDEX. Trace those symbols through the clue before forming any conclusion: follow calls: chains, walk extends: hierarchies, and read behavior: annotations as compact control-flow summaries. Use TREE and INDEX to place each symbol in its module context. Then consult the provided source snippets only to confirm or refine the traced path. State explicitly what GAPS says cannot be determined from the evidence. Finally, synthesize the answer, separating supported conclusions from remaining uncertainty.
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the modules, symbols, or relationships most relevant to the question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before concluding: follow calls: chains, walk extends: hierarchies, and use behavior: annotations as summaries of how control or responsibility moves. Use TREE and INDEX to situate the relationship in the repository structure. State explicitly what GAPS says cannot be determined from the clue alone. Finally, synthesize the answer, distinguishing supported structure from unresolved uncertainty.
 
---- CLUE FILE (File 1) ---
-=CC v2.1 maybe@HEAD 91mod 267sym
+--- CLUE FILE START ---
+=CC v2.1 maybe@HEAD 91mod 270sym
 ? How are authentication, AI enablement, and endpoint scopes related across Maybe's Chat API?
+
 
 
 -- TREE
@@ -20,6 +22,7 @@ app/  (50 files)
   javascript/
 vendor/  (41 files)
   javascript/
+.env.example  README.md  package.json
 
 -- INDEX
 app/components/DS/dialog_controller.js           33L  clickOutside, close, connect, extends
@@ -73,8 +76,8 @@ extends.validate                    M app/javascript/controllers/password_valida
 extends.addEventListeners           M app/components/DS/tooltip_controller.js:29     method extends.addEventListeners
 extends._getTrendIcon               M app/javascript/controllers/time_series_chart_controller.js:401    method extends._getTrendIcon
 extends.hideAllTooltipsExcept       M app/javascript/controllers/mobile_cell_interaction_controller.js:126    method extends.hideAllTooltipsExcept
-extends.applyTheme                  M app/javascript/controllers/theme_controller.js:32     method extends.applyTheme
 extends.startSystemThemeListener    M app/javascript/controllers/theme_controller.js:71     method extends.startSystemThemeListener
+extends.applyTheme                  M app/javascript/controllers/theme_controller.js:32     method extends.applyTheme
 extends.stopSystemThemeListener     M app/javascript/controllers/theme_controller.js:79     method extends.stopSystemThemeListener
 extends.showPaletteSection          M app/javascript/controllers/category_controller.js:211    method extends.showPaletteSection
 extends._addHiddenFormInputsForSelectedIds M app/javascript/controllers/bulk_select_controller.js:85     method extends._addHiddenFormInputsForSelectedIds
@@ -108,9 +111,17 @@ extends.removeEventListeners        M app/javascript/controllers/tooltip_control
 extends.startAutoUpdate             M app/javascript/controllers/tooltip_controller.js:50     method extends.startAutoUpdate
 extends.stopAutoUpdate              M app/javascript/controllers/tooltip_controller.js:60     method extends.stopAutoUpdate
 extends.removeEventListeners        M app/components/DS/tooltip_controller.js:34     method extends.removeEventListeners
-  ...and 202 more symbols
+  ...and 205 more symbols
 
 -- FOCUS
+.env.example (.env.example:1-86)
+  Config summary for .env.example: entries: SELF_HOSTED=true, SECRET_KEY_BASE=secret-value, SYNTH_API_KEY=<set>, PORT=3000, SMTP_ADDRESS=<set>, SMTP_PORT=465
+  entries: SELF_HOSTED=true, SECRET_KEY_BASE=secret-value, SYNTH_API_KEY=<set>, PORT=3000, SMTP_ADDRESS=<set>
+
+README.md (README.md:1-64)
+  Documentation summary for README.md: <img width="1190" alt="maybe_hero" src="https://github.com/user-attachments/assets/5ed08763-a9ee-42b2-a436-e05038fcf5... > [!IMPORTANT]; sections: Maybe: The personal finance app for everyone, Maybe Hosting, Forking and Attribution, Local Development Setup, Requirements
+  sections: Maybe: The personal finance app for everyone, Maybe Hosting, Forking and Attribution, Local Development Setup, Requirements
+
 extends.submitSampleQuestion (app/javascript/controllers/chat_controller.js:27-35)
   method extends.submitSampleQuestion
   sig: extends.submitSampleQuestion(e)
@@ -144,122 +155,12 @@ extends.handleInputKeyDown (app/javascript/controllers/chat_controller.js:36-43)
   uses: e.key, e.shiftKey, e.preventDefault, this.formTarget.requestSubmit
 
 -- GAPS
-type: MECHANISTIC (body logic needed for full answer)
-coverage: 6 symbols in L3, 0 with behavior annotations
-drill: app/javascript/controllers/chat_controller.js (~2 lines, extends.disconnect)
-drill: app/javascript/controllers/chat_controller.js (~9 lines, extends.autoResize)
-drill: app/javascript/controllers/chat_controller.js (~4 lines, extends.submitSampleQuestion)
+type: STRUCTURAL (answerable from L0-L2)
+coverage: 8 symbols in L3, 0 with behavior annotations
 
---- END CLUE FILE ---
-
---- SOURCE SNIPPETS (File 2 Drill-Down) ---
-## extends.disconnect  (app/javascript/controllers/turbo_frame_timeout_controller.js L16-18)
-```
-  disconnect() {
-    this.clearTimeout()
-  }
-```
-
-## extends.submitSampleQuestion  (app/javascript/controllers/chat_controller.js L27-35)
-```
-  submitSampleQuestion(e) {
-    this.inputTarget.value = e.target.dataset.chatQuestionParam;
-
-    setTimeout(() => {
-      this.formTarget.requestSubmit();
-    }, 200);
-  }
-
-  // Newlines require shift+enter, otherwise submit the form (same functionality as ChatGPT and others)
-```
-
-## extends.autoResize  (app/javascript/controllers/chat_controller.js L16-27)
-```
-  autoResize() {
-    const input = this.inputTarget;
-    const lineHeight = 20; // text-sm line-height (14px * 1.429 ≈ 20px)
-    const maxLines = 3; // 3 lines = 60px total
-
-    input.style.height = "auto";
-    input.style.height = `${Math.min(input.scrollHeight, lineHeight * maxLines)}px`;
-    input.style.overflowY =
-      input.scrollHeight > lineHeight * maxLines ? "auto" : "hidden";
-  }
-
-  submitSampleQuestion(e) {
-```
-
-## extends.connect  (app/javascript/controllers/turbo_frame_timeout_controller.js L7-14)
-```
-  connect() {
-    this.timeoutId = setTimeout(() => {
-      this.handleTimeout()
-    }, this.timeoutValue)
-
-    // Listen for successful frame loads to clear timeout
-    this.element.addEventListener("turbo:frame-load", this.clearTimeout.bind(this))
-  }
-```
-
-## extends.handleInputKeyDown  (app/javascript/controllers/chat_controller.js L36-43)
-```
-  handleInputKeyDown(e) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      this.formTarget.requestSubmit();
-    }
-  }
-
-  #configureAutoScroll() {
-```
-
-## extends  (app/javascript/controllers/turbo_frame_timeout_controller.js L2-42)
-```
-
-// Connects to data-controller="turbo-frame-timeout"
-export default class extends Controller {
-  static values = { timeout: { type: Number, default: 10000 } }
-
-  connect() {
-    this.timeoutId = setTimeout(() => {
-      this.handleTimeout()
-    }, this.timeoutValue)
-
-    // Listen for successful frame loads to clear timeout
-    this.element.addEventListener("turbo:frame-load", this.clearTimeout.bind(this))
-  }
-
-  disconnect() {
-    this.clearTimeout()
-  }
-
-  clearTimeout() {
-    if (this.timeoutId) {
-      clearTimeout(this.timeoutId)
-      this.timeoutId = null
-    }
-  }
-
-  handleTimeout() {
-    // Replace loading content with error state
-    this.element.innerHTML = `
-      <div class="flex items-center justify-end gap-1">
-        <div class="w-8 h-4 flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-warning">
-            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-            <path d="M12 9v4"/>
-            <path d="m12 17 .01 0"/>
-          </svg>
-        </div>
-        <p class="font-mono text-right text-xs text-warning">Timeout</p>
-      </div>
-    `
-  }
-} 
-```
---- END SOURCE SNIPPETS ---
+--- CLUE FILE END ---
 
 QUESTION: How are authentication, AI enablement, and endpoint scopes related across Maybe's Chat API?
 
-Provide a detailed answer based on the clue file and source snippets above.
-For each claim you make, cite the specific clue entry or source snippet that supports it.
+Provide a detailed answer based solely on the clue file above.
+For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.

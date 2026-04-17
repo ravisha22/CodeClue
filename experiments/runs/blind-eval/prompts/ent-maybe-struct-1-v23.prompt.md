@@ -1,18 +1,20 @@
-# Blind Evaluation Prompt - MRLF v2.4 with File 2 Drill-Down
+# Blind Evaluation Prompt - MRLF v2.4
 # Task: ent-maybe-struct-1
 
-You are a senior software engineer. You have been given:
-1. A codebase comprehension artifact (clue file) - a compressed representation
-2. Source code snippets for key functions identified as needing deeper analysis
+You are a senior software engineer. You have been given a codebase
+comprehension artifact (a "clue file") that summarises a repository's
+structure, symbols, and behavior. This is NOT the full source code - it is
+a compressed representation.
 
-Answer the question using the clue file AND the source snippets below.
+Answer the question below using ONLY the information in the clue file.
 Do not use any external knowledge about the framework or library.
 
-**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the symbols most relevant to the question from FOCUS, SYM, and INDEX. Trace those symbols through the clue before forming any conclusion: follow calls: chains, walk extends: hierarchies, and read behavior: annotations as compact control-flow summaries. Use TREE and INDEX to place each symbol in its module context. Then consult the provided source snippets only to confirm or refine the traced path. State explicitly what GAPS says cannot be determined from the evidence. Finally, synthesize the answer, separating supported conclusions from remaining uncertainty.
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the modules, symbols, or relationships most relevant to the question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before concluding: follow calls: chains, walk extends: hierarchies, and use behavior: annotations as summaries of how control or responsibility moves. Use TREE and INDEX to situate the relationship in the repository structure. State explicitly what GAPS says cannot be determined from the clue alone. Finally, synthesize the answer, distinguishing supported structure from unresolved uncertainty.
 
---- CLUE FILE (File 1) ---
-=CC v2.1 maybe@HEAD 91mod 267sym
+--- CLUE FILE START ---
+=CC v2.1 maybe@HEAD 91mod 270sym
 ? What documented surfaces and usage modes does Maybe expose for users, self-hosters, and developers?
+
 
 
 -- TREE
@@ -20,6 +22,7 @@ app/  (50 files)
   javascript/
 vendor/  (41 files)
   javascript/
+.env.example  README.md  package.json
 
 -- INDEX
 app/components/DS/dialog_controller.js           33L  clickOutside, close, connect, extends
@@ -73,8 +76,8 @@ extends.validate                    M app/javascript/controllers/password_valida
 extends.addEventListeners           M app/components/DS/tooltip_controller.js:29     method extends.addEventListeners
 extends._getTrendIcon               M app/javascript/controllers/time_series_chart_controller.js:401    method extends._getTrendIcon
 extends.hideAllTooltipsExcept       M app/javascript/controllers/mobile_cell_interaction_controller.js:126    method extends.hideAllTooltipsExcept
-extends.applyTheme                  M app/javascript/controllers/theme_controller.js:32     method extends.applyTheme
 extends.startSystemThemeListener    M app/javascript/controllers/theme_controller.js:71     method extends.startSystemThemeListener
+extends.applyTheme                  M app/javascript/controllers/theme_controller.js:32     method extends.applyTheme
 extends.stopSystemThemeListener     M app/javascript/controllers/theme_controller.js:79     method extends.stopSystemThemeListener
 extends.showPaletteSection          M app/javascript/controllers/category_controller.js:211    method extends.showPaletteSection
 extends._addHiddenFormInputsForSelectedIds M app/javascript/controllers/bulk_select_controller.js:85     method extends._addHiddenFormInputsForSelectedIds
@@ -108,237 +111,30 @@ extends.removeEventListeners        M app/javascript/controllers/tooltip_control
 extends.startAutoUpdate             M app/javascript/controllers/tooltip_controller.js:50     method extends.startAutoUpdate
 extends.stopAutoUpdate              M app/javascript/controllers/tooltip_controller.js:60     method extends.stopAutoUpdate
 extends.removeEventListeners        M app/components/DS/tooltip_controller.js:34     method extends.removeEventListeners
-  ...and 202 more symbols
+  ...and 205 more symbols
 
 -- FOCUS
+.env.example (.env.example:1-86)
+  Config summary for .env.example: entries: SELF_HOSTED=true, SECRET_KEY_BASE=secret-value, SYNTH_API_KEY=<set>, PORT=3000, SMTP_ADDRESS=<set>, SMTP_PORT=465
+  entries: SELF_HOSTED=true, SECRET_KEY_BASE=secret-value, SYNTH_API_KEY=<set>, PORT=3000, SMTP_ADDRESS=<set>
+
+README.md (README.md:1-64)
+  Documentation summary for README.md: <img width="1190" alt="maybe_hero" src="https://github.com/user-attachments/assets/5ed08763-a9ee-42b2-a436-e05038fcf5... > [!IMPORTANT]; sections: Maybe: The personal finance app for everyone, Maybe Hosting, Forking and Attribution, Local Development Setup, Requirements
+  sections: Maybe: The personal finance app for everyone, Maybe Hosting, Forking and Attribution, Local Development Setup, Requirements
+
 extends.userPreferenceValueChanged (app/javascript/controllers/theme_controller.js:15-17)
   method extends.userPreferenceValueChanged
   calls: applyTheme
   called_by: extends
   uses: this.applyTheme
 
-extends (app/javascript/controllers/theme_controller.js:2-87)
-  extends: Controller
-  methods: applyTheme, connect, disconnect, setTheme, startSystemThemeListener, stopSystemThemeListener
-  calls: applyTheme, connect, disconnect, setTheme, startSystemThemeListener, stopSystemThemeListener, systemPrefersDark, toggle
-  uses: this.startSystemThemeListener, this.stopSystemThemeListener, e.g, this.applyTheme
-
-extends.applyTheme (app/javascript/controllers/theme_controller.js:32-40)
-  method extends.applyTheme
-  calls: setTheme, systemPrefersDark
-  called_by: userPreferenceValueChanged, extends
-  uses: this.userPreferenceValue, this.setTheme, this.systemPrefersDark
-
-extends.setTheme (app/javascript/controllers/theme_controller.js:43-49)
-  method extends.setTheme
-  sig: extends.setTheme(isDark)
-  called_by: applyTheme, toggle, updateTheme, extends
-  uses: document.documentElement.setAttribute
-
-extends.systemPrefersDark (app/javascript/controllers/theme_controller.js:51-53)
-  method extends.systemPrefersDark
-  behavior: DELEGATE(window.matchMedia -> result)
-  called_by: applyTheme, updateTheme, extends
-  uses: window.matchMedia
-
-extends.updateTheme (app/javascript/controllers/theme_controller.js:20-29)
-  method extends.updateTheme
-  sig: extends.updateTheme(event)
-  calls: setTheme, systemPrefersDark
-  called_by: extends
-  uses: event.currentTarget.value, this.setTheme, this.systemPrefersDark
-
-extends.connect (app/javascript/controllers/theme_controller.js:6-8)
-  method extends.connect
-  calls: startSystemThemeListener
-  called_by: extends
-  uses: this.startSystemThemeListener
-
-extends.disconnect (app/javascript/controllers/theme_controller.js:10-12)
-  method extends.disconnect
-  calls: stopSystemThemeListener
-  called_by: extends
-  uses: this.stopSystemThemeListener
-
-extends.startSystemThemeListener (app/javascript/controllers/theme_controller.js:71-77)
-  method extends.startSystemThemeListener
-  called_by: connect, extends
-  uses: this.darkMediaQuery, window.matchMedia, this.darkMediaQuery.addEventListener, this.handleSystemThemeChange
-
-extends.stopSystemThemeListener (app/javascript/controllers/theme_controller.js:79-86)
-  method extends.stopSystemThemeListener
-  called_by: disconnect, extends
-  uses: this.darkMediaQuery, this.darkMediaQuery.removeEventListener, this.handleSystemThemeChange
-
-extends.toggle (app/javascript/controllers/theme_controller.js:62-69)
-  method extends.toggle
-  calls: setTheme
-  called_by: extends
-  uses: document.documentElement.getAttribute, this.setTheme
-
 -- GAPS
-type: MECHANISTIC (body logic needed for full answer)
-coverage: 11 symbols in L3, 1 with behavior annotations
-drill: app/javascript/controllers/theme_controller.js (~1 lines, extends.userPreferenceValueChanged)
-drill: app/javascript/controllers/theme_controller.js (~4 lines, extends.setTheme)
-drill: app/javascript/controllers/theme_controller.js (~6 lines, extends.applyTheme)
+type: STRUCTURAL (answerable from L0-L2)
+coverage: 3 symbols in L3, 0 with behavior annotations
 
---- END CLUE FILE ---
-
---- SOURCE SNIPPETS (File 2 Drill-Down) ---
-## extends.userPreferenceValueChanged  (app/javascript/controllers/theme_controller.js L15-17)
-```
-  userPreferenceValueChanged() {
-    this.applyTheme();
-  }
-```
-
-## extends.setTheme  (app/javascript/controllers/theme_controller.js L43-49)
-```
-  setTheme(isDark) {
-    if (isDark) {
-      document.documentElement.setAttribute("data-theme", "dark");
-    } else {
-      document.documentElement.setAttribute("data-theme", "light");
-    }
-  }
-```
-
-## extends.applyTheme  (app/javascript/controllers/theme_controller.js L32-40)
-```
-  applyTheme() {
-    if (this.userPreferenceValue === "system") {
-      this.setTheme(this.systemPrefersDark());
-    } else if (this.userPreferenceValue === "dark") {
-      this.setTheme(true);
-    } else {
-      this.setTheme(false);
-    }
-  }
-```
-
-## extends.connect  (app/javascript/controllers/turbo_frame_timeout_controller.js L7-14)
-```
-  connect() {
-    this.timeoutId = setTimeout(() => {
-      this.handleTimeout()
-    }, this.timeoutValue)
-
-    // Listen for successful frame loads to clear timeout
-    this.element.addEventListener("turbo:frame-load", this.clearTimeout.bind(this))
-  }
-```
-
-## extends.disconnect  (app/javascript/controllers/turbo_frame_timeout_controller.js L16-18)
-```
-  disconnect() {
-    this.clearTimeout()
-  }
-```
-
-## extends.startSystemThemeListener  (app/javascript/controllers/theme_controller.js L71-77)
-```
-  startSystemThemeListener() {
-    this.darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    this.darkMediaQuery.addEventListener(
-      "change",
-      this.handleSystemThemeChange,
-    );
-  }
-```
-
-## extends.stopSystemThemeListener  (app/javascript/controllers/theme_controller.js L79-86)
-```
-  stopSystemThemeListener() {
-    if (this.darkMediaQuery) {
-      this.darkMediaQuery.removeEventListener(
-        "change",
-        this.handleSystemThemeChange,
-      );
-    }
-  }
-```
-
-## extends.systemPrefersDark  (app/javascript/controllers/theme_controller.js L51-53)
-```
-  systemPrefersDark() {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  }
-```
-
-## extends.toggle  (app/javascript/controllers/theme_controller.js L62-69)
-```
-  toggle() {
-    const currentTheme = document.documentElement.getAttribute("data-theme");
-    if (currentTheme === "dark") {
-      this.setTheme(false);
-    } else {
-      this.setTheme(true);
-    }
-  }
-```
-
-## extends.updateTheme  (app/javascript/controllers/theme_controller.js L20-29)
-```
-  updateTheme(event) {
-    const selectedTheme = event.currentTarget.value;
-    if (selectedTheme === "system") {
-      this.setTheme(this.systemPrefersDark());
-    } else if (selectedTheme === "dark") {
-      this.setTheme(true);
-    } else {
-      this.setTheme(false);
-    }
-  }
-```
-
-## extends  (app/javascript/controllers/turbo_frame_timeout_controller.js L2-42)
-```
-
-// Connects to data-controller="turbo-frame-timeout"
-export default class extends Controller {
-  static values = { timeout: { type: Number, default: 10000 } }
-
-  connect() {
-    this.timeoutId = setTimeout(() => {
-      this.handleTimeout()
-    }, this.timeoutValue)
-
-    // Listen for successful frame loads to clear timeout
-    this.element.addEventListener("turbo:frame-load", this.clearTimeout.bind(this))
-  }
-
-  disconnect() {
-    this.clearTimeout()
-  }
-
-  clearTimeout() {
-    if (this.timeoutId) {
-      clearTimeout(this.timeoutId)
-      this.timeoutId = null
-    }
-  }
-
-  handleTimeout() {
-    // Replace loading content with error state
-    this.element.innerHTML = `
-      <div class="flex items-center justify-end gap-1">
-        <div class="w-8 h-4 flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-warning">
-            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-            <path d="M12 9v4"/>
-            <path d="m12 17 .01 0"/>
-          </svg>
-        </div>
-        <p class="font-mono text-right text-xs text-warning">Timeout</p>
-      </div>
-    `
-  }
-} 
-```
---- END SOURCE SNIPPETS ---
+--- CLUE FILE END ---
 
 QUESTION: What documented surfaces and usage modes does Maybe expose for users, self-hosters, and developers?
 
-Provide a detailed answer based on the clue file and source snippets above.
-For each claim you make, cite the specific clue entry or source snippet that supports it.
+Provide a detailed answer based solely on the clue file above.
+For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.

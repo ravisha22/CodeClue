@@ -1,11 +1,15 @@
-=CC v2.1 saleor@HEAD 4239mod 27374sym
+=CC v2.1 saleor@HEAD 4239mod 27389sym
 ? How are permission checks attached to Saleor GraphQL queries and mutations?
 
+
+-- README
+<div align="center" width="100px"> <picture>
+sections: Table of Contents, What makes Saleor special?, Why API-only Architecture?, What are the tradeoffs?, Features
 
 -- TREE
 saleor/  (4237 files)
   account/  app/  asgi/  attribute/  auth/  channel/  checkout/  core/  csv/  discount/  ...+20
-conftest.py  manage.py
+.env.example  README.md  conftest.py  manage.py  package.json  pyproject.toml
 
 -- INDEX
 conftest.py                                     115L  Custom, django_db_setup, pytest_addoption, pytest_collection_modifyitems, pytest_configure
@@ -85,19 +89,21 @@ clean_attributes                    M saleor/graphql/product/mutations/product/p
 clean_attributes                    M saleor/graphql/product/mutations/product/product_update.py:78     function clean_attributes
 clean_attributes                    M saleor/graphql/product/mutations/product_variant/product_variant_update.py:130    function clean_attributes
 clean_input                         M saleor/graphql/page/mutations/page_create.py:81     function clean_input
-clean_attributes                    M saleor/graphql/page/mutations/page_create.py:72     function clean_attributes
-_resolve_page                       M saleor/graphql/page/schema.py:103    function _resolve_page
-resolve_page                        M saleor/graphql/page/schema.py:94     function resolve_page
-_resolve_pages                      M saleor/graphql/page/schema.py:122    function _resolve_pages
-resolve_pages                       M saleor/graphql/page/schema.py:117    function resolve_pages
-_create_variant_errors              M saleor/graphql/checkout/mutations/checkout_create_from_order.py:81     function _create_variant_errors
-__run_payment_method                M saleor/plugins/manager.py:2556   function __run_payment_method
-__run_payment_webhook               M saleor/plugins/webhook/plugin.py:2994   Trigger payment webhook event.
-get_form_field_description          M saleor/graphql/core/types/converter.py:24     function get_form_field_description
-_resolve_product                    M saleor/graphql/product/schema.py:455    function _resolve_product
-  ...and 13182 more symbols
+  ...and 13206 more symbols
 
 -- FOCUS
+saleor/settings.py (saleor/settings.py:1-1261)
+  Config summary for saleor/settings.py: entries: SOFT_MEMORY_LIMIT_IN_MB=os.environ.get('SOFT_MEMORY_LIMIT_IN_MB', None), HARD_MEMORY_LIMIT_IN_MB=os.environ.get('HARD_MEMORY_LIMIT_IN_MB', None), DEBUG=get_bool_from_env('DEBUG', True), SITE_ID=1, PROJECT_ROOT=os.path.normpath(os.path.join(os.path.dirname(__file__), '..')), ROOT_URLCONF='saleor.urls'
+  entries: SOFT_MEMORY_LIMIT_IN_MB=os.environ.get('SOFT_MEMORY_LIMIT_IN_MB', None), HARD_MEMORY_LIMIT_IN_MB=os.environ.get('HARD_MEMORY_LIMIT_IN_MB', None), DEBUG=get_bool_from_env('DEBUG', True), SITE_ID=1, PROJECT_ROOT=os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
+
+saleor/tests/settings.py (saleor/tests/settings.py:1-105)
+  Config summary for saleor/tests/settings.py: entries: POPULATE_DEFAULTS=False, CELERY_TASK_ALWAYS_EAGER=True, PUBLIC_URL='https://example.com', SECRET_KEY='NOTREALLY', ALLOWED_CLIENT_HOSTS=['www.example.com'], EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend'
+  entries: POPULATE_DEFAULTS=False, CELERY_TASK_ALWAYS_EAGER=True, PUBLIC_URL='https://example.com', SECRET_KEY='NOTREALLY', ALLOWED_CLIENT_HOSTS=['www.example.com']
+
+.env.example (.env.example:1-8)
+  Config summary for .env.example: entries: CACHE_URL=redis://localhost:6379/0, CELERY_BROKER_URL=redis://localhost:6379/1, DEFAULT_FROM_EMAIL=noreply@example.com, EMAIL_URL=smtp://localhost:1025, SECRET_KEY=changeme, HTTP_IP_FILTER_ALLOW_LOOPBACK_IPS=True
+  entries: CACHE_URL=redis://localhost:6379/0, CELERY_BROKER_URL=redis://localhost:6379/1, DEFAULT_FROM_EMAIL=noreply@example.com, EMAIL_URL=smtp://localhost:1025, SECRET_KEY=changeme
+
 get_saleor_permission_names (saleor/plugins/openid_connect/utils.py:728-731)
   sig: get_saleor_permission_names(permissions)
 
@@ -221,50 +227,7 @@ MenuQueries (saleor/graphql/menu/schema.py:32-116)
   calls: resolve_menu, resolve_menu_item, resolve_menu_items, resolve_menus
   uses: ChannelQsContext (core.context)
 
-__queries_or_introspection_in_selections (saleor/graphql/utils/validators.py:36-55)
-  sig: __queries_or_introspection_in_selections(selections, is_query)
-  behavior: ACCUMULATE(selections loop -> result)
-  calls: __queries_or_introspection_in_inline_fragment
-  called_by: __queries_or_introspection_in_fragment_definition, __queries_or_introspection_in_inline_fragment, __queries_or_introspection_in_operation_definition
-
-CheckoutQueries (saleor/graphql/checkout/schema.py:50-123)
-  extends: ObjectType
-  imports: graphene, permission.enums, core, core.connection, core.descriptions
-  calls: resolve_checkout, resolve_checkout_lines, resolve_checkouts
-
-GiftCardQueries (saleor/graphql/giftcard/schema.py:38-134)
-  extends: ObjectType
-  imports: graphene, graphql.error, core.search, giftcard, permission.enums
-  calls: resolve_gift_card, resolve_gift_card_tags, resolve_gift_cards
-  raises: GraphQLError
-  uses: GraphQLError (graphql.error)
-
-PaymentQueries (saleor/graphql/payment/schema.py:55-157)
-  extends: ObjectType
-  imports: graphene, permission.enums, core, core.connection, core.descriptions
-  calls: resolve_payments, resolve_transaction, resolve_transactions
-
-ChannelQueries (saleor/graphql/channel/schema.py:20-50)
-  extends: ObjectType
-  imports: graphene, permission.auth_filters, core, core.doc_category, core.fields
-  calls: resolve_channel, resolve_channels
-
-CsvQueries (saleor/graphql/csv/schema.py:16-42)
-  extends: ObjectType
-  imports: graphene, permission.enums, core, core.connection, core.descriptions
-  calls: resolve_export_file, resolve_export_files
-
-PluginsQueries (saleor/graphql/plugins/schema.py:17-53)
-  extends: ObjectType
-  imports: graphene, permission.enums, core, core.connection, core.context
-  calls: resolve_plugin, resolve_plugins
-
-StockQueries (saleor/graphql/warehouse/schema.py:87-114)
-  extends: ObjectType
-  imports: graphene, permission.enums, warehouse, core, core.connection
-  calls: resolve_stock, resolve_stocks
-
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 7 with behavior annotations
+coverage: 83 symbols in L3, 7 with behavior annotations
 uncovered: resolve_permission_group, resolve_permission_group, resolve_permission_group, resolve_permission_groups

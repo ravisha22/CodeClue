@@ -11,20 +11,24 @@ Do not use any external knowledge about the framework or library.
 **Reasoning scaffold:** Think through the clue systematically before answering. First, identify the symbols most relevant to the question from FOCUS, SYM, and INDEX. Trace those symbols through the clue before forming any conclusion: follow calls: chains, walk extends: hierarchies, and read behavior: annotations as compact control-flow summaries. Use TREE and INDEX to place each symbol in its module context. Then consult the provided source snippets only to confirm or refine the traced path. State explicitly what GAPS says cannot be determined from the evidence. Finally, synthesize the answer, separating supported conclusions from remaining uncertainty.
 
 --- CLUE FILE (File 1) ---
-=CC v2.1 calcom@HEAD 5074mod 11723sym
+=CC v2.1 calcom@HEAD 5074mod 11733sym
 ? How does the headless router flow from a submitted form to a booked meeting?
 
 
+-- README
+> [!WARNING] > Use at your own risk. Cal.diy is the open source community edition of Cal.com and it is intended for users who want...
+sections: About Cal.diy, What's different from Cal.com?, Built With, Getting Started, Prerequisites
+
 -- TREE
 __checks__/  (3 files)
-apps/  (1632 files)
+apps/  (1635 files)
   api/  docs/  web/
-example-apps/  (7 files)
+example-apps/  (8 files)
   credential-sync/
-packages/  (3418 files)
+packages/  (3420 files)
   app-store/  dayjs/  debugging/  emails/  embeds/  features/  i18n/  kysely/  lib/  prisma/  ...+4
 scripts/  (9 files)
-checkly.config.ts  i18n-unused.config.js  playwright.config.ts  setupVitest.ts  vitest.workspace.ts
+.env.example  README.md  checkly.config.ts  docker-compose.yml  i18n-unused.config.js  package.json  playwright.config.ts  setupVitest.ts  vitest.workspace.ts
 
 -- INDEX
 packages/embeds/embed-core/src/embed.ts        1709L  buildFilteredQueryParams, constructor, doInIframe, ensureGuestKey, filterParams
@@ -50,14 +54,6 @@ InputLocationValidator_2024_06_14.validate M packages/platform/types/event-types
 InputTeamLocationValidator_2024_06_14.validate M packages/platform/types/event-types/event-types_2024_06_14/inputs/locations.input.ts:215    async_method InputTeamLocationValidator_2024_06...
 hasPermission                       M packages/platform/enums/permissions.ts:15     function hasPermission
 hasPermission                       M packages/platform/utils/permissions.ts:15     function hasPermission
-SystemError.constructor             M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:207    method SystemError.constructor
-TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:118    async_method TestRepository.delete
-TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:135    async_method TestRepository.delete
-TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:31     async_method TestRepository.delete
-TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:47     async_method TestRepository.delete
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:156    async_method TestRepository.update
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:186    async_method TestRepository.update
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:66     async_method TestRepository.update
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:118    method TestTasker.constructor
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:152    method TestTasker.constructor
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:194    method TestTasker.constructor
@@ -69,34 +65,48 @@ TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:386    
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:430    method TestTasker.constructor
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:470    method TestTasker.constructor
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:73     method TestTasker.constructor
-UserError.constructor               M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:197    method UserError.constructor
-PartialWebhookInputPipe.transform   M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:16     method PartialWebhookInputPipe.transform
-WebhookInputPipe.transform          M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:6      method WebhookInputPipe.transform
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:102    async_method TestRepository.update
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:171    async_method TestRepository.update
-CalendarAppDelegationCredentialClientIdNotAuthorizedError.constructor M packages/lib/CalendarAppError.ts:30     method CalendarAppDelegationCredentialClientIdN...
-CalendarAppDelegationCredentialConfigurationError.constructor M packages/lib/CalendarAppError.ts:16     method CalendarAppDelegationCredentialConfigura...
-CalendarAppDelegationCredentialInvalidGrantError.constructor M packages/lib/CalendarAppError.ts:23     method CalendarAppDelegationCredentialInvalidGr...
-CalendarAppError.constructor        M packages/lib/CalendarAppError.ts:2      method CalendarAppError.constructor
-CalendarAppDelegationCredentialError.constructor M packages/lib/CalendarAppError.ts:9      method CalendarAppDelegationCredentialError.con...
-CalendarAppDelegationCredentialNotSetupError.constructor M packages/lib/CalendarAppError.ts:37     method CalendarAppDelegationCredentialNotSetupE...
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:113    async_method TestRepository.findById
+TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:136    async_method TestRepository.findById
+TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:176    async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:192    async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:34     async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:53     async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:74     async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:90     async_method TestRepository.findById
-TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:136    async_method TestRepository.findById
-TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:176    async_method TestRepository.findById
-Office365CalendarService.triggerDelegationCredentialError M packages/app-store/office365calendar/lib/CalendarService.ts:126    async_method Office365CalendarService.triggerDe...
-BookingAuditAccessService.constructor M packages/features/booking-audit/lib/service/BookingAuditAccessService.ts:33     method BookingAuditAccessService.constructor
-BookingAuditPermissionError.constructor M packages/features/booking-audit/lib/service/BookingAuditAccessService.ts:13     method BookingAuditPermissionError.constructor
-DefaultLayoutEnabledValidator.validate M packages/platform/types/event-types/event-types_2024_06_14/inputs/booker-layouts.input.ts:49     method DefaultLayoutEnabledValidator.validate
-LayoutValidator.validate            M packages/platform/types/event-types/event-types_2024_06_14/inputs/booker-layouts.input.ts:17     method LayoutValidator.validate
-DefaultLayoutEnabledValidator.defaultMessage M packages/platform/types/event-types/event-types_2024_06_14/inputs/booker-layouts.input.ts:58     method DefaultLayoutEnabledValidator.defaultMes...
-  ...and 11280 more symbols
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:31     async_method TestRepository.delete
+PartialWebhookInputPipe.transform   M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:16     method PartialWebhookInputPipe.transform
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:118    async_method TestRepository.delete
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:135    async_method TestRepository.delete
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:47     async_method TestRepository.delete
+CalendarAppDelegationCredentialClientIdNotAuthorizedError.constructor M packages/lib/CalendarAppError.ts:30     method CalendarAppDelegationCredentialClientIdN...
+CalendarAppDelegationCredentialConfigurationError.constructor M packages/lib/CalendarAppError.ts:16     method CalendarAppDelegationCredentialConfigura...
+CalendarAppDelegationCredentialError.constructor M packages/lib/CalendarAppError.ts:9      method CalendarAppDelegationCredentialError.con...
+CalendarAppDelegationCredentialInvalidGrantError.constructor M packages/lib/CalendarAppError.ts:23     method CalendarAppDelegationCredentialInvalidGr...
+CalendarAppError.constructor        M packages/lib/CalendarAppError.ts:2      method CalendarAppError.constructor
+UserError.constructor               M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:197    method UserError.constructor
+WebhookInputPipe.transform          M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:6      method WebhookInputPipe.transform
+CalendarAppDelegationCredentialNotSetupError.constructor M packages/lib/CalendarAppError.ts:37     method CalendarAppDelegationCredentialNotSetupE...
+SystemError.constructor             M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:207    method SystemError.constructor
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:102    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:156    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:171    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:186    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:66     async_method TestRepository.update
+  ...and 11296 more symbols
 
 -- FOCUS
+.env.example (.env.example:1-484)
+  Config summary for .env.example: entries: DATABASE_URL=postgresql://postgres:@localhost:5450..., DATABASE_DIRECT_URL=postgresql://postgres:@localhost:5450..., INSIGHTS_DATABASE_URL=<set>, NEXT_PUBLIC_WEBAPP_URL=http://localhost:3000, NEXT_PUBLIC_WEBSITE_URL=http://localhost:3000, NEXT_PUBLIC_EMBED_LIB_URL=http://localhost:3000/embed/embed.js
+  entries: DATABASE_URL=postgresql://postgres:@localhost:5450..., DATABASE_DIRECT_URL=postgresql://postgres:@localhost:5450..., INSIGHTS_DATABASE_URL=<set>, NEXT_PUBLIC_WEBAPP_URL=http://localhost:3000, NEXT_PUBLIC_WEBSITE_URL=http://localhost:3000
+
+apps/api/v2/.env.example (apps/api/v2/.env.example:1-76)
+  Config summary for apps/api/v2/.env.example: entries: NODE_ENV=development, API_PORT=5555, API_URL=http://localhost, DATABASE_READ_URL=postgresql://postgres:@localhost:5450..., DATABASE_WRITE_URL=postgresql://postgres:@localhost:5450..., LOG_LEVEL=DEBUG
+  entries: NODE_ENV=development, API_PORT=5555, API_URL=http://localhost, DATABASE_READ_URL=postgresql://postgres:@localhost:5450..., DATABASE_WRITE_URL=postgresql://postgres:@localhost:5450...
+
+example-apps/credential-sync/.env.example (example-apps/credential-sync/.env.example:1-15)
+  Config summary for example-apps/credential-sync/.env.example: entries: CALCOM_TEST_USER_ID=1, GOOGLE_REFRESH_TOKEN=<set>, GOOGLE_CLIENT_ID=<set>, GOOGLE_CLIENT_SECRET=<set>, ZOOM_REFRESH_TOKEN=<set>, ZOOM_CLIENT_ID=<set>
+  entries: CALCOM_TEST_USER_ID=1, GOOGLE_REFRESH_TOKEN=<set>, GOOGLE_CLIENT_ID=<set>, GOOGLE_CLIENT_SECRET=<set>, ZOOM_REFRESH_TOKEN=<set>
+
 FormSubmittedDTO (packages/features/webhooks/lib/dto/types.ts:175-186)
   interface FormSubmittedDTO
   extends: BaseEventDTO
@@ -212,44 +222,9 @@ SeatBookedAuditActionService.getDisplayTitle (packages/features/booking-audit/li
   called_by: SeatBookedAuditActionService
   uses: booking_audit_action.seat_booked
 
-deleteMeeting (packages/features/conferencing/lib/videoClient.ts:146-164)
-  sig: deleteMeeting(credential: CredentialPayload | CredentialForCalendarServ...)
-  behavior: GUARD(videoAdapter -> return videoAdapter...); PRECEDENCE(credential -> videoAdapter)
-  uses: log.debug, e.g, videoAdapter.deleteMeeting, Promise.resolve
-
-getMeetingInformationHandler (packages/trpc/server/routers/viewer/calVideo/getMeetingInformation.handler.ts:14-43)
-  sig: getMeetingInformationHandler({ ctx: _ctx, input }: GetMeetingInformationOptions)
-  uses: VideoApiAdapterMap.dailyvideo, dailyVideoAdapterModule.default, videoApiAdapter.getMeetingInformation
-
-onRouterTransitionStart (apps/web/instrumentation-client.ts:46-51)
-  sig: onRouterTransitionStart(url: string, navigationType: "push" | "replace" | "traverse")
-  uses: process.env.NODE_ENV, Sentry.captureRouterTransitionStart
-
-parseMultiFormData (apps/web/app/api/parseRequestData.ts:19-28)
-  sig: parseMultiFormData(req: NextRequest)
-  behavior: DELEGATE(Object.fromEntries -> result)
-  called_by: parseRequestData
-  uses: req.formData, Object.fromEntries, formData.entries, log.error
-
-resetForm (apps/web/components/settings/DisableTwoFactorModal.tsx:45-51)
-  sig: resetForm(clearPassword = true)
-  called_by: handleDisable
-  uses: form.setValue
-
-useCreateEventTypeForm (packages/platform/atoms/hooks/event-types/private/useCreateEventTypeForm.ts:11-32)
-  uses: form.watch, SchedulingType.MANAGED, form.setValue, metadata.managedEventConfig.unlockedFields
-
-useRouterQuery (apps/web/lib/hooks/useRouterQuery.ts:5-28)
-  sig: useRouterQuery(name: T)
-  uses: _searchParams.delete, _searchParams.set, router.replace, _searchParams.toString
-
-AppRouter (packages/trpc/server/routers/_app.ts:16-16)
-  type alias AppRouter = typeof appRouter
-  uses: appRouter
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 11 with behavior annotations
+coverage: 83 symbols in L3, 11 with behavior annotations
 uncovered: IUseBookingForm, InstantMeetingBuilder, InstantMeetingPayload, JoinMeetingButtonProps
 drill: packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts (~17 lines, WebhookTaskerProducerService.queueFormSubmittedWebhook)
 

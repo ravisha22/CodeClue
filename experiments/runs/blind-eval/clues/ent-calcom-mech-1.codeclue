@@ -1,17 +1,21 @@
-=CC v2.1 calcom@HEAD 5074mod 11723sym
+=CC v2.1 calcom@HEAD 5074mod 11733sym
 ? How does the cancellation-reason setting change booking cancellation behavior?
 
 
+-- README
+> [!WARNING] > Use at your own risk. Cal.diy is the open source community edition of Cal.com and it is intended for users who want...
+sections: About Cal.diy, What's different from Cal.com?, Built With, Getting Started, Prerequisites
+
 -- TREE
 __checks__/  (3 files)
-apps/  (1632 files)
+apps/  (1635 files)
   api/  docs/  web/
-example-apps/  (7 files)
+example-apps/  (8 files)
   credential-sync/
-packages/  (3418 files)
+packages/  (3420 files)
   app-store/  dayjs/  debugging/  emails/  embeds/  features/  i18n/  kysely/  lib/  prisma/  ...+4
 scripts/  (9 files)
-checkly.config.ts  i18n-unused.config.js  playwright.config.ts  setupVitest.ts  vitest.workspace.ts
+.env.example  README.md  checkly.config.ts  docker-compose.yml  i18n-unused.config.js  package.json  playwright.config.ts  setupVitest.ts  vitest.workspace.ts
 
 -- INDEX
 packages/embeds/embed-core/src/embed.ts        1709L  buildFilteredQueryParams, constructor, doInIframe, ensureGuestKey, filterParams
@@ -37,14 +41,6 @@ InputLocationValidator_2024_06_14.validate M packages/platform/types/event-types
 InputTeamLocationValidator_2024_06_14.validate M packages/platform/types/event-types/event-types_2024_06_14/inputs/locations.input.ts:215    async_method InputTeamLocationValidator_2024_06...
 hasPermission                       M packages/platform/enums/permissions.ts:15     function hasPermission
 hasPermission                       M packages/platform/utils/permissions.ts:15     function hasPermission
-SystemError.constructor             M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:207    method SystemError.constructor
-TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:118    async_method TestRepository.delete
-TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:135    async_method TestRepository.delete
-TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:31     async_method TestRepository.delete
-TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:47     async_method TestRepository.delete
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:156    async_method TestRepository.update
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:186    async_method TestRepository.update
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:66     async_method TestRepository.update
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:118    method TestTasker.constructor
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:152    method TestTasker.constructor
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:194    method TestTasker.constructor
@@ -56,34 +52,48 @@ TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:386    
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:430    method TestTasker.constructor
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:470    method TestTasker.constructor
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:73     method TestTasker.constructor
-UserError.constructor               M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:197    method UserError.constructor
-PartialWebhookInputPipe.transform   M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:16     method PartialWebhookInputPipe.transform
-WebhookInputPipe.transform          M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:6      method WebhookInputPipe.transform
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:102    async_method TestRepository.update
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:171    async_method TestRepository.update
-CalendarAppDelegationCredentialClientIdNotAuthorizedError.constructor M packages/lib/CalendarAppError.ts:30     method CalendarAppDelegationCredentialClientIdN...
-CalendarAppDelegationCredentialConfigurationError.constructor M packages/lib/CalendarAppError.ts:16     method CalendarAppDelegationCredentialConfigura...
-CalendarAppDelegationCredentialInvalidGrantError.constructor M packages/lib/CalendarAppError.ts:23     method CalendarAppDelegationCredentialInvalidGr...
-CalendarAppError.constructor        M packages/lib/CalendarAppError.ts:2      method CalendarAppError.constructor
-CalendarAppDelegationCredentialError.constructor M packages/lib/CalendarAppError.ts:9      method CalendarAppDelegationCredentialError.con...
-CalendarAppDelegationCredentialNotSetupError.constructor M packages/lib/CalendarAppError.ts:37     method CalendarAppDelegationCredentialNotSetupE...
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:113    async_method TestRepository.findById
+TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:136    async_method TestRepository.findById
+TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:176    async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:192    async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:34     async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:53     async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:74     async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:90     async_method TestRepository.findById
-TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:136    async_method TestRepository.findById
-TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:176    async_method TestRepository.findById
-Office365CalendarService.triggerDelegationCredentialError M packages/app-store/office365calendar/lib/CalendarService.ts:126    async_method Office365CalendarService.triggerDe...
-BookingAuditAccessService.constructor M packages/features/booking-audit/lib/service/BookingAuditAccessService.ts:33     method BookingAuditAccessService.constructor
-BookingAuditPermissionError.constructor M packages/features/booking-audit/lib/service/BookingAuditAccessService.ts:13     method BookingAuditPermissionError.constructor
-DefaultLayoutEnabledValidator.validate M packages/platform/types/event-types/event-types_2024_06_14/inputs/booker-layouts.input.ts:49     method DefaultLayoutEnabledValidator.validate
-LayoutValidator.validate            M packages/platform/types/event-types/event-types_2024_06_14/inputs/booker-layouts.input.ts:17     method LayoutValidator.validate
-DefaultLayoutEnabledValidator.defaultMessage M packages/platform/types/event-types/event-types_2024_06_14/inputs/booker-layouts.input.ts:58     method DefaultLayoutEnabledValidator.defaultMes...
-  ...and 11280 more symbols
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:31     async_method TestRepository.delete
+PartialWebhookInputPipe.transform   M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:16     method PartialWebhookInputPipe.transform
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:118    async_method TestRepository.delete
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:135    async_method TestRepository.delete
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:47     async_method TestRepository.delete
+CalendarAppDelegationCredentialClientIdNotAuthorizedError.constructor M packages/lib/CalendarAppError.ts:30     method CalendarAppDelegationCredentialClientIdN...
+CalendarAppDelegationCredentialConfigurationError.constructor M packages/lib/CalendarAppError.ts:16     method CalendarAppDelegationCredentialConfigura...
+CalendarAppDelegationCredentialError.constructor M packages/lib/CalendarAppError.ts:9      method CalendarAppDelegationCredentialError.con...
+CalendarAppDelegationCredentialInvalidGrantError.constructor M packages/lib/CalendarAppError.ts:23     method CalendarAppDelegationCredentialInvalidGr...
+CalendarAppError.constructor        M packages/lib/CalendarAppError.ts:2      method CalendarAppError.constructor
+UserError.constructor               M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:197    method UserError.constructor
+WebhookInputPipe.transform          M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:6      method WebhookInputPipe.transform
+CalendarAppDelegationCredentialNotSetupError.constructor M packages/lib/CalendarAppError.ts:37     method CalendarAppDelegationCredentialNotSetupE...
+SystemError.constructor             M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:207    method SystemError.constructor
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:102    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:156    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:171    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:186    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:66     async_method TestRepository.update
+  ...and 11296 more symbols
 
 -- FOCUS
+.env.example (.env.example:1-484)
+  Config summary for .env.example: entries: DATABASE_URL=postgresql://postgres:@localhost:5450..., DATABASE_DIRECT_URL=postgresql://postgres:@localhost:5450..., INSIGHTS_DATABASE_URL=<set>, NEXT_PUBLIC_WEBAPP_URL=http://localhost:3000, NEXT_PUBLIC_WEBSITE_URL=http://localhost:3000, NEXT_PUBLIC_EMBED_LIB_URL=http://localhost:3000/embed/embed.js
+  entries: DATABASE_URL=postgresql://postgres:@localhost:5450..., DATABASE_DIRECT_URL=postgresql://postgres:@localhost:5450..., INSIGHTS_DATABASE_URL=<set>, NEXT_PUBLIC_WEBAPP_URL=http://localhost:3000, NEXT_PUBLIC_WEBSITE_URL=http://localhost:3000
+
+apps/api/v2/.env.example (apps/api/v2/.env.example:1-76)
+  Config summary for apps/api/v2/.env.example: entries: NODE_ENV=development, API_PORT=5555, API_URL=http://localhost, DATABASE_READ_URL=postgresql://postgres:@localhost:5450..., DATABASE_WRITE_URL=postgresql://postgres:@localhost:5450..., LOG_LEVEL=DEBUG
+  entries: NODE_ENV=development, API_PORT=5555, API_URL=http://localhost, DATABASE_READ_URL=postgresql://postgres:@localhost:5450..., DATABASE_WRITE_URL=postgresql://postgres:@localhost:5450...
+
+example-apps/credential-sync/.env.example (example-apps/credential-sync/.env.example:1-15)
+  Config summary for example-apps/credential-sync/.env.example: entries: CALCOM_TEST_USER_ID=1, GOOGLE_REFRESH_TOKEN=<set>, GOOGLE_CLIENT_ID=<set>, GOOGLE_CLIENT_SECRET=<set>, ZOOM_REFRESH_TOKEN=<set>, ZOOM_CLIENT_ID=<set>
+  entries: CALCOM_TEST_USER_ID=1, GOOGLE_REFRESH_TOKEN=<set>, GOOGLE_CLIENT_ID=<set>, GOOGLE_CLIENT_SECRET=<set>, ZOOM_REFRESH_TOKEN=<set>
+
 AssignmentReasonRepository.findByBookingId (packages/features/assignment-reason/repositories/AssignmentReasonRepository.ts:36-47)
   async_method AssignmentReasonRepository.findByBookingId
   sig: AssignmentReasonRepository.findByBookingId(bookingId: number)
@@ -182,37 +192,7 @@ RescheduleReasonDefaultFieldInput_2024_06_14 (packages/platform/types/event-type
 RescheduleReasonDefaultFieldOutput_2024_06_14 (packages/platform/types/event-types/event-types_2024_06_14/outputs/booking-fields.output.ts:150-202)
   extends: RescheduleReasonDefaultFieldInput_2024_06_14
 
-fieldIsCustomSystemRescheduleReason (apps/api/v2/src/platform/event-types/event-types_2024_06_14/transformers/api-to-internal/booking-fields.ts:282-287)
-  sig: fieldIsCustomSystemRescheduleReason(field: InputBookingField)
-  called_by: getBaseProperties
-  uses: field.slug
-
-handleSelectChange (apps/web/components/booking/CancelBooking.tsx:39-48)
-  sig: handleSelectChange(option: { value: number | string; label: string } | null)
-
-ManagedEventCancellationResult (packages/features/bookings/repositories/BookingRepository.ts:71-71)
-  type alias ManagedEventCancellationResult = {
-
-ManagedEventCancellationResult (packages/features/bookings/repositories/BookingRepository.ts:70-70)
-  type alias ManagedEventCancellationResult = {
-
-BookingEmailSmsHandler.send (packages/features/bookings/lib/BookingEmailSmsHandler.ts:94-106)
-  async_method BookingEmailSmsHandler.send
-  sig: BookingEmailSmsHandler.send(payload: EmailsAndSmsSideEffectsPayload)
-  behavior: GUARD(action === BookingActionMap.rescheduled -> if (data.eventType....)
-  calls: _handleConfirmed, _handleRequested, _handleRescheduled, _handleRoundRobinRescheduled
-  called_by: BookingEmailSmsHandler
-  uses: BookingActionMap.rescheduled, data.eventType.schedulingType, this._handleRoundRobinRescheduled, this._handleRescheduled
-
-CalendarSyncService.rescheduleBooking (packages/features/calendar-subscription/lib/sync/CalendarSyncService.ts:154-238)
-  async_method CalendarSyncService.rescheduleBooking
-  sig: CalendarSyncService.rescheduleBooking(event: CalendarSubscriptionEventItem, calendarUserId: number)
-  behavior: GUARD(!bookingUid -> log.debug("Unable t...); PRECEDENCE(not_bookingUid -> not_booking -> booking)
-  calls: buildRescheduleBookingData, hasStartTimeChanged
-  called_by: CalendarSyncService
-  uses: performance.now, log.debug, event.iCalUID, this.deps.bookingRepository.findBookingByUidWithEventType
-
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 69 with behavior annotations
+coverage: 83 symbols in L3, 69 with behavior annotations
 uncovered: BookingsRepository_2024_08_13.updateBooking, BookingsService_2024_08_13.confirmBooking, BookingsService_2024_08_13.declineBooking, BookingsService_2024_08_13.getBookingBySeatUid

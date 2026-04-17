@@ -12,14 +12,18 @@ Do not use any external knowledge about the framework or library.
 **Reasoning scaffold:** Think through the clue systematically before answering. First, identify the modules, symbols, or relationships most relevant to the question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before concluding: follow calls: chains, walk extends: hierarchies, and use behavior: annotations as summaries of how control or responsibility moves. Use TREE and INDEX to situate the relationship in the repository structure. State explicitly what GAPS says cannot be determined from the clue alone. Finally, synthesize the answer, distinguishing supported structure from unresolved uncertainty.
 
 --- CLUE FILE START ---
-=CC v2.1 saleor@HEAD 4239mod 27374sym
+=CC v2.1 saleor@HEAD 4239mod 27389sym
 ? How are concurrent object updates kept safe in Saleor?
 
+
+-- README
+<div align="center" width="100px"> <picture>
+sections: Table of Contents, What makes Saleor special?, Why API-only Architecture?, What are the tradeoffs?, Features
 
 -- TREE
 saleor/  (4237 files)
   account/  app/  asgi/  attribute/  auth/  channel/  checkout/  core/  csv/  discount/  ...+20
-conftest.py  manage.py
+.env.example  README.md  conftest.py  manage.py  package.json  pyproject.toml
 
 -- INDEX
 conftest.py                                     115L  Custom, django_db_setup, pytest_addoption, pytest_collection_modifyitems, pytest_configure
@@ -99,19 +103,21 @@ clean_attributes                    M saleor/graphql/product/mutations/product/p
 clean_attributes                    M saleor/graphql/product/mutations/product/product_update.py:78     function clean_attributes
 clean_attributes                    M saleor/graphql/product/mutations/product_variant/product_variant_update.py:130    function clean_attributes
 clean_input                         M saleor/graphql/page/mutations/page_create.py:81     function clean_input
-clean_attributes                    M saleor/graphql/page/mutations/page_create.py:72     function clean_attributes
-_resolve_page                       M saleor/graphql/page/schema.py:103    function _resolve_page
-resolve_page                        M saleor/graphql/page/schema.py:94     function resolve_page
-_resolve_pages                      M saleor/graphql/page/schema.py:122    function _resolve_pages
-resolve_pages                       M saleor/graphql/page/schema.py:117    function resolve_pages
-_create_variant_errors              M saleor/graphql/checkout/mutations/checkout_create_from_order.py:81     function _create_variant_errors
-__run_payment_method                M saleor/plugins/manager.py:2556   function __run_payment_method
-__run_payment_webhook               M saleor/plugins/webhook/plugin.py:2994   Trigger payment webhook event.
-get_form_field_description          M saleor/graphql/core/types/converter.py:24     function get_form_field_description
-_resolve_product                    M saleor/graphql/product/schema.py:455    function _resolve_product
-  ...and 13182 more symbols
+  ...and 13206 more symbols
 
 -- FOCUS
+saleor/settings.py (saleor/settings.py:1-1261)
+  Config summary for saleor/settings.py: entries: SOFT_MEMORY_LIMIT_IN_MB=os.environ.get('SOFT_MEMORY_LIMIT_IN_MB', None), HARD_MEMORY_LIMIT_IN_MB=os.environ.get('HARD_MEMORY_LIMIT_IN_MB', None), DEBUG=get_bool_from_env('DEBUG', True), SITE_ID=1, PROJECT_ROOT=os.path.normpath(os.path.join(os.path.dirname(__file__), '..')), ROOT_URLCONF='saleor.urls'
+  entries: SOFT_MEMORY_LIMIT_IN_MB=os.environ.get('SOFT_MEMORY_LIMIT_IN_MB', None), HARD_MEMORY_LIMIT_IN_MB=os.environ.get('HARD_MEMORY_LIMIT_IN_MB', None), DEBUG=get_bool_from_env('DEBUG', True), SITE_ID=1, PROJECT_ROOT=os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
+
+saleor/tests/settings.py (saleor/tests/settings.py:1-105)
+  Config summary for saleor/tests/settings.py: entries: POPULATE_DEFAULTS=False, CELERY_TASK_ALWAYS_EAGER=True, PUBLIC_URL='https://example.com', SECRET_KEY='NOTREALLY', ALLOWED_CLIENT_HOSTS=['www.example.com'], EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend'
+  entries: POPULATE_DEFAULTS=False, CELERY_TASK_ALWAYS_EAGER=True, PUBLIC_URL='https://example.com', SECRET_KEY='NOTREALLY', ALLOWED_CLIENT_HOSTS=['www.example.com']
+
+.env.example (.env.example:1-8)
+  Config summary for .env.example: entries: CACHE_URL=redis://localhost:6379/0, CELERY_BROKER_URL=redis://localhost:6379/1, DEFAULT_FROM_EMAIL=noreply@example.com, EMAIL_URL=smtp://localhost:1025, SECRET_KEY=changeme, HTTP_IP_FILTER_ALLOW_LOOPBACK_IPS=True
+  entries: CACHE_URL=redis://localhost:6379/0, CELERY_BROKER_URL=redis://localhost:6379/1, DEFAULT_FROM_EMAIL=noreply@example.com, EMAIL_URL=smtp://localhost:1025, SECRET_KEY=changeme
+
 create_or_update_discount_object_from_order_level_voucher (saleor/discount/utils/voucher.py:387-481)
   Create or update discount object for ENTIRE_ORDER and SHIPPING voucher.
   sig: create_or_update_discount_object_from_order_level_voucher(order, database_connection_name)
@@ -180,13 +186,13 @@ updates_amounts_for_order (saleor/order/utils.py:1081-1108)
   sig: updates_amounts_for_order(order, save)
   calls: update_order_authorize_data, update_order_charge_data
 
-filter_by_contains_referenced_object_ids (saleor/graphql/page/filters.py:505-540)
+filter_by_contains_referenced_object_ids (saleor/graphql/product/filters/product_variant.py:521-556)
   sig: filter_by_contains_referenced_object_ids(attr_id, attr_value, db_connection_name)
   calls: _filter_by_contains_all_referenced_object_ids, _filter_by_contains_any_referenced_object_ids
   called_by: filter_objects_by_reference_attributes
   uses: Q (django.db.models)
 
-filter_by_contains_referenced_object_ids (saleor/graphql/product/filters/product_variant.py:521-556)
+filter_by_contains_referenced_object_ids (saleor/graphql/page/filters.py:505-540)
   sig: filter_by_contains_referenced_object_ids(attr_id, attr_value, db_connection_name)
   calls: _filter_by_contains_all_referenced_object_ids, _filter_by_contains_any_referenced_object_ids
   called_by: filter_objects_by_reference_attributes
@@ -233,48 +239,9 @@ _filter_by_contains_all_referenced_object_ids (saleor/graphql/product/filters/pr
   called_by: filter_by_contains_referenced_object_ids
   uses: Q (django.db.models)
 
-_filter_by_contains_any_referenced_object_ids (saleor/graphql/product/filters/product_variant.py:463-518)
-  sig: _filter_by_contains_any_referenced_object_ids(variant_ids, product_ids, page_ids, category_ids, collection_ids...)
-  calls: _filter_contains_single_expression
-  called_by: filter_by_contains_referenced_object_ids
-  uses: Q (django.db.models)
-
-get_source_object (saleor/graphql/payment/mutations/transaction/transaction_process.py:93-109)
-  sig: get_source_object(cls, transaction_item)
-  behavior: GUARD(transaction_item.checkout_id -> return checkout)
-  called_by: perform_mutation, TransactionProcess
-  raises: ValidationError
-  uses: ValidationError (django.core.exceptions)
-
-BaseInputObjectType (saleor/graphql/core/types/base.py:31-37)
-  extends: InputObjectType
-  imports: graphene.relay.connection, graphene.types.enum, graphene.types.inputobjecttype, graphene.types.interface, graphene.types.objecttype
-
-BaseObjectType (saleor/graphql/core/types/base.py:8-28)
-  extends: ObjectType
-  imports: graphene.relay.connection, graphene.types.enum, graphene.types.inputobjecttype, graphene.types.interface, graphene.types.objecttype
-
-ChannelFilterInputObjectType (saleor/graphql/core/filters/filter_input.py:93-103)
-  extends: FilterInputObjectType
-  imports: itertools, django.db, django_filters.filterset, graphene, graphene.types.inputobjecttype
-
-ChannelSortInputObjectType (saleor/graphql/core/types/sort_input.py:48-58)
-  extends: SortInputObjectType
-  imports: copy, graphene, graphene.types.inputobjecttype, descriptions, enums
-
-CheckoutDiscountedObjectWhere (saleor/graphql/checkout/filters.py:147-158)
-  extends: DiscountedObjectWhere
-  imports: uuid, django_filters, django.core.exceptions, django.db.models, account.models
-  calls: _filter_price
-  uses: ValidationError (django.core.exceptions)
-
-DiscountedObjectWhere (saleor/graphql/discount/filters.py:228-241)
-  extends: WhereFilterSet
-  imports: decimal, django_filters, django.db.models, django.utils, discount
-
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 11 with behavior annotations
+coverage: 83 symbols in L3, 11 with behavior annotations
 uncovered: get_translated_object_id, get_translated_object_id, get_translated_object_id, linked_object
 
 --- CLUE FILE END ---

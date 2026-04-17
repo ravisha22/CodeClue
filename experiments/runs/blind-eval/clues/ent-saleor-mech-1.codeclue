@@ -1,11 +1,15 @@
-=CC v2.1 saleor@HEAD 4239mod 27374sym
+=CC v2.1 saleor@HEAD 4239mod 27389sym
 ? How does Saleor keep search indexing and other scheduled work running?
 
+
+-- README
+<div align="center" width="100px"> <picture>
+sections: Table of Contents, What makes Saleor special?, Why API-only Architecture?, What are the tradeoffs?, Features
 
 -- TREE
 saleor/  (4237 files)
   account/  app/  asgi/  attribute/  auth/  channel/  checkout/  core/  csv/  discount/  ...+20
-conftest.py  manage.py
+.env.example  README.md  conftest.py  manage.py  package.json  pyproject.toml
 
 -- INDEX
 conftest.py                                     115L  Custom, django_db_setup, pytest_addoption, pytest_collection_modifyitems, pytest_configure
@@ -85,19 +89,21 @@ clean_attributes                    M saleor/graphql/product/mutations/product/p
 clean_attributes                    M saleor/graphql/product/mutations/product/product_update.py:78     function clean_attributes
 clean_attributes                    M saleor/graphql/product/mutations/product_variant/product_variant_update.py:130    function clean_attributes
 clean_input                         M saleor/graphql/page/mutations/page_create.py:81     function clean_input
-clean_attributes                    M saleor/graphql/page/mutations/page_create.py:72     function clean_attributes
-_resolve_page                       M saleor/graphql/page/schema.py:103    function _resolve_page
-resolve_page                        M saleor/graphql/page/schema.py:94     function resolve_page
-_resolve_pages                      M saleor/graphql/page/schema.py:122    function _resolve_pages
-resolve_pages                       M saleor/graphql/page/schema.py:117    function resolve_pages
-_create_variant_errors              M saleor/graphql/checkout/mutations/checkout_create_from_order.py:81     function _create_variant_errors
-__run_payment_method                M saleor/plugins/manager.py:2556   function __run_payment_method
-__run_payment_webhook               M saleor/plugins/webhook/plugin.py:2994   Trigger payment webhook event.
-get_form_field_description          M saleor/graphql/core/types/converter.py:24     function get_form_field_description
-_resolve_product                    M saleor/graphql/product/schema.py:455    function _resolve_product
-  ...and 13182 more symbols
+  ...and 13206 more symbols
 
 -- FOCUS
+saleor/settings.py (saleor/settings.py:1-1261)
+  Config summary for saleor/settings.py: entries: SOFT_MEMORY_LIMIT_IN_MB=os.environ.get('SOFT_MEMORY_LIMIT_IN_MB', None), HARD_MEMORY_LIMIT_IN_MB=os.environ.get('HARD_MEMORY_LIMIT_IN_MB', None), DEBUG=get_bool_from_env('DEBUG', True), SITE_ID=1, PROJECT_ROOT=os.path.normpath(os.path.join(os.path.dirname(__file__), '..')), ROOT_URLCONF='saleor.urls'
+  entries: SOFT_MEMORY_LIMIT_IN_MB=os.environ.get('SOFT_MEMORY_LIMIT_IN_MB', None), HARD_MEMORY_LIMIT_IN_MB=os.environ.get('HARD_MEMORY_LIMIT_IN_MB', None), DEBUG=get_bool_from_env('DEBUG', True), SITE_ID=1, PROJECT_ROOT=os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
+
+saleor/tests/settings.py (saleor/tests/settings.py:1-105)
+  Config summary for saleor/tests/settings.py: entries: POPULATE_DEFAULTS=False, CELERY_TASK_ALWAYS_EAGER=True, PUBLIC_URL='https://example.com', SECRET_KEY='NOTREALLY', ALLOWED_CLIENT_HOSTS=['www.example.com'], EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend'
+  entries: POPULATE_DEFAULTS=False, CELERY_TASK_ALWAYS_EAGER=True, PUBLIC_URL='https://example.com', SECRET_KEY='NOTREALLY', ALLOWED_CLIENT_HOSTS=['www.example.com']
+
+.env.example (.env.example:1-8)
+  Config summary for .env.example: entries: CACHE_URL=redis://localhost:6379/0, CELERY_BROKER_URL=redis://localhost:6379/1, DEFAULT_FROM_EMAIL=noreply@example.com, EMAIL_URL=smtp://localhost:1025, SECRET_KEY=changeme, HTTP_IP_FILTER_ALLOW_LOOPBACK_IPS=True
+  entries: CACHE_URL=redis://localhost:6379/0, CELERY_BROKER_URL=redis://localhost:6379/1, DEFAULT_FROM_EMAIL=noreply@example.com, EMAIL_URL=smtp://localhost:1025, SECRET_KEY=changeme
+
 set_search_index_dirty (saleor/checkout/search/indexing.py:60-72)
   Reset search vectors for multiple checkouts.
   sig: set_search_index_dirty(checkout_pks, search_index_dirty_value)
@@ -208,60 +214,21 @@ update_products_search_index (saleor/graphql/page/mutations/page_delete.py:48-62
   called_by: perform_mutation, PageDelete
   uses: Exists (django.db.models.expressions), OuterRef (django.db.models.expressions)
 
-update_products_search_index (saleor/graphql/page/mutations/page_type_delete.py:43-60)
+update_products_search_index (saleor/graphql/page/mutations/page_update.py:70-84)
   sig: update_products_search_index(cls, instance)
-  called_by: perform_mutation, PageTypeDelete
-  uses: Exists (django.db.models.expressions), OuterRef (django.db.models.expressions)
-
-update_products_search_index (saleor/graphql/page/bulk_mutations.py:53-67)
-  sig: update_products_search_index(cls, instance_pks)
+  called_by: save, PageUpdate
   uses: Exists (django.db.models), OuterRef (django.db.models)
 
 update_products_search_index (saleor/graphql/page/bulk_mutations.py:146-164)
   sig: update_products_search_index(cls, instance_pks)
   uses: Exists (django.db.models), OuterRef (django.db.models)
 
-update_products_search_index (saleor/graphql/page/mutations/page_update.py:70-84)
-  sig: update_products_search_index(cls, instance)
-  called_by: save, PageUpdate
+update_products_search_index (saleor/graphql/page/bulk_mutations.py:53-67)
+  sig: update_products_search_index(cls, instance_pks)
   uses: Exists (django.db.models), OuterRef (django.db.models)
-
-filter_checkout_search (saleor/graphql/checkout/filters.py:101-102)
-  sig: filter_checkout_search(qs, _, value)
-  behavior: DELEGATE(prefix_search -> result)
-
-filter_order_search (saleor/graphql/order/filters.py:184-185)
-  sig: filter_order_search(qs, _, value)
-  behavior: DELEGATE(prefix_search -> result)
-
-filter_search (saleor/graphql/product/filters/product_helpers.py:324-325)
-  sig: filter_search(qs, _, value)
-  behavior: DELEGATE(prefix_search -> result)
-
-filter_user_search (saleor/graphql/account/filters.py:67-68)
-  sig: filter_user_search(qs, _, value)
-  behavior: DELEGATE(prefix_search -> result)
-
-generate_attributes_search_vector_value (saleor/page/search.py:192-211)
-  Prepare `search_vector` value for assigned attributes.
-  sig: generate_attributes_search_vector_value(values_data)
-  behavior: ACCUMULATE(values_data loop -> search vectors get search ve)
-  called_by: prepare_page_search_vector_value
-
-generate_attributes_search_vector_value_with_assignment (saleor/product/search.py:155-172)
-  Prepare `search_vector` value for assigned attributes.
-  sig: generate_attributes_search_vector_value_with_assignment(assigned_attributes)
-  behavior: ACCUMULATE(assigned_attributes loop -> search vectors get search ve)
-  called_by: generate_variants_search_vector_value
-
-prepare_order_search_vector_value (saleor/order/search.py:23-93)
-  sig: prepare_order_search_vector_value(order)
-  calls: generate_order_discounts_search_vector_value, generate_order_events_search_vector_value, generate_order_invoices_search_vector_value, generate_order_lines_search_vector_value, generate_order_payments_search_vector_value, generate_order_transactions_search_vector_value
-  called_by: update_order_search_vector
-  uses: NoValidationSearchVector (core.postgres), Value (django.db.models)
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 32 with behavior annotations
+coverage: 83 symbols in L3, 32 with behavior annotations
 uncovered: generate_attributes_search_vector_value, get_reference_attribute_search_value, mark_pages_search_vector_as_dirty, mark_pages_search_vector_as_dirty_in_batches
 drill: saleor/checkout/search/indexing.py (~15 lines, set_search_index_dirty)

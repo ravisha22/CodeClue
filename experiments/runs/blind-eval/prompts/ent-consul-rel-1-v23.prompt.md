@@ -1,0 +1,266 @@
+# Blind Evaluation Prompt - MRLF v2.4
+# Task: ent-consul-rel-1
+
+You are a senior software engineer. You have been given a codebase
+comprehension artifact (a "clue file") that summarises a repository's
+structure, symbols, and behavior. This is NOT the full source code - it is
+a compressed representation.
+
+Answer the question below using ONLY the information in the clue file.
+Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the modules, symbols, or relationships most relevant to the question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before concluding: follow calls: chains, walk extends: hierarchies, and use behavior: annotations as summaries of how control or responsibility moves. Use TREE and INDEX to situate the relationship in the repository structure. State explicitly what GAPS says cannot be determined from the clue alone. Finally, synthesize the answer, distinguishing supported structure from unresolved uncertainty.
+
+--- CLUE FILE START ---
+=CC v2.1 consul@HEAD 1527mod 17749sym
+? How are the ACL entities related in Consul's ACL documentation?
+
+
+-- README
+<h1> <img src="./ui/logo.svg" align="left" height="46px" alt="Consul logo"/>
+sections: Quick Start, Documentation, Contributing
+
+-- TREE
+acl/  (20 files)
+agent/  (716 files)
+api/  (55 files)
+command/  (193 files)
+connect/  (10 files)
+envoyextensions/  (9 files)
+grpcmocks/  (26 files)
+internal/  (164 files)
+ipaddr/  (2 files)
+lib/  (28 files)
+logging/  (13 files)
+proto/  (70 files)
+proto-public/  (68 files)
+sdk/  (25 files)
+sentinel/  (3 files)
+service_os/  (2 files)
+snapshot/  (2 files)
+test/  (39 files)
+test-integ/  (10 files)
+testing/  (47 files)
+testrpc/  (1 files)
+tlsutil/  (3 files)
+tools/  (1 files)
+troubleshoot/  (12 files)
+types/  (4 files)
+ui/  (3 files)
+version/  (3 files)
+
+-- INDEX
+proto/private/pbconfigentry/config_entry.pb.go  9779L  GetDefaults, GetHash, GetListeners, GetMeta, GetStatus
+agent/structs/structs.deepcopy.go              1469L  DeepCopy, DeepCopy, DeepCopy, DeepCopy, DeepCopy
+proto-public/pbresource/resource_deepcopy.gen.go   573L  DeepCopy, DeepCopyInterface, DeepCopyInto, DeepCopy, DeepCopyInterface
+agent/config/flagset.go                         203L  Get, IsBoolFlag, Set, String, boolPtrValue
+internal/controller/controller.go               361L  String, WithBackoff, WithCustomWatch, WithForceReconcileEvery, WithInitializer
+agent/structs/structs_ce.go                     185L  String, DefaultEnterpriseMetaInDefaultPartition, DefaultEnterpriseMetaInPartition, EnterpriseServiceUsage, HasWildcardDestination
+proto/private/pbsubscribe/subscribe.pb.go      1079L  Enum, Number, String, GetConfigEntry, GetOp
+agent/submatview/rpc_materializer.go            128L  NewRPCMaterializer, Query, Run, reset, subscribeOnce
+agent/consul/controller/reconciler.go            66L  Reconciler, Key, Request, RequeueAfter, Error
+agent/structs/structs.go                       3354L  CensusRequest, NamespaceOrDefault, PartitionOrDefault, StringHashMD5, StringHashSHA256
+agent/consul/stream/string_types.go              14L  String, String
+proto-public/annotations/ratelimit/ratelimit.pb.go   318L  Enum, Number, String, Enum, Number
+proto-public/pbdataplane/dataplane.pb.go        647L  GetFeatureName, GetSupported, ProtoReflect, Reset, String
+types/tls.go                                    231L  MarshalEnvoyTLSCipherSuiteStrings, String, LessThan, String, TLSVersions
+  ...and 1513 more modules
+
+-- SYM
+GRPCLogger.Errorf                   M logging/grpc.go:74     Errorf implements grpclog.LoggerV2
+Client.doRequest                    M api/api.go:1085   doRequest runs a request with our client
+Client.newRequest                   M api/api.go:1053   newRequest is used to create a new request
+durToMsec                           M api/api.go:940    durToMsec converts a duration to a millisecond ...
+ConstError.Error                    M internal/resource/errors.go:41     function ConstError.Error
+txn.Get                             M internal/controller/cache/index/txn.go:19     function txn.Get
+Mutex.Unlock                        M lib/mutex/mutex.go:28     function Mutex.Unlock
+Mutex.Lock                          M lib/mutex/mutex.go:24     function Mutex.Lock
+Lock.Lock                           M api/lock.go:138    Lock attempts to acquire the lock and blocks wh...
+Lock.Unlock                         M api/lock.go:268    Unlock released the lock.
+request.setQueryOptions             M api/api.go:843    setQueryOptions is used to annotate the request...
+txn.getRaw                          M internal/controller/cache/index/txn.go:28     function txn.getRaw
+ChainedAuthorizer.executeChain      M acl/chained_authorizer.go:29     function ChainedAuthorizer.executeChain
+request.toHTTP                      M api/api.go:999    toHTTP converts the request to an HTTP request
+request.toHTTP                      M command/resource/client/client.go:846    toHTTP converts the request to an HTTP request
+GRPCLogger.Error                    M logging/grpc.go:64     Error implements grpclog.LoggerV2
+ecsNotGlobalError.Error             M agent/dns.go:717    function ecsNotGlobalError.Error
+APIGatewayListener.DeepCopy         M agent/structs/structs.deepcopy.go:11     DeepCopy generates a deep copy of *APIGatewayLi...
+ACLRemoteError.Error                M agent/consul/acl.go:126    function ACLRemoteError.Error
+caStateError.Error                  M agent/consul/leader_connect_ca.go:193    function caStateError.Error
+errPeeringInvalidServerAddress.Error M agent/rpc/peering/service.go:62     Error implements the error interface
+ProviderLoginFailedError.Error      M internal/go-sso/oidcauth/oidc.go:186    function ProviderLoginFailedError.Error
+MethodNotAllowedError.Error         M agent/http.go:66     function MethodNotAllowedError.Error
+PermissionDeniedError.Error         M acl/errors.go:88     Initially we may not have attribution informati...
+enterpriseConfigKeyError.Error      M agent/config/builder_ce.go:74     function enterpriseConfigKeyError.Error
+invalidCSRError.Error               M agent/connect/csr.go:145    function invalidCSRError.Error
+RequeueAfterError.Error             M agent/consul/controller/reconciler.go:42     Error implements the error interface.
+UnsupportedFSMApplyPanicError.Error M agent/consul/state/txn.go:22     function UnsupportedFSMApplyPanicError.Error
+CodeWithPayloadError.Error          M agent/http.go:78     function CodeWithPayloadError.Error
+HTTPError.Error                     M agent/http.go:89     function HTTPError.Error
+terminalError.Error                 M agent/proxycfg/data_sources.go:42     function terminalError.Error
+TxnError.Error                      M agent/structs/txn.go:131    Error returns the string representation of an a...
+resetErr.Error                      M agent/submatview/rpc_materializer.go:116    Error implements error
+StatusError.Error                   M api/api.go:107    function StatusError.Error
+startupLogger.Error                 M command/agent/startup_logger.go:62     function startupLogger.Error
+StatusError.Error                   M command/resource/client/client.go:94     function StatusError.Error
+DuplicateIndexError.Error           M internal/controller/cache/errors.go:63     function DuplicateIndexError.Error
+DuplicateQueryError.Error           M internal/controller/cache/errors.go:71     function DuplicateQueryError.Error
+IndexNotFoundError.Error            M internal/controller/cache/errors.go:29     function IndexNotFoundError.Error
+QueryNotFoundError.Error            M internal/controller/cache/errors.go:21     function QueryNotFoundError.Error
+MissingRequiredIndexError.Error     M internal/controller/cache/index/errors.go:14     function MissingRequiredIndexError.Error
+RequeueAfterError.Error             M internal/controller/controller.go:317    Error implements the error interface.
+TokenVerificationFailedError.Error  M internal/go-sso/oidcauth/oidc.go:203    function TokenVerificationFailedError.Error
+ErrDataParse.Error                  M internal/resource/errors.go:57     function ErrDataParse.Error
+ErrInvalidField.Error               M internal/resource/errors.go:70     function ErrInvalidField.Error
+ErrInvalidFields.Error              M internal/resource/errors.go:174    function ErrInvalidFields.Error
+ErrInvalidListElement.Error         M internal/resource/errors.go:84     function ErrInvalidListElement.Error
+ErrInvalidMapKey.Error              M internal/resource/errors.go:112    function ErrInvalidMapKey.Error
+ErrInvalidMapValue.Error            M internal/resource/errors.go:98     function ErrInvalidMapValue.Error
+ErrInvalidReferenceType.Error       M internal/resource/errors.go:165    function ErrInvalidReferenceType.Error
+ErrOwnerTenantInvalid.Error         M internal/resource/errors.go:139    function ErrOwnerTenantInvalid.Error
+ErrOwnerTypeInvalid.Error           M internal/resource/errors.go:125    function ErrOwnerTypeInvalid.Error
+GroupVersionMismatchError.Error     M internal/storage/storage.go:316    Error implements the error interface.
+TargetedUI.Error                    M command/exec/exec.go:683    function TargetedUI.Error
+policyOrRoleTokenError.Error        M agent/consul/acl.go:155    function policyOrRoleTokenError.Error
+ConfigEntryGraphError.Error         M agent/structs/config_entry_discoverychain.go:2019   function ConfigEntryGraphError.Error
+TxnResponse.Error                   M agent/structs/txn.go:157    Error returns an aggregate of all errors in thi...
+CacheTypeError.Error                M internal/controller/cache/errors.go:38     function CacheTypeError.Error
+IndexError.Error                    M internal/controller/cache/errors.go:51     function IndexError.Error
+IsEnterpriseData                    M agent/consul/fsm/decode_downgrade.go:17     function IsEnterpriseData
+  ...and 16346 more symbols
+
+-- FOCUS
+ui/package.json (ui/package.json:1-69)
+  Config summary for ui/package.json: deps: doctoc, license-checker, npm-run-all
+  deps: doctoc, license-checker, npm-run-all
+
+ui/packages/consul-ui/lib/block-slots/package.json (ui/packages/consul-ui/lib/block-slots/package.json:1-11)
+  Config summary for ui/packages/consul-ui/lib/block-slots/package.json: deps: ember-cli-htmlbars, ember-cli-babel
+  deps: ember-cli-htmlbars, ember-cli-babel
+
+ui/packages/consul-ui/package.json (ui/packages/consul-ui/package.json:1-217)
+  Config summary for ui/packages/consul-ui/package.json: deps: @babel/core, @babel/eslint-parser, @babel/plugin-proposal-decorators, @babel/plugin-transform-class-properties, @docfy/ember, @docfy/ember-cli, @ember-data/adapter, @ember-data/legacy-compat
+  deps: @babel/core, @babel/eslint-parser, @babel/plugin-proposal-decorators, @babel/plugin-transform-class-properties, @docfy/ember, @docfy/ember-cli
+
+Server.filterACL (agent/consul/acl_server.go:201-201)
+  sig: Server.filterACL(token string, subj interface{})
+  behavior: DELEGATE(filterACL -> result)
+  called_by: GatewayServices, ListNodes, NodeServiceList, NodeServices, ServiceNodes, ListMeshGateways, List, GatewayIntentions
+
+Store.aclAuthMethodDelete (agent/consul/state/acl.go:1689-1689)
+  sig: Store.aclAuthMethodDelete(idx uint64, name string, entMeta *acl.EnterpriseMeta)
+  behavior: GUARD(err := aclAuthMethodDeleteTxn(tx, idx, name,... -> return err); UNWIND(defer)
+  calls: aclAuthMethodDeleteTxn, WriteTxn, Commit, Abort
+  called_by: ACLAuthMethodDeleteByName
+
+Store.aclBindingRuleDelete (agent/consul/state/acl.go:1505-1505)
+  sig: Store.aclBindingRuleDelete(idx uint64, id string, entMeta *acl.EnterpriseMeta)
+  behavior: GUARD(err := aclBindingRuleDeleteTxn(tx, idx, id, e... -> return err); UNWIND(defer)
+  calls: aclBindingRuleDeleteTxn, WriteTxn, Commit, Abort
+  called_by: ACLBindingRuleDeleteByID
+
+Store.aclPolicyDelete (agent/consul/state/acl.go:1077-1077)
+  sig: Store.aclPolicyDelete(idx uint64, value string, fn aclPolicyGetFn, entMeta *ac...)
+  behavior: GUARD(err := aclPolicyDeleteTxn(tx, idx, value, fn,... -> return err); UNWIND(defer)
+  calls: aclPolicyDeleteTxn, WriteTxn, Commit, Abort
+  called_by: ACLPolicyDeleteByID, ACLPolicyDeleteByName
+
+Store.aclRoleDelete (agent/consul/state/acl.go:1350-1350)
+  sig: Store.aclRoleDelete(idx uint64, value string, fn aclRoleGetFn, entMeta *acl....)
+  behavior: GUARD(err := aclRoleDeleteTxn(tx, idx, value, fn, e... -> return err); UNWIND(defer)
+  calls: aclRoleDeleteTxn, WriteTxn, Commit, Abort
+  called_by: ACLRoleDeleteByID, ACLRoleDeleteByName
+
+Store.aclTokenDelete (agent/consul/state/acl.go:816-816)
+  sig: Store.aclTokenDelete(idx uint64, value, index string, entMeta *acl.Enterprise...)
+  behavior: GUARD(err := aclTokenDeleteTxn(tx, idx, value, inde... -> return err); UNWIND(defer)
+  calls: aclTokenDeleteTxn, WriteTxn, Commit, Abort
+  called_by: ACLTokenDeleteByAccessor
+
+ACL.aclPreCheck (agent/consul/acl_endpoint.go:160-160)
+  called_by: AuthMethodDelete, AuthMethodList, AuthMethodRead, AuthMethodSet, Authorize, BindingRuleDelete, BindingRuleList, BindingRuleRead
+
+aclRoleReplicator.Type (agent/consul/acl_replication_types.go:274-274)
+  called_by: mergeValue, sanitize, visit, walk, handlePtr, handleQuery, readEntry, decodeAttributeToMessage
+
+aclPolicyReplicator.Type (agent/consul/acl_replication_types.go:138-138)
+  called_by: mergeValue, sanitize, visit, walk, handlePtr, handleQuery, readEntry, decodeAttributeToMessage
+
+aclBindingRuleInsert (agent/consul/state/acl.go:1782-1782)
+  sig: aclBindingRuleInsert(tx WriteTxn, rule *structs.ACLBindingRule)
+  behavior: GUARD(err := tx.Insert(tableACLBindingRules, rule);... -> return fmt.Errorf(...)
+  calls: Insert, Errorf
+  called_by: ACLBindingRule, aclBindingRuleSetTxn
+
+aclTokenSetTxn (agent/consul/state/acl.go:447-447)
+  aclTokenSetTxn is the inner method used to insert an ACL token with the proper indexes into the state store.
+  sig: aclTokenSetTxn(tx WriteTxn, idx uint64, token *structs.ACLToken, opts A...)
+  behavior: GUARD(token.SecretID == "" -> return ErrMissingAC...); PRECEDENCE(token -> opts); ACCUMULATE(Errorf loop -> result)
+  calls: aclTokenInsert, getAuthMethodWithTxn, resolveTokenPolicyLinks, resolveTokenRoleLinks, Errorf
+  called_by: ACLBootstrap, ACLTokenBatchSet
+
+aclTokenReplicator.RemoteMeta (agent/consul/acl_replication_types.go:65-65)
+  sig: aclTokenReplicator.RemoteMeta(i int)
+  called_by: diffACLType
+
+aclTokenReplicator.SingularNoun (agent/consul/acl_replication_types.go:24-24)
+  called_by: deleteLocalACLType, replicateACLType, updateLocalACLType
+
+aclPolicyReplicator.SingularNoun (agent/consul/acl_replication_types.go:139-139)
+  called_by: deleteLocalACLType, replicateACLType, updateLocalACLType
+
+aclRoleReplicator.DeleteLocalBatch (agent/consul/acl_replication_types.go:360-360)
+  sig: aclRoleReplicator.DeleteLocalBatch(srv *Server, batch []string)
+  calls: leaderRaftApply
+  called_by: deleteLocalACLType
+
+ACL.Authorize (agent/consul/acl_endpoint.go:2192-2192)
+  sig: ACL.Authorize(args *structs.RemoteACLAuthorizationRequest, reply *[]st...)
+  calls: ResolveToken, aclPreCheck, ForwardRPC
+
+ACL.TokenRead (agent/consul/acl_endpoint.go:266-266)
+  sig: ACL.TokenRead(args *structs.ACLTokenGetRequest, reply *structs.ACLToke...)
+  calls: aclPreCheck, lookupExpandedTokenInfo, LocalTokensEnabled, filterACLWithAuthorizer, ForwardRPC, ResolveTokenAndDefaultMeta, validateEnterpriseRequest, Errorf
+  called_by: TokenExist, assignAgentJoinPolicyToAnonymousToken, getTokenByDescription
+
+aclTokenDeleteTxn (agent/consul/state/acl.go:827-827)
+  sig: aclTokenDeleteTxn(tx WriteTxn, idx uint64, value, index string, entMeta *a...)
+  behavior: GUARD(err != nil -> return fmt.Errorf("...); PRECEDENCE(err -> token)
+  calls: Errorf
+  called_by: ACLTokenBatchDelete, aclTokenDelete
+
+aclTokenList (agent/consul/state/acl.go:1724-1724)
+  sig: aclTokenList(tx ReadTxn, entMeta *acl.EnterpriseMeta, locality bool)
+  behavior: DELEGATE(tx.Get -> result)
+  calls: Get
+  called_by: ACLTokenListWithParameters
+
+aclTokenReplicator.Type (agent/consul/acl_replication_types.go:23-23)
+  called_by: mergeValue, sanitize, visit, walk, handlePtr, handleQuery, readEntry, decodeAttributeToMessage
+
+Server.aclTokenWriter (agent/consul/acl_server.go:217-217)
+  behavior: DELEGATE(auth.NewTokenWriter -> result)
+  calls: State, InPrimaryDatacenter, LocalTokensEnabled
+  called_by: Logout, TokenClone, TokenSet, aclLogin, registerACLServer
+
+aclBindingRuleSetTxn (agent/consul/state/acl.go:1400-1400)
+  sig: aclBindingRuleSetTxn(tx WriteTxn, idx uint64, rule *structs.ACLBindingRule)
+  behavior: GUARD(rule.ID == "" -> return ErrMissingAC...); PRECEDENCE(rule -> err -> existingRaw)
+  calls: aclBindingRuleInsert, Errorf
+  called_by: ACLBindingRuleBatchSet, ACLBindingRuleSet
+
+aclPolicyReplicator.PendingUpdateEstimatedSize (agent/consul/acl_replication_types.go:247-247)
+  sig: aclPolicyReplicator.PendingUpdateEstimatedSize(i int)
+  called_by: updateLocalACLType
+
+-- GAPS
+type: STRUCTURAL (answerable from L0-L2)
+coverage: 83 symbols in L3, 27 with behavior annotations
+uncovered: aclAuthMethodGetByName, aclAuthMethodInsert, aclAuthMethodList, aclAuthMethodMaxIndex
+
+--- CLUE FILE END ---
+
+QUESTION: How are the ACL entities related in Consul's ACL documentation?
+
+Provide a detailed answer based solely on the clue file above.
+For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.

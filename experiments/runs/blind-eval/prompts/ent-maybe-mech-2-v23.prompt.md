@@ -11,8 +11,9 @@ Do not use any external knowledge about the framework or library.
 **Reasoning scaffold:** Think through the clue systematically before answering. First, identify the symbols most relevant to the question from FOCUS, SYM, and INDEX. Trace those symbols through the clue before forming any conclusion: follow calls: chains, walk extends: hierarchies, and read behavior: annotations as compact control-flow summaries. Use TREE and INDEX to place each symbol in its module context. Then consult the provided source snippets only to confirm or refine the traced path. State explicitly what GAPS says cannot be determined from the evidence. Finally, synthesize the answer, separating supported conclusions from remaining uncertainty.
 
 --- CLUE FILE (File 1) ---
-=CC v2.1 maybe@HEAD 91mod 267sym
+=CC v2.1 maybe@HEAD 91mod 270sym
 ? How does the documented self-hosting update path work, and what is the recovery flow for a first-time database connection problem?
+
 
 
 -- TREE
@@ -20,6 +21,7 @@ app/  (50 files)
   javascript/
 vendor/  (41 files)
   javascript/
+.env.example  README.md  package.json
 
 -- INDEX
 app/components/DS/dialog_controller.js           33L  clickOutside, close, connect, extends
@@ -73,8 +75,8 @@ extends.validate                    M app/javascript/controllers/password_valida
 extends.addEventListeners           M app/components/DS/tooltip_controller.js:29     method extends.addEventListeners
 extends._getTrendIcon               M app/javascript/controllers/time_series_chart_controller.js:401    method extends._getTrendIcon
 extends.hideAllTooltipsExcept       M app/javascript/controllers/mobile_cell_interaction_controller.js:126    method extends.hideAllTooltipsExcept
-extends.applyTheme                  M app/javascript/controllers/theme_controller.js:32     method extends.applyTheme
 extends.startSystemThemeListener    M app/javascript/controllers/theme_controller.js:71     method extends.startSystemThemeListener
+extends.applyTheme                  M app/javascript/controllers/theme_controller.js:32     method extends.applyTheme
 extends.stopSystemThemeListener     M app/javascript/controllers/theme_controller.js:79     method extends.stopSystemThemeListener
 extends.showPaletteSection          M app/javascript/controllers/category_controller.js:211    method extends.showPaletteSection
 extends._addHiddenFormInputsForSelectedIds M app/javascript/controllers/bulk_select_controller.js:85     method extends._addHiddenFormInputsForSelectedIds
@@ -108,7 +110,7 @@ extends.removeEventListeners        M app/javascript/controllers/tooltip_control
 extends.startAutoUpdate             M app/javascript/controllers/tooltip_controller.js:50     method extends.startAutoUpdate
 extends.stopAutoUpdate              M app/javascript/controllers/tooltip_controller.js:60     method extends.stopAutoUpdate
 extends.removeEventListeners        M app/components/DS/tooltip_controller.js:34     method extends.removeEventListeners
-  ...and 202 more symbols
+  ...and 205 more symbols
 
 -- FOCUS
 extends.updateConditionPrefixes (app/javascript/controllers/rules_controller.js:58-77)
@@ -146,15 +148,15 @@ extends.startAutoUpdate (app/components/DS/tooltip_controller.js:50-59)
   called_by: extends
   uses: this._cleanup, this.element.querySelector, this.element, this.tooltipTarget
 
-extends.startAutoUpdate (app/components/DS/menu_controller.js:88-96)
-  method extends.startAutoUpdate
-  called_by: connect, extends
-  uses: this._cleanup, this.buttonTarget, this.contentTarget, this.boundUpdate
-
 extends.startAutoUpdate (app/javascript/controllers/tooltip_controller.js:50-58)
   method extends.startAutoUpdate
   called_by: connect, extends
   uses: this._cleanup, this.element, this.tooltipTarget, this.boundUpdate
+
+extends.startAutoUpdate (app/components/DS/menu_controller.js:88-96)
+  method extends.startAutoUpdate
+  called_by: connect, extends
+  uses: this._cleanup, this.buttonTarget, this.contentTarget, this.boundUpdate
 
 extends.updateSelectedIconColor (app/javascript/controllers/category_controller.js:118-124)
   method extends.updateSelectedIconColor
@@ -188,11 +190,6 @@ extends._updateSelectionBar (app/javascript/controllers/bulk_select_controller.j
   called_by: extends
   uses: this.selectedIdsValue.length, this.selectionBarTextTarget.innerText, this._pluralizedResourceName, this.selectionBarTarget.classList.toggle
 
-extends.stopAutoUpdate (app/components/DS/tooltip_controller.js:61-66)
-  method extends.stopAutoUpdate
-  called_by: disconnect, extends
-  uses: this._cleanup
-
 extends.stopAutoUpdate (app/components/DS/menu_controller.js:98-103)
   method extends.stopAutoUpdate
   called_by: disconnect, extends
@@ -203,16 +200,21 @@ extends.stopAutoUpdate (app/javascript/controllers/tooltip_controller.js:60-65)
   called_by: disconnect, extends
   uses: this._cleanup
 
-extends.update (app/javascript/controllers/tooltip_controller.js:67-86)
-  method extends.update
-  called_by: extends
-  uses: this.element, this.tooltipTarget, this.placementValue, this.offsetValue
+extends.stopAutoUpdate (app/components/DS/tooltip_controller.js:61-66)
+  method extends.stopAutoUpdate
+  called_by: disconnect, extends
+  uses: this._cleanup
 
 extends.update (app/javascript/controllers/transfer_match_controller.js:7-15)
   method extends.update
   sig: extends.update(event)
   called_by: extends
   uses: event.target.value, this.newSelectTarget.classList.remove, this.existingSelectTarget.classList.add, this.newSelectTarget.classList.add
+
+extends.update (app/javascript/controllers/tooltip_controller.js:67-86)
+  method extends.update
+  called_by: extends
+  uses: this.element, this.tooltipTarget, this.placementValue, this.offsetValue
 
 extends.update (app/components/DS/tooltip_controller.js:68-86)
   method extends.update
@@ -230,16 +232,19 @@ extends.updateAmount (app/javascript/controllers/money_field_controller.js:14-26
   called_by: handleCurrencyChange, extends
   uses: this.amountTarget.step, currency.step, Number.isFinite, this.amountTarget.value
 
+.env.example (.env.example:1-86)
+  Config summary for .env.example: entries: SELF_HOSTED=true, SECRET_KEY_BASE=secret-value, SYNTH_API_KEY=<set>, PORT=3000, SMTP_ADDRESS=<set>, SMTP_PORT=465
+  entries: SELF_HOSTED=true, SECRET_KEY_BASE=secret-value, SYNTH_API_KEY=<set>, PORT=3000, SMTP_ADDRESS=<set>
+
+README.md (README.md:1-64)
+  Documentation summary for README.md: <img width="1190" alt="maybe_hero" src="https://github.com/user-attachments/assets/5ed08763-a9ee-42b2-a436-e05038fcf5... > [!IMPORTANT]; sections: Maybe: The personal finance app for everyone, Maybe Hosting, Forking and Attribution, Local Development Setup, Requirements
+  sections: Maybe: The personal finance app for everyone, Maybe Hosting, Forking and Attribution, Local Development Setup, Requirements
+
 extends (app/components/DS/menu_controller.js:13-117)
   extends: Controller
   methods: addEventListeners, close, connect, disconnect, focusFirstElement, removeEventListeners
   calls: addEventListeners, close, connect, disconnect, focusFirstElement, removeEventListeners, startAutoUpdate, stopAutoUpdate
   uses: this.show, this.showValue, this.boundUpdate, this.update.bind
-
-extends.clearTimeout (app/javascript/controllers/donut_chart_controller.js:112-112)
-  method extends.clearTimeout
-  sig: extends.clearTimeout(hoverTimeout)
-  called_by: extends
 
 extends.clearTimeout (app/javascript/controllers/auto_submit_form_controller.js:28-28)
   method extends.clearTimeout
@@ -250,6 +255,11 @@ extends.clearTimeout (app/javascript/controllers/turbo_frame_timeout_controller.
   method extends.clearTimeout
   called_by: disconnect, extends
   uses: this.timeoutId
+
+extends.clearTimeout (app/javascript/controllers/donut_chart_controller.js:112-112)
+  method extends.clearTimeout
+  sig: extends.clearTimeout(hoverTimeout)
+  called_by: extends
 
 extends.handleTimeout (app/javascript/controllers/turbo_frame_timeout_controller.js:27-41)
   method extends.handleTimeout
@@ -273,24 +283,6 @@ extends (app/javascript/controllers/tooltip_controller.js:9-87)
   methods: addEventListeners, connect, disconnect, removeEventListeners, startAutoUpdate, stopAutoUpdate
   calls: addEventListeners, connect, disconnect, removeEventListeners, startAutoUpdate, stopAutoUpdate, update
   uses: this._cleanup, this.boundUpdate, this.update.bind, this.startAutoUpdate
-
-extends (app/javascript/controllers/category_controller.js:3-262)
-  extends: Controller
-  methods: autoAdjust, backgroundColor, contrast, darkenColor, handleColorChange, handleContrastValidation
-  calls: autoAdjust, backgroundColor, contrast, darkenColor, handleColorChange, handleContrastValidation, handleIconChange, handleIconColorChange
-  uses: this.pickerBtnTarget.addEventListener, this.showPaletteSection, this.colorInputTarget.addEventListener, this.picker.setColor
-
-extends (app/javascript/controllers/rules_controller.js:2-78)
-  extends: Controller
-  methods: addAction, addCondition, addConditionGroup, clearEffectiveDate, connect, updateConditionPrefixes
-  calls: addAction, addCondition, addConditionGroup, clearEffectiveDate, connect, updateConditionPrefixes
-  uses: this.updateConditionPrefixes, this.conditionGroupTemplateTarget, this.conditionsListTarget, this.conditionTemplateTarget
-
-extends.showPaletteSection (app/javascript/controllers/category_controller.js:211-218)
-  method extends.showPaletteSection
-  calls: initPicker, updatePopupPosition
-  called_by: initialize, toggleSections, extends
-  uses: this.initPicker, this.colorsSectionTarget.classList.add, this.paletteSectionTarget.classList.remove, this.pickerSectionTarget.classList.remove
 
 -- GAPS
 type: MECHANISTIC (body logic needed for full answer)

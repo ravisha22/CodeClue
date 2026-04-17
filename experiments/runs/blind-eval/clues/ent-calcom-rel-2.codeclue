@@ -1,17 +1,21 @@
-=CC v2.1 calcom@HEAD 5074mod 11723sym
+=CC v2.1 calcom@HEAD 5074mod 11733sym
 ? How do Cal.diy webhooks map booking lifecycle events to outgoing requests?
 
 
+-- README
+> [!WARNING] > Use at your own risk. Cal.diy is the open source community edition of Cal.com and it is intended for users who want...
+sections: About Cal.diy, What's different from Cal.com?, Built With, Getting Started, Prerequisites
+
 -- TREE
 __checks__/  (3 files)
-apps/  (1632 files)
+apps/  (1635 files)
   api/  docs/  web/
-example-apps/  (7 files)
+example-apps/  (8 files)
   credential-sync/
-packages/  (3418 files)
+packages/  (3420 files)
   app-store/  dayjs/  debugging/  emails/  embeds/  features/  i18n/  kysely/  lib/  prisma/  ...+4
 scripts/  (9 files)
-checkly.config.ts  i18n-unused.config.js  playwright.config.ts  setupVitest.ts  vitest.workspace.ts
+.env.example  README.md  checkly.config.ts  docker-compose.yml  i18n-unused.config.js  package.json  playwright.config.ts  setupVitest.ts  vitest.workspace.ts
 
 -- INDEX
 packages/embeds/embed-core/src/embed.ts        1709L  buildFilteredQueryParams, constructor, doInIframe, ensureGuestKey, filterParams
@@ -37,14 +41,6 @@ InputLocationValidator_2024_06_14.validate M packages/platform/types/event-types
 InputTeamLocationValidator_2024_06_14.validate M packages/platform/types/event-types/event-types_2024_06_14/inputs/locations.input.ts:215    async_method InputTeamLocationValidator_2024_06...
 hasPermission                       M packages/platform/enums/permissions.ts:15     function hasPermission
 hasPermission                       M packages/platform/utils/permissions.ts:15     function hasPermission
-SystemError.constructor             M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:207    method SystemError.constructor
-TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:118    async_method TestRepository.delete
-TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:135    async_method TestRepository.delete
-TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:31     async_method TestRepository.delete
-TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:47     async_method TestRepository.delete
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:156    async_method TestRepository.update
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:186    async_method TestRepository.update
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:66     async_method TestRepository.update
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:118    method TestTasker.constructor
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:152    method TestTasker.constructor
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:194    method TestTasker.constructor
@@ -56,34 +52,48 @@ TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:386    
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:430    method TestTasker.constructor
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:470    method TestTasker.constructor
 TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:73     method TestTasker.constructor
-UserError.constructor               M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:197    method UserError.constructor
-PartialWebhookInputPipe.transform   M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:16     method PartialWebhookInputPipe.transform
-WebhookInputPipe.transform          M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:6      method WebhookInputPipe.transform
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:102    async_method TestRepository.update
-TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:171    async_method TestRepository.update
-CalendarAppDelegationCredentialClientIdNotAuthorizedError.constructor M packages/lib/CalendarAppError.ts:30     method CalendarAppDelegationCredentialClientIdN...
-CalendarAppDelegationCredentialConfigurationError.constructor M packages/lib/CalendarAppError.ts:16     method CalendarAppDelegationCredentialConfigura...
-CalendarAppDelegationCredentialInvalidGrantError.constructor M packages/lib/CalendarAppError.ts:23     method CalendarAppDelegationCredentialInvalidGr...
-CalendarAppError.constructor        M packages/lib/CalendarAppError.ts:2      method CalendarAppError.constructor
-CalendarAppDelegationCredentialError.constructor M packages/lib/CalendarAppError.ts:9      method CalendarAppDelegationCredentialError.con...
-CalendarAppDelegationCredentialNotSetupError.constructor M packages/lib/CalendarAppError.ts:37     method CalendarAppDelegationCredentialNotSetupE...
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:113    async_method TestRepository.findById
+TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:136    async_method TestRepository.findById
+TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:176    async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:192    async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:34     async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:53     async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:74     async_method TestRepository.findById
 TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:90     async_method TestRepository.findById
-TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:136    async_method TestRepository.findById
-TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:176    async_method TestRepository.findById
-Office365CalendarService.triggerDelegationCredentialError M packages/app-store/office365calendar/lib/CalendarService.ts:126    async_method Office365CalendarService.triggerDe...
-BookingAuditAccessService.constructor M packages/features/booking-audit/lib/service/BookingAuditAccessService.ts:33     method BookingAuditAccessService.constructor
-BookingAuditPermissionError.constructor M packages/features/booking-audit/lib/service/BookingAuditAccessService.ts:13     method BookingAuditPermissionError.constructor
-DefaultLayoutEnabledValidator.validate M packages/platform/types/event-types/event-types_2024_06_14/inputs/booker-layouts.input.ts:49     method DefaultLayoutEnabledValidator.validate
-LayoutValidator.validate            M packages/platform/types/event-types/event-types_2024_06_14/inputs/booker-layouts.input.ts:17     method LayoutValidator.validate
-DefaultLayoutEnabledValidator.defaultMessage M packages/platform/types/event-types/event-types_2024_06_14/inputs/booker-layouts.input.ts:58     method DefaultLayoutEnabledValidator.defaultMes...
-  ...and 11280 more symbols
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:31     async_method TestRepository.delete
+PartialWebhookInputPipe.transform   M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:16     method PartialWebhookInputPipe.transform
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:118    async_method TestRepository.delete
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:135    async_method TestRepository.delete
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:47     async_method TestRepository.delete
+CalendarAppDelegationCredentialClientIdNotAuthorizedError.constructor M packages/lib/CalendarAppError.ts:30     method CalendarAppDelegationCredentialClientIdN...
+CalendarAppDelegationCredentialConfigurationError.constructor M packages/lib/CalendarAppError.ts:16     method CalendarAppDelegationCredentialConfigura...
+CalendarAppDelegationCredentialError.constructor M packages/lib/CalendarAppError.ts:9      method CalendarAppDelegationCredentialError.con...
+CalendarAppDelegationCredentialInvalidGrantError.constructor M packages/lib/CalendarAppError.ts:23     method CalendarAppDelegationCredentialInvalidGr...
+CalendarAppError.constructor        M packages/lib/CalendarAppError.ts:2      method CalendarAppError.constructor
+UserError.constructor               M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:197    method UserError.constructor
+WebhookInputPipe.transform          M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:6      method WebhookInputPipe.transform
+CalendarAppDelegationCredentialNotSetupError.constructor M packages/lib/CalendarAppError.ts:37     method CalendarAppDelegationCredentialNotSetupE...
+SystemError.constructor             M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:207    method SystemError.constructor
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:102    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:156    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:171    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:186    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:66     async_method TestRepository.update
+  ...and 11296 more symbols
 
 -- FOCUS
+.env.example (.env.example:1-484)
+  Config summary for .env.example: entries: DATABASE_URL=postgresql://postgres:@localhost:5450..., DATABASE_DIRECT_URL=postgresql://postgres:@localhost:5450..., INSIGHTS_DATABASE_URL=<set>, NEXT_PUBLIC_WEBAPP_URL=http://localhost:3000, NEXT_PUBLIC_WEBSITE_URL=http://localhost:3000, NEXT_PUBLIC_EMBED_LIB_URL=http://localhost:3000/embed/embed.js
+  entries: DATABASE_URL=postgresql://postgres:@localhost:5450..., DATABASE_DIRECT_URL=postgresql://postgres:@localhost:5450..., INSIGHTS_DATABASE_URL=<set>, NEXT_PUBLIC_WEBAPP_URL=http://localhost:3000, NEXT_PUBLIC_WEBSITE_URL=http://localhost:3000
+
+apps/api/v2/.env.example (apps/api/v2/.env.example:1-76)
+  Config summary for apps/api/v2/.env.example: entries: NODE_ENV=development, API_PORT=5555, API_URL=http://localhost, DATABASE_READ_URL=postgresql://postgres:@localhost:5450..., DATABASE_WRITE_URL=postgresql://postgres:@localhost:5450..., LOG_LEVEL=DEBUG
+  entries: NODE_ENV=development, API_PORT=5555, API_URL=http://localhost, DATABASE_READ_URL=postgresql://postgres:@localhost:5450..., DATABASE_WRITE_URL=postgresql://postgres:@localhost:5450...
+
+example-apps/credential-sync/.env.example (example-apps/credential-sync/.env.example:1-15)
+  Config summary for example-apps/credential-sync/.env.example: entries: CALCOM_TEST_USER_ID=1, GOOGLE_REFRESH_TOKEN=<set>, GOOGLE_CLIENT_ID=<set>, GOOGLE_CLIENT_SECRET=<set>, ZOOM_REFRESH_TOKEN=<set>, ZOOM_CLIENT_ID=<set>
+  entries: CALCOM_TEST_USER_ID=1, GOOGLE_REFRESH_TOKEN=<set>, GOOGLE_CLIENT_ID=<set>, GOOGLE_CLIENT_SECRET=<set>, ZOOM_REFRESH_TOKEN=<set>
+
 BookingWebhookService.scheduleNoShowWebhooks (packages/features/webhooks/lib/service/BookingWebhookService.ts:339-439)
   async_method BookingWebhookService.scheduleNoShowWebhooks
   sig: BookingWebhookService.scheduleNoShowWebhooks(params: ScheduleNoShowWebhooksParams)
@@ -128,12 +138,12 @@ BookingForCalEventBuilder (packages/features/CalendarEventBuilder.ts:72-72)
   type alias BookingForCalEventBuilder = NonNullable< Awaited<ReturnType<BookingRepository["getBookingForCalEventBuilder"]>> >
   uses: NonNullable, Awaited, ReturnType, BookingRepository
 
-BookingTriggerEvents (packages/features/webhooks/lib/factory/versioned/PayloadBuilderFactory.ts:105-105)
-  type alias BookingTriggerEvents = | typeof WebhookTriggerEvents.BOOKING_CREATED | typeof WebhookTriggerEvents.BOOKING_RESCHEDULED | typeof WebhookTriggerEvents.BOOKING_CANCELLED | typeof WebhookTriggerEvents.BOOKING_REJECTED | typeof WebhookTriggerEvents.BOOKING_REQUESTED | typeof WebhookTriggerEvents.BOOKING_PAYMENT_INITIATED | typeof WebhookTriggerEvents.BOOKING_PAID
-  uses: WebhookTriggerEvents.BOOKING_CREATED, WebhookTriggerEvents.BOOKING_RESCHEDULED, WebhookTriggerEvents.BOOKING_CANCELLED, WebhookTriggerEvents.BOOKING_REJECTED
-
 BookingTriggerEvents (packages/features/webhooks/lib/factory/versioned/PayloadBuilderFactory.ts:104-104)
   type alias BookingTriggerEvents = | typeof WebhookTriggerEvents.BOOKING_CREATED | typeof WebhookTriggerEvents.BOOKING_RESCHEDULED | typeof WebhookTriggerEvents.BOOKING_CANCELLED | typeof WebhookTriggerEvents.BOOKING_REJECTED | typeof WebhookTriggerEvents.BOOKING_REQUESTED | typeof WebhookTriggerEvents.BOOKING_PAYMENT_INITIATED
+  uses: WebhookTriggerEvents.BOOKING_CREATED, WebhookTriggerEvents.BOOKING_RESCHEDULED, WebhookTriggerEvents.BOOKING_CANCELLED, WebhookTriggerEvents.BOOKING_REJECTED
+
+BookingTriggerEvents (packages/features/webhooks/lib/factory/versioned/PayloadBuilderFactory.ts:105-105)
+  type alias BookingTriggerEvents = | typeof WebhookTriggerEvents.BOOKING_CREATED | typeof WebhookTriggerEvents.BOOKING_RESCHEDULED | typeof WebhookTriggerEvents.BOOKING_CANCELLED | typeof WebhookTriggerEvents.BOOKING_REJECTED | typeof WebhookTriggerEvents.BOOKING_REQUESTED | typeof WebhookTriggerEvents.BOOKING_PAYMENT_INITIATED | typeof WebhookTriggerEvents.BOOKING_PAID
   uses: WebhookTriggerEvents.BOOKING_CREATED, WebhookTriggerEvents.BOOKING_RESCHEDULED, WebhookTriggerEvents.BOOKING_CANCELLED, WebhookTriggerEvents.BOOKING_REJECTED
 
 BookingLocationIntegrationService_2024_08_13.handleCalVideoLocation (apps/api/v2/src/platform/bookings/2024-08-13/services/booking-location-integration.service.ts:141-186)
@@ -158,38 +168,15 @@ BookingRepository.findBookingIncludeCalVideoSettingsAndReferences (packages/feat
   called_by: BookingRepository
   uses: this.prismaClient.booking.findUnique
 
-MeetingTriggerEvents (packages/features/webhooks/lib/factory/versioned/PayloadBuilderFactory.ts:125-125)
-  type alias MeetingTriggerEvents = | typeof WebhookTriggerEvents.MEETING_STARTED | typeof WebhookTriggerEvents.MEETING_ENDED | typeof WebhookTriggerEvents.AFTER_HOSTS_CAL_VIDEO_NO_SHOW | typeof WebhookTriggerEvents.AFTER_GUESTS_CAL_VIDEO_NO_SHOW
-  uses: WebhookTriggerEvents.MEETING_STARTED, WebhookTriggerEvents.MEETING_ENDED, WebhookTriggerEvents.AFTER_HOSTS_CAL_VIDEO_NO_SHOW, WebhookTriggerEvents.AFTER_GUESTS_CAL_VIDEO_NO_SHOW
-
 MeetingTriggerEvents (packages/features/webhooks/lib/factory/versioned/PayloadBuilderFactory.ts:124-124)
   type alias MeetingTriggerEvents = | typeof WebhookTriggerEvents.MEETING_STARTED | typeof WebhookTriggerEvents.MEETING_ENDED | typeof WebhookTriggerEvents.AFTER_HOSTS_CAL_VIDEO_NO_SHOW | typeof WebhookTriggerEvents.AFTER_GUESTS_CAL_VIDEO_NO_SHOW
   uses: WebhookTriggerEvents.MEETING_STARTED, WebhookTriggerEvents.MEETING_ENDED, WebhookTriggerEvents.AFTER_HOSTS_CAL_VIDEO_NO_SHOW, WebhookTriggerEvents.AFTER_GUESTS_CAL_VIDEO_NO_SHOW
 
-PaymentTriggerEvents (packages/features/webhooks/lib/factory/versioned/PayloadBuilderFactory.ts:114-114)
-  type alias PaymentTriggerEvents = | typeof WebhookTriggerEvents.BOOKING_PAYMENT_INITIATED | typeof WebhookTriggerEvents.BOOKING_PAID
-  uses: WebhookTriggerEvents.BOOKING_PAYMENT_INITIATED, WebhookTriggerEvents.BOOKING_PAID
-
-PaymentTriggerEvents (packages/features/webhooks/lib/factory/versioned/PayloadBuilderFactory.ts:115-115)
-  type alias PaymentTriggerEvents = | typeof WebhookTriggerEvents.BOOKING_PAYMENT_INITIATED | typeof WebhookTriggerEvents.BOOKING_PAID
-  uses: WebhookTriggerEvents.BOOKING_PAYMENT_INITIATED, WebhookTriggerEvents.BOOKING_PAID
-
-BookingActionType (packages/features/bookings/lib/BookingEmailSmsHandler.ts:21-21)
-  type alias BookingActionType = | (typeof BookingActionMap)["confirmed"]
-  uses: BookingActionMap, confirmed
-
-BookingActionType (packages/features/bookings/lib/BookingEmailSmsHandler.ts:20-20)
-  type alias BookingActionType = | (typeof BookingActionMap)["confirmed"]
-  uses: BookingActionMap, confirmed
-
-BookingWebhookDataFetcher.fetchEventData (packages/features/webhooks/lib/service/data-fetchers/BookingWebhookDataFetcher.ts:27-73)
-  async_method BookingWebhookDataFetcher.fetchEventData
-  sig: BookingWebhookDataFetcher.fetchEventData(payload: BookingWebhookTaskPayload)
-  behavior: GUARD(!bookingUid -> this.logger.warn("M...); PRECEDENCE(not_bookingUid -> not_booking -> not_calendarEvent)
-  called_by: BookingWebhookDataFetcher
-  uses: this.logger.warn, this.bookingRepository.getBookingForCalEventBuilderFromUid, CalendarEventBuilder.fromBooking, payload.oAuthClientId
+MeetingTriggerEvents (packages/features/webhooks/lib/factory/versioned/PayloadBuilderFactory.ts:125-125)
+  type alias MeetingTriggerEvents = | typeof WebhookTriggerEvents.MEETING_STARTED | typeof WebhookTriggerEvents.MEETING_ENDED | typeof WebhookTriggerEvents.AFTER_HOSTS_CAL_VIDEO_NO_SHOW | typeof WebhookTriggerEvents.AFTER_GUESTS_CAL_VIDEO_NO_SHOW
+  uses: WebhookTriggerEvents.MEETING_STARTED, WebhookTriggerEvents.MEETING_ENDED, WebhookTriggerEvents.AFTER_HOSTS_CAL_VIDEO_NO_SHOW, WebhookTriggerEvents.AFTER_GUESTS_CAL_VIDEO_NO_SHOW
 
 -- GAPS
-type: MECHANISTIC (body logic needed for full answer)
-coverage: 80 symbols in L3, 24 with behavior annotations
+type: STRUCTURAL (answerable from L0-L2)
+coverage: 83 symbols in L3, 24 with behavior annotations
 uncovered: IWebhookProducerService.queueBookingCreatedWebhook, IWebhookProducerService.queueBookingNoShowUpdatedWebhook, IWebhookProducerService.queueBookingPaidWebhook, IWebhookProducerService.queueBookingPaymentInitiatedWebhook

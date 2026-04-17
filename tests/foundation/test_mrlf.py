@@ -149,6 +149,40 @@ def _make_large_graph(n_modules: int = 50, symbols_per_module: int = 10) -> Cano
     )
 
 
+def _make_enterprise_graph() -> CanonicalClueGraph:
+    graph = _make_large_graph(n_modules=260, symbols_per_module=20)
+    graph.nodes.extend(
+        [
+            _make_node(
+                "config:settings.py",
+                "config",
+                "settings.py",
+                symbol_name="settings.py",
+                purpose="Config summary for settings.py: entries: INSTALLED_APPS, MIDDLEWARE, DATABASES",
+            ),
+            _make_node(
+                "config:docker-compose.yml",
+                "config",
+                "docker-compose.yml",
+                symbol_name="docker-compose.yml",
+                purpose="Config summary for docker-compose.yml: services: web, worker, db",
+            ),
+            _make_node(
+                "doc:README.md",
+                "doc",
+                "README.md",
+                symbol_name="README.md",
+                purpose="Documentation summary for README.md: Web app, worker, and PostgreSQL database.",
+            ),
+        ]
+    )
+    graph.nodes[-3].semantic_contract["config_entries"] = ["INSTALLED_APPS", "MIDDLEWARE", "DATABASES"]
+    graph.nodes[-2].semantic_contract["services"] = ["web", "worker", "db"]
+    graph.nodes[-1].semantic_contract["summary_lines"] = ["Web app, worker, and PostgreSQL database."]
+    graph.nodes[-1].semantic_contract["headings"] = ["Architecture", "Deployment"]
+    return graph
+
+
 # ---------------------------------------------------------------------------
 # PageRank tests
 # ---------------------------------------------------------------------------
@@ -335,6 +369,13 @@ class TestL3:
         result = _render_l3(graph, "What does func000 do?", budget=100)
         words = _word_count(result)
         assert words < 150  # generous margin
+
+    def test_enterprise_focus_prepends_config_nodes(self):
+        graph = _make_enterprise_graph()
+        focus = _select_focus_nodes(graph, "How is deployment configured?")
+        focus_names = [n.semantic_contract.get("symbol_name", "") for n in focus[:3]]
+        assert "settings.py" in focus_names
+        assert "docker-compose.yml" in focus_names
 
     def test_question_entity_expansion_matches_symbol_names(self):
         graph = CanonicalClueGraph(
@@ -637,6 +678,41 @@ class TestRenderMRLF:
         words = _word_count(result)
         # Small graph should produce compact output
         assert words < 500
+
+    def test_enterprise_render_includes_readme_preamble(self):
+        graph = _make_enterprise_graph()
+        result = render_mrlf(graph, "How is deployment configured?")
+        assert "-- README" in result
+        assert result.index("-- README") < result.index("-- TREE")
+
+    def test_large_edge_graph_uses_pagerank_instead_of_betweenness(self):
+        nodes = [_make_node("module:src/app.py", "module", "src/app.py", symbol_name="src/app.py")]
+        edges = []
+        for idx in range(600):
+            sym_id = f"sym:app:func{idx:03d}"
+            nodes.append(
+                _make_node(
+                    sym_id,
+                    "function",
+                    "src/app.py",
+                    symbol_name=f"func{idx:03d}",
+                    purpose="Request routing helper" if idx == 0 else "function helper",
+                )
+            )
+            edges.append(_make_edge("contains", "module:src/app.py", sym_id))
+        for idx in range(100001):
+            src = f"sym:app:func{idx % 600:03d}"
+            dst = f"sym:app:func{(idx + 1) % 600:03d}"
+            edges.append(_make_edge("calls", src, dst))
+        graph = CanonicalClueGraph(
+            metadata={"schema_version": "2.0"},
+            repository={"name": "huge-edges", "root_path": "."},
+            nodes=nodes,
+            edges=edges,
+        )
+        with patch("codeclue_research.clue_view_mrlf._betweenness_centrality", side_effect=AssertionError("should skip")):
+            focus = _select_focus_nodes(graph, "How is request routing handled?")
+        assert focus
 
 
 # ---------------------------------------------------------------------------

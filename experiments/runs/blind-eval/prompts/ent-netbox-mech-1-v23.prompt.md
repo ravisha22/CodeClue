@@ -12,14 +12,20 @@ Do not use any external knowledge about the framework or library.
 **Reasoning scaffold:** Think through the clue systematically before answering. First, identify the modules, symbols, or relationships most relevant to the question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before concluding: follow calls: chains, walk extends: hierarchies, and use behavior: annotations as summaries of how control or responsibility moves. Use TREE and INDEX to situate the relationship in the repository structure. State explicitly what GAPS says cannot be determined from the clue alone. Finally, synthesize the answer, distinguishing supported structure from unresolved uncertainty.
 
 --- CLUE FILE START ---
-=CC v2.1 netbox@HEAD 1108mod 11516sym
+=CC v2.1 netbox@HEAD 1108mod 11893sym
 ? How are NetBox background jobs enqueued, scheduled, and executed?
 
 
+-- README
+<div align="center"> <img src="https://raw.githubusercontent.com/netbox-community/netbox/main/docs/netbox_logo_light.svg" width="400" alt=...
+sections: NetBox's Role, Why NetBox?, Comprehensive Data Model, Focused Development, Extensible and Customizable
+
 -- TREE
 contrib/  (1 files)
-netbox/  (1107 files)
-  account/  circuits/  core/  dcim/  extras/  ipam/  netbox/  reports/  scripts/  tenancy/  ...+5
+docs/  (1 files)
+netbox/  (1109 files)
+  account/  circuits/  core/  dcim/  extras/  ipam/  netbox/  project-static/  reports/  scripts/  ...+6
+README.md  mkdocs.yml
 
 -- INDEX
 contrib/gunicorn.py                              20L  
@@ -27,7 +33,7 @@ netbox/account/__init__.py                        0L
 netbox/account/migrations/0001_initial.py        27L  Migration
 netbox/account/migrations/__init__.py             0L  
 netbox/account/models.py                         17L  Meta, get_absolute_url, UserToken
-netbox/account/urls.py                           21L  
+netbox/account/urls.py                           21L  path:api-tokens/, path:api-tokens/<int:pk>/, path:api-tokens/add/, path:bookmarks/, path:notifications/
 netbox/account/views.py                         380L  get_extra_context, get_queryset, BookmarkListView, get, post
 netbox/circuits/__init__.py                       0L  
 netbox/circuits/api/__init__.py                   0L  
@@ -40,8 +46,7 @@ netbox/circuits/api/urls.py                      26L
 netbox/circuits/api/views.py                    126L  CircuitGroupAssignmentViewSet, CircuitGroupViewSet, CircuitTerminationViewSet, CircuitTypeViewSet, CircuitViewSet
 netbox/circuits/apps.py                          26L  ready, CircuitsConfig
 netbox/circuits/choices.py                      110L  CircuitCommitRateChoices, CircuitPriorityChoices, CircuitStatusChoices, CircuitTerminationPortSpeedChoices, CircuitTerminationSideChoices
-netbox/circuits/constants.py                     11L  
-  ...and 1089 more modules
+  ...and 1090 more modules
 
 -- SYM
 IPAddress                           C netbox/ipam/models/ip.py:750    An IPAddress represents an individual IPv4 or I...
@@ -76,10 +81,10 @@ validate                            M netbox/utilities/filters.py:52     functio
 get_limit                           M netbox/netbox/api/pagination.py:45     function get_limit
 _get_terminations                   M netbox/dcim/tables/cables.py:29     function _get_terminations
 _populate_count_for_type            M netbox/dcim/migrations/0219_devicetype_device_count.py:7      Update a CounterCache field on the specified mo...
-get_url_params                      M netbox/netbox/object_actions.py:55     function get_url_params
 _get_custom_fields                  M netbox/extras/api/customfields.py:40     Cache CustomFields assigned to this model to av...
 VLANGroupSerializer                 C netbox/ipam/api/serializers_/vlans.py:27     class VLANGroupSerializer
 filter_device                       M netbox/ipam/graphql/filters.py:166    Helper to standardize logic for device and devi...
+get_url_params                      M netbox/netbox/object_actions.py:55     function get_url_params
 get_queryset                        M netbox/users/api/views.py:118    function get_queryset
 cache_templates                     M netbox/utilities/jinja2.py:44     function cache_templates
 _draw_device                        M netbox/dcim/svg/racks.py:177    function _draw_device
@@ -95,26 +100,29 @@ get_viewname                        M netbox/utilities/views.py:293    Return th
 _clean_side                         M netbox/dcim/forms/bulk_import.py:1539   Derive a Cable's A/B termination objects.
 _get_script                         M netbox/extras/api/views.py:294    function _get_script
 get_additional_lookups              M netbox/netbox/filtersets.py:167    function get_additional_lookups
-get_queryset                        M netbox/core/models/object_types.py:43     function get_queryset
 generate                            M netbox/users/models/tokens.py:256    Generate and return a random token value of the...
-get_clean_data                      M netbox/core/models/change_logging.py:173    Return only the pre-/post-change attributes whi...
+get_queryset                        M netbox/core/models/object_types.py:43     function get_queryset
 get_object                          M netbox/extras/views.py:1642   function get_object
+get_clean_data                      M netbox/core/models/change_logging.py:173    Return only the pre-/post-change attributes whi...
 clone                               M netbox/ipam/models/ip.py:991    function clone
 to_objectchange                     M netbox/ipam/models/ip.py:1000   function to_objectchange
 get_for_model                       M netbox/extras/models/customfields.py:66     Return all CustomFields assigned to the given m...
 _get_columns                        M netbox/netbox/tables/tables.py:64     function _get_columns
-get_serializer_ref_name             M netbox/core/api/schema.py:208    Get serializer's ref_name
-_get_opts                           M netbox/core/models/object_types.py:63     function _get_opts
-update                              M netbox/netbox/api/serializers/features.py:65     function update
-filter_by_cable_end                 M netbox/dcim/filtersets.py:2651   function filter_by_cable_end
-vc_interfaces                       M netbox/dcim/models/devices.py:1087   Return a QuerySet matching all Interfaces assig...
-_is_superuser                       M netbox/netbox/authentication/__init__.py:240    function _is_superuser
-enqueue                             M netbox/netbox/jobs.py:150    Enqueue a new `Job`.
-_load_resource                      M netbox/netbox/plugins/__init__.py:87     function _load_resource
-ProviderSerializer                  C netbox/circuits/api/serializers_/providers.py:18     class ProviderSerializer
-  ...and 7826 more symbols
+  ...and 8206 more symbols
 
 -- FOCUS
+netbox/netbox/settings.py (netbox/netbox/settings.py:1-981)
+  Config summary for netbox/netbox/settings.py: entries: RELEASE=load_release_data(), VERSION=RELEASE.full_version, BASE_DIR=os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ADMINS=getattr(configuration, 'ADMINS', []), ALLOWED_HOSTS=getattr(configuration, 'ALLOWED_HOSTS'), API_TOKEN_PEPPERS=getattr(configuration, 'API_TOKEN_PEPPERS', {})
+  entries: RELEASE=load_release_data(), VERSION=RELEASE.full_version, BASE_DIR=os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ADMINS=getattr(configuration, 'ADMINS', []), ALLOWED_HOSTS=getattr(configuration, 'ALLOWED_HOSTS')
+
+netbox/core/tables/config.py (netbox/core/tables/config.py:1-36)
+  Config summary for netbox/core/tables/config.py: entries: REVISION_BUTTONS='\n{% if not record.is_active %}\n<a href="{% url \'core:configrevision_restore\' pk=record.pk %}...
+  entries: REVISION_BUTTONS='\n{% if not record.is_active %}\n<a href="{% url \'core:configrevision_restore\' pk=record.pk %}...
+
+netbox/project-static/netbox-graphiql/package.json (netbox/project-static/netbox-graphiql/package.json:1-17)
+  Config summary for netbox/project-static/netbox-graphiql/package.json: deps: @graphiql/plugin-explorer, graphiql, graphql, js-cookie, react, react-dom
+  deps: @graphiql/plugin-explorer, graphiql, graphql, js-cookie, react, react-dom
+
 is_background_request (netbox/utilities/jobs.py:14-18)
   Return True if the request is being processed as a background job.
   sig: is_background_request(request)
@@ -224,93 +232,54 @@ get_jobs (netbox/netbox/views/generic/feature_views.py:209-214)
   sig: get_jobs(instance)
   called_by: ObjectJobsView
 
-ObjectJobsView (netbox/netbox/views/generic/feature_views.py:184-235)
-  Render a list of all Job assigned to an object.
-  extends: ConditionalLoginRequiredMixin, View
-  attrs: base_template=None
-  imports: django.contrib, django.contrib.auth.mixins, django.contrib.contenttypes.models, django.db, django.db.models
-  calls: get_jobs, get_object
+path:background-queues/ (netbox/core/urls.py:1-57)
+  Django route background-queues/ -> views.BackgroundQueueListView.as_view
+  target: views.BackgroundQueueListView.as_view
 
-JobRunner (netbox/netbox/jobs.py:54-188)
-  Background Job helper class.
-  extends: ABC
-  imports: logging, django.core.exceptions, django.utils, django.utils.functional, django_pglocks
-  calls: JobLogHandler, enqueue, get_jobs
+path:background-queues/<i (netbox/core/urls.py:1-57)
+  Django route background-queues/<i -> views.BackgroundTaskListView.as_view
+  target: views.BackgroundTaskListView.as_view
 
-AsyncViewJob (netbox/netbox/jobs.py:191-207)
-  Execute a view as a background job.
-  extends: JobRunner
-  imports: logging, django.core.exceptions, django.utils, django.utils.functional, django_pglocks
-  raises: JobFailed
+path:background-tasks/<st (netbox/core/urls.py:1-57)
+  Django route background-tasks/<st -> views.BackgroundTaskDeleteView.as_view
+  target: views.BackgroundTaskDeleteView.as_view
 
-process_request_as_job (netbox/utilities/jobs.py:21-49)
-  Process a request using a view as a background job.
-  sig: process_request_as_job(view, request, name)
-  calls: is_background_request
+path:background-tasks/<st (netbox/core/urls.py:1-57)
+  Django route background-tasks/<st -> views.BackgroundTaskRequeueView.as_view
+  target: views.BackgroundTaskRequeueView.as_view
 
-system_job (netbox/netbox/jobs.py:25-38)
-  Decorator for registering a `JobRunner` class as system background job.
-  sig: system_job(interval)
-  raises: ImproperlyConfigured
-  uses: ImproperlyConfigured (django.core.exceptions)
+path:background-tasks/<st (netbox/core/urls.py:1-57)
+  Django route background-tasks/<st -> views.BackgroundTaskEnqueueView.as_view
+  target: views.BackgroundTaskEnqueueView.as_view
 
-BackgroundQueueViewSet (netbox/core/api/views.py:154-184)
-  Retrieve a list of RQ Queues.
-  extends: BaseRQViewSet
-  attrs: lookup_field='name', lookup_value_regex='[\\w.@+-]+'
-  imports: django.http, django.shortcuts, django.utils.translation, django_rq.queues, django_rq.settings
-  raises: Http404
+path:background-tasks/<st (netbox/core/urls.py:1-57)
+  Django route background-tasks/<st -> views.BackgroundTaskStopView.as_view
+  target: views.BackgroundTaskStopView.as_view
 
-BackgroundTaskViewSet (netbox/core/api/views.py:218-288)
-  Retrieve a list of RQ Tasks.
-  extends: BaseRQViewSet
-  attrs: lookup_field='id'
-  imports: django.http, django.shortcuts, django.utils.translation, django_rq.queues, django_rq.settings
-  calls: get_task_from_id
-  raises: Http404
+path:background-tasks/<st (netbox/core/urls.py:1-57)
+  Django route background-tasks/<st -> views.BackgroundTaskView.as_view
+  target: views.BackgroundTaskView.as_view
 
-BackgroundWorkerViewSet (netbox/core/api/views.py:187-215)
-  Retrieve a list of RQ Workers.
-  extends: BaseRQViewSet
-  attrs: lookup_field='name'
-  imports: django.http, django.shortcuts, django.utils.translation, django_rq.queues, django_rq.settings
-  raises: Http404
+path:background-workers/< (netbox/core/urls.py:1-57)
+  Django route background-workers/< -> views.WorkerListView.as_view
+  target: views.WorkerListView.as_view
 
-JobsMixin (netbox/netbox/models/features.py:452-470)
-  Enables support for job results.
-  extends: Model
-  imports: django.contrib.contenttypes.fields, django.contrib.contenttypes.models, django.core.validators, django.db, django.db.models
+path:background-workers/< (netbox/core/urls.py:1-57)
+  Django route background-workers/< -> views.WorkerView.as_view
+  target: views.WorkerView.as_view
 
-Job (netbox/core/models/jobs.py:35-324)
-  Tracks the lifecycle of a job which represents a background task (e.g.
-  extends: Model
-  imports: logging, uuid, django_rq, django.conf, django.contrib.contenttypes.fields
-  calls: clean, delete, get_event_type
-  called_by: enqueue
-  raises: ValidationError, ValueError
-  uses: ValidationError (django.core.exceptions)
+path:jobs/ (netbox/core/urls.py:1-57)
+  Django route jobs/ -> include
+  target: include
 
-SystemHousekeepingJob (netbox/core/jobs.py:61-197)
-  Perform daily system housekeeping functions.
-  extends: JobRunner
-  imports: importlib, requests, django.conf, django.core.cache, django.utils
-  calls: check_for_new_releases, clear_expired_sessions, delete_expired_jobs, prune_changelog, send_census_report
-  uses: Config (netbox.config)
-
-enqueue (netbox/netbox/jobs.py:150-158)
-  Enqueue a new `Job`.
-  sig: enqueue(cls)
-  called_by: enqueue_once, handle, JobRunner
-
-enqueue_once (netbox/netbox/jobs.py:162-188)
-  Enqueue a new `Job` once, i.e.
-  sig: enqueue_once(cls, instance, schedule_at, interval)
-  calls: enqueue, get_jobs
+path:jobs/<int:pk>/ (netbox/core/urls.py:1-57)
+  Django route jobs/<int:pk>/ -> include
+  target: include
 
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 19 with behavior annotations
-uncovered: terminate, draw_device_front, draw_device_rear, _get_device_coords
+coverage: 80 symbols in L3, 12 with behavior annotations
+uncovered: NetBoxModelFilter, NetBoxModelFilterSet, NetBoxModelFilterSetForm, README.md
 
 --- CLUE FILE END ---
 

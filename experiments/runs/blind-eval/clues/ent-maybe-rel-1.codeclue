@@ -1,5 +1,6 @@
-=CC v2.1 maybe@HEAD 91mod 267sym
+=CC v2.1 maybe@HEAD 91mod 270sym
 ? How are authentication, AI enablement, and endpoint scopes related across Maybe's Chat API?
+
 
 
 -- TREE
@@ -7,6 +8,7 @@ app/  (50 files)
   javascript/
 vendor/  (41 files)
   javascript/
+.env.example  README.md  package.json
 
 -- INDEX
 app/components/DS/dialog_controller.js           33L  clickOutside, close, connect, extends
@@ -60,8 +62,8 @@ extends.validate                    M app/javascript/controllers/password_valida
 extends.addEventListeners           M app/components/DS/tooltip_controller.js:29     method extends.addEventListeners
 extends._getTrendIcon               M app/javascript/controllers/time_series_chart_controller.js:401    method extends._getTrendIcon
 extends.hideAllTooltipsExcept       M app/javascript/controllers/mobile_cell_interaction_controller.js:126    method extends.hideAllTooltipsExcept
-extends.applyTheme                  M app/javascript/controllers/theme_controller.js:32     method extends.applyTheme
 extends.startSystemThemeListener    M app/javascript/controllers/theme_controller.js:71     method extends.startSystemThemeListener
+extends.applyTheme                  M app/javascript/controllers/theme_controller.js:32     method extends.applyTheme
 extends.stopSystemThemeListener     M app/javascript/controllers/theme_controller.js:79     method extends.stopSystemThemeListener
 extends.showPaletteSection          M app/javascript/controllers/category_controller.js:211    method extends.showPaletteSection
 extends._addHiddenFormInputsForSelectedIds M app/javascript/controllers/bulk_select_controller.js:85     method extends._addHiddenFormInputsForSelectedIds
@@ -95,9 +97,17 @@ extends.removeEventListeners        M app/javascript/controllers/tooltip_control
 extends.startAutoUpdate             M app/javascript/controllers/tooltip_controller.js:50     method extends.startAutoUpdate
 extends.stopAutoUpdate              M app/javascript/controllers/tooltip_controller.js:60     method extends.stopAutoUpdate
 extends.removeEventListeners        M app/components/DS/tooltip_controller.js:34     method extends.removeEventListeners
-  ...and 202 more symbols
+  ...and 205 more symbols
 
 -- FOCUS
+.env.example (.env.example:1-86)
+  Config summary for .env.example: entries: SELF_HOSTED=true, SECRET_KEY_BASE=secret-value, SYNTH_API_KEY=<set>, PORT=3000, SMTP_ADDRESS=<set>, SMTP_PORT=465
+  entries: SELF_HOSTED=true, SECRET_KEY_BASE=secret-value, SYNTH_API_KEY=<set>, PORT=3000, SMTP_ADDRESS=<set>
+
+README.md (README.md:1-64)
+  Documentation summary for README.md: <img width="1190" alt="maybe_hero" src="https://github.com/user-attachments/assets/5ed08763-a9ee-42b2-a436-e05038fcf5... > [!IMPORTANT]; sections: Maybe: The personal finance app for everyone, Maybe Hosting, Forking and Attribution, Local Development Setup, Requirements
+  sections: Maybe: The personal finance app for everyone, Maybe Hosting, Forking and Attribution, Local Development Setup, Requirements
+
 extends.submitSampleQuestion (app/javascript/controllers/chat_controller.js:27-35)
   method extends.submitSampleQuestion
   sig: extends.submitSampleQuestion(e)
@@ -131,8 +141,5 @@ extends.handleInputKeyDown (app/javascript/controllers/chat_controller.js:36-43)
   uses: e.key, e.shiftKey, e.preventDefault, this.formTarget.requestSubmit
 
 -- GAPS
-type: MECHANISTIC (body logic needed for full answer)
-coverage: 6 symbols in L3, 0 with behavior annotations
-drill: app/javascript/controllers/chat_controller.js (~2 lines, extends.disconnect)
-drill: app/javascript/controllers/chat_controller.js (~9 lines, extends.autoResize)
-drill: app/javascript/controllers/chat_controller.js (~4 lines, extends.submitSampleQuestion)
+type: STRUCTURAL (answerable from L0-L2)
+coverage: 8 symbols in L3, 0 with behavior annotations

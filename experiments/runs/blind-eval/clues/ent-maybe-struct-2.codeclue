@@ -1,5 +1,6 @@
-=CC v2.1 maybe@HEAD 91mod 267sym
+=CC v2.1 maybe@HEAD 91mod 270sym
 ? What files and setup artifacts are documented for getting a self-hosted Maybe deployment running with Docker?
+
 
 
 -- TREE
@@ -7,6 +8,7 @@ app/  (50 files)
   javascript/
 vendor/  (41 files)
   javascript/
+.env.example  README.md  package.json
 
 -- INDEX
 app/components/DS/dialog_controller.js           33L  clickOutside, close, connect, extends
@@ -60,8 +62,8 @@ extends.validate                    M app/javascript/controllers/password_valida
 extends.addEventListeners           M app/components/DS/tooltip_controller.js:29     method extends.addEventListeners
 extends._getTrendIcon               M app/javascript/controllers/time_series_chart_controller.js:401    method extends._getTrendIcon
 extends.hideAllTooltipsExcept       M app/javascript/controllers/mobile_cell_interaction_controller.js:126    method extends.hideAllTooltipsExcept
-extends.applyTheme                  M app/javascript/controllers/theme_controller.js:32     method extends.applyTheme
 extends.startSystemThemeListener    M app/javascript/controllers/theme_controller.js:71     method extends.startSystemThemeListener
+extends.applyTheme                  M app/javascript/controllers/theme_controller.js:32     method extends.applyTheme
 extends.stopSystemThemeListener     M app/javascript/controllers/theme_controller.js:79     method extends.stopSystemThemeListener
 extends.showPaletteSection          M app/javascript/controllers/category_controller.js:211    method extends.showPaletteSection
 extends._addHiddenFormInputsForSelectedIds M app/javascript/controllers/bulk_select_controller.js:85     method extends._addHiddenFormInputsForSelectedIds
@@ -95,7 +97,7 @@ extends.removeEventListeners        M app/javascript/controllers/tooltip_control
 extends.startAutoUpdate             M app/javascript/controllers/tooltip_controller.js:50     method extends.startAutoUpdate
 extends.stopAutoUpdate              M app/javascript/controllers/tooltip_controller.js:60     method extends.stopAutoUpdate
 extends.removeEventListeners        M app/components/DS/tooltip_controller.js:34     method extends.removeEventListeners
-  ...and 202 more symbols
+  ...and 205 more symbols
 
 -- FOCUS
 extends._setupResizeObserver (app/javascript/controllers/time_series_chart_controller.js:564-569)
@@ -108,6 +110,14 @@ extends (app/javascript/controllers/time_series_chart_controller.js:5-570)
   methods: connect, disconnect
   calls: _createMainGroup, _createMainSvg, _d3Container, _d3ContainerHeight, _d3ContainerWidth, _d3Group, _d3Line, _d3Svg
   uses: this._install, document.addEventListener, this._reinstall, this._setupResizeObserver
+
+.env.example (.env.example:1-86)
+  Config summary for .env.example: entries: SELF_HOSTED=true, SECRET_KEY_BASE=secret-value, SYNTH_API_KEY=<set>, PORT=3000, SMTP_ADDRESS=<set>, SMTP_PORT=465
+  entries: SELF_HOSTED=true, SECRET_KEY_BASE=secret-value, SYNTH_API_KEY=<set>, PORT=3000, SMTP_ADDRESS=<set>
+
+README.md (README.md:1-64)
+  Documentation summary for README.md: <img width="1190" alt="maybe_hero" src="https://github.com/user-attachments/assets/5ed08763-a9ee-42b2-a436-e05038fcf5... > [!IMPORTANT]; sections: Maybe: The personal finance app for everyone, Maybe Hosting, Forking and Attribution, Local Development Setup, Requirements
+  sections: Maybe: The personal finance app for everyone, Maybe Hosting, Forking and Attribution, Local Development Setup, Requirements
 
 extends.fileSelected (app/javascript/controllers/file_upload_controller.js:34-54)
   method extends.fileSelected
@@ -150,12 +160,6 @@ extends._drawEmpty (app/javascript/controllers/time_series_chart_controller.js:7
   called_by: _draw, extends
   uses: this._d3Svg.selectAll, this._drawDashedLineEmptyState, this._drawCenteredCircleEmptyState
 
-extends._drawGradientBelowTrendline (app/javascript/controllers/time_series_chart_controller.js:222-272)
-  method extends._drawGradientBelowTrendline
-  calls: _d3XScale, _d3YScale
-  called_by: _drawChart, extends
-  uses: this._d3Group, this.element.id, this._d3YScale, d3.max
-
 extends._d3XScale (app/javascript/controllers/time_series_chart_controller.js:503-508)
   method extends._d3XScale
   called_by: _d3Line, _drawGradientBelowTrendline, _trackMouseForShowingTooltip, extends
@@ -166,6 +170,12 @@ extends._d3YScale (app/javascript/controllers/time_series_chart_controller.js:51
   behavior: GUARD(dataMin === dataMax -> const padding = dat...); PRECEDENCE(dataMin -> relativeChange -> useLabelsValue -> default)
   called_by: _d3Line, _drawGradientBelowTrendline, _trackMouseForShowingTooltip, extends
   uses: d3.min, this._normalDataPoints, this._getDatumValue, d3.max
+
+extends._drawGradientBelowTrendline (app/javascript/controllers/time_series_chart_controller.js:222-272)
+  method extends._drawGradientBelowTrendline
+  calls: _d3XScale, _d3YScale
+  called_by: _drawChart, extends
+  uses: this._d3Group, this.element.id, this._d3YScale, d3.max
 
 extends._drawTrendline (app/javascript/controllers/time_series_chart_controller.js:119-131)
   method extends._drawTrendline
@@ -239,26 +249,6 @@ extends._drawTooltip (app/javascript/controllers/time_series_chart_controller.js
   called_by: _drawChart, extends
   uses: this._d3Tooltip, this.element.id
 
-extends._drawXAxisLabels (app/javascript/controllers/time_series_chart_controller.js:190-220)
-  method extends._drawXAxisLabels
-  called_by: _drawChart, extends
-  uses: this._d3Group, this._d3ContainerHeight, this._d3XScale, this._normalDataPoints
-
-extends._getTrendIcon (app/javascript/controllers/time_series_chart_controller.js:401-416)
-  method extends._getTrendIcon
-  sig: extends._getTrendIcon(datum)
-  behavior: PRECEDENCE(isIncrease -> isDecrease)
-  called_by: _tooltipTemplate, extends
-  uses: datum.trend.previous.amount, datum.trend.current.amount, www.w3.org, datum.trend.color
-
-extends._installTrendlineSplit (app/javascript/controllers/time_series_chart_controller.js:133-169)
-  method extends._installTrendlineSplit
-  called_by: _drawTrendline, extends
-  uses: this._d3Svg, this.element.id, this._d3XScale.range, this.dataValue.trend.color
-
 -- GAPS
-type: MECHANISTIC (body logic needed for full answer)
-coverage: 42 symbols in L3, 4 with behavior annotations
-drill: app/javascript/controllers/time_series_chart_controller.js (~4 lines, extends._setupResizeObserver)
-drill: app/javascript/controllers/file_upload_controller.js (~15 lines, extends.formSubmitting)
-drill: app/javascript/controllers/file_upload_controller.js (~14 lines, extends.fileSelected)
+type: STRUCTURAL (answerable from L0-L2)
+coverage: 44 symbols in L3, 4 with behavior annotations

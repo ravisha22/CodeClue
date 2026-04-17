@@ -12,8 +12,9 @@ Do not use any external knowledge about the framework or library.
 **Reasoning scaffold:** Think through the clue systematically before answering. First, identify the modules, symbols, or relationships most relevant to the question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before concluding: follow calls: chains, walk extends: hierarchies, and use behavior: annotations as summaries of how control or responsibility moves. Use TREE and INDEX to situate the relationship in the repository structure. State explicitly what GAPS says cannot be determined from the clue alone. Finally, synthesize the answer, distinguishing supported structure from unresolved uncertainty.
 
 --- CLUE FILE START ---
-=CC v2.1 maybe@HEAD 91mod 267sym
+=CC v2.1 maybe@HEAD 91mod 270sym
 ? How do chats, messages, assistant responses, and tool calls relate in the documented Chat API payloads?
+
 
 
 -- TREE
@@ -21,6 +22,7 @@ app/  (50 files)
   javascript/
 vendor/  (41 files)
   javascript/
+.env.example  README.md  package.json
 
 -- INDEX
 app/components/DS/dialog_controller.js           33L  clickOutside, close, connect, extends
@@ -74,8 +76,8 @@ extends.validate                    M app/javascript/controllers/password_valida
 extends.addEventListeners           M app/components/DS/tooltip_controller.js:29     method extends.addEventListeners
 extends._getTrendIcon               M app/javascript/controllers/time_series_chart_controller.js:401    method extends._getTrendIcon
 extends.hideAllTooltipsExcept       M app/javascript/controllers/mobile_cell_interaction_controller.js:126    method extends.hideAllTooltipsExcept
-extends.applyTheme                  M app/javascript/controllers/theme_controller.js:32     method extends.applyTheme
 extends.startSystemThemeListener    M app/javascript/controllers/theme_controller.js:71     method extends.startSystemThemeListener
+extends.applyTheme                  M app/javascript/controllers/theme_controller.js:32     method extends.applyTheme
 extends.stopSystemThemeListener     M app/javascript/controllers/theme_controller.js:79     method extends.stopSystemThemeListener
 extends.showPaletteSection          M app/javascript/controllers/category_controller.js:211    method extends.showPaletteSection
 extends._addHiddenFormInputsForSelectedIds M app/javascript/controllers/bulk_select_controller.js:85     method extends._addHiddenFormInputsForSelectedIds
@@ -109,14 +111,21 @@ extends.removeEventListeners        M app/javascript/controllers/tooltip_control
 extends.startAutoUpdate             M app/javascript/controllers/tooltip_controller.js:50     method extends.startAutoUpdate
 extends.stopAutoUpdate              M app/javascript/controllers/tooltip_controller.js:60     method extends.stopAutoUpdate
 extends.removeEventListeners        M app/components/DS/tooltip_controller.js:34     method extends.removeEventListeners
-  ...and 202 more symbols
+  ...and 205 more symbols
 
 -- FOCUS
-extends._trackMouseForShowingTooltip (app/javascript/controllers/time_series_chart_controller.js:284-373)
-  method extends._trackMouseForShowingTooltip
-  calls: _d3XScale, _d3YScale, _setTrendlineSplitAt, _tooltipTemplate
+.env.example (.env.example:1-86)
+  Config summary for .env.example: entries: SELF_HOSTED=true, SECRET_KEY_BASE=secret-value, SYNTH_API_KEY=<set>, PORT=3000, SMTP_ADDRESS=<set>, SMTP_PORT=465
+  entries: SELF_HOSTED=true, SECRET_KEY_BASE=secret-value, SYNTH_API_KEY=<set>, PORT=3000, SMTP_ADDRESS=<set>
+
+package.json (package.json:1-19)
+  Config summary for package.json: deps: @biomejs/biome
+  deps: @biomejs/biome
+
+extends._drawTooltip (app/javascript/controllers/time_series_chart_controller.js:274-282)
+  method extends._drawTooltip
   called_by: _drawChart, extends
-  uses: d3.bisector, d.date, this._d3Group, this._d3ContainerWidth
+  uses: this._d3Tooltip, this.element.id
 
 extends._tooltipTemplate (app/javascript/controllers/time_series_chart_controller.js:375-399)
   method extends._tooltipTemplate
@@ -125,16 +134,17 @@ extends._tooltipTemplate (app/javascript/controllers/time_series_chart_controlle
   called_by: _trackMouseForShowingTooltip, extends
   uses: datum.date_formatted, this._getTrendIcon, this._extractFormattedValue, datum.trend.current
 
+extends._trackMouseForShowingTooltip (app/javascript/controllers/time_series_chart_controller.js:284-373)
+  method extends._trackMouseForShowingTooltip
+  calls: _d3XScale, _d3YScale, _setTrendlineSplitAt, _tooltipTemplate
+  called_by: _drawChart, extends
+  uses: d3.bisector, d.date, this._d3Group, this._d3ContainerWidth
+
 extends.hideAllErrorTooltips (app/javascript/controllers/mobile_cell_interaction_controller.js:119-124)
   method extends.hideAllErrorTooltips
   behavior: ACCUMULATE(hideAllErrorTooltips... -> result)
   called_by: handleDocumentClick, unhighlightCell, extends
   uses: document.querySelectorAll, tooltip.classList.add, this.activeTooltip
-
-extends._drawTooltip (app/javascript/controllers/time_series_chart_controller.js:274-282)
-  method extends._drawTooltip
-  called_by: _drawChart, extends
-  uses: this._d3Tooltip, this.element.id
 
 extends.hideAllTooltipsExcept (app/javascript/controllers/mobile_cell_interaction_controller.js:126-132)
   method extends.hideAllTooltipsExcept
@@ -147,6 +157,10 @@ extends.showErrorTooltip (app/javascript/controllers/mobile_cell_interaction_con
   method extends.showErrorTooltip
   called_by: handleCellTouch, extends
   uses: this.hasErrorTooltipTarget, this.errorTooltipTarget, tooltip.classList.remove, this.activeTooltip
+
+README.md (README.md:1-64)
+  Documentation summary for README.md: <img width="1190" alt="maybe_hero" src="https://github.com/user-attachments/assets/5ed08763-a9ee-42b2-a436-e05038fcf5... > [!IMPORTANT]; sections: Maybe: The personal finance app for everyone, Maybe Hosting, Forking and Attribution, Local Development Setup, Requirements
+  sections: Maybe: The personal finance app for everyone, Maybe Hosting, Forking and Attribution, Local Development Setup, Requirements
 
 extends (app/javascript/controllers/chat_controller.js:2-61)
   extends: Controller
@@ -187,96 +201,9 @@ extends.toggleErrorMessage (app/javascript/controllers/mobile_cell_interaction_c
   called_by: extends
   uses: event.currentTarget, errorIcon.closest, cellContainer.querySelector, field.focus
 
-extends (app/javascript/controllers/mobile_cell_interaction_controller.js:2-149)
-  extends: Controller
-  methods: connect, disconnect, findHighlightForField, handleCellTouch, handleDocumentClick, hideAllErrorTooltips
-  calls: connect, disconnect, findHighlightForField, handleCellTouch, handleDocumentClick, hideAllErrorTooltips, hideAllTooltipsExcept, highlightCell
-  uses: this.documentClickHandler, this.handleDocumentClick.bind, document.addEventListener, document.removeEventListener
-
-extends (app/javascript/controllers/time_series_chart_controller.js:5-570)
-  extends: Controller
-  methods: connect, disconnect
-  calls: _createMainGroup, _createMainSvg, _d3Container, _d3ContainerHeight, _d3ContainerWidth, _d3Group, _d3Line, _d3Svg
-  uses: this._install, document.addEventListener, this._reinstall, this._setupResizeObserver
-
-extends._drawChart (app/javascript/controllers/time_series_chart_controller.js:105-117)
-  method extends._drawChart
-  calls: _drawGradientBelowTrendline, _drawTooltip, _drawTrendline, _drawXAxisLabels, _trackMouseForShowingTooltip
-  called_by: _draw, extends
-  uses: this._drawTrendline, this.useLabelsValue, this._drawXAxisLabels, this._drawGradientBelowTrendline
-
-extends._d3XScale (app/javascript/controllers/time_series_chart_controller.js:503-508)
-  method extends._d3XScale
-  called_by: _d3Line, _drawGradientBelowTrendline, _trackMouseForShowingTooltip, extends
-  uses: this._d3ContainerWidth, d3.extent, this._normalDataPoints, d.date
-
-extends._d3YScale (app/javascript/controllers/time_series_chart_controller.js:510-562)
-  method extends._d3YScale
-  behavior: GUARD(dataMin === dataMax -> const padding = dat...); PRECEDENCE(dataMin -> relativeChange -> useLabelsValue -> default)
-  called_by: _d3Line, _drawGradientBelowTrendline, _trackMouseForShowingTooltip, extends
-  uses: d3.min, this._normalDataPoints, this._getDatumValue, d3.max
-
-extends.handleCellTouch (app/javascript/controllers/mobile_cell_interaction_controller.js:50-71)
-  method extends.handleCellTouch
-  sig: extends.handleCellTouch(event)
-  calls: findHighlightForField, showErrorTooltip
-  called_by: extends
-  uses: this.touchTimeout, event.target, this.findHighlightForField, highlight.style.opacity
-
-extends.unhighlightCell (app/javascript/controllers/mobile_cell_interaction_controller.js:40-48)
-  method extends.unhighlightCell
-  sig: extends.unhighlightCell(event)
-  calls: findHighlightForField, hideAllErrorTooltips
-  called_by: extends
-  uses: event.target, this.findHighlightForField, highlight.style.opacity, this.hideAllErrorTooltips
-
-extends._getTrendIcon (app/javascript/controllers/time_series_chart_controller.js:401-416)
-  method extends._getTrendIcon
-  sig: extends._getTrendIcon(datum)
-  behavior: PRECEDENCE(isIncrease -> isDecrease)
-  called_by: _tooltipTemplate, extends
-  uses: datum.trend.previous.amount, datum.trend.current.amount, www.w3.org, datum.trend.color
-
-extends._setTrendlineSplitAt (app/javascript/controllers/time_series_chart_controller.js:171-188)
-  method extends._setTrendlineSplitAt
-  sig: extends._setTrendlineSplitAt(percent)
-  called_by: _trackMouseForShowingTooltip, extends
-  uses: this._d3Svg, this.element.id, this._d3ContainerWidth
-
-extends.handleDocumentClick (app/javascript/controllers/mobile_cell_interaction_controller.js:23-30)
-  method extends.handleDocumentClick
-  sig: extends.handleDocumentClick(event)
-  calls: hideAllErrorTooltips
-  called_by: extends
-  uses: event.target.closest, this.hideAllErrorTooltips
-
-extends._install (app/javascript/controllers/time_series_chart_controller.js:48-52)
-  method extends._install
-  calls: _draw, _normalizeDataPoints, _rememberInitialContainerSize
-  called_by: connect, extends
-  uses: this._normalizeDataPoints, this._rememberInitialContainerSize, this._draw
-
-extends._draw (app/javascript/controllers/time_series_chart_controller.js:68-74)
-  method extends._draw
-  calls: _drawChart, _drawEmpty
-  called_by: _install, extends
-  uses: this._normalDataPoints.length, this._drawEmpty, this._drawChart
-
-extends._drawEmpty (app/javascript/controllers/time_series_chart_controller.js:76-82)
-  method extends._drawEmpty
-  calls: _drawCenteredCircleEmptyState, _drawDashedLineEmptyState
-  called_by: _draw, extends
-  uses: this._d3Svg.selectAll, this._drawDashedLineEmptyState, this._drawCenteredCircleEmptyState
-
-extends.findHighlightForField (app/javascript/controllers/mobile_cell_interaction_controller.js:145-148)
-  method extends.findHighlightForField
-  sig: extends.findHighlightForField(field)
-  called_by: handleCellTouch, highlightCell, unhighlightCell, extends
-  uses: field.closest, container.querySelector
-
 -- GAPS
 type: RELATIONAL (answerable from L2-L3 structure)
-coverage: 53 symbols in L3, 6 with behavior annotations
+coverage: 16 symbols in L3, 2 with behavior annotations
 
 --- CLUE FILE END ---
 

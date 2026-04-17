@@ -1,11 +1,15 @@
-=CC v2.1 saleor@HEAD 4239mod 27374sym
+=CC v2.1 saleor@HEAD 4239mod 27389sym
 ? How do Saleor’s API deprecation rules relate GraphQL fields, webhook payloads, plugins, and changelog entries?
 
+
+-- README
+<div align="center" width="100px"> <picture>
+sections: Table of Contents, What makes Saleor special?, Why API-only Architecture?, What are the tradeoffs?, Features
 
 -- TREE
 saleor/  (4237 files)
   account/  app/  asgi/  attribute/  auth/  channel/  checkout/  core/  csv/  discount/  ...+20
-conftest.py  manage.py
+.env.example  README.md  conftest.py  manage.py  package.json  pyproject.toml
 
 -- INDEX
 conftest.py                                     115L  Custom, django_db_setup, pytest_addoption, pytest_collection_modifyitems, pytest_configure
@@ -85,19 +89,21 @@ clean_attributes                    M saleor/graphql/product/mutations/product/p
 clean_attributes                    M saleor/graphql/product/mutations/product/product_update.py:78     function clean_attributes
 clean_attributes                    M saleor/graphql/product/mutations/product_variant/product_variant_update.py:130    function clean_attributes
 clean_input                         M saleor/graphql/page/mutations/page_create.py:81     function clean_input
-clean_attributes                    M saleor/graphql/page/mutations/page_create.py:72     function clean_attributes
-_resolve_page                       M saleor/graphql/page/schema.py:103    function _resolve_page
-resolve_page                        M saleor/graphql/page/schema.py:94     function resolve_page
-_resolve_pages                      M saleor/graphql/page/schema.py:122    function _resolve_pages
-resolve_pages                       M saleor/graphql/page/schema.py:117    function resolve_pages
-_create_variant_errors              M saleor/graphql/checkout/mutations/checkout_create_from_order.py:81     function _create_variant_errors
-__run_payment_method                M saleor/plugins/manager.py:2556   function __run_payment_method
-__run_payment_webhook               M saleor/plugins/webhook/plugin.py:2994   Trigger payment webhook event.
-get_form_field_description          M saleor/graphql/core/types/converter.py:24     function get_form_field_description
-_resolve_product                    M saleor/graphql/product/schema.py:455    function _resolve_product
-  ...and 13182 more symbols
+  ...and 13206 more symbols
 
 -- FOCUS
+saleor/settings.py (saleor/settings.py:1-1261)
+  Config summary for saleor/settings.py: entries: SOFT_MEMORY_LIMIT_IN_MB=os.environ.get('SOFT_MEMORY_LIMIT_IN_MB', None), HARD_MEMORY_LIMIT_IN_MB=os.environ.get('HARD_MEMORY_LIMIT_IN_MB', None), DEBUG=get_bool_from_env('DEBUG', True), SITE_ID=1, PROJECT_ROOT=os.path.normpath(os.path.join(os.path.dirname(__file__), '..')), ROOT_URLCONF='saleor.urls'
+  entries: SOFT_MEMORY_LIMIT_IN_MB=os.environ.get('SOFT_MEMORY_LIMIT_IN_MB', None), HARD_MEMORY_LIMIT_IN_MB=os.environ.get('HARD_MEMORY_LIMIT_IN_MB', None), DEBUG=get_bool_from_env('DEBUG', True), SITE_ID=1, PROJECT_ROOT=os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
+
+saleor/tests/settings.py (saleor/tests/settings.py:1-105)
+  Config summary for saleor/tests/settings.py: entries: POPULATE_DEFAULTS=False, CELERY_TASK_ALWAYS_EAGER=True, PUBLIC_URL='https://example.com', SECRET_KEY='NOTREALLY', ALLOWED_CLIENT_HOSTS=['www.example.com'], EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend'
+  entries: POPULATE_DEFAULTS=False, CELERY_TASK_ALWAYS_EAGER=True, PUBLIC_URL='https://example.com', SECRET_KEY='NOTREALLY', ALLOWED_CLIENT_HOSTS=['www.example.com']
+
+.env.example (.env.example:1-8)
+  Config summary for .env.example: entries: CACHE_URL=redis://localhost:6379/0, CELERY_BROKER_URL=redis://localhost:6379/1, DEFAULT_FROM_EMAIL=noreply@example.com, EMAIL_URL=smtp://localhost:1025, SECRET_KEY=changeme, HTTP_IP_FILTER_ALLOW_LOOPBACK_IPS=True
+  entries: CACHE_URL=redis://localhost:6379/0, CELERY_BROKER_URL=redis://localhost:6379/1, DEFAULT_FROM_EMAIL=noreply@example.com, EMAIL_URL=smtp://localhost:1025, SECRET_KEY=changeme
+
 process_webhook_payloads (saleor/webhook/transport/asynchronous/transport.py:150-218)
   sig: process_webhook_payloads(webhook_payloads)
   behavior: ACCUMULATE(zip(subscribable_obje... -> event payloads data payload)
@@ -118,11 +124,23 @@ get_upper_fields_camel_case (saleor/graphql/account/utils.py:30-32)
   sig: get_upper_fields_camel_case(upper_fields)
   calls: validation_field_to_camel_case
 
+re_path:^plugins/(?P<plugin (saleor/urls.py:1-64)
+  Django route ^plugins/(?P<plugin -> handle_plugin_webhook
+  target: handle_plugin_webhook
+
 _restore_non_allowed_fields (saleor/account/i18n.py:181-194)
   Restore original values for fields not allowed by country validation rules.
   sig: _restore_non_allowed_fields(data, original_data)
   behavior: ACCUMULATE(i18naddress.KNOWN_FIE... -> result)
   called_by: validate_address, CountryAwareAddressForm
+
+re_path:^plugins/channel/(?P (saleor/urls.py:1-64)
+  Django route ^plugins/channel/(?P -> handle_plugin_per_channel_webhook
+  target: handle_plugin_per_channel_webhook
+
+re_path:^plugins/global/(?P< (saleor/urls.py:1-64)
+  Django route ^plugins/global/(?P< -> handle_global_plugin_webhook
+  target: handle_global_plugin_webhook
 
 generate_pre_save_payloads (saleor/graphql/webhook/subscription_payload.py:263-309)
   sig: generate_pre_save_payloads(webhooks, instances, event_type, requestor, request_time)
@@ -214,48 +232,7 @@ monitor_fields_usage (saleor/graphql/api.py:59-89)
   behavior: ACCUMULATE(schema.get_type_map()... -> result)
   calls: wrapper
 
-resolve_webhook_sample_payload (saleor/graphql/webhook/schema.py:58-59)
-  sig: resolve_webhook_sample_payload(_root, info, app)
-  behavior: DELEGATE(resolve_sample_payload -> result)
-
-serialize_webhook_event (saleor/graphql/api.py:168-169)
-  sig: serialize_webhook_event(value)
-
-with_channel_listing_promotion_rules (saleor/graphql/checkout/dataloaders/promotion_rule_infos.py:38-156)
-  sig: with_channel_listing_promotion_rules(variant_listing_promotion_rules)
-  behavior: ACCUMULATE(zip(variant_listing_p... -> rule ids listing promotion r)
-  uses: PromotionRuleByIdLoader (discount.dataloaders), PromotionByRuleIdLoader (discount.dataloaders), PromotionRuleTranslationByIdAndLanguageCodeLoader (translations.dataloaders), VariantPromotionRuleInfo (discount.interface)
-
-with_promotion_rules (saleor/graphql/checkout/dataloaders/promotion_rule_infos.py:59-140)
-  sig: with_promotion_rules(results)
-  uses: VariantPromotionRuleInfo (discount.interface), PromotionTranslationByIdAndLanguageCodeLoader (translations.dataloaders)
-
-_wrap_with_sync_webhook_control_context (saleor/graphql/webhook/subscription_types.py:1327-1328)
-  sig: _wrap_with_sync_webhook_control_context(order)
-  behavior: DELEGATE(SyncWebhookControlContext -> result)
-  uses: SyncWebhookControlContext (core.context)
-
-_wrap_with_sync_webhook_control_context (saleor/graphql/invoice/types.py:38-39)
-  sig: _wrap_with_sync_webhook_control_context(order)
-  behavior: DELEGATE(SyncWebhookControlContext -> result)
-  uses: SyncWebhookControlContext (core.context)
-
-_wrap_with_sync_webhook_control_context (saleor/graphql/account/types.py:276-277)
-  sig: _wrap_with_sync_webhook_control_context(order)
-  behavior: DELEGATE(SyncWebhookControlContext -> result)
-  uses: SyncWebhookControlContext (core.context)
-
-resolve_postal_code_rules (saleor/graphql/shipping/types.py:217-218)
-  sig: resolve_postal_code_rules(root, info)
-  behavior: DELEGATE(PostalCodeRulesByShippingMethodIdLoader.load -> result)
-  uses: PostalCodeRulesByShippingMethodIdLoader (dataloaders)
-
-resolve_rules (saleor/graphql/discount/types/promotions.py:63-64)
-  sig: resolve_rules(root, info)
-  behavior: DELEGATE(PromotionRulesByPromotionIdLoader.load -> result)
-  uses: PromotionRulesByPromotionIdLoader (dataloaders)
-
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 39 with behavior annotations
-uncovered: clean_base_fields, call_gift_card_created_on_plugins, webhook, ApiCallTruncationError
+coverage: 82 symbols in L3, 39 with behavior annotations
+uncovered: update_fields, PluginsQueries, WebhookQueries, subscribe_webhook

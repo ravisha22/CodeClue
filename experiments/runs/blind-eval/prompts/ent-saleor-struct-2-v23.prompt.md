@@ -12,14 +12,18 @@ Do not use any external knowledge about the framework or library.
 **Reasoning scaffold:** Think through the clue systematically before answering. First, identify the modules, symbols, or relationships most relevant to the question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before concluding: follow calls: chains, walk extends: hierarchies, and use behavior: annotations as summaries of how control or responsibility moves. Use TREE and INDEX to situate the relationship in the repository structure. State explicitly what GAPS says cannot be determined from the clue alone. Finally, synthesize the answer, distinguishing supported structure from unresolved uncertainty.
 
 --- CLUE FILE START ---
-=CC v2.1 saleor@HEAD 4239mod 27374sym
+=CC v2.1 saleor@HEAD 4239mod 27389sym
 ? How is the Saleor repository organized for app modules, GraphQL APIs, and tests?
 
+
+-- README
+<div align="center" width="100px"> <picture>
+sections: Table of Contents, What makes Saleor special?, Why API-only Architecture?, What are the tradeoffs?, Features
 
 -- TREE
 saleor/  (4237 files)
   account/  app/  asgi/  attribute/  auth/  channel/  checkout/  core/  csv/  discount/  ...+20
-conftest.py  manage.py
+.env.example  README.md  conftest.py  manage.py  package.json  pyproject.toml
 
 -- INDEX
 conftest.py                                     115L  Custom, django_db_setup, pytest_addoption, pytest_collection_modifyitems, pytest_configure
@@ -99,29 +103,31 @@ clean_attributes                    M saleor/graphql/product/mutations/product/p
 clean_attributes                    M saleor/graphql/product/mutations/product/product_update.py:78     function clean_attributes
 clean_attributes                    M saleor/graphql/product/mutations/product_variant/product_variant_update.py:130    function clean_attributes
 clean_input                         M saleor/graphql/page/mutations/page_create.py:81     function clean_input
-clean_attributes                    M saleor/graphql/page/mutations/page_create.py:72     function clean_attributes
-_resolve_page                       M saleor/graphql/page/schema.py:103    function _resolve_page
-resolve_page                        M saleor/graphql/page/schema.py:94     function resolve_page
-_resolve_pages                      M saleor/graphql/page/schema.py:122    function _resolve_pages
-resolve_pages                       M saleor/graphql/page/schema.py:117    function resolve_pages
-_create_variant_errors              M saleor/graphql/checkout/mutations/checkout_create_from_order.py:81     function _create_variant_errors
-__run_payment_method                M saleor/plugins/manager.py:2556   function __run_payment_method
-__run_payment_webhook               M saleor/plugins/webhook/plugin.py:2994   Trigger payment webhook event.
-get_form_field_description          M saleor/graphql/core/types/converter.py:24     function get_form_field_description
-_resolve_product                    M saleor/graphql/product/schema.py:455    function _resolve_product
-  ...and 13182 more symbols
+  ...and 13206 more symbols
 
 -- FOCUS
+saleor/settings.py (saleor/settings.py:1-1261)
+  Config summary for saleor/settings.py: entries: SOFT_MEMORY_LIMIT_IN_MB=os.environ.get('SOFT_MEMORY_LIMIT_IN_MB', None), HARD_MEMORY_LIMIT_IN_MB=os.environ.get('HARD_MEMORY_LIMIT_IN_MB', None), DEBUG=get_bool_from_env('DEBUG', True), SITE_ID=1, PROJECT_ROOT=os.path.normpath(os.path.join(os.path.dirname(__file__), '..')), ROOT_URLCONF='saleor.urls'
+  entries: SOFT_MEMORY_LIMIT_IN_MB=os.environ.get('SOFT_MEMORY_LIMIT_IN_MB', None), HARD_MEMORY_LIMIT_IN_MB=os.environ.get('HARD_MEMORY_LIMIT_IN_MB', None), DEBUG=get_bool_from_env('DEBUG', True), SITE_ID=1, PROJECT_ROOT=os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
+
+saleor/tests/settings.py (saleor/tests/settings.py:1-105)
+  Config summary for saleor/tests/settings.py: entries: POPULATE_DEFAULTS=False, CELERY_TASK_ALWAYS_EAGER=True, PUBLIC_URL='https://example.com', SECRET_KEY='NOTREALLY', ALLOWED_CLIENT_HOSTS=['www.example.com'], EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend'
+  entries: POPULATE_DEFAULTS=False, CELERY_TASK_ALWAYS_EAGER=True, PUBLIC_URL='https://example.com', SECRET_KEY='NOTREALLY', ALLOWED_CLIENT_HOSTS=['www.example.com']
+
+.env.example (.env.example:1-8)
+  Config summary for .env.example: entries: CACHE_URL=redis://localhost:6379/0, CELERY_BROKER_URL=redis://localhost:6379/1, DEFAULT_FROM_EMAIL=noreply@example.com, EMAIL_URL=smtp://localhost:1025, SECRET_KEY=changeme, HTTP_IP_FILTER_ALLOW_LOOPBACK_IPS=True
+  entries: CACHE_URL=redis://localhost:6379/0, CELERY_BROKER_URL=redis://localhost:6379/1, DEFAULT_FROM_EMAIL=noreply@example.com, EMAIL_URL=smtp://localhost:1025, SECRET_KEY=changeme
+
 AppManifestRequiredSaleorVersion (saleor/graphql/app/types.py:315-326)
   extends: BaseObjectType
   imports: base64, graphene, graphql, app, app.types
 
-get_active_app (saleor/graphql/payment/types.py:411-423)
+get_active_app (saleor/graphql/payment/types.py:780-792)
   sig: get_active_app(app)
   behavior: GUARD(app and app.is_active and (not app.removed_at) -> return app)
   uses: ActiveAppsByAppIdentifierLoader (app.dataloaders)
 
-get_active_app (saleor/graphql/payment/types.py:780-792)
+get_active_app (saleor/graphql/payment/types.py:411-423)
   sig: get_active_app(app)
   behavior: GUARD(app and app.is_active and (not app.removed_at) -> return app)
   uses: ActiveAppsByAppIdentifierLoader (app.dataloaders)
@@ -180,7 +186,7 @@ promise_app (saleor/graphql/app/dataloaders/utils.py:13-17)
   called_by: get_app_promise
   uses: AppByTokenLoader (app)
 
-resolve_app (saleor/graphql/giftcard/types.py:139-150)
+resolve_app (saleor/graphql/csv/types.py:106-111)
   sig: resolve_app(root, info)
   uses: AppByIdLoader (app.dataloaders)
 
@@ -188,15 +194,11 @@ resolve_app (saleor/graphql/csv/types.py:63-68)
   sig: resolve_app(root, info)
   uses: AppByIdLoader (app.dataloaders)
 
-resolve_app (saleor/graphql/csv/types.py:106-111)
+resolve_app (saleor/graphql/account/types.py:259-264)
   sig: resolve_app(root, info)
   uses: AppByIdLoader (app.dataloaders)
 
-resolve_app (saleor/graphql/giftcard/types.py:469-480)
-  sig: resolve_app(root, info)
-  uses: AppByIdLoader (app.dataloaders)
-
-resolve_app (saleor/graphql/order/types.py:362-366)
+resolve_app (saleor/graphql/giftcard/types.py:139-150)
   sig: resolve_app(root, info)
   uses: AppByIdLoader (app.dataloaders)
 
@@ -204,7 +206,11 @@ resolve_app (saleor/graphql/order/types.py:576-595)
   sig: resolve_app(root, info)
   uses: AppByIdLoader (app.dataloaders), UserByUserIdLoader (account.dataloaders)
 
-resolve_app (saleor/graphql/account/types.py:259-264)
+resolve_app (saleor/graphql/order/types.py:362-366)
+  sig: resolve_app(root, info)
+  uses: AppByIdLoader (app.dataloaders)
+
+resolve_app (saleor/graphql/giftcard/types.py:469-480)
   sig: resolve_app(root, info)
   uses: AppByIdLoader (app.dataloaders)
 
@@ -251,48 +257,9 @@ AppByTokenLoader (saleor/graphql/app/dataloaders/app.py:49-113)
   imports: hashlib, django.contrib.auth.hashers, django.core.cache, app.models, core.dataloaders
   calls: get_and_cache_app_id, remove_not_valid_tokens_from_cache, TokenInfo
 
-AppCreate (saleor/graphql/app/mutations/app_create.py:36-99)
-  extends: DeprecatedModelMutation
-  imports: graphene, app, permission.enums, webhook.event_types, core.descriptions
-  calls: clean_input, save, AppInput
-
-AppInstall (saleor/graphql/app/mutations/app_install.py:44-85)
-  extends: DeprecatedModelMutation
-  imports: graphene, app, app.manifest_validations, app.tasks, permission.enums
-  calls: clean_input, perform_mutation, AppInstallInput
-
-AppProblemCreateInput (saleor/graphql/app/mutations/app_problem_create.py:59-90)
-  extends: InputObjectType
-  imports: graphene, django.utils, pydantic, app.error_codes, app.lock_objects
-  called_by: Arguments, AppProblemCreate
-
-AppInput (saleor/graphql/app/mutations/app_create.py:19-33)
-  extends: BaseInputObjectType
-  imports: graphene, app, permission.enums, webhook.event_types, core.descriptions
-  called_by: Arguments, AppCreate
-
-AppTokenCreate (saleor/graphql/app/mutations/app_token_create.py:26-69)
-  extends: DeprecatedModelMutation
-  imports: graphene, django.core.exceptions, oauthlib.common, app, app.error_codes
-  calls: clean_input, AppTokenInput
-  raises: ValidationError
-  uses: ValidationError (django.core.exceptions)
-
-create_app_cache_key_from_token (saleor/graphql/app/dataloaders/app.py:15-17)
-  Create a cache key for the app based on the token.
-  sig: create_app_cache_key_from_token(token)
-  called_by: cache_key, TokenInfo
-
-AppFetchManifest (saleor/graphql/app/mutations/app_fetch_manifest.py:18-122)
-  extends: BaseMutation
-  imports: graphene, requests, django.conf, django.core.exceptions, app.error_codes
-  calls: clean_manifest_data, construct_instance, fetch_manifest, success_response
-  raises: ValidationError
-  uses: Manifest (types), ValidationError (django.core.exceptions)
-
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 80 symbols in L3, 10 with behavior annotations
+coverage: 83 symbols in L3, 10 with behavior annotations
 uncovered: AppToken, AppTokenDelete, AppTokenVerify, AppTokensByAppIdLoader
 
 --- CLUE FILE END ---

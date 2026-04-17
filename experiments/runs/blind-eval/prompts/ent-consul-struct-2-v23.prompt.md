@@ -1,0 +1,262 @@
+# Blind Evaluation Prompt - MRLF v2.4
+# Task: ent-consul-struct-2
+
+You are a senior software engineer. You have been given a codebase
+comprehension artifact (a "clue file") that summarises a repository's
+structure, symbols, and behavior. This is NOT the full source code - it is
+a compressed representation.
+
+Answer the question below using ONLY the information in the clue file.
+Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the modules, symbols, or relationships most relevant to the question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before concluding: follow calls: chains, walk extends: hierarchies, and use behavior: annotations as summaries of how control or responsibility moves. Use TREE and INDEX to situate the relationship in the repository structure. State explicitly what GAPS says cannot be determined from the clue alone. Finally, synthesize the answer, distinguishing supported structure from unresolved uncertainty.
+
+--- CLUE FILE START ---
+=CC v2.1 consul@HEAD 1527mod 17749sym
+? How do the docs describe Consul's cluster communication and federation topology?
+
+
+-- README
+<h1> <img src="./ui/logo.svg" align="left" height="46px" alt="Consul logo"/>
+sections: Quick Start, Documentation, Contributing
+
+-- TREE
+acl/  (20 files)
+agent/  (716 files)
+api/  (55 files)
+command/  (193 files)
+connect/  (10 files)
+envoyextensions/  (9 files)
+grpcmocks/  (26 files)
+internal/  (164 files)
+ipaddr/  (2 files)
+lib/  (28 files)
+logging/  (13 files)
+proto/  (70 files)
+proto-public/  (68 files)
+sdk/  (25 files)
+sentinel/  (3 files)
+service_os/  (2 files)
+snapshot/  (2 files)
+test/  (39 files)
+test-integ/  (10 files)
+testing/  (47 files)
+testrpc/  (1 files)
+tlsutil/  (3 files)
+tools/  (1 files)
+troubleshoot/  (12 files)
+types/  (4 files)
+ui/  (3 files)
+version/  (3 files)
+
+-- INDEX
+proto/private/pbconfigentry/config_entry.pb.go  9779L  GetDefaults, GetHash, GetListeners, GetMeta, GetStatus
+agent/structs/structs.deepcopy.go              1469L  DeepCopy, DeepCopy, DeepCopy, DeepCopy, DeepCopy
+proto-public/pbresource/resource_deepcopy.gen.go   573L  DeepCopy, DeepCopyInterface, DeepCopyInto, DeepCopy, DeepCopyInterface
+agent/config/flagset.go                         203L  Get, IsBoolFlag, Set, String, boolPtrValue
+internal/controller/controller.go               361L  String, WithBackoff, WithCustomWatch, WithForceReconcileEvery, WithInitializer
+agent/structs/structs_ce.go                     185L  String, DefaultEnterpriseMetaInDefaultPartition, DefaultEnterpriseMetaInPartition, EnterpriseServiceUsage, HasWildcardDestination
+proto/private/pbsubscribe/subscribe.pb.go      1079L  Enum, Number, String, GetConfigEntry, GetOp
+agent/submatview/rpc_materializer.go            128L  NewRPCMaterializer, Query, Run, reset, subscribeOnce
+agent/consul/controller/reconciler.go            66L  Reconciler, Key, Request, RequeueAfter, Error
+agent/structs/structs.go                       3354L  CensusRequest, NamespaceOrDefault, PartitionOrDefault, StringHashMD5, StringHashSHA256
+agent/consul/stream/string_types.go              14L  String, String
+proto-public/annotations/ratelimit/ratelimit.pb.go   318L  Enum, Number, String, Enum, Number
+proto-public/pbdataplane/dataplane.pb.go        647L  GetFeatureName, GetSupported, ProtoReflect, Reset, String
+types/tls.go                                    231L  MarshalEnvoyTLSCipherSuiteStrings, String, LessThan, String, TLSVersions
+  ...and 1513 more modules
+
+-- SYM
+GRPCLogger.Errorf                   M logging/grpc.go:74     Errorf implements grpclog.LoggerV2
+Client.doRequest                    M api/api.go:1085   doRequest runs a request with our client
+Client.newRequest                   M api/api.go:1053   newRequest is used to create a new request
+durToMsec                           M api/api.go:940    durToMsec converts a duration to a millisecond ...
+ConstError.Error                    M internal/resource/errors.go:41     function ConstError.Error
+txn.Get                             M internal/controller/cache/index/txn.go:19     function txn.Get
+Mutex.Unlock                        M lib/mutex/mutex.go:28     function Mutex.Unlock
+Mutex.Lock                          M lib/mutex/mutex.go:24     function Mutex.Lock
+Lock.Lock                           M api/lock.go:138    Lock attempts to acquire the lock and blocks wh...
+Lock.Unlock                         M api/lock.go:268    Unlock released the lock.
+request.setQueryOptions             M api/api.go:843    setQueryOptions is used to annotate the request...
+txn.getRaw                          M internal/controller/cache/index/txn.go:28     function txn.getRaw
+ChainedAuthorizer.executeChain      M acl/chained_authorizer.go:29     function ChainedAuthorizer.executeChain
+request.toHTTP                      M api/api.go:999    toHTTP converts the request to an HTTP request
+request.toHTTP                      M command/resource/client/client.go:846    toHTTP converts the request to an HTTP request
+GRPCLogger.Error                    M logging/grpc.go:64     Error implements grpclog.LoggerV2
+ecsNotGlobalError.Error             M agent/dns.go:717    function ecsNotGlobalError.Error
+APIGatewayListener.DeepCopy         M agent/structs/structs.deepcopy.go:11     DeepCopy generates a deep copy of *APIGatewayLi...
+ACLRemoteError.Error                M agent/consul/acl.go:126    function ACLRemoteError.Error
+caStateError.Error                  M agent/consul/leader_connect_ca.go:193    function caStateError.Error
+errPeeringInvalidServerAddress.Error M agent/rpc/peering/service.go:62     Error implements the error interface
+ProviderLoginFailedError.Error      M internal/go-sso/oidcauth/oidc.go:186    function ProviderLoginFailedError.Error
+MethodNotAllowedError.Error         M agent/http.go:66     function MethodNotAllowedError.Error
+PermissionDeniedError.Error         M acl/errors.go:88     Initially we may not have attribution informati...
+enterpriseConfigKeyError.Error      M agent/config/builder_ce.go:74     function enterpriseConfigKeyError.Error
+invalidCSRError.Error               M agent/connect/csr.go:145    function invalidCSRError.Error
+RequeueAfterError.Error             M agent/consul/controller/reconciler.go:42     Error implements the error interface.
+UnsupportedFSMApplyPanicError.Error M agent/consul/state/txn.go:22     function UnsupportedFSMApplyPanicError.Error
+CodeWithPayloadError.Error          M agent/http.go:78     function CodeWithPayloadError.Error
+HTTPError.Error                     M agent/http.go:89     function HTTPError.Error
+terminalError.Error                 M agent/proxycfg/data_sources.go:42     function terminalError.Error
+TxnError.Error                      M agent/structs/txn.go:131    Error returns the string representation of an a...
+resetErr.Error                      M agent/submatview/rpc_materializer.go:116    Error implements error
+StatusError.Error                   M api/api.go:107    function StatusError.Error
+startupLogger.Error                 M command/agent/startup_logger.go:62     function startupLogger.Error
+StatusError.Error                   M command/resource/client/client.go:94     function StatusError.Error
+DuplicateIndexError.Error           M internal/controller/cache/errors.go:63     function DuplicateIndexError.Error
+DuplicateQueryError.Error           M internal/controller/cache/errors.go:71     function DuplicateQueryError.Error
+IndexNotFoundError.Error            M internal/controller/cache/errors.go:29     function IndexNotFoundError.Error
+QueryNotFoundError.Error            M internal/controller/cache/errors.go:21     function QueryNotFoundError.Error
+MissingRequiredIndexError.Error     M internal/controller/cache/index/errors.go:14     function MissingRequiredIndexError.Error
+RequeueAfterError.Error             M internal/controller/controller.go:317    Error implements the error interface.
+TokenVerificationFailedError.Error  M internal/go-sso/oidcauth/oidc.go:203    function TokenVerificationFailedError.Error
+ErrDataParse.Error                  M internal/resource/errors.go:57     function ErrDataParse.Error
+ErrInvalidField.Error               M internal/resource/errors.go:70     function ErrInvalidField.Error
+ErrInvalidFields.Error              M internal/resource/errors.go:174    function ErrInvalidFields.Error
+ErrInvalidListElement.Error         M internal/resource/errors.go:84     function ErrInvalidListElement.Error
+ErrInvalidMapKey.Error              M internal/resource/errors.go:112    function ErrInvalidMapKey.Error
+ErrInvalidMapValue.Error            M internal/resource/errors.go:98     function ErrInvalidMapValue.Error
+ErrInvalidReferenceType.Error       M internal/resource/errors.go:165    function ErrInvalidReferenceType.Error
+ErrOwnerTenantInvalid.Error         M internal/resource/errors.go:139    function ErrOwnerTenantInvalid.Error
+ErrOwnerTypeInvalid.Error           M internal/resource/errors.go:125    function ErrOwnerTypeInvalid.Error
+GroupVersionMismatchError.Error     M internal/storage/storage.go:316    Error implements the error interface.
+TargetedUI.Error                    M command/exec/exec.go:683    function TargetedUI.Error
+policyOrRoleTokenError.Error        M agent/consul/acl.go:155    function policyOrRoleTokenError.Error
+ConfigEntryGraphError.Error         M agent/structs/config_entry_discoverychain.go:2019   function ConfigEntryGraphError.Error
+TxnResponse.Error                   M agent/structs/txn.go:157    Error returns an aggregate of all errors in thi...
+CacheTypeError.Error                M internal/controller/cache/errors.go:38     function CacheTypeError.Error
+IndexError.Error                    M internal/controller/cache/errors.go:51     function IndexError.Error
+IsEnterpriseData                    M agent/consul/fsm/decode_downgrade.go:17     function IsEnterpriseData
+  ...and 16346 more symbols
+
+-- FOCUS
+ui/package.json (ui/package.json:1-69)
+  Config summary for ui/package.json: deps: doctoc, license-checker, npm-run-all
+  deps: doctoc, license-checker, npm-run-all
+
+ui/packages/consul-ui/lib/block-slots/package.json (ui/packages/consul-ui/lib/block-slots/package.json:1-11)
+  Config summary for ui/packages/consul-ui/lib/block-slots/package.json: deps: ember-cli-htmlbars, ember-cli-babel
+  deps: ember-cli-htmlbars, ember-cli-babel
+
+ui/packages/consul-ui/package.json (ui/packages/consul-ui/package.json:1-217)
+  Config summary for ui/packages/consul-ui/package.json: deps: @babel/core, @babel/eslint-parser, @babel/plugin-proposal-decorators, @babel/plugin-transform-class-properties, @docfy/ember, @docfy/ember-cli, @ember-data/adapter, @ember-data/legacy-compat
+  deps: @babel/core, @babel/eslint-parser, @babel/plugin-proposal-decorators, @babel/plugin-transform-class-properties, @docfy/ember, @docfy/ember-cli
+
+ResourceGenerator.makeExternalIPCluster (agent/xds/clusters.go:2108-2108)
+  makeExternalIPCluster creates an Envoy cluster for routing to IP addresses outside of Consul This is used by terminating
+  sig: ResourceGenerator.makeExternalIPCluster(snap *proxycfg.ConfigSnapshot, opts clusterOpts)
+  called_by: makeDestinationClusters
+
+FederationState.Get (agent/consul/federation_state_endpoint.go:98-98)
+  sig: FederationState.Get(args *structs.FederationStateQuery, reply *structs.Feder...)
+  behavior: GUARD(done, err := c.srv.ForwardRPC("FederationStat... -> return err); PRECEDENCE(done -> not_c.srv.DatacenterSupportsFede -> err); UNWIND(defer)
+  calls: ResolveToken, ForwardRPC, DatacenterSupportsFederationStates
+  called_by: ACLRead, ACLWrite, AgentRead, AgentWrite, EventRead, EventWrite, IntentionDefaultAllow, IntentionRead
+
+Server.DatacenterSupportsFederationStates (agent/consul/leader.go:1158-1158)
+  behavior: GUARD(atomic.LoadInt32(&s.dcSupportsFederationState... -> return true); PRECEDENCE(atomic -> s -> state)
+  calls: setDatacenterSupportsFederationStates
+  called_by: Apply, Get, List, ListMeshGateways, FetchRemote, federationStateAntiEntropySync, startFederationStateAntiEntropy
+
+FederationState.Apply (agent/consul/federation_state_endpoint.go:48-48)
+  sig: FederationState.Apply(args *structs.FederationStateRequest, reply *bool)
+  behavior: GUARD(done, err := c.srv.ForwardRPC("FederationStat... -> return err); PRECEDENCE(done -> not_c.srv.DatacenterSupportsFede -> err); UNWIND(defer)
+  calls: ResolveToken, ForwardRPC, DatacenterSupportsFederationStates, raftApply, Errorf
+  called_by: Run, Apply
+
+FederationState.List (agent/consul/federation_state_endpoint.go:137-137)
+  List is the endpoint meant to be used by consul servers performing replication.
+  sig: FederationState.List(args *structs.DCSpecificRequest, reply *structs.IndexedF...)
+  behavior: GUARD(done, err := c.srv.ForwardRPC("FederationStat... -> return err); PRECEDENCE(done -> not_c.srv.DatacenterSupportsFede -> err); UNWIND(defer)
+  calls: ResolveToken, ForwardRPC, DatacenterSupportsFederationStates
+  called_by: Acquire, Destroy, monitorLock, keyPrefixWatch, Run, decodeBlocksToList
+
+Restore.FederationState (agent/consul/state/federation_state.go:49-49)
+  FederationState is used when restoring from a snapshot.
+  sig: Restore.FederationState(g *structs.FederationState)
+  behavior: GUARD(err := s.tx.Insert(tableFederationStates, g);... -> return fmt.Errorf(...); PRECEDENCE(err)
+  calls: Insert, Errorf
+
+Server.stopFederationStateAntiEntropy (agent/consul/leader_federation_state_ae.go:66-66)
+  behavior: GUARD(s.config.DisableFederationStateAntiEntropy -> return)
+  called_by: revokeLeadership
+
+Store.FederationStateBatchDelete (agent/consul/state/federation_state.go:195-195)
+  sig: Store.FederationStateBatchDelete(idx uint64, datacenters []string)
+  behavior: ACCUMULATE(federationStateDelete... -> result); UNWIND(defer)
+  calls: federationStateDeleteTxn, WriteTxn, Commit, Abort
+
+Store.FederationStateBatchSet (agent/consul/state/federation_state.go:61-61)
+  sig: Store.FederationStateBatchSet(idx uint64, configs structs.FederationStates)
+  behavior: ACCUMULATE(federationStateSetTxn... -> result); UNWIND(defer)
+  calls: federationStateSetTxn, WriteTxn, Commit, Abort
+
+Store.FederationStateDelete (agent/consul/state/federation_state.go:184-184)
+  sig: Store.FederationStateDelete(idx uint64, datacenter string)
+  behavior: GUARD(err := federationStateDeleteTxn(tx, idx, data... -> return err); UNWIND(defer)
+  calls: federationStateDeleteTxn, WriteTxn, Commit, Abort
+
+Store.FederationStateGet (agent/consul/state/federation_state.go:131-131)
+  FederationStateGet is called to get a federation state.
+  sig: Store.FederationStateGet(ws memdb.WatchSet, datacenter string)
+  behavior: DELEGATE(federationStateGetTxn -> result); UNWIND(defer)
+  calls: federationStateGetTxn, Txn, Abort
+
+Store.FederationStateList (agent/consul/state/federation_state.go:161-161)
+  FederationStateList is called to get all federation state objects.
+  sig: Store.FederationStateList(ws memdb.WatchSet)
+  behavior: DELEGATE(federationStateListTxn -> result); UNWIND(defer)
+  calls: federationStateListTxn, Txn, Abort
+
+Store.FederationStateSet (agent/consul/state/federation_state.go:75-75)
+  FederationStateSet is called to do an upsert of a given federation state.
+  sig: Store.FederationStateSet(idx uint64, config *structs.FederationState)
+  behavior: GUARD(err := federationStateSetTxn(tx, idx, config)... -> return err); UNWIND(defer)
+  calls: federationStateSetTxn, WriteTxn, Commit, Abort
+
+serversFederationStatesInfo.update (agent/consul/leader.go:1198-1198)
+  sig: serversFederationStatesInfo.update(srv *metadata.Server)
+  behavior: GUARD(srv.Status != serf.StatusAlive && srv.Status... -> return true); PRECEDENCE(srv -> supported)
+
+Server.startFederationStateReplication (agent/consul/leader.go:823-823)
+  sig: Server.startFederationStateReplication(ctx context.Context)
+  behavior: GUARD(s.config.PrimaryDatacenter == "" || s.config.... -> return)
+  called_by: establishLeadership
+
+federationStateSetTxn (agent/consul/state/federation_state.go:87-87)
+  federationStateSetTxn upserts a federation state inside of a transaction.
+  sig: federationStateSetTxn(tx WriteTxn, idx uint64, config *structs.FederationState)
+  behavior: GUARD(config.Datacenter == "" -> return fmt.Errorf("...); PRECEDENCE(config -> err -> existingRaw)
+  calls: Insert, Errorf
+  called_by: FederationStateBatchSet, FederationStateSet
+
+Server.setDatacenterSupportsFederationStates (agent/consul/leader.go:1154-1154)
+  called_by: updateFromState, DatacenterSupportsFederationStates, startFederationStateAntiEntropy
+
+updateMeshTopology (agent/consul/state/catalog.go:4924-4924)
+  updateMeshTopology creates associations between the input service and its upstreams in the topology table
+  sig: updateMeshTopology(tx WriteTxn, idx uint64, node string, svc *structs.NodeS...)
+  calls: String, PartitionOrDefault, CompoundServiceID, Insert, Errorf
+  called_by: ensureServiceTxn
+
+cleanupMeshTopology (agent/consul/state/catalog.go:4998-4998)
+  cleanupMeshTopology removes a service from the mesh topology table This is only safe to call when there are no more know
+  sig: cleanupMeshTopology(tx WriteTxn, idx uint64, service *structs.ServiceNode)
+  calls: String, Get, DeepCopy, Delete, Insert, Errorf
+  called_by: deleteServiceTxn
+
+FederationState (agent/consul/federation_state_endpoint.go:44-44)
+  FederationState endpoint is used to manipulate federation states from all datacenters.
+  methods: Apply, Get, List, ListMeshGateways
+
+-- GAPS
+type: STRUCTURAL (answerable from L0-L2)
+coverage: 83 symbols in L3, 43 with behavior annotations
+uncovered: ServiceTopologySummary, V1ConsulRegistrator, clusterOpts, serverFederationStateListMeshGateways
+
+--- CLUE FILE END ---
+
+QUESTION: How do the docs describe Consul's cluster communication and federation topology?
+
+Provide a detailed answer based solely on the clue file above.
+For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.
