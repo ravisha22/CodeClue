@@ -1,0 +1,264 @@
+=CC v2.1 saleor@HEAD 4239mod 27374sym
+? How are concurrent object updates kept safe in Saleor?
+
+
+-- TREE
+saleor/  (4237 files)
+  account/  app/  asgi/  attribute/  auth/  channel/  checkout/  core/  csv/  discount/  ...+20
+conftest.py  manage.py
+
+-- INDEX
+conftest.py                                     115L  Custom, django_db_setup, pytest_addoption, pytest_collection_modifyitems, pytest_configure
+manage.py                                        10L  
+saleor/__init__.py                               23L  reset, PatchedSubscriberExecutionContext
+saleor/__main__.py                                7L  
+saleor/account/__init__.py                       46L  CustomerEvents
+saleor/account/apps.py                           16L  ready, AccountAppConfig
+saleor/account/error_codes.py                    72L  AccountErrorCode, CustomerBulkUpdateErrorCode, PermissionGroupErrorCode, SendConfirmationEmailErrorCode
+saleor/account/events.py                        113L  assigned_email_to_a_customer_event, assigned_name_to_a_customer_event, customer_account_activated_event, customer_account_created_event, customer_account_deactivated_event
+saleor/account/forms.py                          36L  get_address_form
+saleor/account/i18n.py                          343L  Meta, clean, AddressForm, Meta, clean
+saleor/account/i18n_rules_override.py            28L  i18n_rules_override, patched_load_validation_data
+saleor/account/i18n_valid_address_extension.py    45L  AddressFieldsToSubstitute
+saleor/account/lock_objects.py                    5L  user_qs_select_for_update
+saleor/account/management/__init__.py             0L  
+saleor/account/management/commands/__init__.py     0L  
+saleor/account/management/commands/changepassword.py     3L  
+saleor/account/management/commands/createsuperuser.py   284L  add_arguments, execute, get_input_data, handle, Command
+saleor/account/migrations/0001_initial.py       440L  Migration
+saleor/account/migrations/0002_auto_20150907_0602.py    15L  Migration
+  ...and 4220 more modules
+
+-- SYM
+__run_method_on_plugins             M saleor/plugins/manager.py:211    Try to run a method with the given name on each...
+get_plugins                         M saleor/plugins/manager.py:2488   Return list of plugins for a given channel.
+__run_method_on_single_plugin       M saleor/plugins/manager.py:233    Run method_name on plugin.
+_ensure_channel_plugins_loaded      M saleor/plugins/manager.py:151    function _ensure_channel_plugins_loaded
+trigger_webhooks_async              M saleor/plugins/webhook/plugin.py:246    function trigger_webhooks_async
+_serialize_payload                  M saleor/plugins/webhook/plugin.py:181    function _serialize_payload
+_get_db_plugin_configs              M saleor/plugins/manager.py:201    function _get_db_plugin_configs
+_load_plugin                        M saleor/plugins/manager.py:104    function _load_plugin
+_get_webhooks_for_event             M saleor/plugins/webhook/plugin.py:175    function _get_webhooks_for_event
+get_attribute_values                M saleor/graphql/attribute/types.py:702    function get_attribute_values
+NonNullList                         C saleor/graphql/core/types/common.py:111    A list type that automatically adds non-null co...
+OrderBulkError                      C saleor/graphql/order/bulk_mutations/order_bulk_create.py:91     class OrderBulkError
+is_newly_created_user               M saleor/graphql/account/types.py:314    Determine if the resolver is called for newly c...
+send_email                          M saleor/plugins/sendgrid/tasks.py:22     function send_email
+_generate_meta                      M saleor/plugins/webhook/plugin.py:184    function _generate_meta
+_get_assigned_page_attribute_for_attribute_value M saleor/graphql/page/filters.py:73     function _get_assigned_page_attribute_for_attri...
+_get_assigned_product_attribute_for_attribute_value M saleor/graphql/product/filters/product_attributes.py:325    function _get_assigned_product_attribute_for_at...
+__queries_or_introspection_in_selections M saleor/graphql/utils/validators.py:36     function __queries_or_introspection_in_selections
+__queries_or_introspection_in_inline_fragment M saleor/graphql/utils/validators.py:58     function __queries_or_introspection_in_inline_f...
+_trigger_metadata_updated_event     M saleor/plugins/webhook/plugin.py:187    function _trigger_metadata_updated_event
+flatten_model_metadata              M saleor/core/migrations/0001_migrate_metadata.py:6      function flatten_model_metadata
+flatten_metadata                    M saleor/core/migrations/0001_migrate_metadata.py:20     function flatten_metadata
+_line_per_quantity_to_line_object   M saleor/order/events.py:17     function _line_per_quantity_to_line_object
+fetch_checkout_data                 M saleor/checkout/calculations.py:843    Fetch checkout data.
+_get_webhooks_for_channel_events    M saleor/plugins/webhook/plugin.py:766    Get webhooks for channel-based events.
+_get_gateway_config                 M saleor/payment/gateways/braintree/plugin.py:116    function _get_gateway_config
+_fetch_checkout_prices_if_expired   M saleor/checkout/calculations.py:367    Fetch checkout prices with taxes.
+has_perm                            M saleor/permission/models.py:143    Return True if the user has the specified permi...
+_user_has_perm                      M saleor/permission/models.py:8      Backend can raise `PermissionDenied` to short-c...
+get_plugin                          M saleor/plugins/manager.py:2669   function get_plugin
+fetch_order_prices_if_expired       M saleor/order/calculations.py:192    Fetch order prices with taxes.
+_filter_contains_single_expression  M saleor/graphql/page/filters.py:167    function _filter_contains_single_expression
+_filter_contains_single_expression  M saleor/graphql/product/filters/product_variant.py:174    function _filter_contains_single_expression
+_get_gateway_config                 M saleor/payment/gateways/authorize_net/plugin.py:104    function _get_gateway_config
+_filter_contains_single_expression  M saleor/graphql/product/filters/product_attributes.py:419    function _filter_contains_single_expression
+_get_gateway_config                 M saleor/payment/gateways/dummy/plugin.py:67     function _get_gateway_config
+_get_gateway_config                 M saleor/payment/gateways/dummy_credit_card/plugin.py:67     function _get_gateway_config
+call_order_events                   M saleor/order/actions.py:244    function call_order_events
+stripe_otel_trace                   M saleor/payment/gateways/stripe/stripe_api.py:32     function stripe_otel_trace
+encode                              M saleor/core/hashers.py:18     function encode
+pbkdf2_round                        M saleor/core/hashers.py:30     PBKDF2 round (salt + secure hash function added).
+call_order_event                    M saleor/order/actions.py:266    function call_order_event
+get_default_user_payload            M saleor/account/notifications.py:11     function get_default_user_payload
+update_errors                       M saleor/graphql/account/mutations/permission_group/permission_group_create.py:262    Create ValidationError and add it to error list.
+_get_assigned_variant_attribute_for_attribute_value_qs M saleor/graphql/product/filters/product_variant.py:155    function _get_assigned_variant_attribute_for_at...
+resolve_product_variants            M saleor/graphql/product/types/products.py:1546   function resolve_product_variants
+_get_metadata_instance              M saleor/graphql/meta/types.py:41     function _get_metadata_instance
+clean_input                         M saleor/graphql/product/mutations/product/product_update.py:65     function clean_input
+clean_input                         M saleor/graphql/product/mutations/product/product_create.py:140    function clean_input
+_resolve_product_variants           M saleor/graphql/product/types/products.py:1549   function _resolve_product_variants
+clean_input                         M saleor/graphql/product/mutations/product_variant/product_variant_update.py:111    function clean_input
+clean_attributes                    M saleor/graphql/product/mutations/product/product_create.py:153    function clean_attributes
+clean_attributes                    M saleor/graphql/product/mutations/product/product_update.py:78     function clean_attributes
+clean_attributes                    M saleor/graphql/product/mutations/product_variant/product_variant_update.py:130    function clean_attributes
+clean_input                         M saleor/graphql/page/mutations/page_create.py:81     function clean_input
+clean_attributes                    M saleor/graphql/page/mutations/page_create.py:72     function clean_attributes
+_resolve_page                       M saleor/graphql/page/schema.py:103    function _resolve_page
+resolve_page                        M saleor/graphql/page/schema.py:94     function resolve_page
+_resolve_pages                      M saleor/graphql/page/schema.py:122    function _resolve_pages
+resolve_pages                       M saleor/graphql/page/schema.py:117    function resolve_pages
+_create_variant_errors              M saleor/graphql/checkout/mutations/checkout_create_from_order.py:81     function _create_variant_errors
+__run_payment_method                M saleor/plugins/manager.py:2556   function __run_payment_method
+__run_payment_webhook               M saleor/plugins/webhook/plugin.py:2994   Trigger payment webhook event.
+get_form_field_description          M saleor/graphql/core/types/converter.py:24     function get_form_field_description
+_resolve_product                    M saleor/graphql/product/schema.py:455    function _resolve_product
+  ...and 13182 more symbols
+
+-- FOCUS
+create_or_update_discount_object_from_order_level_voucher (saleor/discount/utils/voucher.py:387-481)
+  Create or update discount object for ENTIRE_ORDER and SHIPPING voucher.
+  sig: create_or_update_discount_object_from_order_level_voucher(order, database_connection_name)
+  behavior: BRANCH(is_shipping_voucher(voucher) -> voucher.get_discount_..., else -> ord...)
+  calls: is_order_level_voucher, is_shipping_voucher
+  called_by: create_or_update_voucher_discount_objects_for_order
+  uses: DiscountInfo (interface)
+
+_update_order_line_discount_object (saleor/order/utils.py:883-913)
+  sig: _update_order_line_discount_object(value, value_type, reason, quantity, base_unit_price...)
+  called_by: update_discount_for_order_line
+
+clean_source_object (saleor/graphql/payment/mutations/base.py:27-101)
+  sig: clean_source_object(cls, info, id, incorrect_type_error_code, not_found_error...)
+  behavior: BRANCH(source_object_type == 'Checkout' -> checkout_models.Check..., else ->...)
+  raises: GraphQLError, ValidationError
+  uses: GraphQLError (graphql), ValidationError (django.core.exceptions)
+
+get_instances_by_object_ids (saleor/graphql/shipping/utils.py:48-55)
+  sig: get_instances_by_object_ids(object_ids)
+  behavior: ACCUMULATE(object_ids loop -> model ids object pk)
+
+get_shipping_model_by_object_id (saleor/graphql/shipping/utils.py:23-45)
+  sig: get_shipping_model_by_object_id(object_id, raise_error, error_field)
+  behavior: GUARD(object_id -> raise ValidationError({er...)
+  raises: ValidationError
+  uses: ValidationError (django.core.exceptions)
+
+get_linked_object_url (saleor/menu/migrations/0007_auto_20180807_0547.py:15-26)
+  sig: get_linked_object_url(menu_item)
+  behavior: GUARD(menu_item.category -> return Category(**get_lin...)
+  calls: get_linked_object_kwargs
+  called_by: get_menu_item_as_dict
+  uses: Category (saleor.product.models), Collection (saleor.product.models), Page (saleor.page.models)
+
+_line_per_quantity_to_line_object (saleor/order/events.py:17-18)
+  sig: _line_per_quantity_to_line_object(quantity, line)
+  called_by: _lines_per_quantity_to_line_object_list, fulfillment_refunded_event, order_added_products_event, order_line_discount_event, order_removed_products_event, order_returned_event
+
+print_object_directives (saleor/graphql/schema_printer.py:152-155)
+  sig: print_object_directives(type_)
+  calls: print_object_directives_for_category, print_object_directvie_for_webhook_events_info
+  called_by: print_enum, print_input_object, print_interface, print_object
+
+_lines_per_quantity_to_line_object_list (saleor/order/events.py:21-24)
+  sig: _lines_per_quantity_to_line_object_list(order_lines)
+  calls: _line_per_quantity_to_line_object
+  called_by: draft_order_created_from_replace_event, fulfillment_replaced_event, order_added_products_event, order_line_product_removed_event, order_line_variant_removed_event, order_removed_products_event
+
+print_object (saleor/graphql/schema_printer.py:239-251)
+  sig: print_object(type_)
+  calls: print_description, print_fields, print_implemented_interfaces, print_object_directives
+  called_by: print_type
+
+print_input_object (saleor/graphql/schema_printer.py:284-294)
+  sig: print_input_object(type_)
+  calls: print_block, print_description, print_input_value, print_object_directives
+  called_by: print_type
+
+ObjectWithMetadata (saleor/graphql/meta/types.py:49-154)
+  extends: Interface
+  imports: graphene, graphene.types.generic, core.models, core, core.context
+  calls: Metadata, resolve_metadata, resolve_private_metadata, _filter_metadata, _get_metadata_instance
+
+updates_amounts_for_order (saleor/order/utils.py:1081-1108)
+  sig: updates_amounts_for_order(order, save)
+  calls: update_order_authorize_data, update_order_charge_data
+
+filter_by_contains_referenced_object_ids (saleor/graphql/page/filters.py:505-540)
+  sig: filter_by_contains_referenced_object_ids(attr_id, attr_value, db_connection_name)
+  calls: _filter_by_contains_all_referenced_object_ids, _filter_by_contains_any_referenced_object_ids
+  called_by: filter_objects_by_reference_attributes
+  uses: Q (django.db.models)
+
+filter_by_contains_referenced_object_ids (saleor/graphql/product/filters/product_variant.py:521-556)
+  sig: filter_by_contains_referenced_object_ids(attr_id, attr_value, db_connection_name)
+  calls: _filter_by_contains_all_referenced_object_ids, _filter_by_contains_any_referenced_object_ids
+  called_by: filter_objects_by_reference_attributes
+  uses: Q (django.db.models)
+
+filter_by_contains_referenced_object_ids (saleor/graphql/product/filters/product_attributes.py:757-792)
+  sig: filter_by_contains_referenced_object_ids(attr_id, attr_value, db_connection_name)
+  calls: _filter_by_contains_all_referenced_object_ids, _filter_by_contains_any_referenced_object_ids
+  called_by: filter_objects_by_reference_attributes
+  uses: Q (django.db.models)
+
+OrderEventOrderLineObject (saleor/graphql/order/types.py:472-481)
+  extends: BaseObjectType
+  imports: logging, decimal, uuid, graphene, prices
+  called_by: _resolve_lines, OrderEvent
+
+_filter_by_contains_all_referenced_object_ids (saleor/graphql/page/filters.py:384-444)
+  sig: _filter_by_contains_all_referenced_object_ids(variant_ids, product_ids, page_ids, category_ids, collection_ids...)
+  calls: _filter_contains_single_expression
+  called_by: filter_by_contains_referenced_object_ids
+  uses: Q (django.db.models)
+
+_filter_by_contains_any_referenced_object_ids (saleor/graphql/page/filters.py:447-502)
+  sig: _filter_by_contains_any_referenced_object_ids(variant_ids, product_ids, page_ids, category_ids, collection_ids...)
+  calls: _filter_contains_single_expression
+  called_by: filter_by_contains_referenced_object_ids
+  uses: Q (django.db.models)
+
+_filter_by_contains_all_referenced_object_ids (saleor/graphql/product/filters/product_attributes.py:636-696)
+  sig: _filter_by_contains_all_referenced_object_ids(variant_ids, product_ids, page_ids, category_ids, collection_ids...)
+  calls: _filter_contains_single_expression
+  called_by: filter_by_contains_referenced_object_ids
+  uses: Q (django.db.models)
+
+_filter_by_contains_any_referenced_object_ids (saleor/graphql/product/filters/product_attributes.py:699-754)
+  sig: _filter_by_contains_any_referenced_object_ids(variant_ids, product_ids, page_ids, category_ids, collection_ids...)
+  calls: _filter_contains_single_expression
+  called_by: filter_by_contains_referenced_object_ids
+  uses: Q (django.db.models)
+
+_filter_by_contains_all_referenced_object_ids (saleor/graphql/product/filters/product_variant.py:400-460)
+  sig: _filter_by_contains_all_referenced_object_ids(variant_ids, product_ids, page_ids, category_ids, collection_ids...)
+  calls: _filter_contains_single_expression
+  called_by: filter_by_contains_referenced_object_ids
+  uses: Q (django.db.models)
+
+_filter_by_contains_any_referenced_object_ids (saleor/graphql/product/filters/product_variant.py:463-518)
+  sig: _filter_by_contains_any_referenced_object_ids(variant_ids, product_ids, page_ids, category_ids, collection_ids...)
+  calls: _filter_contains_single_expression
+  called_by: filter_by_contains_referenced_object_ids
+  uses: Q (django.db.models)
+
+get_source_object (saleor/graphql/payment/mutations/transaction/transaction_process.py:93-109)
+  sig: get_source_object(cls, transaction_item)
+  behavior: GUARD(transaction_item.checkout_id -> return checkout)
+  called_by: perform_mutation, TransactionProcess
+  raises: ValidationError
+  uses: ValidationError (django.core.exceptions)
+
+BaseInputObjectType (saleor/graphql/core/types/base.py:31-37)
+  extends: InputObjectType
+  imports: graphene.relay.connection, graphene.types.enum, graphene.types.inputobjecttype, graphene.types.interface, graphene.types.objecttype
+
+BaseObjectType (saleor/graphql/core/types/base.py:8-28)
+  extends: ObjectType
+  imports: graphene.relay.connection, graphene.types.enum, graphene.types.inputobjecttype, graphene.types.interface, graphene.types.objecttype
+
+ChannelFilterInputObjectType (saleor/graphql/core/filters/filter_input.py:93-103)
+  extends: FilterInputObjectType
+  imports: itertools, django.db, django_filters.filterset, graphene, graphene.types.inputobjecttype
+
+ChannelSortInputObjectType (saleor/graphql/core/types/sort_input.py:48-58)
+  extends: SortInputObjectType
+  imports: copy, graphene, graphene.types.inputobjecttype, descriptions, enums
+
+CheckoutDiscountedObjectWhere (saleor/graphql/checkout/filters.py:147-158)
+  extends: DiscountedObjectWhere
+  imports: uuid, django_filters, django.core.exceptions, django.db.models, account.models
+  calls: _filter_price
+  uses: ValidationError (django.core.exceptions)
+
+DiscountedObjectWhere (saleor/graphql/discount/filters.py:228-241)
+  extends: WhereFilterSet
+  imports: decimal, django_filters, django.db.models, django.utils, discount
+
+-- GAPS
+type: STRUCTURAL (answerable from L0-L2)
+coverage: 80 symbols in L3, 11 with behavior annotations
+uncovered: get_translated_object_id, get_translated_object_id, get_translated_object_id, linked_object

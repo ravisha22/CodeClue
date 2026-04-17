@@ -56,3 +56,10 @@ paper/*.html
 
 # Revert snapshots (local development only)
 experiments/revert-point-*/
+
+# Large enterprise detail stores (>50MB)
+experiments/runs/blind-eval/clues/grafana.codeclue-detail
+experiments/runs/blind-eval/clues/mattermost.codeclue-detail
+experiments/runs/blind-eval/clues/supabase.codeclue-detail
+experiments/runs/blind-eval/clues/consul.codeclue-detail
+experiments/runs/blind-eval/clues/saleor.codeclue-detail

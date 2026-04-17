@@ -1,0 +1,295 @@
+# Blind Evaluation Prompt - MRLF v2.4
+# Task: ent-netbox-mech-2
+
+You are a senior software engineer. You have been given a codebase
+comprehension artifact (a "clue file") that summarises a repository's
+structure, symbols, and behavior. This is NOT the full source code - it is
+a compressed representation.
+
+Answer the question below using ONLY the information in the clue file.
+Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the modules, symbols, or relationships most relevant to the question from FOCUS, SYM, INDEX, and TREE. Trace them through the clue before concluding: follow calls: chains, walk extends: hierarchies, and use behavior: annotations as summaries of how control or responsibility moves. Use TREE and INDEX to situate the relationship in the repository structure. State explicitly what GAPS says cannot be determined from the clue alone. Finally, synthesize the answer, distinguishing supported structure from unresolved uncertainty.
+
+--- CLUE FILE START ---
+=CC v2.1 netbox@HEAD 1108mod 11516sym
+? What is the processing chain for event rules and outgoing webhooks?
+
+
+-- TREE
+contrib/  (1 files)
+netbox/  (1107 files)
+  account/  circuits/  core/  dcim/  extras/  ipam/  netbox/  reports/  scripts/  tenancy/  ...+5
+
+-- INDEX
+contrib/gunicorn.py                              20L  
+netbox/account/__init__.py                        0L  
+netbox/account/migrations/0001_initial.py        27L  Migration
+netbox/account/migrations/__init__.py             0L  
+netbox/account/models.py                         17L  Meta, get_absolute_url, UserToken
+netbox/account/urls.py                           21L  
+netbox/account/views.py                         380L  get_extra_context, get_queryset, BookmarkListView, get, post
+netbox/circuits/__init__.py                       0L  
+netbox/circuits/api/__init__.py                   0L  
+netbox/circuits/api/serializers.py                2L  
+netbox/circuits/api/serializers_/__init__.py      0L  
+netbox/circuits/api/serializers_/circuits.py    207L  Meta, CircuitCircuitTerminationSerializer, Meta, CircuitGroupAssignmentSerializer, Meta
+netbox/circuits/api/serializers_/nested.py       13L  Meta, NestedProviderAccountSerializer
+netbox/circuits/api/serializers_/providers.py    67L  Meta, ProviderAccountSerializer, Meta, ProviderNetworkSerializer, Meta
+netbox/circuits/api/urls.py                      26L  
+netbox/circuits/api/views.py                    126L  CircuitGroupAssignmentViewSet, CircuitGroupViewSet, CircuitTerminationViewSet, CircuitTypeViewSet, CircuitViewSet
+netbox/circuits/apps.py                          26L  ready, CircuitsConfig
+netbox/circuits/choices.py                      110L  CircuitCommitRateChoices, CircuitPriorityChoices, CircuitStatusChoices, CircuitTerminationPortSpeedChoices, CircuitTerminationSideChoices
+netbox/circuits/constants.py                     11L  
+  ...and 1089 more modules
+
+-- SYM
+IPAddress                           C netbox/ipam/models/ip.py:750    An IPAddress represents an individual IPv4 or I...
+filter_by_termination_object        M netbox/dcim/filtersets.py:2675   function filter_by_termination_object
+multivalue_field_factory            M netbox/utilities/filters.py:31     Given a form field class, return a subclass cap...
+run                                 M netbox/extras/jobs.py:100    Run the script.
+save                                M netbox/extras/models/scripts.py:186    function save
+IPRange                             C netbox/ipam/models/ip.py:516    A range of IP addresses, defined by start and e...
+run_script                          M netbox/extras/jobs.py:30     Core script execution task.
+delete                              M netbox/extras/models/scripts.py:77     function delete
+sync_classes                        M netbox/extras/models/scripts.py:153    Syncs the file-based module to the database, ad...
+_get_registered_content             M netbox/utilities/templatetags/plugins.py:11     Given an object and a PluginTemplateExtension m...
+get                                 M netbox/ipam/views.py:1130   function get
+process_lhs                         M netbox/ipam/lookups.py:6      function process_lhs
+get_next_available_ip               M netbox/ipam/models/ip.py:864    Return the next available IP address within thi...
+_log                                M netbox/extras/scripts.py:525    Log a message.
+_check_permission                   M netbox/utilities/templatetags/perms.py:17     function _check_permission
+create                              M netbox/core/models/object_types.py:26     function create
+_save_tags                          M netbox/netbox/api/serializers/features.py:77     function _save_tags
+update                              M netbox/ipam/api/views.py:126    function update
+_populate_from_cache                M netbox/netbox/config/__init__.py:69     Populate config data from Redis cache
+serialize_for_event                 M netbox/extras/events.py:79     Return a serialized representation of the given...
+resolve_name                        M netbox/dcim/models/device_component_templates.py:169    function resolve_name
+RIRSerializer                       C netbox/ipam/api/serializers_/asns.py:18     class RIRSerializer
+resolve_label                       M netbox/dcim/models/device_component_templates.py:174    function resolve_label
+_serialize_params                   M netbox/utilities/forms/widgets/apiselect.py:105    Serialize dynamic or static query params to JSO...
+ObjectTypeQuerySet                  C netbox/core/models/object_types.py:24     class ObjectTypeQuerySet
+_get_filter_lookup_dict             M netbox/netbox/filtersets.py:129    function _get_filter_lookup_dict
+run_validators                      M netbox/utilities/filters.py:48     function run_validators
+to_python                           M netbox/utilities/filters.py:39     function to_python
+validate                            M netbox/utilities/filters.py:52     function validate
+get_limit                           M netbox/netbox/api/pagination.py:45     function get_limit
+_get_terminations                   M netbox/dcim/tables/cables.py:29     function _get_terminations
+_populate_count_for_type            M netbox/dcim/migrations/0219_devicetype_device_count.py:7      Update a CounterCache field on the specified mo...
+get_url_params                      M netbox/netbox/object_actions.py:55     function get_url_params
+_get_custom_fields                  M netbox/extras/api/customfields.py:40     Cache CustomFields assigned to this model to av...
+VLANGroupSerializer                 C netbox/ipam/api/serializers_/vlans.py:27     class VLANGroupSerializer
+filter_device                       M netbox/ipam/graphql/filters.py:166    Helper to standardize logic for device and devi...
+get_queryset                        M netbox/users/api/views.py:118    function get_queryset
+cache_templates                     M netbox/utilities/jinja2.py:44     function cache_templates
+_draw_device                        M netbox/dcim/svg/racks.py:177    function _draw_device
+profile_class                       M netbox/dcim/models/cables.py:139    function profile_class
+_get_protocol_from_url              M netbox/utilities/proxy.py:17     Determine the applicable protocol (e.g.
+collect                             M netbox/netbox/models/deletion.py:15     function collect
+unpack_grouped_choices              M netbox/utilities/choices.py:86     Unpack a grouped choices hierarchy into a flat ...
+to_python                           M netbox/ipam/fields.py:33     function to_python
+serialize_object                    M netbox/netbox/models/features.py:82     Return a JSON representation of the instance.
+_compile_form_errors                M netbox/netbox/views/generic/bulk_views.py:362    function _compile_form_errors
+Config                              C netbox/netbox/config/__init__.py:42     Fetch and store in memory the current NetBox co...
+get_viewname                        M netbox/utilities/views.py:293    Return the view name for the given model and ac...
+_clean_side                         M netbox/dcim/forms/bulk_import.py:1539   Derive a Cable's A/B termination objects.
+_get_script                         M netbox/extras/api/views.py:294    function _get_script
+get_additional_lookups              M netbox/netbox/filtersets.py:167    function get_additional_lookups
+get_queryset                        M netbox/core/models/object_types.py:43     function get_queryset
+generate                            M netbox/users/models/tokens.py:256    Generate and return a random token value of the...
+get_clean_data                      M netbox/core/models/change_logging.py:173    Return only the pre-/post-change attributes whi...
+get_object                          M netbox/extras/views.py:1642   function get_object
+clone                               M netbox/ipam/models/ip.py:991    function clone
+to_objectchange                     M netbox/ipam/models/ip.py:1000   function to_objectchange
+get_for_model                       M netbox/extras/models/customfields.py:66     Return all CustomFields assigned to the given m...
+_get_columns                        M netbox/netbox/tables/tables.py:64     function _get_columns
+get_serializer_ref_name             M netbox/core/api/schema.py:208    Get serializer's ref_name
+_get_opts                           M netbox/core/models/object_types.py:63     function _get_opts
+update                              M netbox/netbox/api/serializers/features.py:65     function update
+filter_by_cable_end                 M netbox/dcim/filtersets.py:2651   function filter_by_cable_end
+vc_interfaces                       M netbox/dcim/models/devices.py:1087   Return a QuerySet matching all Interfaces assig...
+_is_superuser                       M netbox/netbox/authentication/__init__.py:240    function _is_superuser
+enqueue                             M netbox/netbox/jobs.py:150    Enqueue a new `Job`.
+_load_resource                      M netbox/netbox/plugins/__init__.py:87     function _load_resource
+ProviderSerializer                  C netbox/circuits/api/serializers_/providers.py:18     class ProviderSerializer
+  ...and 7826 more symbols
+
+-- FOCUS
+EventRulesMixin (netbox/netbox/models/features.py:503-508)
+  Enables support for event rules, which can be used to transmit webhooks or execute scripts automatically.
+  extends: Model
+  imports: django.contrib.contenttypes.fields, django.contrib.contenttypes.models, django.core.validators, django.db, django.db.models
+
+process_event_rules (netbox/extras/events.py:162-257)
+  Process a list of EventRules against an event.
+  sig: process_event_rules(event_rules, object_type, event)
+  behavior: ACCUMULATE(event_rules loop -> result, raises ValueError)
+  called_by: process_event_queue
+  raises: ValueError
+
+process_job_end_event_rules (netbox/extras/signals.py:116-130)
+  Process event rules for jobs terminating.
+  sig: process_job_end_event_rules(sender)
+  uses: EventContext (extras.events)
+
+process_job_start_event_rules (netbox/extras/signals.py:98-112)
+  Process event rules for jobs starting.
+  sig: process_job_start_event_rules(sender)
+  uses: EventContext (extras.events)
+
+update_event_rules (netbox/extras/migrations/0109_script_model.py:122-146)
+  Update any existing EventRules for scripts.
+  sig: update_event_rules(apps, schema_editor)
+  behavior: ACCUMULATE(EventRule.objects.usi... -> EventRule objects using filt)
+
+process_event_queue (netbox/extras/events.py:258-285)
+  Flush a list of object representation to RQ for EventRule processing.
+  sig: process_event_queue(events)
+  behavior: ACCUMULATE(events loop -> result)
+  calls: process_event_rules
+
+flush_events (netbox/extras/events.py:286-297)
+  Flush a list of object representations to RQ for event processing.
+  sig: flush_events(events)
+
+set_event_types (netbox/extras/migrations/0120_eventrule_event_types.py:7-26)
+  sig: set_event_types(apps, schema_editor)
+  behavior: ACCUMULATE(event_rules loop -> event rule event types OBJEC)
+
+EventRuleForm (netbox/extras/forms/model_forms.py:464-577)
+  extends: OwnerMixin, NetBoxModelForm
+  imports: django, django.contrib.postgres.forms, django.utils.safestring, django.utils.translation, core.forms.mixins
+  calls: init_notificationgroup_choice, init_script_choice, init_webhook_choice
+  uses: DynamicModelChoiceField (utilities.forms.fields)
+
+EventRule (netbox/extras/models/models.py:54-162)
+  An EventRule defines an action to be taken automatically in response to a specific set of events, such as when a
+  extends: CustomFieldsMixin, ExportTemplatesMixin, OwnerMixin
+  imports: urllib.parse, django.conf, django.contrib.contenttypes.fields, django.contrib.postgres.fields, django.core.validators
+  raises: ValidationError
+
+EventRuleActionChoices (netbox/extras/choices.py:242-252)
+  extends: ChoiceSet
+  attrs: WEBHOOK='webhook', SCRIPT='script', NOTIFICATION='notification'
+  imports: logging, django.utils.translation, netbox.choices, utilities.choices
+
+EventRuleActionPanel (netbox/extras/ui/panels.py:379-388)
+  extends: ObjectAttributesPanel
+  imports: django.contrib.contenttypes.models, django.template.loader, django.utils.translation, netbox.ui, utilities.data
+
+EventRuleBulkDeleteView (netbox/extras/views.py:859-862)
+  extends: BulkDeleteView
+  imports: django.contrib, django.contrib.auth.mixins, django.contrib.contenttypes.models, django.core.paginator, django.db.models
+
+EventRuleBulkEditForm (netbox/extras/forms/bulk_edit.py:274-297)
+  extends: OwnerMixin, NetBoxModelBulkEditForm
+  imports: django, django.utils.translation, extras.choices, extras.models, netbox.events
+
+EventRuleBulkEditView (netbox/extras/views.py:845-849)
+  extends: BulkEditView
+  imports: django.contrib, django.contrib.auth.mixins, django.contrib.contenttypes.models, django.core.paginator, django.db.models
+
+EventRuleBulkImportView (netbox/extras/views.py:839-841)
+  extends: BulkImportView
+  imports: django.contrib, django.contrib.auth.mixins, django.contrib.contenttypes.models, django.core.paginator, django.db.models
+
+EventRuleBulkRenameView (netbox/extras/views.py:853-855)
+  extends: BulkRenameView
+  imports: django.contrib, django.contrib.auth.mixins, django.contrib.contenttypes.models, django.core.paginator, django.db.models
+
+EventRuleDeleteView (netbox/extras/views.py:834-835)
+  extends: ObjectDeleteView
+  imports: django.contrib, django.contrib.auth.mixins, django.contrib.contenttypes.models, django.core.paginator, django.db.models
+
+EventRuleEditView (netbox/extras/views.py:828-830)
+  extends: ObjectEditView
+  imports: django.contrib, django.contrib.auth.mixins, django.contrib.contenttypes.models, django.core.paginator, django.db.models
+
+EventRuleEventTypesPanel (netbox/extras/ui/panels.py:368-376)
+  extends: ObjectPanel
+  imports: django.contrib.contenttypes.models, django.template.loader, django.utils.translation, netbox.ui, utilities.data
+
+EventRuleFilter (netbox/extras/graphql/filters.py:336-355)
+  extends: CustomFieldsFilterMixin, TagsFilterMixin, ChangeLoggedModelFilter
+  imports: strawberry, strawberry_django, strawberry.scalars, extras, extras.graphql.filter_mixins
+
+EventRuleFilterForm (netbox/extras/forms/filtersets.py:325-354)
+  extends: OwnerFilterMixin, NetBoxModelFilterSetForm
+  imports: django, django.utils.translation, core.models, dcim.models, extras.choices
+
+EventRuleFilterSet (netbox/extras/filtersets.py:99-137)
+  extends: OwnerFilterMixin, NetBoxModelFilterSet
+  imports: django_filters, django.contrib.contenttypes.models, django.db.models, django.utils.translation, core.models
+
+EventRuleImportForm (netbox/extras/forms/bulk_import.py:229-275)
+  extends: OwnerCSVMixin, NetBoxModelImportForm
+  imports: django, django.contrib.postgres.forms, django.core.exceptions, django.utils.translation, core.models
+  raises: ValidationError
+
+EventRuleListView (netbox/extras/views.py:801-805)
+  extends: ObjectListView
+  imports: django.contrib, django.contrib.auth.mixins, django.contrib.contenttypes.models, django.core.paginator, django.db.models
+
+EventRulePanel (netbox/extras/ui/panels.py:360-365)
+  extends: ObjectAttributesPanel
+  imports: django.contrib.contenttypes.models, django.template.loader, django.utils.translation, netbox.ui, utilities.data
+
+EventRuleSerializer (netbox/extras/api/serializers_/events.py:19-37)
+  extends: OwnerMixin, NetBoxModelSerializer
+  imports: core.models, extras.choices, extras.models, netbox.api.fields, netbox.api.gfk_fields
+
+EventRuleTable (netbox/extras/tables/tables.py:505-546)
+  extends: NetBoxTable
+  imports: django_tables2, django.template.defaultfilters, django.utils.html, django.utils.translation, core.models
+
+EventRuleType (netbox/extras/graphql/types.py:236-237)
+  extends: OwnerMixin, CustomFieldsMixin, TagsMixin
+  imports: strawberry, strawberry_django, core.graphql.mixins, extras, extras.graphql.mixins
+
+EventRuleView (netbox/extras/views.py:809-823)
+  extends: ObjectView
+  imports: django.contrib, django.contrib.auth.mixins, django.contrib.contenttypes.models, django.core.paginator, django.db.models
+
+EventRuleViewSet (netbox/extras/api/views.py:44-48)
+  extends: NetBoxModelViewSet
+  imports: django.http, django.shortcuts, django_rq.queues, drf_spectacular.utils, rest_framework
+
+enqueue_event (netbox/extras/events.py:115-161)
+  Enqueue (or coalesce) an event for a created/updated/deleted object.
+  sig: enqueue_event(queue, instance, request, event_type)
+  behavior: BRANCH(key in queue -> get_snapshots(instanc..., else -> EventContext(object...)
+  calls: freeze_data, refresh_serialization_source, EventContext, get_snapshots
+
+get_event_text (netbox/netbox/events.py:26-29)
+  sig: get_event_text(name)
+  behavior: GUARD((event := registry['event_types'].get(name)) -> return event.text)
+
+move_webhooks (netbox/extras/migrations/0101_eventrule.py:10-32)
+  sig: move_webhooks(apps, schema_editor)
+  behavior: ACCUMULATE(Webhook.objects.all()... -> event content types starred)
+
+get_event_type (netbox/core/models/jobs.py:156-161)
+  behavior: DELEGATE(get -> result)
+  called_by: terminate, Job
+
+serialize_for_event (netbox/extras/events.py:79-89)
+  Return a serialized representation of the given instance suitable for use in a queued event.
+  sig: serialize_for_event(instance)
+  called_by: __getitem__, freeze_data, EventContext
+
+EventType (netbox/netbox/events.py:39-79)
+  A type of event which can occur in NetBox.
+  imports: netbox.registry
+  raises: Exception
+
+-- GAPS
+type: STRUCTURAL (answerable from L0-L2)
+coverage: 80 symbols in L3, 13 with behavior annotations
+uncovered: register_webhook_callback, send_webhook, Command, VLANTranslationRule
+
+--- CLUE FILE END ---
+
+QUESTION: What is the processing chain for event rules and outgoing webhooks?
+
+Provide a detailed answer based solely on the clue file above.
+For each claim you make, cite the specific clue entry (symbol name + file location) that supports it.

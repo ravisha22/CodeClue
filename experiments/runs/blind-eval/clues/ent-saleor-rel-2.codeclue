@@ -1,0 +1,261 @@
+=CC v2.1 saleor@HEAD 4239mod 27374sym
+? How do Saleor’s API deprecation rules relate GraphQL fields, webhook payloads, plugins, and changelog entries?
+
+
+-- TREE
+saleor/  (4237 files)
+  account/  app/  asgi/  attribute/  auth/  channel/  checkout/  core/  csv/  discount/  ...+20
+conftest.py  manage.py
+
+-- INDEX
+conftest.py                                     115L  Custom, django_db_setup, pytest_addoption, pytest_collection_modifyitems, pytest_configure
+manage.py                                        10L  
+saleor/__init__.py                               23L  reset, PatchedSubscriberExecutionContext
+saleor/__main__.py                                7L  
+saleor/account/__init__.py                       46L  CustomerEvents
+saleor/account/apps.py                           16L  ready, AccountAppConfig
+saleor/account/error_codes.py                    72L  AccountErrorCode, CustomerBulkUpdateErrorCode, PermissionGroupErrorCode, SendConfirmationEmailErrorCode
+saleor/account/events.py                        113L  assigned_email_to_a_customer_event, assigned_name_to_a_customer_event, customer_account_activated_event, customer_account_created_event, customer_account_deactivated_event
+saleor/account/forms.py                          36L  get_address_form
+saleor/account/i18n.py                          343L  Meta, clean, AddressForm, Meta, clean
+saleor/account/i18n_rules_override.py            28L  i18n_rules_override, patched_load_validation_data
+saleor/account/i18n_valid_address_extension.py    45L  AddressFieldsToSubstitute
+saleor/account/lock_objects.py                    5L  user_qs_select_for_update
+saleor/account/management/__init__.py             0L  
+saleor/account/management/commands/__init__.py     0L  
+saleor/account/management/commands/changepassword.py     3L  
+saleor/account/management/commands/createsuperuser.py   284L  add_arguments, execute, get_input_data, handle, Command
+saleor/account/migrations/0001_initial.py       440L  Migration
+saleor/account/migrations/0002_auto_20150907_0602.py    15L  Migration
+  ...and 4220 more modules
+
+-- SYM
+__run_method_on_plugins             M saleor/plugins/manager.py:211    Try to run a method with the given name on each...
+get_plugins                         M saleor/plugins/manager.py:2488   Return list of plugins for a given channel.
+__run_method_on_single_plugin       M saleor/plugins/manager.py:233    Run method_name on plugin.
+_ensure_channel_plugins_loaded      M saleor/plugins/manager.py:151    function _ensure_channel_plugins_loaded
+trigger_webhooks_async              M saleor/plugins/webhook/plugin.py:246    function trigger_webhooks_async
+_serialize_payload                  M saleor/plugins/webhook/plugin.py:181    function _serialize_payload
+_get_db_plugin_configs              M saleor/plugins/manager.py:201    function _get_db_plugin_configs
+_load_plugin                        M saleor/plugins/manager.py:104    function _load_plugin
+_get_webhooks_for_event             M saleor/plugins/webhook/plugin.py:175    function _get_webhooks_for_event
+get_attribute_values                M saleor/graphql/attribute/types.py:702    function get_attribute_values
+NonNullList                         C saleor/graphql/core/types/common.py:111    A list type that automatically adds non-null co...
+OrderBulkError                      C saleor/graphql/order/bulk_mutations/order_bulk_create.py:91     class OrderBulkError
+is_newly_created_user               M saleor/graphql/account/types.py:314    Determine if the resolver is called for newly c...
+send_email                          M saleor/plugins/sendgrid/tasks.py:22     function send_email
+_generate_meta                      M saleor/plugins/webhook/plugin.py:184    function _generate_meta
+_get_assigned_page_attribute_for_attribute_value M saleor/graphql/page/filters.py:73     function _get_assigned_page_attribute_for_attri...
+_get_assigned_product_attribute_for_attribute_value M saleor/graphql/product/filters/product_attributes.py:325    function _get_assigned_product_attribute_for_at...
+__queries_or_introspection_in_selections M saleor/graphql/utils/validators.py:36     function __queries_or_introspection_in_selections
+__queries_or_introspection_in_inline_fragment M saleor/graphql/utils/validators.py:58     function __queries_or_introspection_in_inline_f...
+_trigger_metadata_updated_event     M saleor/plugins/webhook/plugin.py:187    function _trigger_metadata_updated_event
+flatten_model_metadata              M saleor/core/migrations/0001_migrate_metadata.py:6      function flatten_model_metadata
+flatten_metadata                    M saleor/core/migrations/0001_migrate_metadata.py:20     function flatten_metadata
+_line_per_quantity_to_line_object   M saleor/order/events.py:17     function _line_per_quantity_to_line_object
+fetch_checkout_data                 M saleor/checkout/calculations.py:843    Fetch checkout data.
+_get_webhooks_for_channel_events    M saleor/plugins/webhook/plugin.py:766    Get webhooks for channel-based events.
+_get_gateway_config                 M saleor/payment/gateways/braintree/plugin.py:116    function _get_gateway_config
+_fetch_checkout_prices_if_expired   M saleor/checkout/calculations.py:367    Fetch checkout prices with taxes.
+has_perm                            M saleor/permission/models.py:143    Return True if the user has the specified permi...
+_user_has_perm                      M saleor/permission/models.py:8      Backend can raise `PermissionDenied` to short-c...
+get_plugin                          M saleor/plugins/manager.py:2669   function get_plugin
+fetch_order_prices_if_expired       M saleor/order/calculations.py:192    Fetch order prices with taxes.
+_filter_contains_single_expression  M saleor/graphql/page/filters.py:167    function _filter_contains_single_expression
+_filter_contains_single_expression  M saleor/graphql/product/filters/product_variant.py:174    function _filter_contains_single_expression
+_get_gateway_config                 M saleor/payment/gateways/authorize_net/plugin.py:104    function _get_gateway_config
+_filter_contains_single_expression  M saleor/graphql/product/filters/product_attributes.py:419    function _filter_contains_single_expression
+_get_gateway_config                 M saleor/payment/gateways/dummy/plugin.py:67     function _get_gateway_config
+_get_gateway_config                 M saleor/payment/gateways/dummy_credit_card/plugin.py:67     function _get_gateway_config
+call_order_events                   M saleor/order/actions.py:244    function call_order_events
+stripe_otel_trace                   M saleor/payment/gateways/stripe/stripe_api.py:32     function stripe_otel_trace
+encode                              M saleor/core/hashers.py:18     function encode
+pbkdf2_round                        M saleor/core/hashers.py:30     PBKDF2 round (salt + secure hash function added).
+call_order_event                    M saleor/order/actions.py:266    function call_order_event
+get_default_user_payload            M saleor/account/notifications.py:11     function get_default_user_payload
+update_errors                       M saleor/graphql/account/mutations/permission_group/permission_group_create.py:262    Create ValidationError and add it to error list.
+_get_assigned_variant_attribute_for_attribute_value_qs M saleor/graphql/product/filters/product_variant.py:155    function _get_assigned_variant_attribute_for_at...
+resolve_product_variants            M saleor/graphql/product/types/products.py:1546   function resolve_product_variants
+_get_metadata_instance              M saleor/graphql/meta/types.py:41     function _get_metadata_instance
+clean_input                         M saleor/graphql/product/mutations/product/product_update.py:65     function clean_input
+clean_input                         M saleor/graphql/product/mutations/product/product_create.py:140    function clean_input
+_resolve_product_variants           M saleor/graphql/product/types/products.py:1549   function _resolve_product_variants
+clean_input                         M saleor/graphql/product/mutations/product_variant/product_variant_update.py:111    function clean_input
+clean_attributes                    M saleor/graphql/product/mutations/product/product_create.py:153    function clean_attributes
+clean_attributes                    M saleor/graphql/product/mutations/product/product_update.py:78     function clean_attributes
+clean_attributes                    M saleor/graphql/product/mutations/product_variant/product_variant_update.py:130    function clean_attributes
+clean_input                         M saleor/graphql/page/mutations/page_create.py:81     function clean_input
+clean_attributes                    M saleor/graphql/page/mutations/page_create.py:72     function clean_attributes
+_resolve_page                       M saleor/graphql/page/schema.py:103    function _resolve_page
+resolve_page                        M saleor/graphql/page/schema.py:94     function resolve_page
+_resolve_pages                      M saleor/graphql/page/schema.py:122    function _resolve_pages
+resolve_pages                       M saleor/graphql/page/schema.py:117    function resolve_pages
+_create_variant_errors              M saleor/graphql/checkout/mutations/checkout_create_from_order.py:81     function _create_variant_errors
+__run_payment_method                M saleor/plugins/manager.py:2556   function __run_payment_method
+__run_payment_webhook               M saleor/plugins/webhook/plugin.py:2994   Trigger payment webhook event.
+get_form_field_description          M saleor/graphql/core/types/converter.py:24     function get_form_field_description
+_resolve_product                    M saleor/graphql/product/schema.py:455    function _resolve_product
+  ...and 13182 more symbols
+
+-- FOCUS
+process_webhook_payloads (saleor/webhook/transport/asynchronous/transport.py:150-218)
+  sig: process_webhook_payloads(webhook_payloads)
+  behavior: ACCUMULATE(zip(subscribable_obje... -> event payloads data payload)
+  uses: EventPayload (core.models), EventDelivery (core.models)
+
+get_allowed_fields_camel_case (saleor/graphql/account/utils.py:43-48)
+  Return set of AddressValidationRules allowed fields in camel case.
+  sig: get_allowed_fields_camel_case(allowed_fields)
+  calls: validation_field_to_camel_case
+
+get_required_fields_camel_case (saleor/graphql/account/utils.py:25-27)
+  Return set of AddressValidationRules required fields in camel case.
+  sig: get_required_fields_camel_case(required_fields)
+  calls: validation_field_to_camel_case
+
+get_upper_fields_camel_case (saleor/graphql/account/utils.py:30-32)
+  Return set of AddressValidationRules upper fields in camel case.
+  sig: get_upper_fields_camel_case(upper_fields)
+  calls: validation_field_to_camel_case
+
+_restore_non_allowed_fields (saleor/account/i18n.py:181-194)
+  Restore original values for fields not allowed by country validation rules.
+  sig: _restore_non_allowed_fields(data, original_data)
+  behavior: ACCUMULATE(i18naddress.KNOWN_FIE... -> result)
+  called_by: validate_address, CountryAwareAddressForm
+
+generate_pre_save_payloads (saleor/graphql/webhook/subscription_payload.py:263-309)
+  sig: generate_pre_save_payloads(webhooks, instances, event_type, requestor, request_time)
+  behavior: GUARD(not settings.ENABLE_LIMITING_WEBHOOKS_FOR_IDENTICAL_PAYLOADS -> return {}); ACCUMULATE(webhooks loop -> result)
+  calls: generate_payload_from_subscription, get_pre_save_payload_key, initialize_request
+
+generate_api_call_payload (saleor/webhook/observability/payloads.py:153-190)
+  sig: generate_api_call_payload(request, response, gql_operations, bytes_limit)
+  calls: dump_payload, serialize_gql_operation_results, serialize_headers
+  raises: ApiCallTruncationError
+  uses: ApiCallPayload (payload_schema), App (payload_schema), ApiCallTruncationError (exceptions), ApiCallRequest (payload_schema)
+
+check_plugin_fields (saleor/plugins/apps.py:30-35)
+  sig: check_plugin_fields(fields, plugin_class)
+  behavior: ACCUMULATE(fields loop -> result, raises ImproperlyConfigured)
+  called_by: load_and_check_plugin, PluginConfig
+  raises: ImproperlyConfigured
+  uses: ImproperlyConfigured (django.core.exceptions)
+
+deprecation_reason (saleor/graphql/webhook/enums.py:255-263)
+  sig: deprecation_reason(enum)
+  behavior: GUARD(enum.value == WebhookEventAsyncType.NOTIFY_USER -> return 'See the doc...)
+
+print_field_directives_for_webhook_events_info (saleor/graphql/schema_printer.py:171-195)
+  sig: print_field_directives_for_webhook_events_info(field, name)
+  behavior: ACCUMULATE(webhook_events_info loop -> async events event type uppe)
+  called_by: print_field_directives
+
+_wrap_with_sync_webhook_control_context (saleor/graphql/order/types.py:265-268)
+  sig: _wrap_with_sync_webhook_control_context(line)
+  behavior: DELEGATE(SyncWebhookControlContext -> result)
+  uses: SyncWebhookControlContext (graphql.core.context)
+
+_wrap_with_sync_webhook_control_context (saleor/graphql/order/types.py:837-840)
+  sig: _wrap_with_sync_webhook_control_context(line)
+  behavior: DELEGATE(SyncWebhookControlContext -> result)
+  uses: SyncWebhookControlContext (graphql.core.context)
+
+WebhookPlugin (saleor/plugins/webhook/plugin.py:156-3518)
+  extends: BasePlugin
+  attrs: PLUGIN_ID='mirumee.webhooks', PLUGIN_NAME='Webhooks', DEFAULT_ACTIVE=True, CONFIGURATION_PER_CHANNEL=False
+  imports: logging, decimal, graphene, django.conf, pydantic
+  calls: __init__, __run_payment_webhook, __trigger_category_event, __trigger_channel_event, __trigger_menu_item_event, _generate_meta, _get_webhooks_for_channel_events, _get_webhooks_for_event
+  raises: PaymentError
+  uses: PaymentError (payment), WebhookPayloadData (webhook.transport.asynchronous.transport), PaymentGatewayData (payment.interface), TransactionSessionResult (payment.interface)
+
+__run_payment_webhook (saleor/plugins/webhook/plugin.py:2994-3072)
+  Trigger payment webhook event.
+  sig: __run_payment_webhook(event_type, transaction_kind, payment_information, previous_value)
+  behavior: ACCUMULATE(apps loop -> result, raises PaymentError)
+  called_by: authorize_payment, capture_payment, confirm_payment, process_payment, refund_payment, void_payment, WebhookPlugin
+  raises: PaymentError
+  uses: PaymentError (payment)
+
+_payment_gateway_initialize_session_for_single_webhook (saleor/plugins/webhook/plugin.py:3074-3145)
+  sig: _payment_gateway_initialize_session_for_single_webhook(webhook, gateways, response_gateway, amount, source_object...)
+  called_by: payment_gateway_initialize_session, WebhookPlugin
+  uses: PaymentGatewayData (payment.interface)
+
+ApiCallPayload (saleor/webhook/observability/payload_schema.py:110-114)
+  extends: ObservabilityEventBase
+  imports: enum
+
+ApiCallRequest (saleor/webhook/observability/payload_schema.py:95-101)
+  extends: TypedDict
+  imports: enum
+
+ApiCallResponse (saleor/webhook/observability/payload_schema.py:104-107)
+  extends: TypedDict
+  imports: enum
+
+handle_global_plugin_webhook (saleor/plugins/views.py:15-19)
+  sig: handle_global_plugin_webhook(request, plugin_id)
+
+handle_plugin_per_channel_webhook (saleor/plugins/views.py:23-27)
+  sig: handle_plugin_per_channel_webhook(request, plugin_id, channel_slug)
+
+handle_plugin_webhook (saleor/plugins/views.py:9-11)
+  sig: handle_plugin_webhook(request, plugin_id)
+
+hide_private_configuration_fields (saleor/graphql/plugins/resolvers.py:15-37)
+  sig: hide_private_configuration_fields(configuration, config_structure)
+  behavior: GUARD(not config_structure -> return); ACCUMULATE(configuration loop -> result)
+  called_by: aggregate_plugins_configuration
+
+monitor_fields_usage (saleor/graphql/api.py:59-89)
+  Wrap resolvers of tracked fields to record usage metrics on each call.
+  sig: monitor_fields_usage(schema)
+  behavior: ACCUMULATE(schema.get_type_map()... -> result)
+  calls: wrapper
+
+resolve_webhook_sample_payload (saleor/graphql/webhook/schema.py:58-59)
+  sig: resolve_webhook_sample_payload(_root, info, app)
+  behavior: DELEGATE(resolve_sample_payload -> result)
+
+serialize_webhook_event (saleor/graphql/api.py:168-169)
+  sig: serialize_webhook_event(value)
+
+with_channel_listing_promotion_rules (saleor/graphql/checkout/dataloaders/promotion_rule_infos.py:38-156)
+  sig: with_channel_listing_promotion_rules(variant_listing_promotion_rules)
+  behavior: ACCUMULATE(zip(variant_listing_p... -> rule ids listing promotion r)
+  uses: PromotionRuleByIdLoader (discount.dataloaders), PromotionByRuleIdLoader (discount.dataloaders), PromotionRuleTranslationByIdAndLanguageCodeLoader (translations.dataloaders), VariantPromotionRuleInfo (discount.interface)
+
+with_promotion_rules (saleor/graphql/checkout/dataloaders/promotion_rule_infos.py:59-140)
+  sig: with_promotion_rules(results)
+  uses: VariantPromotionRuleInfo (discount.interface), PromotionTranslationByIdAndLanguageCodeLoader (translations.dataloaders)
+
+_wrap_with_sync_webhook_control_context (saleor/graphql/webhook/subscription_types.py:1327-1328)
+  sig: _wrap_with_sync_webhook_control_context(order)
+  behavior: DELEGATE(SyncWebhookControlContext -> result)
+  uses: SyncWebhookControlContext (core.context)
+
+_wrap_with_sync_webhook_control_context (saleor/graphql/invoice/types.py:38-39)
+  sig: _wrap_with_sync_webhook_control_context(order)
+  behavior: DELEGATE(SyncWebhookControlContext -> result)
+  uses: SyncWebhookControlContext (core.context)
+
+_wrap_with_sync_webhook_control_context (saleor/graphql/account/types.py:276-277)
+  sig: _wrap_with_sync_webhook_control_context(order)
+  behavior: DELEGATE(SyncWebhookControlContext -> result)
+  uses: SyncWebhookControlContext (core.context)
+
+resolve_postal_code_rules (saleor/graphql/shipping/types.py:217-218)
+  sig: resolve_postal_code_rules(root, info)
+  behavior: DELEGATE(PostalCodeRulesByShippingMethodIdLoader.load -> result)
+  uses: PostalCodeRulesByShippingMethodIdLoader (dataloaders)
+
+resolve_rules (saleor/graphql/discount/types/promotions.py:63-64)
+  sig: resolve_rules(root, info)
+  behavior: DELEGATE(PromotionRulesByPromotionIdLoader.load -> result)
+  uses: PromotionRulesByPromotionIdLoader (dataloaders)
+
+-- GAPS
+type: STRUCTURAL (answerable from L0-L2)
+coverage: 80 symbols in L3, 39 with behavior annotations
+uncovered: clean_base_fields, call_gift_card_created_on_plugins, webhook, ApiCallTruncationError
