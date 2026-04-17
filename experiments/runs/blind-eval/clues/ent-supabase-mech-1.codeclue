@@ -1,0 +1,237 @@
+=CC v2.1 supabase@HEAD 6483mod 21358sym
+? How does Realtime move database changes and broadcasts from Postgres to clients?
+
+
+-- TREE
+apps/  (5235 files)
+  design-system/  docs/  learn/  lite-studio/  studio/  ui-library/  www/
+blocks/  (32 files)
+  vue/
+docker/  (2 files)
+e2e/  (56 files)
+  studio/
+examples/  (418 files)
+  clerk/
+packages/  (724 files)
+  ai-commands/  api-types/  common/  config/  dev-tools/  eslint-config-supabase/  generator/  marketing/  shared-data/  ui/  ...+1
+scripts/  (7 files)
+  actions/
+supabase/  (9 files)
+
+-- INDEX
+apps/studio/public/monaco-editor/base/worker/workerMain.js 11606L  $, A, A, A, constructor
+apps/studio/public/monaco-editor/loader.js     1365L  a, configure, constructor, enqueueDefineAnonymousModule, getBuildInfo
+apps/studio/components/layouts/TableEditorLayout/ExportAllRows.errors.ts    93L  constructor, BlobCreationError, constructor, DownloadSaveError, constructor
+apps/docs/scripts/search/sources/markdown.ts     85L  fromGuideModel, load, MarkdownLoader, extractIndexedContent, process
+apps/docs/resources/utils/connections.ts        382L  CollectionFetch, CollectionInMemory, GraphQLCollection, paginateArray, GraphQLCollectionBuilder
+apps/docs/scripts/search/sources/github-discussion.ts   147L  Discussion, Discussion, DiscussionsResponse, DiscussionsResponse, ExtendedOctokit
+apps/docs/scripts/search/sources/partner-integrations.ts    85L  load, IntegrationLoader, extractIndexedContent, process, IntegrationSource
+apps/docs/scripts/search/sources/troubleshooting.ts   101L  load, TroubleshootingLoader, extractIndexedContent, process, TroubleshootingSource
+apps/studio/lib/api/self-hosted/functions/fileSystemStore.ts    80L  constructor, getFileEntriesBySlug, getFunctionBySlug, getFunctions, FileSystemFunctionsArtifactStore
+examples/edge-functions/supabase/functions/kysely-postgres/DenoPostgresDriver.ts   152L  constructor, executeQuery, PostgresConnection, PostgresConnectionOptions, PostgresDialectConfig
+packages/pg-meta/src/query/QueryFilter.ts        82L  IQueryFilter, clone, filter, match, order
+apps/design-system/__registry__/default/block/chart-bar-interactive.tsx   210L  Component
+apps/design-system/__registry__/default/block/chart-composed-actions.tsx   106L  ChartComposedActions
+  ...and 6470 more modules
+
+-- SYM
+S.push                              M apps/studio/public/monaco-editor/base/worker/workerMain.js:9966   method S.push
+D.push                              M apps/studio/public/monaco-editor/base/worker/workerMain.js:3028   method D.push
+D.get                               M apps/studio/public/monaco-editor/base/worker/workerMain.js:2040   method D.get
+i.get                               M apps/studio/public/monaco-editor/base/worker/workerMain.js:10891  method i.get
+D.get                               M apps/studio/public/monaco-editor/base/worker/workerMain.js:5208   method D.get
+L.get                               M apps/studio/public/monaco-editor/base/worker/workerMain.js:6101   method L.get
+R.get                               M apps/studio/public/monaco-editor/base/worker/workerMain.js:6116   method R.get
+r.get                               M apps/studio/public/monaco-editor/base/worker/workerMain.js:2974   method r.get
+D.get                               M apps/studio/public/monaco-editor/base/worker/workerMain.js:6975   method D.get
+R.get                               M apps/studio/public/monaco-editor/base/worker/workerMain.js:2024   method R.get
+p.get                               M apps/studio/public/monaco-editor/base/worker/workerMain.js:6078   method p.get
+InvalidRequestError.constructor     M apps/docs/app/api/utils.ts:32     method InvalidRequestError.constructor
+NoDataError.constructor             M apps/docs/app/api/utils.ts:50     method NoDataError.constructor
+D._insert                           M apps/studio/public/monaco-editor/base/worker/workerMain.js:3031   method D._insert
+d.set                               M apps/studio/public/monaco-editor/base/worker/workerMain.js:2939   method d.set
+r.set                               M apps/studio/public/monaco-editor/base/worker/workerMain.js:2977   method r.set
+EmptySqlError.constructor           M packages/ai-commands/src/errors.ts:23     method EmptySqlError.constructor
+ContextLengthError.constructor      M packages/ai-commands/src/errors.ts:11     method ContextLengthError.constructor
+EmptyResponseError.constructor      M packages/ai-commands/src/errors.ts:17     method EmptyResponseError.constructor
+E.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:10675  method E.constructor
+f.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:10273  method f.constructor
+E.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:2880   method E.constructor
+D.set                               M apps/studio/public/monaco-editor/base/worker/workerMain.js:6978   method D.set
+D.set                               M apps/studio/public/monaco-editor/base/worker/workerMain.js:5204   method D.set
+S.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:6446   method S.constructor
+g.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:9836   method g.constructor
+o.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:10117  method o.constructor
+i.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:6983   method i.constructor
+e.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:6283   method e.constructor
+S.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:2844   method S.constructor
+d.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:2936   method d.constructor
+p.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:950    method p.constructor
+r.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:2960   method r.constructor
+i.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:5217   method i.constructor
+y.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:2893   method y.constructor
+ge.constructor                      M apps/studio/public/monaco-editor/base/worker/workerMain.js:9720   method ge.constructor
+C.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:10791  method C.constructor
+R.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:2085   method R.constructor
+r.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:10055  method r.constructor
+d.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:6851   method d.constructor
+R.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:141    method R.constructor
+D.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:5334   method D.constructor
+D.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:5772   method D.constructor
+D.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:909    method D.constructor
+W.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:3384   method W.constructor
+w.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:9750   method w.constructor
+D.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:304    method D.constructor
+R.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:2344   method R.constructor
+S.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:10556  method S.constructor
+S.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:11365  method S.constructor
+a.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:3919   method a.constructor
+a.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:7988   method a.constructor
+p.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:10195  method p.constructor
+D.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:5194   method D.constructor
+ee.constructor                      M apps/studio/public/monaco-editor/base/worker/workerMain.js:3517   method ee.constructor
+i.constructor                       M apps/studio/public/monaco-editor/base/worker/workerMain.js:9447   method i.constructor
+  ...and 21217 more symbols
+
+-- FOCUS
+RealtimeInspectorDatabaseRoleUpdatedEvent (packages/common/telemetry-constants.ts:511-516)
+  interface RealtimeInspectorDatabaseRoleUpdatedEvent
+
+IconDatabaseChanges (packages/ui/src/components/Icon/icons/IconDatabaseChanges/IconDatabaseChanges.tsx:31-34)
+  sig: IconDatabaseChanges(props: any)
+
+DatabaseQueueData (apps/studio/data/database-queues/database-queues-query.ts:31-31)
+  type alias DatabaseQueueData = PostgresQueue[] export type DatabaseQueueError = ResponseError export const useQueuesQuery = <TData = DatabaseQueueData>( { projectRef, connectionString }: DatabaseQueuesVariables,
+  uses: PostgresQueue, DatabaseQueueError, ResponseError, const
+
+DatabaseQueueData (apps/studio/data/database-queues/database-queue-messages-infinite-query.ts:81-81)
+  type alias DatabaseQueueData = PostgresQueueMessage[] export type DatabaseQueueError = ResponseError export const useQueueMessagesInfiniteQuery = <TData = DatabaseQueueData>( { projectRef, connectionString, queueName, status }: DatabaseQueueVariables,
+  uses: PostgresQueueMessage, DatabaseQueueError, ResponseError, const
+
+DatabaseQueueData (apps/studio/data/database-queues/database-queues-query.ts:32-32)
+  type alias DatabaseQueueData = PostgresQueue[] export type DatabaseQueueError = ResponseError export const useQueuesQuery = <TData = DatabaseQueueData>( { projectRef, connectionString }: DatabaseQueuesVariables,
+  uses: PostgresQueue, DatabaseQueueError, ResponseError, const
+
+DatabaseQueueData (apps/studio/data/database-queues/database-queue-messages-infinite-query.ts:82-82)
+  type alias DatabaseQueueData = PostgresQueueMessage[] export type DatabaseQueueError = ResponseError export const useQueueMessagesInfiniteQuery = <TData = DatabaseQueueData>( { projectRef, connectionString, queueName, status }: DatabaseQueueVariables,
+  uses: PostgresQueueMessage, DatabaseQueueError, ResponseError, const
+
+DatabaseQueuesMetricsData (apps/studio/data/database-queues/database-queues-metrics-query.ts:83-83)
+  type alias DatabaseQueuesMetricsData = PostgresQueueMetric export type DatabaseQueuesMetricsError = ResponseError export const useQueuesMetricsQuery = <TData = DatabaseQueuesMetricsData>( { projectRef, connectionString, queueName }: DatabaseQueuesMetricsVariables,
+  uses: PostgresQueueMetric, DatabaseQueuesMetricsError, ResponseError, const
+
+DatabaseQueuesMetricsData (apps/studio/data/database-queues/database-queues-metrics-query.ts:84-84)
+  type alias DatabaseQueuesMetricsData = PostgresQueueMetric export type DatabaseQueuesMetricsError = ResponseError export const useQueuesMetricsQuery = <TData = DatabaseQueuesMetricsData>( { projectRef, connectionString, queueName }: DatabaseQueuesMetricsVariables,
+  uses: PostgresQueueMetric, DatabaseQueuesMetricsError, ResponseError, const
+
+DatabaseExtension (apps/studio/data/database-extensions/database-extensions-query.ts:11-11)
+  type alias DatabaseExtension = components['schemas']['PostgresExtension'] & {
+  uses: components, schemas, PostgresExtension
+
+DatabaseExtension (apps/studio/data/database-extensions/database-extensions-query.ts:10-10)
+  type alias DatabaseExtension = components['schemas']['PostgresExtension'] & {
+  uses: components, schemas, PostgresExtension
+
+Database (examples/edge-functions/supabase/functions/kysely-postgres/index.ts:22-26)
+  interface Database
+
+PostgresTrigger (apps/studio/components/interfaces/Database/Triggers/TriggersList/TriggerList.utils.ts:1-15)
+  interface PostgresTrigger
+
+RealtimeInspectorBroadcastSentEvent (packages/common/telemetry-constants.ts:463-468)
+  interface RealtimeInspectorBroadcastSentEvent
+
+applyChanges (apps/studio/pages/project/[ref]/database/column-privileges.tsx:202-205)
+
+handleMouseMove (apps/www/components/Products/RealtimeVisual.tsx:15-36)
+  sig: handleMouseMove(event: React.MouseEvent<HTMLDivElement>)
+  uses: React.MouseEvent, cardRef.current, cardRef.current.getBoundingClientRect, event.clientX
+
+PostgresQueue (apps/studio/data/database-queues/database-queues-query.ts:11-11)
+  type alias PostgresQueue = {
+
+PostgresQueue (apps/studio/data/database-queues/database-queues-query.ts:12-12)
+  type alias PostgresQueue = {
+
+PostgresQueueMessage (apps/studio/data/database-queues/database-queue-messages-infinite-query.ts:19-19)
+  type alias PostgresQueueMessage = {
+
+PostgresQueueMessage (apps/studio/data/database-queues/database-queue-messages-infinite-query.ts:20-20)
+  type alias PostgresQueueMessage = {
+
+PostgresQueueMetric (apps/studio/data/database-queues/database-queues-metrics-query.ts:14-14)
+  type alias PostgresQueueMetric = {
+
+PostgresQueueMetric (apps/studio/data/database-queues/database-queues-metrics-query.ts:15-15)
+  type alias PostgresQueueMetric = {
+
+updateTableRealtime (apps/studio/components/interfaces/TableGridEditor/SidePanelEditor/SidePanelEditor.tsx:469-557)
+  sig: updateTableRealtime(table: RetrieveTableResult, enabled: boolean)
+  behavior: PRECEDENCE(realtimePublication); TRANSFORM(map)
+  uses: console.error, pub.name, table.schema, table.name
+
+useRealtimeMessages (apps/studio/components/interfaces/Realtime/Inspector/useRealtimeMessages.ts:56-241)
+  sig: useRealtimeMessages(config: RealtimeConfig, setRealtimeConfig: Dispatch<SetSt...)
+  behavior: GUARD(!enabled -> return); PRECEDENCE(not_enabled -> bearer -> not_client -> default)
+  uses: supabase.co, realtimeClient.setAuth, realtimeClient.disconnect, newChannel.on
+
+a.PrettifyChanges (apps/studio/public/monaco-editor/base/worker/workerMain.js:4175-4278)
+  method a.PrettifyChanges
+  sig: a.PrettifyChanges(e)
+  behavior: ACCUMULATE(PrettifyChanges loop -> result)
+  calls: ChangesOverlap, ElementsAreStrictEqual, ModifiedElementsAreEqual, OriginalElementsAreEqual, _boundaryScore, _findBetterContiguousSequence
+  called_by: _ComputeDiff, a
+  uses: e.length, this._originalElementsOrHash.length, this._modifiedElementsOrHash.length, f.originalLength
+
+RealtimeFilterPopover (apps/studio/components/interfaces/Realtime/Inspector/RealtimeFilterPopover/index.tsx:34-260)
+  sig: RealtimeFilterPopover({ config, onChangeConfig }: RealtimeFilterPopoverProps)
+  uses: publication.name, config.table, tempConfig.enablePresence, tempConfig.enableBroadcast
+
+RealtimePage (apps/www/pages/realtime.tsx:46-248)
+  uses: supabase.com, supabase.com$, og.jpg, PRODUCT_NAMES.REALTIME
+
+h.getReverseChanges (apps/studio/public/monaco-editor/base/worker/workerMain.js:3910-3916)
+  method h.getReverseChanges
+  calls: MarkNextChange, reverse
+  called_by: WALKTRACE, a, h
+  uses: this.m_originalCount, this.m_modifiedCount, this.MarkNextChange, this.m_changes.reverse
+
+a.ConcatenateChanges (apps/studio/public/monaco-editor/base/worker/workerMain.js:4332-4347)
+  method a.ConcatenateChanges
+  sig: a.ConcatenateChanges(e, b)
+  calls: Copy, ChangesOverlap
+  called_by: ComputeDiffRecursive, WALKTRACE, a
+  uses: e.length, b.length, this.ChangesOverlap, L.Copy
+
+createDatabaseSelectorState (apps/studio/state/database-selector.tsx:4-14)
+  called_by: DatabaseSelectorState
+  uses: state.selectedDatabaseId
+
+Database (apps/www/pages/database.tsx:39-386)
+  uses: dashboardSwiper.slideTo, supabase.com, supabase.com$, og.jpg
+
+DatabaseConnectionString (apps/studio/components/interfaces/Connect/DatabaseConnectionString.tsx:67-637)
+  behavior: TRANSFORM(map)
+  uses: parseAsString.withDefault, DATABASE_CONNECTION_TYPES.map, t.id, validTypes.includes
+
+DatabaseSelectorStateContextProvider (apps/studio/state/database-selector.tsx:21-30)
+  sig: DatabaseSelectorStateContextProvider({ children }: PropsWithChildren)
+  uses: DatabaseSelectorStateContext.Provider
+
+DatabaseSettingsStateContextProvider (apps/studio/state/database-settings.tsx:25-34)
+  sig: DatabaseSettingsStateContextProvider({ children }: PropsWithChildren)
+  uses: DatabaseSettingsStateContext.Provider
+
+DatabaseUsage (apps/studio/pages/project/[ref]/observability/database.tsx:66-431)
+  behavior: PRECEDENCE(isReplicaSelected -> db -> chart); ACCUMULATE(useParams loop -> result); TRANSFORM(map)
+  uses: REPORT_DATERANGE_HELPER_LABELS.LAST_60_MINUTES, state.selectedDatabaseId, selected_addons.find, addon.type
+
+Realtime (apps/studio/components/interfaces/ProjectAPIDocs/Content/Realtime.tsx:4-15)
+  sig: Realtime({ language }: ContentProps)
+  uses: DOCS_CONTENT.realtime, DOCS_CONTENT.subscribeChannel, DOCS_CONTENT.unsubscribeChannel, DOCS_CONTENT.unsubscribeChannels
+
+-- GAPS
+type: MECHANISTIC (body logic needed for full answer)
+coverage: 80 symbols in L3, 12 with behavior annotations
+uncovered: DatabaseQueueError, DatabaseQueueError, DatabaseQueueError, DatabaseQueueVersionData
+drill: packages/ui/src/components/Icon/icons/IconDatabaseChanges/IconDatabaseChanges.tsx (~3 lines, IconDatabaseChanges)
