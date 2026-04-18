@@ -126,3 +126,22 @@ experiments/runs/run_*.py
 
 # Cross-model eval artifacts (results captured in paper)
 experiments/cross-model-eval/
+
+# Debug/diagnostic scripts (keep gen_all_v23.py and regen_clues_with_drilldown.py)
+experiments/runs/_*.py
+experiments/runs/analyze_*.py
+experiments/runs/artifacts_*.py
+experiments/runs/build_*.py
+experiments/runs/check_*.py
+experiments/runs/collate_*.py
+experiments/runs/compile_*.py
+experiments/runs/diagnose_*.py
+experiments/runs/eval_monitor.py
+experiments/runs/fix_*.py
+experiments/runs/generate_*.py
+experiments/runs/inject_*.py
+experiments/runs/measure_*.py
+experiments/runs/score_*.py
+experiments/runs/show_*.py
+experiments/runs/tier2_*.py
+experiments/runs/v2_*.py
