@@ -145,3 +145,9 @@ experiments/runs/score_*.py
 experiments/runs/show_*.py
 experiments/runs/tier2_*.py
 experiments/runs/v2_*.py
+
+experiments/runs/regen_clues_v21.py
+experiments/runs/regen_struct_rel_prompts.py
+experiments/runs/gen_profiles.py
+experiments/runs/gen_projections.py
+experiments/runs/_diag_flask_tf5_regen.codeclue
