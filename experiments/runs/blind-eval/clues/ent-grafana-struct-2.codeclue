@@ -1,23 +1,21 @@
-=CC v2.1 grafana@HEAD 3950mod 35887sym
+=CC v2.1 grafana@HEAD 3950mod 35881sym
 ? What plugin surfaces and security controls does Grafana expose?
 
 
--- README
-![Grafana Logo (Light)](docs/logo-horizontal.png#gh-light-mode-only) ![Grafana Logo (Dark)](docs/logo-horizontal-dark.png#gh-dark-mode-only)
-sections: Get started, Documentation, Contributing, Get involved, License
-
 -- TREE
 apps/  (836 files)
-devenv/  (12 files)
+devenv/  (11 files)
+  dev-dashboards/  jsonnet/  scopes/  secrets/
 e2e/  (6 files)
-emails/  (1 files)
 hack/  (1 files)
 kinds/  (1 files)
-packages/  (1 files)
-pkg/  (3089 files)
+pkg/  (3088 files)
+  api/  build/  bus/  clientauth/  codegen/  configprovider/  events/  expr/  extensions/  kinds/  ...+13
 public/  (1 files)
 scripts/  (4 files)
+  go-workspace/  modowners/  openapi3/
 tools/  (1 files)
+embed.go
 
 -- INDEX
 apps/provisioning/pkg/apis/provisioning/v0alpha1/zz_generated.deepcopy.go  1570L  DeepCopy, DeepCopyInto, DeepCopy, DeepCopyInto, DeepCopy
@@ -84,22 +82,16 @@ PostgresDialect.Unlock              M pkg/services/sqlstore/migrator/postgres_di
 UnknownReceiverError.Error          M pkg/services/ngalert/notifier/alertmanager_config.go:52     function UnknownReceiverError.Error
 Server.Bind                         M pkg/services/ldap/ldap.go:59     Bind authenticates the connection with the LDAP...
 MockRepositoryResources_EnsureFolderExists_Call.Return M pkg/registry/apis/provisioning/resources/repository_resources_mock.go:67     function MockRepositoryResources_EnsureFolderEx...
-  ...and 34256 more symbols
+BaseDialect.Lock                    M pkg/services/sqlstore/migrator/dialect.go:372    function BaseDialect.Lock
+MySQLDialect.Lock                   M pkg/services/sqlstore/migrator/mysql_dialect.go:277    function MySQLDialect.Lock
+PostgresDialect.Lock                M pkg/services/sqlstore/migrator/postgres_dialect.go:297    function PostgresDialect.Lock
+AlertmanagerMock_ApplyConfig_Call.Return M pkg/services/ngalert/notifier/alertmanager_mock/Alertmanager.go:77     function AlertmanagerMock_ApplyConfig_Call.Return
+StaticRequester.GetOrgID            M pkg/apimachinery/identity/static.go:150    GetOrgID returns the ID of the active organization
+Identity.GetOrgID                   M pkg/services/authn/identity.go:220    function Identity.GetOrgID
+SignedInUser.GetOrgID               M pkg/services/user/identity.go:242    GetOrgID returns the ID of the active organization
+  ...and 34243 more symbols
 
 -- FOCUS
-devenv/docker/blocks/traefik/docker-compose.yml (devenv/docker/blocks/traefik/docker-compose.yml:1-20)
-  Config summary for devenv/docker/blocks/traefik/docker-compose.yml: entries: traefik: traefik:v2.1, grafana-subpath: grafana/grafana:latest; services: traefik, volumes, ports, depends_on, grafana-subpath, environment
-  entries: traefik: traefik:v2.1, grafana-subpath: grafana/grafana:latest
-  services: traefik, volumes, ports, depends_on, grafana-subpath
-
-emails/package.json (emails/package.json:1-17)
-  Config summary for emails/package.json: deps: grunt, grunt-assemble, grunt-cli, grunt-contrib-copy, grunt-contrib-watch, grunt-text-replace, load-grunt-config, mjml
-  deps: grunt, grunt-assemble, grunt-cli, grunt-contrib-copy, grunt-contrib-watch, grunt-text-replace
-
-package.json (package.json:1-507)
-  Config summary for package.json: deps: @bsull/augurs, @emotion/css, @emotion/react, @fingerprintjs/fingerprintjs, @floating-ui/react, @formatjs/intl-durationformat, @grafana/alerting, @grafana/api-clients
-  deps: @bsull/augurs, @emotion/css, @emotion/react, @fingerprintjs/fingerprintjs, @floating-ui/react, @formatjs/intl-durationformat
-
 GrafanaPluginId (pkg/semconv/attributes.go:139-139)
   GrafanaPluginId returns an attribute KeyValue conforming to the "grafana.plugin.id" semantic conventions.
   sig: GrafanaPluginId(val string)
@@ -118,6 +110,37 @@ installPlugin (pkg/cmd/grafana-cli/commands/install_command.go:108-108)
   calls: doInstallPlugin
   called_by: installCommand
 
+Manager.grafanaCompatiblePluginVersions (pkg/plugins/repo/service.go:110-110)
+  grafanaCompatiblePluginVersions will get version info from /api/plugins/$pluginID/versions
+  sig: Manager.grafanaCompatiblePluginVersions(ctx context.Context, pluginID string, compatOpts CompatO...)
+  behavior: GUARD(err != nil -> return nil, err); PRECEDENCE(err)
+  calls: Error, Parse
+  called_by: PluginVersion
+
+GrafanaLive.handlePluginScope (pkg/services/live/live.go:989-989)
+  sig: GrafanaLive.handlePluginScope(ctx context.Context, _ identity.Requester, namespace str...)
+  behavior: GUARD(err != nil -> return nil, fmt.Err...)
+  calls: Errorf, getStreamPlugin
+  called_by: GetChannelHandlerFactory
+
+grafanaComPluginVersionMetaToMetaSpec (apps/plugins/pkg/app/meta/converter.go:779-779)
+  grafanaComPluginVersionMetaToMetaSpec converts a grafanaComPluginVersionMeta to a pluginsv0alpha1.MetaSpec.
+  sig: grafanaComPluginVersionMetaToMetaSpec(logger logging.Logger, gcomMeta grafanaComPluginVersionM...)
+  behavior: PRECEDENCE(len -> gcomMeta -> err); ACCUMULATE(append loop -> children c Slug)
+  calls: calculateLoadingStrategyFromGcomMeta, translationsFromManifest, Errorf
+  called_by: grafanaComChildPluginVersionToMetaSpec
+
+GetGrafanaPluginDir (pkg/cmd/grafana-cli/utils/grafana_path.go:11-11)
+  sig: GetGrafanaPluginDir(currentOS string)
+  behavior: GUARD(rootPath, ok := tryGetRootForDevEnvironment()... -> return filepath.Jo...)
+  calls: returnOsDefault, tryGetRootForDevEnvironment
+
+grafanaComChildPluginVersionToMetaSpec (apps/plugins/pkg/app/meta/converter.go:756-756)
+  grafanaComChildPluginVersionToMetaSpec converts a child plugin version to a MetaSpec.
+  sig: grafanaComChildPluginVersionToMetaSpec(logger logging.Logger, child grafanaComChildPluginVersio...)
+  behavior: GUARD(err != nil -> return pluginsv0alp...)
+  calls: grafanaComPluginVersionMetaToMetaSpec, Errorf
+
 grafanaComChildPluginVersion (apps/plugins/pkg/app/meta/converter.go:732-732)
   grafanaComChildPluginVersion represents a child plugin in the parent's version response.
 
@@ -130,36 +153,15 @@ grafanaComPluginVersionMeta (apps/plugins/pkg/app/meta/converter.go:717-717)
 grafanaComPluginVersionMetaJSON (apps/plugins/pkg/app/meta/converter.go:710-710)
   grafanaComPluginVersionMetaJSON is a wrapper around MetaJSONData that includes additional fields like aliasIDs which are
 
-GetGrafanaPluginDir (pkg/cmd/grafana-cli/utils/grafana_path.go:11-11)
-  sig: GetGrafanaPluginDir(currentOS string)
-  behavior: GUARD(rootPath, ok := tryGetRootForDevEnvironment()... -> return filepath.Jo...)
-  calls: returnOsDefault, tryGetRootForDevEnvironment
+corePlugin (pkg/plugins/backendplugin/coreplugin/core_plugin.go:15-15)
+  corePlugin represents a plugin that's part of Grafana core.
+  methods: CallResource, CheckHealth, CollectMetrics, ConvertObjects, Decommission, Exited
 
-GrafanaLive.handlePluginScope (pkg/services/live/live.go:989-989)
-  sig: GrafanaLive.handlePluginScope(ctx context.Context, _ identity.Requester, namespace str...)
-  behavior: GUARD(err != nil -> return nil, fmt.Err...)
-  calls: Errorf, getStreamPlugin
-  called_by: GetChannelHandlerFactory
-
-Manager.grafanaCompatiblePluginVersions (pkg/plugins/repo/service.go:110-110)
-  grafanaCompatiblePluginVersions will get version info from /api/plugins/$pluginID/versions
-  sig: Manager.grafanaCompatiblePluginVersions(ctx context.Context, pluginID string, compatOpts CompatO...)
-  behavior: GUARD(err != nil -> return nil, err); PRECEDENCE(err)
-  calls: Error, Parse
-  called_by: PluginVersion
-
-grafanaComChildPluginVersionToMetaSpec (apps/plugins/pkg/app/meta/converter.go:756-756)
-  grafanaComChildPluginVersionToMetaSpec converts a child plugin version to a MetaSpec.
-  sig: grafanaComChildPluginVersionToMetaSpec(logger logging.Logger, child grafanaComChildPluginVersio...)
-  behavior: GUARD(err != nil -> return pluginsv0alp...)
-  calls: grafanaComPluginVersionMetaToMetaSpec, Errorf
-
-grafanaComPluginVersionMetaToMetaSpec (apps/plugins/pkg/app/meta/converter.go:779-779)
-  grafanaComPluginVersionMetaToMetaSpec converts a grafanaComPluginVersionMeta to a pluginsv0alpha1.MetaSpec.
-  sig: grafanaComPluginVersionMetaToMetaSpec(logger logging.Logger, gcomMeta grafanaComPluginVersionM...)
-  behavior: PRECEDENCE(len -> gcomMeta -> err); ACCUMULATE(append loop -> children c Slug)
-  calls: calculateLoadingStrategyFromGcomMeta, translationsFromManifest, Errorf
-  called_by: grafanaComChildPluginVersionToMetaSpec
+DBstore.filterByPluginOrigin (pkg/services/ngalert/store/alert_rule.go:1685-1685)
+  filterByPluginOrigin adds filtering for plugin-originated rules based on the __grafana_origin label.
+  sig: DBstore.filterByPluginOrigin(filter ngmodels.PluginOriginFilter, sess *xorm.Session)
+  calls: Errorf
+  called_by: buildListAlertRulesQuery
 
 CatalogPluginSpec (pkg/build/daggerbuild/arguments/catalog_plugins.go:16-16)
   CatalogPluginSpec defines a plugin to download from the Grafana catalog.
@@ -167,21 +169,11 @@ CatalogPluginSpec (pkg/build/daggerbuild/arguments/catalog_plugins.go:16-16)
 PluginInfo (pkg/plugins/repo/models.go:37-37)
   PluginInfo is (a subset of) the JSON response from grafana.com/api/plugins/$pluginID
 
-corePlugin (pkg/plugins/backendplugin/coreplugin/core_plugin.go:15-15)
-  corePlugin represents a plugin that's part of Grafana core.
-  methods: CallResource, CheckHealth, CollectMetrics, ConvertObjects, Decommission, Exited
-
 BuildPluginDownloadURL (pkg/build/daggerbuild/plugins/downloader.go:185-185)
   BuildPluginDownloadURL constructs the URL for downloading a plugin from grafana.com.
   sig: BuildPluginDownloadURL(pluginID, version string)
   behavior: DELEGATE(fmt.Sprintf -> result)
   called_by: ResolvePluginVersions
-
-DBstore.filterByPluginOrigin (pkg/services/ngalert/store/alert_rule.go:1685-1685)
-  filterByPluginOrigin adds filtering for plugin-originated rules based on the __grafana_origin label.
-  sig: DBstore.filterByPluginOrigin(filter ngmodels.PluginOriginFilter, sess *xorm.Session)
-  calls: Errorf
-  called_by: buildListAlertRulesQuery
 
 doInstallPlugin (pkg/cmd/grafana-cli/commands/install_command.go:114-114)
   doInstallPlugin is a recursive function that installs a plugin and its dependencies.
@@ -196,23 +188,26 @@ Manager.PluginVersion (pkg/plugins/repo/service.go:84-84)
   calls: grafanaCompatiblePluginVersions
   called_by: GetPluginArchiveInfo
 
-DataPluginConfiguration (pkg/tsdb/grafana-postgresql-datasource/sqleng/sql_engine.go:76-76)
-  type DataPluginConfiguration
+ContextCommandLine.PluginRepoURL (pkg/cmd/grafana-cli/utils/command_line.go:70-70)
+  behavior: GUARD(slices.Contains(c.FlagNames(), "repo") -> return c.String("re...); PRECEDENCE(slices -> c)
+  calls: String, Config, ConfigFile, FlagNames
+  called_by: newInstallPluginOpts, listRemoteCommand, upgradeCommand
 
-InstalledPlugin (pkg/cmd/grafana-cli/models/model.go:8-8)
-  type InstalledPlugin
+uninstallPlugin (pkg/cmd/grafana-cli/commands/install_command.go:195-195)
+  uninstallPlugin removes the plugin directory
+  sig: uninstallPlugin(_ context.Context, pluginID string, c utils.CommandLine)
+  behavior: ACCUMULATE(Infof loop -> result)
+  calls: Errorf, PluginDirectory, Base
 
-Plugin (pkg/cmd/grafana-cli/models/model.go:27-27)
-  type Plugin
+ContextCommandLine.PluginDirectory (pkg/cmd/grafana-cli/utils/command_line.go:57-57)
+  behavior: DELEGATE(c.String -> result)
+  calls: String
+  called_by: newInstallPluginOpts, uninstallPlugin, validateInput, lsCommand, upgradeAllCommand, upgradeCommand
 
-PluginInfo (pkg/cmd/grafana-cli/models/model.go:22-22)
-  type PluginInfo
-
-PluginRepo (pkg/cmd/grafana-cli/models/model.go:45-45)
-  type PluginRepo
-
-pluginInstallOpts (pkg/cmd/grafana-cli/commands/install_command.go:88-88)
-  type pluginInstallOpts
+MockCommandLine.PluginDirectory (pkg/cmd/grafana-cli/utils/command_line_mock.go:108-108)
+  PluginDirectory provides a mock function with given fields:
+  calls: Get
+  called_by: newInstallPluginOpts, uninstallPlugin, validateInput, lsCommand, upgradeAllCommand, upgradeCommand
 
 AccessControlStore.CleanupPluginRBAC (pkg/services/accesscontrol/database/cleanup.go:17-17)
   CleanupPluginRBAC removes all RBAC data associated with the given plugin IDs:   - permissions on any role whose action s
@@ -220,12 +215,32 @@ AccessControlStore.CleanupPluginRBAC (pkg/services/accesscontrol/database/cleanu
   behavior: ACCUMULATE(ContainsAny loop -> result)
   calls: Errorf, cleanupPlugin
 
-ContextCommandLine.PluginDirectory (pkg/cmd/grafana-cli/utils/command_line.go:57-57)
+MockCommandLine.PluginRepoURL (pkg/cmd/grafana-cli/utils/command_line_mock.go:122-122)
+  PluginRepoURL provides a mock function with given fields:
+  calls: Get
+  called_by: newInstallPluginOpts, listRemoteCommand, upgradeCommand
+
+ContextCommandLine.PluginURL (pkg/cmd/grafana-cli/utils/command_line.go:110-110)
   behavior: DELEGATE(c.String -> result)
   calls: String
-  called_by: newInstallPluginOpts, uninstallPlugin, validateInput, lsCommand, upgradeAllCommand, upgradeCommand
+  called_by: newInstallPluginOpts
+
+GetPluginInfoFromRepo (pkg/cmd/grafana-cli/services/api_client.go:17-17)
+  sig: GetPluginInfoFromRepo(pluginId, repoUrl string)
+  behavior: GUARD(err != nil -> return models.Plugi...); PRECEDENCE(err)
+  calls: Errorf, sendRequestGetBytes
+
+newInstallPluginOpts (pkg/cmd/grafana-cli/commands/install_command.go:96-96)
+  sig: newInstallPluginOpts(c utils.CommandLine)
+  calls: Bool, GcomToken, PluginDirectory, PluginRepoURL, PluginURL
+  called_by: installCommand
+
+MockCommandLine.PluginURL (pkg/cmd/grafana-cli/utils/command_line_mock.go:136-136)
+  PluginURL provides a mock function with given fields:
+  calls: Get
+  called_by: newInstallPluginOpts
 
 -- GAPS
 type: STRUCTURAL (answerable from L0-L2)
-coverage: 83 symbols in L3, 61 with behavior annotations
-uncovered: GetDatasourceGroupNameFromPluginID, GetPluginIDFromMeta, GrafanaDatasourceRequestQueryCount, GrafanaDatasourceType
+coverage: 80 symbols in L3, 61 with behavior annotations
+uncovered: RulerApiHandler.handleRouteGetNamespaceGrafanaRulesConfig, PrometheusApiHandler.handleRouteGetGrafanaAlertStatuses, PrometheusApiHandler.handleRouteGetGrafanaRuleStatuses, Plugin.RunStream

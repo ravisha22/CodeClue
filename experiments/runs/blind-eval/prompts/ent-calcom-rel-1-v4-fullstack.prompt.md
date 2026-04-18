@@ -1,0 +1,792 @@
+# Blind Evaluation Prompt - MRLF v2.4 with File 2 Drill-Down
+# Task: ent-calcom-rel-1
+
+You are a senior software engineer. You have been given:
+1. A codebase comprehension artifact (clue file) - a compressed representation
+2. Source code snippets for key functions identified as needing deeper analysis
+
+Answer the question using the clue file AND the source snippets below.
+Do not use any external knowledge about the framework or library.
+
+**Reasoning scaffold:** Think through the clue systematically before answering. First, identify the symbols most relevant to the question from FOCUS, SYM, and INDEX. Trace those symbols through the clue before forming any conclusion: follow calls: chains, walk extends: hierarchies, and read behavior: annotations as compact control-flow summaries. Use TREE and INDEX to place each symbol in its module context. Then consult the provided source snippets only to confirm or refine the traced path. State explicitly what GAPS says cannot be determined from the evidence. Finally, synthesize the answer, separating supported conclusions from remaining uncertainty.
+
+
+--- ARCHITECTURAL CONTEXT (LLM-generated, one-time) ---
+(See deep context below for calcom architecture)
+--- END ARCHITECTURAL CONTEXT ---
+
+--- DEEP DOMAIN CONTEXT (LLM-generated from key files, one-time) ---
+# Cal.com / Cal.diy deep domain context
+
+## Scope and framing
+This repository is effectively the open-source Cal scheduling platform packaged as a Yarn/Turborepo monorepo. The README positions it as **Cal.diy**, a community-maintained fork of Cal.com with enterprise/commercial features stripped out, but the core scheduling architecture is still very recognizably Cal.com: Next.js web app, tRPC server layer, Prisma/Postgres data model, and a newer Nest-based API v2 alongside the legacy web/tRPC APIs.
+
+The most important mental model is: **Cal is an event-type-driven scheduling engine**. Users, teams, and profiles own event types; event types point to schedules/availability rules and booking policies; slot computation combines those rules with busy calendars, booking limits, and temporary reservations; confirmed bookings then fan out to calendars, conferencing, workflows, notifications, and follow-up actions.
+
+## Monorepo structure
+The root `package.json` defines workspaces for `apps/*`, `apps/api/*`, `packages/*`, `packages/features/*`, `packages/platform/*`, and app-store/example packages. In practice:
+
+- `apps/web` is the main Next.js product UI and booking frontend.
+- `apps/api/v2` is the newer REST API, implemented with NestJS.
+- `packages/prisma` owns the canonical Prisma schema and generated types.
+- `packages/trpc` owns the shared tRPC server/router layer used heavily by the web app.
+- `packages/features/*` contains most business logic split by domain (availability, bookings, auth, schedules, credentials, etc.).
+
+`turbo.json` shows the architecture boundaries clearly: `@calcom/web` depends on shared packages, `@calcom/prisma` is foundational, `@calcom/trpc` builds types for consumers, and `@calcom/api-v2` is treated as a separate deployable. The large `globalEnv` list also tells you this app is heavily integration-driven: calendar providers, email, payments, telephony, Redis, SSO/OAuth, and feature flags all matter to runtime behavior.
+
+## Core domain model
+The Prisma schema is the best source of truth.
+
+### Identity and ownership
+`User` is the core actor. It stores login identity (`email`, password/2FA, `identityProvider`), preferences (`timeZone`, `weekStart`, locale, branding), scheduling state (`availability`, `schedules`, `selectedCalendars`, `destinationCalendar`), and business relationships (`bookings`, `teams`, `profiles`, `ownedEventTypes`).
+
+`Profile` is important: it separates a user’s identity from their organization-specific presence. A user can have multiple profiles, one per organization, each with its own `username`. This is how org-aware usernames and profile switching work.
+
+`Team` is overloaded in the Cal model: it represents both teams and organizations. It has branding, timezone defaults, booking limits, org settings, children/parent relationships, and `members` via `Membership`. `Membership` captures accepted membership plus role (`MEMBER`, `ADMIN`, `OWNER`).
+
+### Scheduling primitives
+`EventType` is the central business object. It defines what can be booked: title, slug, description, duration (`length`), timezone behavior, recurrence, custom booking fields, locations, confirmation rules, booking notice/buffers, seats, scheduling type, booking/duration limits, redirect behavior, metadata, and more.
+
+The most important relations on `EventType` are:
+- `users` / `owner`: who owns it
+- `team` / `profile`: which scope it belongs to
+- `bookings`: actual reservations made against it
+- `availability` and `schedule`: explicit timing rules
+- `hosts`: host assignments for team / round-robin / collective scheduling
+- `destinationCalendar`: where resulting events land
+
+`SchedulingType` has three core modes:
+- `ROUND_ROBIN`: pick one qualified host
+- `COLLECTIVE`: multiple hosts must be available together
+- `MANAGED`: parent/template style event type relationship
+
+`Host`, `HostGroup`, and `HostLocation` matter for team scheduling. Hosts can be fixed or weighted, may point at their own schedule, may belong to groups, and may override location/credential behavior. This is key to understanding routed teams and round-robin assignment.
+
+`Schedule` is a named container for availability with a timezone. `Availability` entries are the actual rules: days of week, start/end time, optional date override, and optional attachment to user, event type, or schedule.
+
+### Calendar integration and booking persistence
+`Credential` stores linked provider credentials (Google/Outlook/etc.), while `SelectedCalendar` marks which external calendars are consulted for busy times. `DestinationCalendar` marks where booked meetings should be written.
+
+`Booking` is the persisted reservation. It captures `uid`, attendee responses/custom inputs, start/end, status (`ACCEPTED`, `PENDING`, `AWAITING_HOST`, `CANCELLED`, `REJECTED`), references, payment state, reschedule lineage, recurring IDs, ratings, metadata, and reporting/audit relations. A booking is not just a time slot; it is the durable workflow object the rest of the system hangs off.
+
+## API surface
+There are two major surfaces.
+
+### 1) tRPC (web app / internal frontend API)
+`packages/trpc/server/routers/_app.ts` exposes a single root `appRouter` containing `viewer`.
+
+`viewer/_router.tsx` then composes the real domain routers:
+- `auth`
+- `bookings`
+- `availability`
+- `slots`
+- `eventTypes` / `eventTypesHeavy`
+- `calendars`, `credentials`, `webhook`, `me`, `apps`, etc.
+- `public` and `loggedInViewerRouter`
+
+This is the older but still central application API.
+
+Key booking-facing routers:
+- `publicViewerRouter`: unauthenticated calls like `event`, `countryCode`, rating submission, email-verification requirement checks.
+- `loggedInViewerRouter`: logged-in self-service actions like notifications subscriptions, connected accounts, event-type order, connect-and-join.
+- `viewer.bookings`: authenticated booking management (`get`, `find`, `requestReschedule`, `confirm`, `addGuests`, `editLocation`, history, reporting).
+- `viewer.availability`: authenticated availability/schedule queries and schedule CRUD subtree.
+- `viewer.slots`: public slot discovery/reservation (`getSchedule`, `reserveSlot`, `isAvailable`, reservation cleanup).
+
+A key pattern across routers is **schema + lazy-loaded handler**. Routers mostly validate input with Zod then dynamically import a handler. This keeps route declarations thin and domain logic elsewhere.
+
+### 2) REST API v2 (NestJS)
+`apps/api/v2` is the newer external-facing API. The clearest scheduling example is `/v2/slots` in `slots.controller.ts`.
+
+The controller documents multiple lookup modes:
+- by `eventTypeId`
+- by `eventTypeSlug + username`
+- by `eventTypeSlug + teamSlug`
+- by `usernames[]` for dynamic multi-person availability
+- with optional `organizationSlug`
+- optional `duration`, `timeZone`, `format`, `bookingUidToReschedule`
+
+It also exposes reservation endpoints (`POST /v2/slots/reservations`, lookup/update/delete by UID). The service layer enforces extra rules like ownership checks for custom reservation duration and round-robin slot validation.
+
+## Auth and session handling
+Auth is NextAuth-based but heavily customized.
+
+`next-auth-options.ts` shows:
+- session strategy is `jwt`
+- providers include credentials, Google, Azure AD, and email magic links
+- a custom adapter (`next-auth-custom-adapter`) maps Cal’s DB model to NextAuth expectations
+- login can auto-link identities by email and enrich JWT/session with Cal-specific fields like `profileId`, `upId`, `orgAwareUsername`, org context, locale, and active-team status
+
+Important auth behavior:
+- Credentials login validates password, rate limits attempts, and enforces 2FA / backup codes.
+- Google and Azure sign-in can auto-install calendar credentials and selected calendars if scopes are present.
+- Session state carries **profile context** (`profileId`, `upId`) because the same user can operate through different org profiles.
+
+`getServerSession.ts` is a slim server-side session resolver. Instead of running full NextAuth on every request, it decodes the JWT token, fetches the user from Prisma, enriches it, and reconstructs a `Session`. It caches sessions in an LRU by token payload. That is why a lot of server code can cheaply ask “who is this user/profile?” without invoking the full NextAuth stack.
+
+`userFromSessionUtils.ts` is another crucial bridge: it turns session -> enriched user + org/profile context, verifies that the profile in session is authorized, and normalizes organization metadata for downstream business logic.
+
+The API v2 side wraps this with guards/strategies (`AuthModule`, `NextAuthGuard`, `ApiAuthGuard`) so both browser sessions and API credentials can coexist.
+
+## Booking flow
+The booking flow spans public event discovery, slot calculation, temporary reservation, form submission, and final booking creation.
+
+1. **Load public event metadata**  
+   `publicViewer.event` is the frontend-facing way to fetch bookable event information for a public page.
+
+2. **Load candidate slots**  
+   `viewer.slots.getSchedule` delegates to `AvailableSlotsService.getAvailableSlots`. This is the core availability engine.
+
+3. **Temporarily reserve a slot**  
+   `viewer.slots.reserveSlot` creates temporary `selectedSlots` rows keyed by a `uid` cookie. This prevents two bookers from racing for the same non-seated slot. Reservation expiry is based on `MINUTES_TO_BOOK`. Seated events are treated differently because multiple attendees may share a slot.
+
+4. **Collect booking form data**  
+   `apps/web/modules/bookings/components/Booker.tsx` is the main booking UI orchestrator. It behaves like a state machine: selecting date -> selecting time -> booking. It integrates embed mode, responsive layouts, email verification, captcha, overlay calendars, quick availability checks, and skip-confirm-step logic.
+
+5. **Submit booking**  
+   `BookEventForm.tsx` renders dynamic booking fields from `eventType.bookingFields`, handles paid-event detection, validates captcha/email verification, and submits via `useBookings`.
+
+6. **Persist booking / redirect**  
+   `useBookings.ts` calls `createBooking` (`POST /api/book/event`) or recurring booking creation. On success it branches into dry-run handling, payment redirect, reschedule success, or normal success redirect. This is also where embed SDK events are fired.
+
+## Availability and scheduling logic
+The deepest scheduling logic lives in `packages/features/availability` and `packages/trpc/server/routers/viewer/slots/util.ts`.
+
+`detectEventTypeScheduleForUser.ts` encodes schedule precedence:
+1. event type schedule
+2. host-specific schedule
+3. user default schedule
+4. fallback default Monday-Friday 09:00-17:00
+
+`getUserAvailability.ts` shows the real complexity. User availability is not just static working hours; it combines:
+- schedules and date overrides
+- user/event buffers
+- selected external calendars and busy times
+- travel schedules
+- out-of-office entries and reasons
+- holidays
+- booking limits / duration limits
+- current bookings and seats
+- event metadata and scheduling mode
+
+`getAggregatedAvailability.ts` explains how multi-host events work:
+- for collective/fixed-host scenarios, availability is based on intersection
+- for round-robin, hosts are grouped and the system needs at least one available host per group
+- out-of-office-excluded ranges are used when team semantics require it
+
+`AvailableSlotsService` adds orchestration on top:
+- resolves event type from slug/id/team/user context
+- supports dynamic events built from username lists
+- checks reserved slots and cleans expired reservations
+- uses Redis caching for slot responses
+- applies booking-period logic, interval limits, reserved-slot overlap checks, busy time/conflict checks, and org/subdomain rules
+- ultimately maps computed availability into bookable slot output
+
+The REST v2 slots service mirrors this but adds API-oriented validation and authorization.
+
+## Practical code-navigation guidance
+If you need to understand Cal quickly, start in this order:
+1. `packages/prisma/schema.prisma` for the vocabulary
+2. `packages/trpc/server/routers/viewer/_router.tsx` for major internal API domains
+3. `packages/features/auth/lib/next-auth-options.ts` + `getServerSession.ts` for identity/session model
+4. `packages/trpc/server/routers/viewer/slots/util.ts` for slot-generation orchestration
+5. `packages/features/availability/lib/getUserAvailability.ts` for raw availability computation
+6. `apps/web/modules/bookings/components/Booker.tsx` and `hooks/useBookings.ts` for the end-user booking UX
+
+The biggest conceptual trap is assuming Cal is “just a calendar UI”. It is really a **policy-heavy scheduling engine** with layered ownership (user/profile/team/org), multiple event scheduling modes, temporary reservation semantics, and calendar/provider synchronization woven throughout.
+
+--- END DEEP DOMAIN CONTEXT ---
+
+--- CLUE FILE (File 1) ---
+=CC v2.1 calcom@HEAD 5074mod 11733sym
+? How does the headless router flow from a submitted form to a booked meeting?
+
+
+-- README
+> [!WARNING] > Use at your own risk. Cal.diy is the open source community edition of Cal.com and it is intended for users who want...
+sections: About Cal.diy, What's different from Cal.com?, Built With, Getting Started, Prerequisites
+
+-- TREE
+__checks__/  (3 files)
+apps/  (1635 files)
+  api/  docs/  web/
+example-apps/  (8 files)
+  credential-sync/
+packages/  (3420 files)
+  app-store/  dayjs/  debugging/  emails/  embeds/  features/  i18n/  kysely/  lib/  prisma/  ...+4
+scripts/  (9 files)
+.env.example  README.md  checkly.config.ts  docker-compose.yml  i18n-unused.config.js  package.json  playwright.config.ts  setupVitest.ts  vitest.workspace.ts
+
+-- INDEX
+packages/embeds/embed-core/src/embed.ts        1709L  buildFilteredQueryParams, constructor, doInIframe, ensureGuestKey, filterParams
+packages/lib/CalendarService.ts                1023L  constructor, createEvent, deleteEvent, getAccount, getAttendees
+packages/trpc/server/routers/viewer/eventTypes/utils/EventTypeGroupFilter.ts   124L  byTeam, constructor, count, exists, get
+packages/app-store/zoho-bigin/lib/CrmService.ts   336L  BiginContact, BiginContact, biginAuth, constructor, createBiginEvent
+packages/features/booking-audit/lib/service/EnrichmentDataStore.ts   190L  DataRequirements, fetch, getAttendeeById, getCredentialById, getUserByUuid
+packages/features/tasker/repository.ts          218L  cancel, cancelWithReference, cleanup, constructor, count
+packages/features/webhooks/lib/repository/WebhookRepository.ts   592L  checkPermission, constructor, getTeamIdsWithPermission, hasPermission, PermissionCheckService
+apps/api/v2/src/modules/atoms/services/event-types-atom.service.ts   435L  bulkUpdateEventTypesDefaultLocation, checkTeamOwnsEventType, getEventTypesAppIntegration, getTeamSlug, getUserEventType
+apps/api/v2/src/platform/calendars/services/calendars-cache.service.ts    36L  constructor, deleteConnectedAndDestinationCalendarsCache, getConnectedAndDestinationCalendarsCache, CalendarsCacheService, REDIS_CALENDARS_CACHE_KEY
+packages/app-store/ics-feedcalendar/lib/CalendarService.ts   318L  BuildCalendarService, constructor, createEvent, deleteEvent, getAvailability
+packages/embeds/embed-core/src/sdk-action-manager.ts   362L  EmbedEvent, EmbedEvent, EventData, EventData, EventDataMap
+  ...and 5063 more modules
+
+-- SYM
+Logger.logInternal                  M apps/api/v2/src/lib/logger.bridge.ts:142    method Logger.logInternal
+TriggerDevLogger.logInternal        M packages/lib/triggerDevLogger.ts:76     method TriggerDevLogger.logInternal
+OrganizationWatchlistOperationsService.checkPermission M packages/features/watchlist/lib/service/OrganizationWatchlistOperationsService.ts:48     async_method OrganizationWatchlistOperationsSer...
+SelectedCalendarRepository.findMany M packages/features/selectedCalendar/repositories/SelectedCalendarRepository.ts:334    async_method SelectedCalendarRepository.findMany
+PermissionCheckService.checkPermission M packages/features/watchlist/lib/service/OrganizationWatchlistOperationsService.ts:19     async_method PermissionCheckService.checkPermis...
+InputLocationValidator_2024_06_14.validate M packages/platform/types/event-types/event-types_2024_06_14/inputs/locations.input.ts:160    async_method InputLocationValidator_2024_06_14....
+InputTeamLocationValidator_2024_06_14.validate M packages/platform/types/event-types/event-types_2024_06_14/inputs/locations.input.ts:215    async_method InputTeamLocationValidator_2024_06...
+hasPermission                       M packages/platform/enums/permissions.ts:15     function hasPermission
+hasPermission                       M packages/platform/utils/permissions.ts:15     function hasPermission
+TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:118    method TestTasker.constructor
+TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:152    method TestTasker.constructor
+TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:194    method TestTasker.constructor
+TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:233    method TestTasker.constructor
+TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:267    method TestTasker.constructor
+TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:312    method TestTasker.constructor
+TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:349    method TestTasker.constructor
+TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:386    method TestTasker.constructor
+TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:430    method TestTasker.constructor
+TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:470    method TestTasker.constructor
+TestTasker.constructor              M packages/lib/tasker/Tasker.test.ts:73     method TestTasker.constructor
+TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:113    async_method TestRepository.findById
+TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:136    async_method TestRepository.findById
+TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:176    async_method TestRepository.findById
+TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:192    async_method TestRepository.findById
+TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:34     async_method TestRepository.findById
+TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:53     async_method TestRepository.findById
+TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:74     async_method TestRepository.findById
+TestRepository.findById             M packages/features/cache/decorators/__tests__/Memoize.test.ts:90     async_method TestRepository.findById
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:31     async_method TestRepository.delete
+PartialWebhookInputPipe.transform   M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:16     method PartialWebhookInputPipe.transform
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:118    async_method TestRepository.delete
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:135    async_method TestRepository.delete
+TestRepository.delete               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:47     async_method TestRepository.delete
+CalendarAppDelegationCredentialClientIdNotAuthorizedError.constructor M packages/lib/CalendarAppError.ts:30     method CalendarAppDelegationCredentialClientIdN...
+CalendarAppDelegationCredentialConfigurationError.constructor M packages/lib/CalendarAppError.ts:16     method CalendarAppDelegationCredentialConfigura...
+CalendarAppDelegationCredentialError.constructor M packages/lib/CalendarAppError.ts:9      method CalendarAppDelegationCredentialError.con...
+CalendarAppDelegationCredentialInvalidGrantError.constructor M packages/lib/CalendarAppError.ts:23     method CalendarAppDelegationCredentialInvalidGr...
+CalendarAppError.constructor        M packages/lib/CalendarAppError.ts:2      method CalendarAppError.constructor
+UserError.constructor               M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:197    method UserError.constructor
+WebhookInputPipe.transform          M apps/api/v2/src/modules/webhooks/pipes/WebhookInputPipe.ts:6      method WebhookInputPipe.transform
+CalendarAppDelegationCredentialNotSetupError.constructor M packages/lib/CalendarAppError.ts:37     method CalendarAppDelegationCredentialNotSetupE...
+SystemError.constructor             M packages/trpc/server/routers/viewer/bookings/editLocation.handler.ts:207    method SystemError.constructor
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:102    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:156    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:171    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:186    async_method TestRepository.update
+TestRepository.update               M packages/features/cache/decorators/__tests__/Unmemoize.test.ts:66     async_method TestRepository.update
+  ...and 11296 more symbols
+
+-- FOCUS
+.env.example (.env.example:1-484)
+  Config summary for .env.example: entries: DATABASE_URL=postgresql://postgres:@localhost:5450..., DATABASE_DIRECT_URL=postgresql://postgres:@localhost:5450..., INSIGHTS_DATABASE_URL=<set>, NEXT_PUBLIC_WEBAPP_URL=http://localhost:3000, NEXT_PUBLIC_WEBSITE_URL=http://localhost:3000, NEXT_PUBLIC_EMBED_LIB_URL=http://localhost:3000/embed/embed.js
+  entries: DATABASE_URL=postgresql://postgres:@localhost:5450..., DATABASE_DIRECT_URL=postgresql://postgres:@localhost:5450..., INSIGHTS_DATABASE_URL=<set>, NEXT_PUBLIC_WEBAPP_URL=http://localhost:3000, NEXT_PUBLIC_WEBSITE_URL=http://localhost:3000
+
+apps/api/v2/.env.example (apps/api/v2/.env.example:1-76)
+  Config summary for apps/api/v2/.env.example: entries: NODE_ENV=development, API_PORT=5555, API_URL=http://localhost, DATABASE_READ_URL=postgresql://postgres:@localhost:5450..., DATABASE_WRITE_URL=postgresql://postgres:@localhost:5450..., LOG_LEVEL=DEBUG
+  entries: NODE_ENV=development, API_PORT=5555, API_URL=http://localhost, DATABASE_READ_URL=postgresql://postgres:@localhost:5450..., DATABASE_WRITE_URL=postgresql://postgres:@localhost:5450...
+
+example-apps/credential-sync/.env.example (example-apps/credential-sync/.env.example:1-15)
+  Config summary for example-apps/credential-sync/.env.example: entries: CALCOM_TEST_USER_ID=1, GOOGLE_REFRESH_TOKEN=<set>, GOOGLE_CLIENT_ID=<set>, GOOGLE_CLIENT_SECRET=<set>, ZOOM_REFRESH_TOKEN=<set>, ZOOM_CLIENT_ID=<set>
+  entries: CALCOM_TEST_USER_ID=1, GOOGLE_REFRESH_TOKEN=<set>, GOOGLE_CLIENT_ID=<set>, GOOGLE_CLIENT_SECRET=<set>, ZOOM_REFRESH_TOKEN=<set>
+
+FormSubmittedDTO (packages/features/webhooks/lib/dto/types.ts:175-186)
+  interface FormSubmittedDTO
+  extends: BaseEventDTO
+  uses: WebhookTriggerEvents.FORM_SUBMITTED
+
+FormSubmittedNoEventDTO (packages/features/webhooks/lib/dto/types.ts:205-216)
+  interface FormSubmittedNoEventDTO
+  extends: BaseEventDTO
+  uses: WebhookTriggerEvents.FORM_SUBMITTED_NO_EVENT
+
+WebhookTaskerProducerService.queueFormSubmittedWebhook (packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts:76-97)
+  async_method WebhookTaskerProducerService.queueFormSubmittedWebhook
+  sig: WebhookTaskerProducerService.queueFormSubmittedWebhook(params: QueueFormWebhookParams)
+  calls: queueTask
+  called_by: WebhookTaskerProducerService
+  uses: params.operationId, this.log.debug, WebhookTriggerEvents.FORM_SUBMITTED, params.formId
+
+FormSubmittedPayload (packages/features/webhooks/lib/factory/types.ts:6-13)
+  interface FormSubmittedPayload
+
+IWebhookProducerService.queueFormSubmittedWebhook (packages/features/webhooks/lib/interface/WebhookProducerService.ts:164-164)
+  method IWebhookProducerService.queueFormSubmittedWebhook
+  sig: IWebhookProducerService.queueFormSubmittedWebhook(params: QueueFormWebhookParams)
+  called_by: IWebhookProducerService
+
+BookingWebhookService.scheduleMeetingWebhooks (packages/features/webhooks/lib/service/BookingWebhookService.ts:239-328)
+  async_method BookingWebhookService.scheduleMeetingWebhooks
+  sig: BookingWebhookService.scheduleMeetingWebhooks(params: ScheduleMeetingWebhooksParams)
+  behavior: ACCUMULATE(scheduleMeetingWebhoo... -> result)
+  called_by: BookingWebhookService
+  uses: this.webhookService, webhookService.getSubscribers, params.booking.userId, params.booking.eventTypeId
+
+useRouterHelpers (apps/web/modules/embed/components/Embed.tsx:105-133)
+  behavior: ACCUMULATE(useRouterHelpers loop -> result)
+  called_by: useEmbedGoto
+  uses: searchParams.toString, newQuery.delete, Object.keys, newQuery.set
+
+BookingVideoService_2024_08_13.deleteOldVideoMeetingIfNeeded (apps/api/v2/src/platform/bookings/2024-08-13/services/booking-video.service.ts:13-40)
+  async_method BookingVideoService_2024_08_13.deleteOldVideoMeetingIfNeeded
+  sig: BookingVideoService_2024_08_13.deleteOldVideoMeetingIfNeeded(bookingId: number)
+  behavior: GUARD(!booking || !booking.user -> return;); ACCUMULATE(deleteOldVideoMeeting... -> result)
+  called_by: BookingVideoService_2024_08_13
+  uses: this.bookingsRepository.getBookingByIdWithUserAndEventDetails, booking.user, booking.references.filter, ref.type.endsWith
+
+buildFormStateWithNoErrors (packages/features/form-builder/useShouldBeDisabledDueToPrefill.test.ts:60-63)
+  sig: buildFormStateWithNoErrors(formState?: FormState)
+  behavior: DELEGATE(buildFormState -> result)
+  calls: buildFormState
+
+SeatBookedAuditActionService (packages/features/booking-audit/lib/actions/SeatBookedAuditActionService.ts:27-91)
+  methods: constructor, getDataRequirements, getDisplayJson, getDisplayTitle, getVersion, getVersionedData
+  calls: constructor, getDataRequirements, getDisplayJson, getDisplayTitle, getVersion, getVersionedData, migrateToLatest, parseStored
+  uses: z.object, z.literal, SeatBookedAuditActionService.dataSchemaV1, SeatBookedAuditActionService.fieldsSchemaV1
+
+getUpdatedFormValues (apps/web/modules/settings/my-account/profile-view.tsx:552-590)
+  sig: getUpdatedFormValues(values: FormValues)
+  behavior: TRANSFORM(map)
+  called_by: handleFormSubmit, onDisconnect
+  uses: formMethods.formState.dirtyFields, updatedValues.secondaryEmails.findIndex, secondaryEmail.emailPrimary, updatedValues.email
+
+InstantMeetingDTO (packages/features/webhooks/lib/dto/types.ts:303-313)
+  interface InstantMeetingDTO
+  extends: BaseEventDTO
+  uses: WebhookTriggerEvents.INSTANT_MEETING
+
+MeetingEndedDTO (packages/features/webhooks/lib/dto/types.ts:260-302)
+  interface MeetingEndedDTO
+  extends: BaseEventDTO
+  uses: WebhookTriggerEvents.MEETING_ENDED
+
+MeetingPayloadBuilder (packages/features/webhooks/lib/factory/versioned/v2021-10-20/MeetingPayloadBuilder.ts:19-50)
+  extends: BaseMeetingPayloadBuilder
+  uses: dto.triggerEvent, WebhookTriggerEvents.AFTER_HOSTS_CAL_VIDEO_NO_SHOW, WebhookTriggerEvents.AFTER_GUESTS_CAL_VIDEO_NO_SHOW, dto.createdAt
+
+MeetingStartedDTO (packages/features/webhooks/lib/dto/types.ts:217-259)
+  interface MeetingStartedDTO
+  extends: BaseEventDTO
+  uses: WebhookTriggerEvents.MEETING_STARTED
+
+BookingWebhookService.cancelScheduledMeetingWebhooks (packages/features/webhooks/lib/service/BookingWebhookService.ts:330-337)
+  async_method BookingWebhookService.cancelScheduledMeetingWebhooks
+  sig: BookingWebhookService.cancelScheduledMeetingWebhooks(params: CancelScheduledMeetingWebhooksParams)
+  called_by: BookingWebhookService
+  uses: this.webhookService, webhookService.cancelScheduledWebhooks, params.bookingId, WebhookTriggerEvents.MEETING_STARTED
+
+EventTypeAppSettingsForm (apps/web/components/apps/installation/ConfigureStepCard.tsx:66-121)
+  sig: EventTypeAppSettingsForm(props, ref)
+  uses: eventType.id, z.object, formMethods.getValues, eventType.title
+
+Form (packages/coss-ui/src/components/form.tsx:6-15)
+  sig: Form({ className, ...props }: FormPrimitive.Props)
+  uses: FormPrimitive.Props
+
+Meeting (packages/lib/OgImages.tsx:181-258)
+  sig: Meeting({ title, users = [], profile }: MeetingImageProps)
+  behavior: TRANSFORM(map)
+  calls: joinMultipleNames
+  uses: OG_ASSETS.meeting, profile.image, self.findIndex, v.name
+
+PlainForm (packages/ui/components/address/fields.tsx:202-244)
+  sig: PlainForm(props: FormProps<T>, ref: Ref<HTMLFormElement>)
+  behavior: TRANSFORM(map)
+  uses: event.preventDefault, event.stopPropagation, form.com, React.Children.map
+
+SeatBookedAuditActionService.constructor (packages/features/booking-audit/lib/actions/SeatBookedAuditActionService.ts:46-52)
+  method SeatBookedAuditActionService.constructor
+  called_by: SeatBookedAuditActionService
+  uses: this.helper, this.VERSION, SeatBookedAuditActionService.latestFieldsSchema, SeatBookedAuditActionService.storedDataSchema
+
+SeatBookedAuditActionService.getDisplayTitle (packages/features/booking-audit/lib/actions/SeatBookedAuditActionService.ts:76-78)
+  async_method SeatBookedAuditActionService.getDisplayTitle
+  sig: SeatBookedAuditActionService.getDisplayTitle(_: GetDisplayTitleParams)
+  called_by: SeatBookedAuditActionService
+  uses: booking_audit_action.seat_booked
+
+-- GAPS
+type: MECHANISTIC (body logic needed for full answer)
+coverage: 83 symbols in L3, 11 with behavior annotations
+uncovered: IUseBookingForm, InstantMeetingBuilder, InstantMeetingPayload, JoinMeetingButtonProps
+drill: packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts (~17 lines, WebhookTaskerProducerService.queueFormSubmittedWebhook)
+
+--- END CLUE FILE ---
+
+--- SOURCE SNIPPETS (File 2 Drill-Down) ---
+## WebhookTaskerProducerService.queueFormSubmittedWebhook  (packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts L76-97)
+```
+  async queueFormSubmittedWebhook(params: QueueFormWebhookParams): Promise<void> {
+    const operationId = params.operationId || uuidv4();
+
+    this.log.debug("Queueing form webhook task", {
+      operationId,
+      triggerEvent: WebhookTriggerEvents.FORM_SUBMITTED,
+      formId: params.formId,
+    });
+
+    const taskPayload: WebhookTaskPayload = {
+      operationId,
+      triggerEvent: WebhookTriggerEvents.FORM_SUBMITTED,
+      formId: params.formId,
+      teamId: params.teamId,
+      userId: params.userId,
+      oAuthClientId: params.oAuthClientId,
+      metadata: params.metadata,
+      timestamp: new Date().toISOString(),
+    };
+
+    await this.queueTask(operationId, taskPayload);
+  }
+```
+
+## IWebhookTaskerProducerServiceDeps  (packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts L27-30)
+```
+export interface IWebhookTaskerProducerServiceDeps {
+  webhookTasker: WebhookTasker;
+  logger: ILogger;
+}
+```
+
+## WebhookTaskerProducerService.constructor  (packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts L35-37)
+```
+  constructor(private readonly deps: IWebhookTaskerProducerServiceDeps) {
+    this.log = deps.logger.getSubLogger({ prefix: ["[WebhookTaskerProducerService]"] });
+  }
+```
+
+## WebhookTaskerProducerService.queueBookingCancelledWebhook  (packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts L43-45)
+```
+  async queueBookingCancelledWebhook(params: QueueBookingWebhookParams): Promise<void> {
+    await this.queueBookingWebhook(WebhookTriggerEvents.BOOKING_CANCELLED, params);
+  }
+```
+
+## WebhookTaskerProducerService.queueBookingCreatedWebhook  (packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts L39-41)
+```
+  async queueBookingCreatedWebhook(params: QueueBookingWebhookParams): Promise<void> {
+    await this.queueBookingWebhook(WebhookTriggerEvents.BOOKING_CREATED, params);
+  }
+```
+
+## WebhookTaskerProducerService.queueBookingNoShowUpdatedWebhook  (packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts L72-74)
+```
+  async queueBookingNoShowUpdatedWebhook(params: QueueBookingWebhookParams): Promise<void> {
+    await this.queueBookingWebhook(WebhookTriggerEvents.BOOKING_NO_SHOW_UPDATED, params);
+  }
+```
+
+## WebhookTaskerProducerService.queueBookingPaidWebhook  (packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts L68-70)
+```
+  async queueBookingPaidWebhook(params: QueuePaymentWebhookParams): Promise<void> {
+    await this.queuePaymentWebhook(WebhookTriggerEvents.BOOKING_PAID, params);
+  }
+```
+
+## WebhookTaskerProducerService.queueBookingPaymentInitiatedWebhook  (packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts L64-66)
+```
+  async queueBookingPaymentInitiatedWebhook(params: QueuePaymentWebhookParams): Promise<void> {
+    await this.queuePaymentWebhook(WebhookTriggerEvents.BOOKING_PAYMENT_INITIATED, params);
+  }
+```
+
+## WebhookTaskerProducerService.queueBookingRejectedWebhook  (packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts L60-62)
+```
+  async queueBookingRejectedWebhook(params: QueueBookingWebhookParams): Promise<void> {
+    await this.queueBookingWebhook(WebhookTriggerEvents.BOOKING_REJECTED, params);
+  }
+```
+
+## WebhookTaskerProducerService.queueBookingRequestedWebhook  (packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts L56-58)
+```
+  async queueBookingRequestedWebhook(params: QueueBookingWebhookParams): Promise<void> {
+    await this.queueBookingWebhook(WebhookTriggerEvents.BOOKING_REQUESTED, params);
+  }
+```
+
+## WebhookTaskerProducerService.queueBookingRescheduledWebhook  (packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts L47-49)
+```
+  async queueBookingRescheduledWebhook(params: QueueBookingWebhookParams): Promise<void> {
+    await this.queueBookingWebhook(WebhookTriggerEvents.BOOKING_RESCHEDULED, params);
+  }
+```
+
+## WebhookTaskerProducerService.queueOOOCreatedWebhook  (packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts L125-147)
+```
+  async queueOOOCreatedWebhook(params: QueueOOOWebhookParams): Promise<void> {
+    const operationId = params.operationId || uuidv4();
+
+    this.log.debug("Queueing OOO webhook task", {
+      operationId,
+      triggerEvent: WebhookTriggerEvents.OOO_CREATED,
+      oooEntryId: params.oooEntryId,
+      userId: params.userId,
+    });
+
+    const taskPayload: WebhookTaskPayload = {
+      operationId,
+      triggerEvent: WebhookTriggerEvents.OOO_CREATED,
+      oooEntryId: params.oooEntryId,
+      userId: params.userId,
+      teamId: params.teamId,
+      oAuthClientId: params.oAuthClientId,
+      metadata: params.metadata,
+      timestamp: new Date().toISOString(),
+    };
+
+    await this.queueTask(operationId, taskPayload);
+  }
+```
+
+## WebhookTaskerProducerService.queueRecordingReadyWebhook  (packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts L99-123)
+```
+  async queueRecordingReadyWebhook(params: QueueRecordingWebhookParams): Promise<void> {
+    const operationId = params.operationId || uuidv4();
+
+    this.log.debug("Queueing recording webhook task", {
+      operationId,
+      triggerEvent: WebhookTriggerEvents.RECORDING_READY,
+      recordingId: params.recordingId,
+      bookingUid: params.bookingUid,
+    });
+
+    const taskPayload: WebhookTaskPayload = {
+      operationId,
+      triggerEvent: WebhookTriggerEvents.RECORDING_READY,
+      recordingId: params.recordingId,
+      bookingUid: params.bookingUid,
+      eventTypeId: params.eventTypeId,
+      teamId: params.teamId,
+      userId: params.userId,
+      oAuthClientId: params.oAuthClientId,
+      metadata: params.metadata,
+      timestamp: new Date().toISOString(),
+    };
+
+    await this.queueTask(operationId, taskPayload);
+  }
+```
+
+## WebhookTaskerProducerService.queueTask  (packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts L222-233)
+```
+  private async queueTask(operationId: string, taskPayload: WebhookTaskPayload): Promise<void> {
+    try {
+      const result = await this.deps.webhookTasker.deliverWebhook(taskPayload);
+      this.log.debug("Webhook delivery task queued", { operationId, taskId: result.taskId });
+    } catch (error) {
+      this.log.error("Failed to queue webhook delivery task", {
+        operationId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    }
+  }
+```
+
+## WebhookTaskerProducerService  (packages/features/webhooks/lib/service/WebhookTaskerProducerService.ts L31-234)
+```
+
+export class WebhookTaskerProducerService implements IWebhookProducerService {
+  private readonly log: ILogger;
+
+  constructor(private readonly deps: IWebhookTaskerProducerServiceDeps) {
+    this.log = deps.logger.getSubLogger({ prefix: ["[WebhookTaskerProducerService]"] });
+  }
+
+  async queueBookingCreatedWebhook(params: QueueBookingWebhookParams): Promise<void> {
+    await this.queueBookingWebhook(WebhookTriggerEvents.BOOKING_CREATED, params);
+  }
+
+  async queueBookingCancelledWebhook(params: QueueBookingWebhookParams): Promise<void> {
+    await this.queueBookingWebhook(WebhookTriggerEvents.BOOKING_CANCELLED, params);
+  }
+
+  async queueBookingRescheduledWebhook(params: QueueBookingWebhookParams): Promise<void> {
+    await this.queueBookingWebhook(WebhookTriggerEvents.BOOKING_RESCHEDULED, params);
+  }
+
+  /**
+   * Queue a webhook for requested bookings.
+   *
+   * This fires when bookings require confirmation (status = PENDING).
+   */
+  async queueBookingRequestedWebhook(params: QueueBookingWebhookParams): Promise<void> {
+    await this.queueBookingWebhook(WebhookTriggerEvents.BOOKING_REQUESTED, params);
+  }
+
+  async queueBookingRejectedWebhook(params: QueueBookingWebhookParams): Promise<void> {
+    await this.queueBookingWebhook(WebhookTriggerEvents.BOOKING_REJECTED, params);
+  }
+
+  async queueBookingPaymentInitiatedWebhook(params: QueuePaymentWebhookParams): Promise<void> {
+    await this.queuePaymentWebhook(WebhookTriggerEvents.BOOKING_PAYMENT_INITIATED, params);
+  }
+
+  async queueBookingPaidWebhook(params: QueuePaymentWebhookParams): Promise<void> {
+    await this.queuePaymentWebhook(WebhookTriggerEvents.BOOKING_PAID, params);
+  }
+
+  async queueBookingNoShowUpdatedWebhook(params: QueueBookingWebhookParams): Promise<void> {
+    await this.queueBookingWebhook(WebhookTriggerEvents.BOOKING_NO_SHOW_UPDATED, params);
+  }
+
+  async queueFormSubmittedWebhook(params: QueueFormWebhookParams): Promise<void> {
+    const operationId = params.operationId || uuidv4();
+
+    this.log.debug("Queueing form webhook task", {
+      operationId,
+      triggerEvent: WebhookTriggerEvents.FORM_SUBMITTED,
+      formId: params.formId,
+    });
+
+    const taskPayload: WebhookTaskPayload = {
+      operationId,
+      triggerEvent: WebhookTriggerEvents.FORM_SUBMITTED,
+      formId: params.formId,
+      teamId: params.teamId,
+      userId: params.userId,
+      oAuthClientId: params.oAuthClientId,
+      metadata: params.metadata,
+      timestamp: new Date().toISOString(),
+    };
+
+    await this.queueTask(operationId, taskPayload);
+  }
+
+  async queueRecordingReadyWebhook(params: QueueRecordingWebhookParams): Promise<void> {
+    const operationId = params.operationId || uuidv4();
+
+    this.log.debug("Queueing recording webhook task", {
+      operationId,
+      triggerEvent: WebhookTriggerEvents.RECORDING_READY,
+      recordingId: params.recordingId,
+      bookingUid: params.bookingUid,
+    });
+
+    const taskPayload: WebhookTaskPayload = {
+      operationId,
+      triggerEvent: WebhookTriggerEvents.RECORDING_READY,
+      recordingId: params.recordingId,
+      bookingUid: params.bookingUid,
+      eventTypeId: params.eventTypeId,
+      teamId: params.teamId,
+      userId: params.userId,
+      oAuthClientId: params.oAuthClientId,
+      metadata: params.metadata,
+      timestamp: new Date().toISOString(),
+    };
+
+    await this.queueTask(operationId, taskPayload);
+  }
+
+  async queueOOOCreatedWebhook(params: QueueOOOWebhookParams): Promise<void> {
+    const operationId = params.operationId || uuidv4();
+
+    this.log.debug("Queueing OOO webhook task", {
+      operationId,
+      triggerEvent: WebhookTriggerEvents.OOO_CREATED,
+      oooEntryId: params.oooEntryId,
+      userId: params.userId,
+    });
+
+    const taskPayload: WebhookTaskPayload = {
+      operationId,
+      triggerEvent: WebhookTriggerEvents.OOO_CREATED,
+      oooEntryId: params.oooEntryId,
+      userId: params.userId,
+      teamId: params.teamId,
+      oAuthClientId: params.oAuthClientId,
+      metadata: params.metadata,
+      timestamp: new Date().toISOString(),
+    };
+
+    await this.queueTask(operationId, taskPayload);
+  }
+
+  /**
+   * Internal helper to queue booking-related webhooks
+   */
+  private async queueBookingWebhook(
+    triggerEvent: Exclude<
+      BookingTriggerEvents,
+      typeof WebhookTriggerEvents.BOOKING_PAYMENT_INITIATED | typeof WebhookTriggerEvents.BOOKING_PAID
+    >,
+    params: QueueBookingWebhookParams
+  ): Promise<void> {
+    const operationId = params.operationId || uuidv4();
+
+    this.log.debug("Queueing booking webhook task", {
+      operationId,
+      triggerEvent,
+      bookingUid: params.bookingUid,
+      eventTypeId: params.eventTypeId,
+    });
+
+    const taskPayload: WebhookTaskPayload = {
+      operationId,
+      triggerEvent,
+      bookingUid: params.bookingUid,
+      eventTypeId: params.eventTypeId,
+      teamId: params.teamId,
+      userId: params.userId,
+      orgId: params.orgId,
+      oAuthClientId: params.oAuthClientId,
+      metadata: params.metadata,
+      timestamp: new Date().toISOString(),
+    };
+
+    await this.queueTask(operationId, taskPayload);
+  }
+
+  /**
+   * Internal helper to queue payment-related webhooks
+   */
+  private async queuePaymentWebhook(
+    triggerEvent: PaymentTriggerEvents,
+    params: QueuePaymentWebhookParams
+  ): Promise<void> {
+    const operationId = params.operationId || uuidv4();
+
+    this.log.debug("Queueing payment webhook task", {
+      operationId,
+      triggerEvent,
+      bookingUid: params.bookingUid,
+    });
+
+    const taskPayload: WebhookTaskPayload = {
+      operationId,
+      triggerEvent,
+      bookingUid: params.bookingUid,
+      eventTypeId: params.eventTypeId,
+      teamId: params.teamId,
+      userId: params.userId,
+      orgId: params.orgId,
+      oAuthClientId: params.oAuthClientId,
+      metadata: params.metadata,
+      timestamp: new Date().toISOString(),
+    };
+
+    await this.queueTask(operationId, taskPayload);
+  }
+
+  /**
+   * Internal helper to queue task via WebhookTasker
+   *
+   * The WebhookTasker automatically selects the appropriate execution mode:
+   * - Production: Queues to Trigger.dev for background processing
+   * - E2E Tests: Executes immediately via WebhookSyncTasker
+   */
+  private async queueTask(operationId: string, taskPayload: WebhookTaskPayload): Promise<void> {
+    try {
+... (truncated)
+```
+--- END SOURCE SNIPPETS ---
+
+QUESTION: How does the headless router flow from a submitted form to a booked meeting?
+
+Provide a detailed answer based on the clue file and source snippets above.
+For each claim you make, cite the specific clue entry or source snippet that supports it.
