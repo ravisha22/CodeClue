@@ -3,7 +3,7 @@
 **Ravi Nandagopalan**
 
 ## Abstract
-Large language models can assist with software engineering only when they receive enough repository context to answer code comprehension questions. In practice, full-source prompting is often too expensive, while retrieval-heavy or agentic browsing pipelines incur repeated latency and token costs. This paper presents **CodeClue**, an open-source system for generating persistent, versioned code comprehension artifacts for LLM consumption. CodeClue's **MRLF** (Multi-Resolution Lattice Format) uses a deterministic two-tier design: **File 1** is a \<=4K-token clue optimized for direct prompting, and **File 2** is a JSONL detail store for targeted drill-down. Across 10 open-source repositories in Python, Go, and TypeScript, with 208 gold facts (40 development, 168 blind), MRLF achieved **97% compression** while retaining useful comprehension on the blind set: **51.8% structural**, **60.7% relational**, and **41.1% mechanistic**. Repo-level bootstrap gave a blind overall interval of **[37.5%, 65.5%]**. A reasoning scaffold materially improved weaker models without changing the format, raising Sonnet 4.6 from **50.0%** to **81.3%** on a shared 8-task subset.
+Large language models can assist with software engineering only when they receive enough repository context to answer code comprehension questions. In practice, full-source prompting is often too expensive, while retrieval-heavy or agentic browsing pipelines incur repeated latency and token costs. This paper presents **CodeClue**, an open-source system for generating persistent, versioned code comprehension artifacts for LLM consumption. CodeClue's **MRLF** (Multi-Resolution Lattice Format) uses a deterministic two-file format: **File 1** is a \<=4K-token clue optimized for direct prompting, and **File 2** is a JSONL detail store for targeted drill-down. Across 10 open-source repositories in Python, Go, and TypeScript, with 208 gold facts (40 development, 168 blind), MRLF achieved **97% compression** while retaining useful comprehension on the blind set: **51.8% structural**, **60.7% relational**, and **41.1% mechanistic**. Repo-level bootstrap gave a blind overall interval of **[37.5%, 65.5%]**. A reasoning scaffold materially improved weaker models without changing the format, raising Sonnet 4.6 from **50.0%** to **81.3%** on a shared 8-task subset.
 
 ## 1. Introduction
 LLM-based programming assistants face a basic scaling problem: repositories are much larger than the context that can be economically sent on every turn. Even when a model can technically accept long inputs, long-context use remains expensive and often brittle, with quality degrading when relevant evidence is diluted across large prompts [1]. For code tasks, the default alternatives are usually (i) retrieval-augmented prompting, which repeatedly fetches raw files or snippets [2,3], or (ii) agentic browsing, where the model spends multiple tool calls rediscovering structure that has not changed since the previous session. Both approaches are useful, but both pay comprehension cost repeatedly.
@@ -14,13 +14,13 @@ This paper focuses on **MRLF**, CodeClue's open-source clue format. MRLF is moti
 
 We make four contributions:
 
-1. **MRLF**, a two-file, two-tier code comprehension artifact with deterministic \<=4K-token clue files and explicit drill-down semantics.
+1. **MRLF**, a two-file code comprehension artifact with deterministic \<=4K-token clue files and explicit drill-down semantics.
 2. An **open-source implementation** with deterministic extractors for Python, Go, and TypeScript plus an MCP server for tool-based consumption.
 3. A concise evaluation on **10 open-source repositories** and **208 gold facts**, including a blind protocol and repo-level uncertainty reporting.
 4. A **reasoning scaffold** contribution showing that cross-model performance gaps narrow substantially without changing the underlying format.
 
 ## 2. MRLF Format Design
-MRLF uses a **two-file architecture**. **File 1** is the primary clue and is constrained to roughly \<=4K tokens. **File 2** is a JSONL detail store keyed by stable identifiers for selective drill-down. The first file is designed for low-latency prompting; the second preserves detail without forcing every interaction to pay full context cost.
+MRLF uses a **two-file format**. **File 1** is the primary clue and is constrained to roughly \<=4K tokens. **File 2** is a JSONL detail store keyed by stable identifiers for selective drill-down. The first file is designed for low-latency prompting; the second preserves detail without forcing every interaction to pay full context cost.
 
 File 1 is organized into five ordered resolution levels:
 
@@ -90,7 +90,7 @@ We compared MRLF against two cheap baselines under approximately the same **~6K 
 The filename summary baseline failed completely, and shallow raw-source retrieval was only marginally better. This suggests that the value is not merely compression, but the structure of the compressed artifact.
 
 ### 4.4 Ablation
-Mechanistic tasks benefited from the two-tier design:
+Mechanistic tasks benefited from the two-file format:
 
 | Configuration | Mechanistic score |
 | --- | ---: |
@@ -142,7 +142,7 @@ A third connection is **long-context management**. Long context helps only up to
 Finally, MRLF is informed by **developer cognition** research. Sillito et al. showed that developers ask recurrent question types during change tasks, and that these questions vary in the depth of comprehension they require [6,7]. Our task-family separation follows this intuition: structural and relational questions differ materially from mechanistic ones and should not be conflated.
 
 ## 7. Conclusion
-CodeClue shows that an **open-source**, deterministic, model-agnostic code comprehension artifact can preserve useful repository understanding at large compression ratios. In our study, MRLF achieved **97% compression** while retaining meaningful blind-set performance, especially for **structural (51.8%)** and **relational (60.7%)** questions. The **two-tier architecture** was validated by a **+25pp** drill-down lift on mechanistic tasks. The reasoning scaffold further showed that weaker models can close much of the gap without changing the artifact itself.
+CodeClue shows that an **open-source**, deterministic, model-agnostic code comprehension artifact can preserve useful repository understanding at large compression ratios. In our study, MRLF achieved **97% compression** while retaining meaningful blind-set performance, especially for **structural (51.8%)** and **relational (60.7%)** questions. The **two-file format's drill-down path** was validated by a **+25pp** lift on mechanistic tasks. The reasoning scaffold further showed that weaker models can close much of the gap without changing the artifact itself.
 
 The main next steps are clearer behavioral summaries, broader benchmarks, more balanced blind sets, and human evaluation. The broader lesson is that compressed context for code should be treated not just as summarization, but as a first-class systems artifact with explicit sufficiency boundaries.
 

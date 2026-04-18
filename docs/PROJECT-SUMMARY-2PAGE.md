@@ -5,6 +5,10 @@
 
 CodeClue compresses codebases into structured ≤10K token artifacts using three layers:
 
+This extraction pipeline is rendered as a **two-file format**: **File 1**
+(`.codeclue`) carries the compressed clue, and **File 2**
+(`.codeclue-detail.jsonl`) provides drill-down detail on demand.
+
 **Layer 1 — Deterministic AST Extraction (~4K tokens).** Parses source into five resolution levels: directory tree, module index, PageRank-ranked symbols, task-conditioned FOCUS entries (with behavioral patterns like GUARD, BRANCH, PRECEDENCE extracted from AST), and a GAPS section that self-reports sufficiency. Zero hallucination — same code always produces the same clue. Supports Python, Go, TypeScript.
 
 **Layer 2 — LLM Domain Summary (~2K tokens).** A one-time LLM read of 10-20 key files (README, settings, models, schema, URLs) produces an architectural and domain model summary. Captures what AST extraction misses: entity relationships, business workflows, auth model, API surface. Generated once (~$0.05), consumed thousands of times.

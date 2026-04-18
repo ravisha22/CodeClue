@@ -24,7 +24,7 @@ a codebase — at 95%+ token compression — without hallucination?
 
 ## What Was Built
 
-### Format: MRLF Two-File Architecture
+### Format: MRLF Two-File Format
 - **File 1** (.codeclue, ≤4K tokens): TREE → INDEX → SYM → FOCUS → GAPS
   - Five resolution levels from directory layout to behavioral patterns
   - Question-conditioned FOCUS selection via graph-structural ranking
@@ -133,8 +133,9 @@ The variance is in reasoning, not parsing.
 
 ### 5. Drill-down adds material value (+25pp)
 File 1 alone achieves 22.9% on mechanistic questions. Adding File 2
-drill-down (source snippets) lifts this to 47.9%. The two-tier
-architecture is validated.
+drill-down (source snippets) lifts this to 47.9%. This validates the
+two-file format's targeted drill-down path within the broader
+three-layer architecture.
 
 ### 6. No overfitting detected
 Dev-blind gap is 3.8pp (dev 55%, blind 51.2%) on library repos. The

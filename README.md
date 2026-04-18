@@ -2,6 +2,21 @@
 
 **Persistent, versioned codebase understanding in ≤10K tokens.**
 
+## Goals
+
+This project investigates whether compressed, persistent code comprehension
+artifacts can replace raw source reading for LLM-assisted software engineering.
+
+**Research question:** Can we encode code understanding in ≤10K tokens that
+preserves enough meaning for LLMs to answer structural, relational, and
+mechanistic questions about enterprise codebases — at 95%+ compression?
+
+**Success criteria:**
+- SF1: ≥85% token compression
+- SF2: ≥60% of questions answerable from clue alone (no drill-down)
+- SF3: ≤40% of questions need drill-down
+- SF4: Drill-down provides ≥10pp accuracy lift when used
+
 CodeClue compresses entire codebases into structured comprehension artifacts that LLMs consume instead of reading raw source. The format achieves 95-97% token reduction while retaining enough information to answer structural, relational, and mechanistic questions about the code — including enterprise applications.
 
 ## Results
@@ -103,6 +118,8 @@ codeclue-mcp --clue-dir .codeclue/ --repo-root /path/to/repo
 | `expand_projection` | Widen view around a node |
 | `fetch_contract` | Get full semantic contract for a symbol |
 
+The MCP server is functional with real stdio transport (tested end-to-end via subprocess spawning). 138 MCP tests pass. Two test files have an import resolution conflict with the `mcp` SDK package namespace but the server itself works correctly.
+
 ## Validation Rigor
 
 | Check | Result |
@@ -118,7 +135,7 @@ codeclue-mcp --clue-dir .codeclue/ --repo-root /path/to/repo
 ## Testing
 
 ```bash
-pytest tests/foundation/ tests/mcp/ -q    # 247 tests
+pytest tests/foundation/ tests/mcp/ -q    # run foundation and MCP test suites
 ```
 
 ## Project Structure
@@ -129,7 +146,7 @@ src/codeclue_mcp/          # MCP server (5 tools, budget, tracing)
 experiments/               # Evaluation data, gold tasks, responses
 paper/                     # Research paper draft
 docs/                      # Architecture, charter, open issues
-tests/                     # 131 foundation + 116 MCP tests
+tests/                     # Foundation and MCP test suites
 ```
 
 ## License

@@ -58,10 +58,11 @@
 > "Can we encode code understanding in a format that is natively interpretable
 > by LLMs while remaining lossless to source behavior?"
 
-Yes. The three-layer MRLF format (deterministic AST + LLM domain summary + drill-down)
-achieves 95-97% compression with 100% accuracy on enterprise apps (verified) and
-51-61% on libraries (deterministic only). The format is interpretable by all 6
-tested LLMs and preserves source anchoring for every semantic unit.
+Yes. The three-layer architecture in MRLF's two-file format (deterministic AST +
+LLM domain summary + drill-down) achieves 95-97% compression with 100% accuracy
+on enterprise apps (verified) and 51-61% on libraries (deterministic only). The
+format is interpretable by all 6 tested LLMs and preserves source anchoring for
+every semantic unit.
 
 ## Directive 4.1 No Overfitting: Met ✅
 - Dev-blind gap: 3.8pp (blind higher) on libraries — no overfitting
@@ -118,7 +119,7 @@ approach is the floor; the full-stack approach is the product.
 | Property | Met? |
 |----------|------|
 | Lossless source anchoring | ✅ Every symbol has file:line anchors |
-| Task-dependent views without hallucination | ✅ Deterministic AST layer, zero hallucination on Tier 1 |
+| Task-dependent views without hallucination | ✅ Deterministic AST layer, zero hallucination in Layer 1 outputs |
 | Deterministic clue-to-source validation | ✅ check_freshness tool, content hashing |
 | Explicit uncertainty channels | ✅ GAPS section, confidence fields on MCP tools |
 

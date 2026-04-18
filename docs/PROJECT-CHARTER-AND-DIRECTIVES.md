@@ -35,7 +35,7 @@ research methodology, not feature-shipping urgency.
 Prove that a compressed, deterministic clue artifact can deliver:
 - **Instant structural understanding** from ≤4K tokens (File 1)
 - **Guided deep-dive capability** for mechanistic questions (File 1 → File 2)
-- **Zero hallucination** on all Tier 1 content (deterministic AST extraction)
+- **Zero hallucination** on all deterministic Layer 1 content (AST extraction)
 - **Explicit sufficiency boundary** — the format self-reports what it can and
   cannot answer, with costed drill-down targets
 
@@ -134,19 +134,26 @@ and reported separately.
 
 ---
 
-## 7. Two-Tier Architecture
+## 7. Architecture
 
-The format embraces two tiers rather than claiming single-file sufficiency:
+CodeClue uses a **three-layer architecture** rendered as a **two-file format**.
 
-- **File 1 (.codeclue, ≤4K tokens):** Structural + relational comprehension,
-  behavioral annotations for mechanistic coverage, GAPS section with
-  sufficiency classification and costed drill-down targets
-- **File 2 (.codeclue-detail.jsonl):** Full source snippets for guided
-  drill-down on mechanistic questions
+- **Layer 1 — Deterministic AST Extraction:** Produces the primary
+  **File 1** artifact (`.codeclue`, ≤4K tokens) with TREE, INDEX, SYM, FOCUS,
+  and GAPS. This layer provides structural + relational comprehension plus
+  behavioral annotations and explicit sufficiency boundaries.
+- **Layer 2 — LLM Domain Summary:** Adds semantic and architectural context
+  that AST extraction misses by reading key files such as README, settings,
+  models, schema, and routes. This layer is essential for enterprise apps and
+  optional for smaller libraries.
+- **Layer 3 — Guided Drill-Down:** Uses GAPS-guided retrieval to fetch targeted
+  **File 2** records (`.codeclue-detail.jsonl`) for mechanistic questions that
+  need source-level detail.
 
-The protocol: LLM reads File 1, identifies gaps via GAPS section, retrieves
-specific File 2 records for targeted deep-dive. This is the "double-click"
-pattern.
+The file format remains intentionally **two-file**: File 1 is the portable clue,
+and File 2 is the detail store for selective deep-dive. The protocol is to read
+File 1 first, consult GAPS, and retrieve only the specific File 2 records needed
+for the question at hand. This is the "double-click" pattern.
 
 ---
 
