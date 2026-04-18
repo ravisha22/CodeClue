@@ -155,10 +155,6 @@ docs/                      # Architecture, charter, open issues
 tests/                     # Foundation and MCP test suites
 ```
 
-## License
-
-MIT
-
 ## Author
 
-Ravi Nandagopalan
+Ravishankar Nandagopalan
