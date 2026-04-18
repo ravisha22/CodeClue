@@ -1,4 +1,4 @@
-# External repo clones (large, re-cloneable)
+# External repo clones (large, re-cloneable, never track in git)
 experiments/external-repos/
 
 # Python
@@ -63,3 +63,66 @@ experiments/runs/blind-eval/clues/mattermost.codeclue-detail
 experiments/runs/blind-eval/clues/supabase.codeclue-detail
 experiments/runs/blind-eval/clues/consul.codeclue-detail
 experiments/runs/blind-eval/clues/saleor.codeclue-detail
+
+# Session artifacts (not project content)
+LLMchat.md
+NEXT-STEPS.md
+recall.md
+RecursiveLanguageModels.pdf
+
+# Stale docs (superseded, kept locally for reference)
+docs/02-*.md
+docs/03-*.md
+docs/04-*.md
+docs/05-*.md
+docs/06-*.md
+docs/07-*.md
+docs/08-*.md
+docs/09-*.md
+docs/10-*.md
+docs/11-*.md
+docs/12-*.md
+docs/HANDOFF-*.md
+docs/HANDOFF-NEXT-SESSION.md
+docs/CANONICAL-STATUS.md
+docs/GAP-REMEDIATION-PLAN.md
+docs/CROSS-MODEL-EVALUATION-PROTOCOL.md
+docs/RESEARCH-FIX-PLAN-*.md
+docs/New-Design-Basis.md
+docs/TOPICS-MAP.md
+docs/HANDOFF-MCP-PLAN.md
+
+# Superseded paper artifacts
+paper/ARXIV-REMEDIATION-PLAN.md
+paper/INSTRUCTIONS-*.md
+paper/codeclue-arxiv-draft.md
+paper/codeclue-arxiv-final.md
+paper/codeclue-explainer.md
+paper/convert_*.py
+paper/corrections-applied.md
+paper/gemini-editor-*.json
+paper/meta-review-*.md
+paper/review-gpt54*.md
+paper/review-gpt54*.json
+
+# Superseded PRD
+source/CodeClue-PRD-v0.3.0-mvp-FINAL.md
+
+# One-off experiment scripts (keep gen_all_v23.py and regen_clues_with_drilldown.py)
+experiments/runs/compute_*.py
+experiments/runs/extract_*.py
+experiments/runs/gen_ablation_*.py
+experiments/runs/gen_arch_*.py
+experiments/runs/gen_baselines.py
+experiments/runs/gen_blind_v2_clues.py
+experiments/runs/gen_enterprise_clues.py
+experiments/runs/gen_expansion_clues.py
+experiments/runs/gen_fiber_struct_rel.py
+experiments/runs/gen_fullstack*.py
+experiments/runs/gen_struct_rel_prompts.py
+experiments/runs/prepare_*.py
+experiments/runs/regen_python_clues_v211.py
+experiments/runs/run_*.py
+
+# Cross-model eval artifacts (results captured in paper)
+experiments/cross-model-eval/

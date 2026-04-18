@@ -11,15 +11,11 @@
 | File | Relationship |
 |------|--------------|
 | docs/PROJECT-CHARTER-AND-DIRECTIVES.md | Defines success factors, paper targets, and v2.4 blind metrics |
-| source/CodeClue-PRD-v0.7.0-generalization.md | Holds current design intent but still references pre-v2.4 results |
-| docs/HANDOFF-SESSION-20260415.md | Captures post-v2.3 paper-ready tasks and remaining gaps |
-| docs/HANDOFF-SESSION-20260414.md | Documents anti-overfitting and validation requirements |
-| docs/HANDOFF-SESSION-20260414-v2.md | Documents v2.1 pivot, validation, and evaluation workflow |
-| docs/RESEARCH-FIX-PLAN-20260414.md | Explains behavioral-pattern and selector design rationale |
+| source/CodeClue-PRD-generalization.md | Holds current design intent and latest generalized-comprehension framing |
 | docs/REASONING-SCAFFOLD.md | Defines scaffold text and current unvalidated status |
+| docs/FINAL-PROJECT-SUMMARY.md | Captures consolidated status, evidence, and paper-readiness context |
 | experiments/runs/blind-eval/responses/v24/blind-scoring.md | Source of v2.4 blind scores and task-level misses |
-| paper/ARXIV-REMEDIATION-PLAN.md | Lists paper credibility blockers and evidence gates |
-| GAP-REMEDIATION-PLAN.md | Prior remediation pattern for evaluation and publication gaps |
+| paper/codeclue-paper-v25.md | Current paper draft that should stay aligned with backlog priorities |
 
 ### Test Files
 | Test | Coverage |
@@ -29,8 +25,8 @@
 ### Reference Patterns
 | File | Pattern |
 |------|---------|
-| GAP-REMEDIATION-PLAN.md | Gap-by-gap remediation with effort and impact |
-| paper/ARXIV-REMEDIATION-PLAN.md | Publication blocker framing and claim-tier sequencing |
+| docs/FINAL-PROJECT-SUMMARY.md | Consolidated status narrative and evidence framing |
+| paper/codeclue-paper-v25.md | Current manuscript structure and claim packaging |
 
 ### Risk Assessment
 - [ ] Breaking changes to public API

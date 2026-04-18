@@ -4,8 +4,8 @@ Generates a two-file clue artifact:
   File 1 (.codeclue)        — plain-text primary clue, ≤4150 tokens
   File 2 (.codeclue-detail)  — JSONL detail store, one record per symbol
 
-Design doc: docs/New-Design-Basis.md
-PRD: source/CodeClue-PRD-v0.7.0-generalization.md
+Design docs: docs/REASONING-SCAFFOLD.md, docs/PROJECT-CHARTER-AND-DIRECTIVES.md
+PRD: source/CodeClue-PRD-generalization.md
 
 Resolution levels in File 1:
   L0 TREE   — directory structure       (~150 tokens, 100% coverage)
