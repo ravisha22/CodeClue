@@ -1,0 +1,12 @@
+# Enterprise v3 (arch-enhanced): ent-netbox-mech-1
+Date: 2026-04-18
+
+## Answer
+NetBox background work is built around Redis-backed RQ queues and queue/job views. The architectural summary says Redis is required for task queues and caching, and lists `django-rq` as the background-work dependency (ARCH, ent-netbox-mech-1-v3.prompt.md:21,26). The clue shows queue/job enumeration helpers (`get_rq_jobs`, `get_rq_jobs_from_status`), queue/task serializers and tables, and UI routes/views for background queues, tasks, and workers (get_rq_jobs, netbox/core/utils.py:28-38; get_rq_jobs_from_status, netbox/core/utils.py:41-74; BackgroundQueueListView, netbox/core/views.py:500-509; BackgroundTaskListView, netbox/core/views.py:512-538; BackgroundTaskView, netbox/core/views.py:541-565; path:background-queues/, netbox/core/urls.py:1-57; path:background-tasks/<...>, netbox/core/urls.py:1-57; path:background-workers/<...>, netbox/core/urls.py:1-57).
+
+The kinds of background work visible in the clue include script/report jobs, remote-data synchronization, and housekeeping. `get_jobs` on extras mixins returns jobs associated with a script or report module; `DataSource` and `BulkSyncDataView`/`SyncedDataMixin` show remote data-source sync flows; and `delete_expired_jobs` is called by `SystemHousekeepingJob` (get_jobs, netbox/extras/models/mixins.py:40-48; ScriptJobsView, netbox/extras/views.py:1751-1765; DataSource, netbox/core/models/data.py:35-278; SyncedDataMixin, netbox/netbox/models/features.py:511-638; BulkSyncDataView, netbox/netbox/views/generic/feature_views.py:262-284; delete_expired_jobs, netbox/core/jobs.py:143-159).
+
+The enqueuing story is only partly visible: `JobRunner.get_jobs()` is called by `enqueue_once`, so there is explicit deduplication logic for instance-related jobs, and the admin UI exposes enqueue/requeue/stop/delete actions for tasks (get_jobs, netbox/netbox/jobs.py:134-147; BackgroundTaskEnqueueView, netbox/core/views.py:603-609; BackgroundTaskRequeueView, netbox/core/views.py:595-600; BackgroundTaskStopView, netbox/core/views.py:612-621; BackgroundTaskDeleteView, netbox/core/views.py:568-592).
+
+## Gaps
+The prompt does not show plugin-added jobs running via `rqworker`, does not spell out immediate/future/repeating scheduling modes, and does not expose `system_job()` or default queue names. Those scheduler details are missing from this clue (GAPS, ent-netbox-mech-1-v3.prompt.md:295-298).

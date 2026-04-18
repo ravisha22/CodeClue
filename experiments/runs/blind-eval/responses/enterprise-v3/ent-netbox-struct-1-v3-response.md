@@ -1,0 +1,12 @@
+# Enterprise v3 (arch-enhanced): ent-netbox-struct-1
+Date: 2026-04-18
+
+## Answer
+NetBox’s architectural role is as a single authoritative source-of-truth platform for network infrastructure data, not as a microservice bundle. The architectural summary explicitly calls it a "single authoritative ‘source of truth’ platform" and describes one Django application serving UI, REST, and GraphQL together (ARCH, ent-netbox-struct-1-v3.prompt.md:19,22). Its key workflows reinforce that role: operators model sites, racks, devices, components, cabling, IPAM objects, and then expose intended-state data outward to automation through APIs and exported docs (ARCH, ent-netbox-struct-1-v3.prompt.md:24).
+
+Its data scope is broad and infrastructure-centric. The architectural summary spans `dcim` objects such as sites, racks, devices, modules, power, and cables; `ipam` objects such as VRFs, prefixes, IP addresses, VLANs, services, FHRP groups, and ASNs; plus circuits, virtual machines/clusters, tenants, VPN constructs, and wireless objects (ARCH, ent-netbox-struct-1-v3.prompt.md:19-20). The clue’s symbol set matches that breadth with `IPAddress`, `IPRange`, `Role` for Prefix/VLAN function, `ContactRole`, `CachedScopeMixin` for site/location scoping, and remote-data models like `DataSource`/`DataFile` (IPAddress, netbox/ipam/models/ip.py:750; IPRange, netbox/ipam/models/ip.py:516; Role, netbox/ipam/models/ip.py:191-207; ContactRole, netbox/tenancy/models/contacts.py:64-71; CachedScopeMixin, netbox/dcim/models/mixins.py:41-122; DataSource, netbox/core/models/data.py:35-278; DataFile, netbox/core/models/data.py:281-373).
+
+NetBox also exposes that inventory/state model programmatically. The architectural summary says the platform serves REST and GraphQL, and the clue shows `CoreRootView`, `CoreQuery`, and the GraphiQL package under `project-static/netbox-graphiql` (ARCH, ent-netbox-struct-1-v3.prompt.md:22; CoreRootView, netbox/core/api/views.py:30-35; CoreQuery, netbox/core/graphql/schema.py:8-13; netbox/project-static/netbox-graphiql/package.json, ent-netbox-struct-1-v3.prompt.md:138-140).
+
+## Gaps
+The prompt supports NetBox as the central authority and source of truth, but it does not explicitly spell out the recommended surrounding-tool pattern in which separate monitoring, assurance, and execution systems sit around NetBox. That broader ecosystem recommendation is not directly stated here (GAPS, ent-netbox-struct-1-v3.prompt.md:276-279).
