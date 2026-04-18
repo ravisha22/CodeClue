@@ -99,8 +99,14 @@ cd CodeClue
 python -m venv .venv && .venv/Scripts/activate  # or source .venv/bin/activate
 pip install -e .
 
-# Generate a clue file
-codeclue extract --repo-root /path/to/repo --language python
+# Inspect the installed CLI
+.venv\Scripts\python.exe -m codeclue_research.cli --help
+
+# Extract the canonical graph
+.venv\Scripts\python.exe -m codeclue_research.cli extract --repo-root /path/to/repo --output artifacts\graph.json --language python
+
+# Add deterministic deep context (writes artifacts\graph.codeclue-context)
+.venv\Scripts\python.exe -m codeclue_research.cli extract --repo-root /path/to/repo --output artifacts\graph.json --language python --deep
 
 # Start the MCP server for drill-down
 codeclue-mcp --clue-dir .codeclue/ --repo-root /path/to/repo
@@ -135,7 +141,7 @@ The MCP server is functional with real stdio transport (tested end-to-end via su
 ## Testing
 
 ```bash
-pytest tests/foundation/ tests/mcp/ -q    # run foundation and MCP test suites
+pytest tests/foundation/ tests/test_mcp/ -q    # run foundation and MCP test suites
 ```
 
 ## Project Structure

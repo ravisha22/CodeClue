@@ -508,6 +508,33 @@ def _keyword_variants(keyword: str) -> set[str]:
     return {variant for variant in variants if variant}
 
 
+def _structural_file_keywords(question_keywords: set[str]) -> set[str]:
+    low_signal = {
+        "app", "application", "code", "file", "files", "handle", "handler", "handlers",
+        "module", "modules", "project", "repo", "repository", "request", "response",
+        "service", "services",
+    }
+    return {keyword for keyword in question_keywords if keyword not in low_signal}
+
+
+def _file_path_keyword_boost(file_path: str, question_keywords: set[str]) -> float:
+    keywords = _structural_file_keywords(question_keywords)
+    if not keywords:
+        return 0.0
+
+    file_name = Path(file_path).stem.lower()
+    file_words = _split_compound_words(file_path) | _split_compound_words(file_name)
+    score = 0.0
+    for keyword in keywords:
+        variants = _keyword_variants(keyword)
+        if file_words & variants:
+            score += 0.6
+            continue
+        if any(variant in file_name for variant in variants):
+            score += 0.4
+    return min(1.0, score)
+
+
 def _semantic_overlap(purpose: str, question_keywords: set[str]) -> float:
     """Score overlap between node documentation and question intent.
 
@@ -936,11 +963,18 @@ def _analyze_focus_selection(
     structural_focus = _classify_question_type(question, [], symbol_nodes) == "STRUCTURAL"
     mechanistic_focus = _question_has_mechanistic_signals(question)
     max_anchor_support = max(anchor_support.values(), default=0.0)
+    structural_file_boosts: dict[str, float] = {}
+    if structural_focus:
+        for candidate_id in candidate_ids:
+            structural_file_boosts[candidate_id] = _file_path_keyword_boost(
+                node_by_id[candidate_id].source_anchor.file_path,
+                keywords,
+            )
     file_focus_scores: dict[str, float] = defaultdict(float)
     if structural_focus:
         for candidate_id in candidate_ids:
             node = node_by_id[candidate_id]
-            score = lexical_scores.get(candidate_id, 0.0) + entity_scores.get(candidate_id, 0.0)
+            score = structural_file_boosts.get(candidate_id, 0.0)
             if score > 0:
                 file_focus_scores[node.source_anchor.file_path] = max(
                     file_focus_scores[node.source_anchor.file_path],
@@ -960,7 +994,10 @@ def _analyze_focus_selection(
         return max(distance_score, support_score)
 
     def _blended_focus_score(nid: str) -> float:
-        semantic_score = min(1.0, max(0.0, semantic_scores.get(nid, 0.0)))
+        semantic_score = min(
+            1.0,
+            max(0.0, semantic_scores.get(nid, 0.0) + structural_file_boosts.get(nid, 0.0)),
+        )
         entity_score = _normalized_entity_score(nid)
         proximity_score = _call_graph_proximity_score(nid)
         file_score = 0.0
@@ -976,6 +1013,7 @@ def _analyze_focus_selection(
     def _rank_key(nid: str) -> tuple:
         return (
             -_blended_focus_score(nid),
+            -structural_file_boosts.get(nid, 0.0),
             0 if (semantic_scores.get(nid, 0.0) > 0 or entity_scores.get(nid, 0.0) > 0) else 1,
             0 if relational_focus and (node_by_id[nid].semantic_contract or {}).get("bases") else 1,
             anchor_tier.get(nid, 3),
@@ -1271,8 +1309,21 @@ def _classify_question_type(
         "flow between",
         "used by",
     ]
+    structural_signals = [
+        r"\bwhat modules\b",
+        r"\bwhich modules\b",
+        r"\bwhat files\b",
+        r"\bwhich files\b",
+        r"\bwhere is\b",
+        r"\bwhere are\b",
+        r"\bmodule layout\b",
+        r"\bfile layout\b",
+    ]
     structural_score = _question_content_overlap(l2_symbols, keywords)
     behavior_score = _question_content_overlap(focus_nodes, keywords, behavior_only=True)
+
+    if any(re.search(signal, q) for signal in structural_signals):
+        return "STRUCTURAL"
 
     if mechanistic_signal and (
         behavior_verb_hit

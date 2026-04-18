@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from .cct import run_cct_probe
+from .deep_context import default_context_output_path, extract_deep_context
 from .delta import apply_delta_patch
 from .extractor import extract_graph
 from .fidelity import evaluate_projection_fidelity
@@ -25,7 +26,12 @@ def _cmd_extract(args: argparse.Namespace) -> int:
         generator_model_family=args.generator_model_family,
     )
     save_graph(Path(args.output), graph)
-    print(json.dumps({"status": "ok", "output": args.output}, indent=2))
+    payload = {"status": "ok", "output": args.output}
+    if args.deep:
+        context_output = default_context_output_path(Path(args.output))
+        save_data(context_output, extract_deep_context(Path(args.repo_root)))
+        payload["deep_context_output"] = str(context_output)
+    print(json.dumps(payload, indent=2))
     return 0
 
 
@@ -150,6 +156,11 @@ def _build_parser() -> argparse.ArgumentParser:
         "--generator-model-family",
         default="codeclue",
         help="Generator model family (e.g., anthropic, openai, codeclue)",
+    )
+    extract.add_argument(
+        "--deep",
+        action="store_true",
+        help="Write deterministic deep context alongside the graph output",
     )
     extract.set_defaults(func=_cmd_extract)
 

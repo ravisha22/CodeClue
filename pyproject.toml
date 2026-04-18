@@ -23,5 +23,4 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.pytest.ini_options]
-importmode = "importlib"
 testpaths = ["tests"]

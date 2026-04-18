@@ -28,6 +28,9 @@ jobs:
       - name: Run foundation tests
         run: python -m pytest tests/foundation/ -q --tb=line
 
+      - name: Run MCP tests
+        run: python -m pytest tests/test_mcp/ -q --tb=line
+
       - name: Smoke test click clue rendering
         run: |
           python - <<'PY'

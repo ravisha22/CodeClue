@@ -474,6 +474,57 @@ class TestL3:
         assert "MiddlewareNext" in focus_names
         assert focus_names.index("RequestPipeline") < focus_names.index("MiddlewareNext")
 
+    def test_structural_classifier_prefers_module_questions(self):
+        graph = _make_small_graph()
+        l2 = [n for n in graph.nodes if n.node_type != "module"]
+        assert _classify_question_type(
+            "What modules handle request context and routing in Fiber?",
+            [],
+            l2,
+        ) == "STRUCTURAL"
+
+    def test_structural_questions_boost_file_name_anchors(self):
+        graph = CanonicalClueGraph(
+            metadata={"schema_version": "2.0"},
+            repository={"name": "fiber-focus", "root_path": "."},
+            nodes=[
+                _make_node("module:ctx.go", "module", "ctx.go", symbol_name="ctx.go"),
+                _make_node("module:router.go", "module", "router.go", symbol_name="router.go"),
+                _make_node("module:request.go", "module", "request.go", symbol_name="request.go"),
+                _make_node(
+                    "sym:fiber:ctx",
+                    "function",
+                    "ctx.go",
+                    symbol_name="DefaultCtx",
+                    purpose="function helper",
+                ),
+                _make_node(
+                    "sym:fiber:router",
+                    "function",
+                    "router.go",
+                    symbol_name="buildStackTree",
+                    purpose="function helper",
+                ),
+                _make_node(
+                    "sym:fiber:request",
+                    "function",
+                    "request.go",
+                    symbol_name="requestLogger",
+                    purpose="Request logging helper",
+                ),
+            ],
+            edges=[
+                _make_edge("contains", "module:ctx.go", "sym:fiber:ctx"),
+                _make_edge("contains", "module:router.go", "sym:fiber:router"),
+                _make_edge("contains", "module:request.go", "sym:fiber:request"),
+                _make_edge("calls", "sym:fiber:router", "sym:fiber:ctx"),
+            ],
+        )
+        focus = _select_focus_nodes(graph, "What modules handle request context and routing in Fiber?")
+        focus_files = [node.source_anchor.file_path for node in focus[:2]]
+        assert "ctx.go" in focus_files
+        assert "router.go" in focus_files
+
 
 # ---------------------------------------------------------------------------
 # GAPS tests
